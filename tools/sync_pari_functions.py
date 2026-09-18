@@ -52,6 +52,7 @@ SECTIONS = {
 STATUSES = {
     "prelude": "top-level ER2 name (in the prelude)",
     "namespace": "available as `pari.<er2_name>`",
+    "wrapper": "needs an ER2 wrapper (takes GP code; not a cypari2 method)",
     "python": "not exposed: Python or its ecosystem already covers it",
     "conflict": "not exposed yet: naming conflict to resolve",
 }
@@ -199,6 +200,11 @@ def default_row(name, section, summary):
         row["note"] = "Python builtin: never shadowed in the prelude"
     if keyword.iskeyword(row["er2_name"]):
         row["er2_name"] += "_"
+    if row["status"] in ("prelude", "namespace") and not hasattr(
+        cypari2.Pari(), name
+    ):
+        row["status"] = "wrapper"
+        row["note"] = "GP expression argument; ER2 takes a Python callable"
     return row
 
 

@@ -53,8 +53,11 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 **Remaining:**
 
 - [X] GitHub repository: [oeistools/ER2](https://github.com/oeistools/ER2)
-- [ ] CI with GitHub Actions: `uv sync`, `ruff format --check`, `ruff check`, `pytest`
-  (Quarto render tests are skipped when Quarto is not installed)
+- [X] CI with GitHub Actions ([.github/workflows/ci.yml](.github/workflows/ci.yml)): ruff,
+  pytest on Python 3.12–3.14, and a check that the PARI table is in sync. Quarto tests will be
+  skipped when Quarto is not installed.
+- [X] First tests: integrity of the PARI → ER2 table ([tests/test_pari_functions.py](tests/test_pari_functions.py))
+- [X] README badges
 - [ ] Settle the decisions M1 needs: **D3** (`_x` symbols), **D4** (`sym` soft keyword),
   **D6** (integer type), **D9** (kernelspec language), **D2b** (decimal literals)
 

@@ -1,5 +1,17 @@
 # ER2 — Mathematical Python
 
+[![CI](https://github.com/oeistools/ER2/actions/workflows/ci.yml/badge.svg)](https://github.com/oeistools/ER2/actions/workflows/ci.yml)
+[![Status: design stage](https://img.shields.io/badge/status-design%20stage-orange)](PLAN.md)
+[![Python 3.12 | 3.13 | 3.14](https://img.shields.io/badge/python-3.12%20%7C%203.13%20%7C%203.14-blue?logo=python&logoColor=white)](pyproject.toml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Code style: PEP 8](https://img.shields.io/badge/code%20style-PEP%208-blue)](https://peps.python.org/pep-0008/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![PARI/GP](https://img.shields.io/badge/powered%20by-PARI%2FGP-8a2be2)](https://pari.math.u-bordeaux.fr/)
+[![SymPy](https://img.shields.io/badge/powered%20by-SymPy-3b5526)](https://www.sympy.org/)
+[![Jupyter](https://img.shields.io/badge/runs%20in-Jupyter-F37626?logo=jupyter&logoColor=white)](ARCHITECTURE.md#12-notebooks-jupyter-and-quarto)
+[![Quarto](https://img.shields.io/badge/runs%20in-Quarto-39729E?logo=quarto&logoColor=white)](ARCHITECTURE.md#12-notebooks-jupyter-and-quarto)
+[![Cite](https://img.shields.io/badge/cite-CITATION.cff-lightgrey)](CITATION.cff)
+
 **ER2** is Python with mathematics built in: symbolic syntax, exact arithmetic by default, and
 computational number theory powered by [PARI/GP](https://pari.math.u-bordeaux.fr/).
 

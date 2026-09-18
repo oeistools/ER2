@@ -199,8 +199,13 @@ status, note, summary`. Readable view: [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTI
   regenerates the Markdown. Running it twice gives the same output. It reads a C struct through
   `ctypes`; the script checks the layout and fails loudly if a PARI upgrade changes it.
 - `status`: `prelude` (a top-level name), `namespace` (reachable as `pari.<er2_name>`),
-  `python` (not exposed: GP programming and plotting, which Python and Matplotlib already
-  cover), `conflict` (not exposed until a decision is made).
+  `wrapper` (30 functions that take GP expressions or closures, such as `sum`, `intnum`,
+  `prodeuler`, `direuler`, `sumdiv` and `O`; they are not cypari2 methods, so ER2 needs a wrapper
+  that accepts Python callables), `python` (not exposed: GP programming and plotting, which Python
+  and Matplotlib already cover), `conflict` (not exposed until a decision is made).
+- `tests/test_pari_functions.py` checks the table: known statuses, unique PEP 8 names, no
+  keywords, no shadowed builtins in the prelude, and every `prelude`/`namespace` row exists in
+  cypari2. CI also fails if the generated files are out of date.
 - Default naming: keep the PARI name when it is PEP 8-compliant. Otherwise convert camelCase to
   snake_case (`mfDelta` → `mf_delta`) and keep CapWords for type constructors (`Mod`, `Pol`).
   Python keywords get a trailing `_`. Python builtins (`abs`, `max`, `sum`, …) are never

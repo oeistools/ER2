@@ -185,7 +185,7 @@ Set,3,Set,namespace,type constructor (CapWords allowed by PEP 8),"convert x into
 simplify,3,simplify,namespace,,simplify the object x as much as possible
 sizebyte,3,sizebyte,namespace,,number of bytes occupied by the complete tree of the object x
 sizedigit,3,sizedigit,namespace,,rough upper bound for the number of decimal digits of (the components of) x
-Str,3,Str,namespace,type constructor (CapWords allowed by PEP 8),concatenates its (string) argument into a single string
+Str,3,Str,wrapper,type constructor (CapWords allowed by PEP 8); GP expression argument; ER2 takes a Python callable,concatenates its (string) argument into a single string
 truncate,3,truncate,namespace,,"truncation of x; when x is a power series,take away the O(X^)"
 valuation,3,valuation,prelude,,valuation of x with respect to p
 varhigher,3,varhigher,namespace,,return a variable 'name' whose priority is higher than the priority of v (of all existing variables if v is omitted)
@@ -236,7 +236,7 @@ contfracpnqn,5,contfracpnqn,namespace,,"[p_n,p_{n-1}; q_n,q_{n-1}] corresponding
 core,5,core,prelude,,unique squarefree integer d dividing n such that n/d is a square
 coredisc,5,coredisc,namespace,,discriminant of the quadratic field Q(sqrt(n))
 dirdiv,5,dirdiv,namespace,,division of the Dirichlet series x by the Dirichlet series y
-direuler,5,direuler,namespace,,"Dirichlet Euler product of expression expr from p=a to p=b, limited to b terms"
+direuler,5,direuler,wrapper,GP expression argument; ER2 takes a Python callable,"Dirichlet Euler product of expression expr from p=a to p=b, limited to b terms"
 dirmul,5,dirmul,namespace,,multiplication of the Dirichlet series x by the Dirichlet series y
 dirpowerssum,5,dirpowerssum,namespace,,return f(1)1^x + f(2)2^x + 
 divisors,5,divisors,prelude,,gives a vector formed by the divisors of x in increasing order
@@ -347,12 +347,12 @@ bezoutres,6,bezoutres,namespace,,deprecated alias for polresultantext
 deriv,6,deriv,namespace,ER2 `diff` dispatches to SymPy,"derivative of x with respect to v, or to the main variable of x if v is omitted"
 derivn,6,derivn,namespace,,"n-th derivative of x with respect to v, or to the main variable of x if v is omitted"
 diffop,6,diffop,namespace,,"apply the differential operator D to x, where D is defined by D(v[i])=d[i], where v is a vector of variable names"
-eval,6,eval,namespace,Python builtin: never shadowed in the prelude,"evaluation of x, replacing variables by their value"
+eval,6,eval,wrapper,Python builtin: never shadowed in the prelude; GP expression argument; ER2 takes a Python callable,"evaluation of x, replacing variables by their value"
 factorpadic,6,factorpadic,namespace,,p-adic factorization of the polynomial pol to precision r
 fft,6,fft,namespace,,"given w from rootsof1, return the discrete Fourier transform of P"
 fftinv,6,fftinv,namespace,,"given w from rootsof1, return the inverse Fourier transform of P"
 intformal,6,intformal,namespace,,"formal integration of x with respect to v, or to the main variable of x if v is omitted"
-O,6,o,namespace,renamed for PEP 8,p-adic or power series zero with precision given by e
+O,6,o,wrapper,renamed for PEP 8; GP expression argument; ER2 takes a Python callable,p-adic or power series zero with precision given by e
 padicappr,6,padicappr,namespace,,p-adic roots of the polynomial pol congruent to a mod p
 padicfields,6,padicfields,namespace,,returns polynomials generating all the extensions of degree N of the field of p-adic rational numbers; N is allowed to b…
 polchebyshev,6,polchebyshev,namespace,,"Chebyshev polynomial of the first (flag = 1) or second (flag = 2) kind, of degree n, evaluated at a"
@@ -413,7 +413,7 @@ bestapprnf,7,bestapprnf,namespace,,"T being an integral polynomial and V being a
 charpoly,7,charpoly,namespace,,det(v*Id-A)=characteristic polynomial of the matrix or polmod A
 concat,7,concat,namespace,,"concatenation of x and y, which can be scalars, vectors or matrices, or lists (in this last case, both x and y have to b…"
 dirpowers,7,dirpowers,namespace,,"return the vector [1^x,2^x,...,n^x]"
-forqfvec,7,forqfvec,namespace,,"q being a square and symmetric integral matrix representing an positive definite quadratic form, evaluate expr for all p…"
+forqfvec,7,forqfvec,wrapper,GP expression argument; ER2 takes a Python callable,"q being a square and symmetric integral matrix representing an positive definite quadratic form, evaluate expr for all p…"
 lindep,7,lindep,namespace,,integral linear dependencies between components of v
 matadjoint,7,matadjoint,namespace,,adjoint matrix of M using Leverrier-Faddeev's algorithm
 matcompanion,7,matcompanion,namespace,,companion matrix to polynomial x
@@ -497,8 +497,8 @@ vecsearch,7,vecsearch,namespace,,determines whether x belongs to the sorted vect
 vecsort,7,vecsort,namespace,,"sorts the vector x in ascending order, according to the comparison function cmpf, if not omitted"
 vecsum,7,vecsum,namespace,,return the sum of the components of the vector v
 vector,7,vector,namespace,,row vector with n components of expression expr (X ranges from 1 to n)
-vectorsmall,7,vectorsmall,namespace,,VECSMALL with n components of expression expr (X ranges from 1 to n) which must be small integers
-vectorv,7,vectorv,namespace,,column vector with n components of expression expr (X ranges from 1 to n)
+vectorsmall,7,vectorsmall,wrapper,GP expression argument; ER2 takes a Python callable,VECSMALL with n components of expression expr (X ranges from 1 to n) which must be small integers
+vectorv,7,vectorv,wrapper,GP expression argument; ER2 takes a Python callable,column vector with n components of expression expr (X ranges from 1 to n)
 abs,8,abs,namespace,Python builtin: never shadowed in the prelude,absolute value (or modulus) of x
 acos,8,acos,namespace,,arc cosine of x
 acosh,8,acosh,namespace,,inverse hyperbolic cosine of x
@@ -576,41 +576,41 @@ asympnum,9,asympnum,namespace,,asymptotic expansion of expr assuming it has rati
 asympnumraw,9,asympnumraw,namespace,,N+1 first terms of asymptotic expansion of expr as floating point numbers; alpha is as in limitnum
 contfraceval,9,contfraceval,namespace,,"given a continued fraction CF from contfracinit, evaluate the first lim terms of the continued fraction at t (all terms …"
 contfracinit,9,contfracinit,namespace,,"given M representing the power series S = sum_{n>=0} M[n+1]z^n, transform it into a continued fraction suitable for eval…"
-derivnum,9,derivnum,namespace,,numerical derivation of expr with respect to X at X = a
-intcirc,9,intcirc,namespace,,"numerical integration of expr on the circle |z-a|=R, divided by 2*I*Pi"
-intfuncinit,9,intfuncinit,namespace,,initialize tables for integrations from a to b using a weight f(t)
-intnum,9,intnum,namespace,,numerical integration of expr from a to b with respect to X
-intnumgauss,9,intnumgauss,namespace,,"numerical integration of expr from a to b, a compact interval, with respect to X using Gauss-Legendre quadrature"
+derivnum,9,derivnum,wrapper,GP expression argument; ER2 takes a Python callable,numerical derivation of expr with respect to X at X = a
+intcirc,9,intcirc,wrapper,GP expression argument; ER2 takes a Python callable,"numerical integration of expr on the circle |z-a|=R, divided by 2*I*Pi"
+intfuncinit,9,intfuncinit,wrapper,GP expression argument; ER2 takes a Python callable,initialize tables for integrations from a to b using a weight f(t)
+intnum,9,intnum,wrapper,GP expression argument; ER2 takes a Python callable,numerical integration of expr from a to b with respect to X
+intnumgauss,9,intnumgauss,wrapper,GP expression argument; ER2 takes a Python callable,"numerical integration of expr from a to b, a compact interval, with respect to X using Gauss-Legendre quadrature"
 intnumgaussinit,9,intnumgaussinit,namespace,,initialize tables for n-point Gauss-Legendre integration on a compact interval
 intnuminit,9,intnuminit,namespace,,initialize tables for integrations from a to b
-intnumosc,9,intnumosc,namespace,,numerical integration from a to oo of oscillating quasi-periodic function expr of half-period H
-intnumromb,9,intnumromb,namespace,,"numerical integration of expr (smooth in ]a,b[) from a to b with respect to X"
+intnumosc,9,intnumosc,wrapper,GP expression argument; ER2 takes a Python callable,numerical integration from a to oo of oscillating quasi-periodic function expr of half-period H
+intnumromb,9,intnumromb,wrapper,GP expression argument; ER2 takes a Python callable,"numerical integration of expr (smooth in ]a,b[) from a to b with respect to X"
 laurentseries,9,laurentseries,namespace,,expand f around 0 as a Laurent series in x to order M
 limitnum,9,limitnum,namespace,,numerical limit of sequence expr using Lagrange-Zagier extrapolation; assume u(n) ~ sum a_i n^(-alpha*i)
-prod,9,prod,namespace,,x times the product (X runs from a to b) of expression
-prodeuler,9,prodeuler,namespace,,"Euler product (p runs over the primes between a and b) of real or complex expression, as a floating point approximation"
+prod,9,prod,wrapper,GP expression argument; ER2 takes a Python callable,x times the product (X runs from a to b) of expression
+prodeuler,9,prodeuler,wrapper,GP expression argument; ER2 takes a Python callable,"Euler product (p runs over the primes between a and b) of real or complex expression, as a floating point approximation"
 prodeulerrat,9,prodeulerrat,namespace,,"product from primes p = a to infinity of F(p^s), where F is a rational function"
-prodinf,9,prodinf,namespace,,infinite product (X goes from a to infinity) of real or complex expression
+prodinf,9,prodinf,wrapper,GP expression argument; ER2 takes a Python callable,infinite product (X goes from a to infinity) of real or complex expression
 prodnumrat,9,prodnumrat,namespace,,"product from n = a to infinity of F(n), where F-1 is a rational function of degree less than or equal to -2"
-solve,9,solve,namespace,,"real root of expression expr (X between a and b), where either a or b is infinite or expr(a)*expr(b)<=0"
-solvestep,9,solvestep,namespace,,"find zeros of a function in the real interval [a,b] by naive interval splitting"
-sum,9,sum,namespace,Python builtin: never shadowed in the prelude,x plus the sum (X goes from a to b) of expression expr
-sumalt,9,sumalt,namespace,,"Cohen-Villegas-Zagier's acceleration of alternating series expr, X starting at a"
-sumdiv,9,sumdiv,namespace,,"sum of expression expr, X running over the divisors of n"
-sumdivmult,9,sumdivmult,namespace,,"sum of multiplicative function expr, d running over the divisors of n"
+solve,9,solve,wrapper,GP expression argument; ER2 takes a Python callable,"real root of expression expr (X between a and b), where either a or b is infinite or expr(a)*expr(b)<=0"
+solvestep,9,solvestep,wrapper,GP expression argument; ER2 takes a Python callable,"find zeros of a function in the real interval [a,b] by naive interval splitting"
+sum,9,sum,wrapper,Python builtin: never shadowed in the prelude; GP expression argument; ER2 takes a Python callable,x plus the sum (X goes from a to b) of expression expr
+sumalt,9,sumalt,wrapper,GP expression argument; ER2 takes a Python callable,"Cohen-Villegas-Zagier's acceleration of alternating series expr, X starting at a"
+sumdiv,9,sumdiv,wrapper,GP expression argument; ER2 takes a Python callable,"sum of expression expr, X running over the divisors of n"
+sumdivmult,9,sumdivmult,wrapper,GP expression argument; ER2 takes a Python callable,"sum of multiplicative function expr, d running over the divisors of n"
 sumeulerrat,9,sumeulerrat,namespace,,"sum from primes p = a to infinity of F(p^s), where F is a rational function"
-suminf,9,suminf,namespace,,naive summation (X goes from a to infinity) of real or complex expression expr
-sumnum,9,sumnum,namespace,,numerical summation of f(n) from n = a to +infinity using Euler-MacLaurin summation
-sumnumap,9,sumnumap,namespace,,numerical summation of f(n) from n = a to +infinity using Abel-Plana formula
+suminf,9,suminf,wrapper,GP expression argument; ER2 takes a Python callable,naive summation (X goes from a to infinity) of real or complex expression expr
+sumnum,9,sumnum,wrapper,GP expression argument; ER2 takes a Python callable,numerical summation of f(n) from n = a to +infinity using Euler-MacLaurin summation
+sumnumap,9,sumnumap,wrapper,GP expression argument; ER2 takes a Python callable,numerical summation of f(n) from n = a to +infinity using Abel-Plana formula
 sumnumapinit,9,sumnumapinit,namespace,,initialize tables for Abel-Plana summation of a series
 sumnuminit,9,sumnuminit,namespace,,initialize tables for Euler-MacLaurin delta summation of a series with positive terms
-sumnumlagrange,9,sumnumlagrange,namespace,,numerical summation of f(n) from n = a to +infinity using Lagrange summation
+sumnumlagrange,9,sumnumlagrange,wrapper,GP expression argument; ER2 takes a Python callable,numerical summation of f(n) from n = a to +infinity using Lagrange summation
 sumnumlagrangeinit,9,sumnumlagrangeinit,namespace,,initialize tables for Lagrange summation of a series
-sumnummonien,9,sumnummonien,namespace,,numerical summation from n = a to +infinity using Monien summation
+sumnummonien,9,sumnummonien,wrapper,GP expression argument; ER2 takes a Python callable,numerical summation from n = a to +infinity using Monien summation
 sumnummonieninit,9,sumnummonieninit,namespace,,initialize tables for Monien summation of a series with positive terms
 sumnumrat,9,sumnumrat,namespace,,"sum from n = a to infinity of F(n), where F is a rational function of degree less than or equal to -2"
-sumnumsidi,9,sumnumsidi,namespace,,numerical summation of f(n) from n = a to +infinity using Sidi summation; a must be an integer
-sumpos,9,sumpos,namespace,,"sum of positive (or negative) series expr, the formal variable X starting at a"
+sumnumsidi,9,sumnumsidi,wrapper,GP expression argument; ER2 takes a Python callable,numerical summation of f(n) from n = a to +infinity using Sidi summation; a must be an integer
+sumpos,9,sumpos,wrapper,GP expression argument; ER2 takes a Python callable,"sum of positive (or negative) series expr, the formal variable X starting at a"
 bnfcertify,10,bnfcertify,namespace,,certify the correctness (i.e
 bnfdecodemodule,10,bnfdecodemodule,namespace,,"given a coded module m as in bnrdisclist, gives the true module"
 bnfinit,10,bnfinit,namespace,,"compute the necessary data for future use in ideal and unit group computations, including fundamental units if they are …"

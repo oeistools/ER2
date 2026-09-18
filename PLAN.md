@@ -58,8 +58,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
   skipped when Quarto is not installed.
 - [X] First tests: integrity of the PARI → ER2 table ([tests/test_pari_functions.py](tests/test_pari_functions.py))
 - [X] README badges
-- [ ] Settle the decisions M1 needs: **D3** (`_x` symbols), **D4** (`sym` soft keyword),
-  **D6** (integer type), **D9** (kernelspec language), **D2b** (decimal literals)
+- [X] Decisions for M1 settled: D2b, D3, D4, D6 (after the spike), D9
 
 **Acceptance:** CI is green on an empty test suite, and D3, D4, D6, D9 and
 D2b are recorded in ARCHITECTURE.md §6.
@@ -72,7 +71,7 @@ Goal: ER2 syntax runs everywhere, even before the mathematics is complete.
 
 **Tasks:**
 
-1. **D6 spike.** Prototype `class Integer(int)` against the §1.1 contract: `range`, indexing,
+1. ✅ **D6 spike** (done in M0; result: `Integer(int)`). Prototype `class Integer(int)` against the §1.1 contract: `range`, indexing,
    `hash`, `json`, `math`, and NumPy (`np.zeros(n)`, `np.array([n])` dtype). NumPy is used only in
    the spike environment. Then decide D6.
 2. `er2/preparser.py`, built on `tokenize`:
@@ -186,11 +185,12 @@ Revisit this only if the preparser shows real limits.
 | --- | -------------------------------------- | --------- | --------------------------------------------------- |
 | D1  | `^` as power                         | —        | ✅ resolved (Sage model)                            |
 | D2  | exact integer literals                 | —        | ✅ resolved (Sage model)                            |
-| D2b | decimal literals:`float` or `Real` | M1        | open                                                |
-| D3  | predefined`_x` symbols               | M1        | open (proposal: keep, and allow shadowing)          |
-| D4  | `sym` as a soft keyword              | M1        | open (proposal: only at the start of a statement)   |
-| D6  | canonical integer type                 | M1        | open (proposal:`Integer(int)`, pending the spike) |
-| D9  | kernelspec language                    | M1        | open (proposal:`python`)                          |
+| D2b | decimal literals | M1 | ✅ resolved: Python `float` |
+| D3  | predefined `_x` symbols | M1 | ✅ resolved: keep, shadowable |
+| D4  | `sym` as a soft keyword | M1 | ✅ resolved: start of statement only |
+| D6  | canonical integer type | M1 | ✅ resolved: `Integer(int)` (spike) |
+| D9  | kernelspec language | M1 | ✅ resolved: `python` |
+| D11 | `x^2` in `print()` | M1 | ✅ resolved: only in ER2 sessions |
 | D5  | `psi`: Dedekind or digamma           | M3        | open                                                |
 | D7  | expensive factorizations               | M3        | open                                                |
 | D8  | `Omega` → `bigomega`              | M3        | open (proposal:`bigomega`)                        |

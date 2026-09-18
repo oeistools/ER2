@@ -338,27 +338,52 @@ Each must be resolved (and recorded here) before or during 0.1.
   Precedence: translating to `**` inherits Python's (`-x^2` = `-(x^2)`, `2^3^2` = `2^(3^2)`),
   which is the mathematical one. Document it.
 - **D2 — Exact by default. ✅ Resolved for integers (2026-09-18, Sage model, §1.1).** Every integer
-  literal in `.er2` sources becomes an ER2 `Integer`, so `1/3` is rational. Still open: decimal
-  literals (`0.1`) — keep Python `float` or use a controlled-precision `Real`. Watch performance in
-  numeric loops.
-- **D3 — Predefined `_x`.** The `_` prefix means "private" in Python, and `_` is the last result
+  literal in `.er2` sources becomes an ER2 `Integer`, so `1/3` is rational. **D2b — decimal literals ✅ Resolved (2026-09-18): `0.1` stays a Python `float`**. Exactness applies to
+  integers and their quotients (`1/10` is exact).
+- **D3 — Predefined `_x`. ✅ Resolved (2026-09-18): keep `_x, _y, _z, _n, _k, _p`; users may shadow them.** The `_` prefix means "private" in Python, and `_` is the last result
   in the REPL. Low but real risk. If the user assigns `_n = 5`, the symbol is shadowed (normal
   Python behavior, acceptable).
-- **D4 — `sym` as a soft keyword.** Only recognized as `sym <name>[, <name>…]` at the start of a
+- **D4 — `sym` as a soft keyword. ✅ Resolved (2026-09-18) as proposed.** Only recognized as `sym <name>[, <name>…]` at the start of a
   logical line. `sym = 3` or `sym(x)` remain plain Python.
 - **D5 — `psi`.** Decide between Dedekind ψ (arithmetic) and digamma. Proposal: `psi` = Dedekind
   (consistent with the list of arithmetic functions) and an explicit `digamma`.
-- **D6 — Canonical integer type.** `sympy.Integer` vs `gmpy2.mpz` vs a custom class. Affects the
+- **D6 — Canonical integer type. ✅ Resolved (2026-09-18): `class Integer(int)` (candidate A).** `sympy.Integer` vs `gmpy2.mpz` vs a custom class. Affects the
   cost of converting to PARI and to SymPy, and ecosystem compatibility (§1.1): with the Sage model
   every literal is an `Integer`, so libraries that check `isinstance(n, int)` would reject it.
   Proposal to evaluate: `class Integer(int)` (a real `int` subclass whose `/` returns `Rational`),
   converted to SymPy/PARI only at the backend boundary. Verify behavior with NumPy before deciding.
+
+  **Spike results (2026-09-18, Python 3.14, NumPy, SymPy 1.14, cypari2 2.2.4):**
+
+  | Check | A `Integer(int)` | B `sympy.Integer` | C `gmpy2.mpz` |
+  |---|---|---|---|
+  | `isinstance(n, int)` | yes | **no** | **no** |
+  | `range(n)`, `lst[n]`, `hash`, `math.sqrt(n)` | yes | yes | yes |
+  | `json.dumps(n)` | yes | **TypeError** | **TypeError** |
+  | `f"{n:03d}"` | yes | **TypeError** | yes |
+  | `np.zeros(n)` | yes | yes | yes |
+  | `np.array([n]).dtype` | `int64` | **`object`** | `int64` |
+  | `n / 3` | `5/3` (exact) | `5/3` (exact) | **`1.666…`** |
+  | `type(n + 1)` | `Integer` | `Integer` | `mpz` |
+  | SymPy `x**n`, `pari(n)`, `pari.eulerphi(n)` | yes | yes | yes |
+  | loop cost vs `int` (pure-Python prototype) | ×8.9 | ×36 | ×4 |
+
+  A is the only candidate that meets the whole §1.1 contract. Its overhead comes from the
+  pure-Python operator wrappers, and a C/Cython implementation can reduce it later (M4). Large-number
+  work is not affected, because it runs inside PARI.
 - **D7 — Expensive factorizations.** `factor(10^1000 - 1)` (the draft's example, §7) may not
   finish in reasonable time. Define a policy: timeout, `factor(n, partial=True)`, or leave it to
   the user.
 - **D8 — `Omega` violates PEP 8.** PEP 8 requires lowercase function names (§11), and the draft's
   `Omega(n)` does not follow that. Proposal: `bigomega(n)` (the PARI name), keeping `omega(n)`.
-- **D9 — Kernelspec language.** `python` (proposed) vs `er2`. See §1.2.
+- **D9 — Kernelspec language. ✅ Resolved (2026-09-18): `python`.** Quarto cells are `` ```{python} `` with
+  `jupyter: er2`. See §1.2.
+- **D11 — `x^2` in `print()`. ✅ Resolved (2026-09-18): only in ER2 sessions.** SymPy results
+  are plain SymPy objects, so `print(f)` uses SymPy's printer. The ER2 entry points (CLI, REPL,
+  `er2` kernel, `%load_ext er2`) call `er2.printing.install()`, which makes ER2's printer SymPy's
+  default for that process. The change can be undone with `uninstall()`. A plain `import er2` from
+  Python changes nothing. Side effect, accepted: inside an ER2 session, SymPy objects created by
+  libraries also print as `x^2`. `sympify("x^2")` still reads that correctly.
 - **D10 — Exposure of PARI functions.** Proposal: only the curated `prelude` rows (~30) are
   top-level names. Every other PARI function is reachable as `pari.<name>`, with ER2 type
   conversions applied. Exposing ~1,000 top-level names would shadow user variables and

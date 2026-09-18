@@ -25,8 +25,8 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 
 | Milestone | Focus                                         | Status      |
 | --------- | --------------------------------------------- | ----------- |
-| M0        | Foundations                                   | in progress |
-| M1 (0.1)  | Preparser, number types, CLI, Jupyter, Quarto | not started |
+| M0        | Foundations                                   | ✅ done (CI result not yet checked) |
+| M1 (0.1)  | Preparser, number types, CLI, Jupyter, Quarto | ✅ done     |
 | M2 (0.2)  | CAS on SymPy                                  | not started |
 | M3 (0.3)  | Number theory on PARI →**MVP**         | not started |
 | M4 (0.4)  | Backend selection, PARI types, benchmarks     | not started |
@@ -60,7 +60,8 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 - [X] README badges
 - [X] Decisions for M1 settled: D2b, D3, D4, D6 (after the spike), D9
 
-**Acceptance:** CI is green on an empty test suite, and D3, D4, D6, D9 and
+**Acceptance:** CI is green (⚠️ not checked yet: the repository is private and `gh` is not
+logged in, so look at the Actions tab), and D3, D4, D6, D9 and
 D2b are recorded in ARCHITECTURE.md §6.
 
 ---
@@ -85,15 +86,32 @@ Goal: ER2 syntax runs everywhere, even before the mathematics is complete.
 5. `er2/printing.py`: `x^2` notation and `__repr__`; `latex()`, `Tex` and `show()`
    (ARCHITECTURE §3.6), with `_repr_latex_` on every ER2 type.
 6. CLI (`er2/__main__.py`): `er2 file.er2`, `er2 --show-python file.er2`, and the `er2` REPL.
-7. `er2/importer.py`: an import hook for `.er2` modules, added to the finders and never
-   replacing them.
-8. Notebooks: `er2/ipython_ext.py` (`%load_ext er2`), and `er2/kernel.py` with
+7. `er2/importer.py`: `.er2` imports through a `FileFinder` path hook, so `.py` still wins and
+   `__init__.er2` packages work.
+8. Notebooks: `er2/session.py` (`%load_ext er2`), and `er2/kernel.py` with
    `er2 kernel install`. The kernel also preparses `user_expressions`, which is how Quarto evaluates inline code. Add the optional extra `er2[jupyter] = ipykernel`.
 9. Tests:
    - `tests/preparser/`: input/output pairs, including `^` and `sym` inside strings and comments
    - `tests/compat/`: plain Python snippets behave identically; stdlib imports work from `.er2`
    - notebook tests: execute a notebook through both routes (`nbclient` in the dev group, justified
      in §8); render a `.qmd` when Quarto is available
+
+**Status: ✅ done (2026-09-18).** There are 115 tests. They cover the preparser, the numbers, printing
+and LaTeX, the CLI, the REPL, imports, the compat suite, both notebook routes, and a real Quarto
+render (with `gfm` output; the HTML rendering was checked in the prototype).
+
+Found and fixed while building M1:
+- Quarto runs `%reset` before rendering, which wiped the prelude. The prelude is now restored
+  before every cell.
+- A meta-path finder cannot see `.er2` packages. The importer now uses a path hook.
+- Tracebacks showed ER2's internal frames and the preparsed code. They now show the user's ER2
+  source.
+
+Known limitations, carried forward:
+- IPython's column highlighting in notebook tracebacks may be misaligned (M4).
+- `f"{2^3=}"` echoes the preparsed text `2**__er2_int__(3)=`.
+- The integer literal escape hatch (`5r`, §1.1 point 6) is not implemented; add it when needed.
+- Literals are wrapped at every evaluation; hoisting constants is an M4 optimization.
 
 **Acceptance:**
 

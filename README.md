@@ -1,7 +1,7 @@
 # ER2 — Mathematical Python
 
 [![CI](https://github.com/oeistools/ER2/actions/workflows/ci.yml/badge.svg)](https://github.com/oeistools/ER2/actions/workflows/ci.yml)
-[![Status: design stage](https://img.shields.io/badge/status-design%20stage-orange)](PLAN.md)
+[![Status: early development](https://img.shields.io/badge/status-0.1%20early%20development-orange)](PLAN.md)
 [![Python 3.12 | 3.13 | 3.14](https://img.shields.io/badge/python-3.12%20%7C%203.13%20%7C%203.14-blue?logo=python&logoColor=white)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Code style: PEP 8](https://img.shields.io/badge/code%20style-PEP%208-blue)](https://peps.python.org/pep-0008/)
@@ -18,8 +18,11 @@ computational number theory powered by [PARI/GP](https://pari.math.u-bordeaux.fr
 It is named after the Hungarian mathematician **Paul Erdős**. In Spanish, "Erdős" sounds like
 "ER-dos", which is where *ER2* comes from.
 
-> **Status: design stage.** There is no working code yet. This README describes what ER2 is meant to
-> be. See [ARCHITECTURE.md](ARCHITECTURE.md) for the technical design and the open decisions.
+> **Status: early development (0.1, milestone M1 done).** The ER2 language layer already works:
+> `^`, `^^`, exact integers and rationals, `sym`, `_x`, `latex()`/`show()`, `.er2` imports, the
+> `er2` command and REPL, the Jupyter kernel, `%load_ext er2`, and Quarto. The mathematical
+> functions used below (`factor`, `diff`, `isprime`, `phi`, …) arrive in M2 and M3. See
+> [PLAN.md](PLAN.md).
 
 ## A taste of ER2
 
@@ -120,8 +123,12 @@ because the cypari2 wheel includes PARI.
 
 ```bash
 git clone https://github.com/oeistools/ER2.git && cd ER2
-uv sync          # creates .venv with sympy, cypari2, pytest and ruff
-uv run pytest
+uv sync                         # creates .venv (sympy, cypari2 and the dev tools)
+uv run pytest                   # the test suite
+uv run er2                      # ER2 REPL
+uv run er2 program.er2          # run a program
+uv run er2 --show-python program.er2   # show the Python that ER2 generates
+uv run er2 kernel install       # add the "ER2" kernel to Jupyter and Quarto
 ```
 
 We keep dependencies deliberately minimal: `sympy` and `cypari2` at runtime, plus `ipykernel` as

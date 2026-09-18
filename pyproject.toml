@@ -11,6 +11,13 @@ dependencies = [
     "cypari2>=2.2",
 ]
 
+[project.optional-dependencies]
+# ER2 Jupyter kernel and %load_ext er2 (ARCHITECTURE.md §1.2).
+jupyter = ["ipykernel>=6.29"]
+
+[project.scripts]
+er2 = "er2.__main__:main"
+
 [project.urls]
 Repository = "https://github.com/oeistools/ER2"
 Issues = "https://github.com/oeistools/ER2/issues"
@@ -19,11 +26,19 @@ Issues = "https://github.com/oeistools/ER2/issues"
 dev = [
     "pytest>=8",
     "ruff>=0.6",
+    # Notebook tests: run the ER2 kernel and %load_ext er2 (§1.2).
+    "ipykernel>=6.29",
+    "nbclient>=0.10",
+    # Quarto's Jupyter bridge runs on this Python and imports yaml.
+    "pyyaml>=6",
 ]
 
-[tool.uv]
-# No importable package yet; switch to true once er2/ exists.
-package = false
+[build-system]
+requires = ["uv_build>=0.11,<0.12"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = ""
 
 [tool.ruff]
 line-length = 79  # PEP 8
@@ -31,6 +46,10 @@ line-length = 79  # PEP 8
 [tool.ruff.lint]
 # pycodestyle (E, W), pyflakes (F), isort (I), pep8-naming (N), pydocstyle/PEP 257 (D)
 select = ["E", "W", "F", "I", "N", "D"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests are not public API: docstrings optional (PEP 257 covers the package).
+"tests/**" = ["D1"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "pep257"

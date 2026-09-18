@@ -30,8 +30,9 @@ Python ecosystem through ordinary `import`. Chosen model: **the SageMath model**
    extension loaded. Every `.py` module and every installed library (NumPy, pandas, SciPy,
    Matplotlib, …) runs as plain, untouched Python.
 2. **Imports are standard.** `import numpy as np` inside a `.er2` file uses Python's normal import
-   system. The ER2 import hook only *adds* a finder for `.er2` modules; it never replaces or wraps
-   the existing finders.
+   system. The ER2 import support adds a `FileFinder` path hook that checks Python's own suffixes
+   first and `.er2` last. A `.py` module therefore always wins over an `.er2` module with the same
+   name. Python's default hook stays in place behind it.
 3. **Every Python construct is valid ER2**: classes, decorators, generators, `async`, `match`,
    comprehensions, f-strings, type hints, `with`, exceptions, `if __name__ == "__main__"`, … The
    preparser rewrites tokens, never syntax structure, so anything `ast.parse` accepts after
@@ -142,14 +143,18 @@ Transformations (0.1):
 
 | ER2                | Generated Python                                  | Notes |
 |--------------------|---------------------------------------------------|-------|
-| `sym x, y`         | `x, y = __er2_symbols__("x y")`                   | only at statement start (soft keyword, like `match`) |
+| `sym x, y`         | `x, y = __er2_sym__("x, y")`                      | at the start of a statement, or after `;` or `:` (soft keyword, D4) |
 | `x^2`              | `x**2`                                            | see D1 |
 | `a ^^ b`           | `a ^ b`                                           | explicit XOR (Sage convention) |
-| `1/3`              | `Integer(1)/Integer(3)` → `Rational(1, 3)`        | see D2 |
+| `5`                | `__er2_int__(5)`                                  | so `1/3` is `Rational(1, 3)`; see D2 and D6 |
 | `_x`               | unchanged; `_x` lives in the prelude              | see D3 |
 
-Requirements:
-- Built on the `tokenize` module; never touch the contents of strings or comments.
+The helpers use reserved dunder names (`__er2_int__`, `__er2_sym__`), so user code such as
+`from sympy import *` can never shadow them. `er2 --show-python` shows them as they are.
+
+Requirements (all implemented in M1 and covered by `tests/preparser/`):
+- Built on the `tokenize` module; never touch the contents of strings or comments. In f-strings
+  (Python ≥ 3.12), only the expressions inside `{…}` are code, and the literal text is untouched.
 - Must preserve line numbers (errors must point at the line in the `.er2` file).
 - Idempotent on plain Python that uses neither `^` nor `sym`.
 - `er2 --show-python file.er2` must print the generated Python (for debugging).
@@ -157,9 +162,17 @@ Requirements:
 ### 3.2 Entry points
 
 - **CLI**: `er2 file.er2` and the `er2` REPL (built on `code.InteractiveConsole` plus the preparser).
-- **Import hook**: `import module` finds `module.er2` (meta path finder + loader).
+- **Import support** (`er2/importer.py`): `import module` finds `module.er2`, and
+  `pkg/__init__.er2` makes a regular package. This uses a `FileFinder` path hook, not a meta-path
+  finder: a meta-path finder placed after Python's own is too late for packages, because Python
+  already claims the directory as a namespace package. No bytecode is cached.
 - **Jupyter / Quarto** (§1.2): the `er2` kernel (`er2 kernel install`) and the `%load_ext er2`
-  extension. Both register the preparser in `input_transformers_post`.
+  extension (`er2/session.py`). Both register the preparser in `input_transformers_post`. They also:
+  - restore the prelude before every cell, because Quarto runs `%reset`, which would otherwise
+    delete `__er2_int__` (found in M1);
+  - make IPython tracebacks show the ER2 cell rather than the preparsed one.
+- **Tracebacks in the CLI** hide the runner frames and the ER2 runtime frames. They drop the
+  column markers for `.er2` frames, because those columns refer to the preparsed line.
 
 All of them share `er2.preparser` and `er2.prelude`; none of them contains its own translation logic.
 
@@ -269,26 +282,29 @@ show(*objs)
   (`er2.config.pari_stack`).
 - Neither backend imports the other. Only `dispatch` knows about both.
 
-## 4. Proposed repository layout
+## 4. Repository layout
+
+The layout below is the target. The files marked ✅ exist (M1).
 
 ```text
 er2/
-  __init__.py
-  __main__.py          # CLI: er2 file.er2 | er2 (REPL) | er2 --show-python
-  preparser.py
-  prelude.py
+  __init__.py          # ✅ %load_ext er2 entry point; no side effects on import
+  __main__.py          # ✅ CLI: er2 file.er2 | er2 (REPL) | er2 --show-python | er2 kernel install
+  preparser.py         # ✅
+  prelude.py           # ✅
+  session.py           # ✅ session start, file runner, REPL, IPython extension
   dispatch.py
-  printing.py
-  importer.py          # .er2 import hook
-  ipython_ext.py       # %load_ext er2
-  kernel.py            # er2 Jupyter kernel + `er2 kernel install` (also preparses user_expressions)
-  runtime/             # types: Integer, Rational, Symbol, Factorization, …
+  printing.py          # ✅
+  importer.py          # ✅ .er2 path hook
+  kernel.py            # ✅ er2 Jupyter kernel + `er2 kernel install` (also preparses user_expressions)
+  runtime/             # types: Integer ✅, Rational ✅, Factorization, …
   backends/
     sympy_backend.py
     pari_backend.py
 tests/
   preparser/           # .er2 → expected .py pairs
   compat/              # Python compatibility contract (§1.1)
+  notebooks/           # er2 kernel, %load_ext er2, Quarto render (§1.2)
   runtime/
   backends/
   examples/            # complete .er2 programs with expected (golden) output

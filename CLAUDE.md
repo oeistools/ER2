@@ -1,62 +1,61 @@
 # CLAUDE.md
 
-Guía para Claude Code en este repositorio.
+Guidance for Claude Code in this repository.
 
-## Proyecto
+## Project
 
-**ER2 — Python matemático.** Superconjunto de Python con sintaxis simbólica (`sym x`, `x^2`, `_x`),
-aritmética exacta por defecto y teoría de números vía PARI/GP.
+**ER2 — mathematical Python.** A superset of Python with symbolic syntax (`sym x`, `x^2`, `_x`),
+exact arithmetic by default, and number theory via PARI/GP.
 
-- Idea original: [draft/ER2_idea_resumen.md](draft/ER2_idea_resumen.md)
-- Diseño técnico y decisiones abiertas (D1–D7): [ARCHITECTURE.md](ARCHITECTURE.md) — **leer antes de implementar**.
-- Estado: pre-implementación. Primer objetivo: el MVP de ARCHITECTURE.md §5.
+- Original idea: [draft/ER2_idea_summary.md](draft/ER2_idea_summary.md)
+- Technical design and open decisions (D1–D7): [ARCHITECTURE.md](ARCHITECTURE.md) — **read before implementing**.
+- Status: pre-implementation. First target: the MVP in ARCHITECTURE.md §5.
 
-## Principio rector
+## Guiding principle
 
-> No crear un lenguaje nuevo innecesariamente. Extender Python sólo donde es poco natural para las matemáticas.
+> Do not create a new language unnecessarily. Extend Python only where it is unnatural for mathematics.
 
-Consecuencias prácticas:
-- ER2 = **preparser fuente→fuente** + **runtime Python** + **backends** (SymPy, cypari2/PARI). No escribir intérprete, compilador ni gramática propia.
-- **No** forkear CPython, SymPy, PARI ni cypari2 en las etapas 0.x. Se usan como dependencias.
-- Toda sintaxis nueva debe poder expresarse como transformación de tokens hacia Python válido.
-- No reimplementar algoritmos que PARI o SymPy ya tienen.
+In practice:
+- ER2 = **source-to-source preparser** + **Python runtime** + **backends** (SymPy, cypari2/PARI). Do not write an interpreter, compiler, or custom grammar.
+- Do **not** fork CPython, SymPy, PARI, or cypari2 during 0.x. Use them as dependencies.
+- Every new piece of syntax must be expressible as a token transformation into valid Python.
+- Do not reimplement algorithms that PARI or SymPy already provide.
 
-## Reglas de implementación
+## Implementation rules
 
-- **Preparser**: usar el módulo `tokenize`, nunca regex sobre el texto. No tocar strings, comentarios ni f-strings. Conservar números de línea.
-- **Dispatch centralizado**: las funciones públicas (`factor`, `isprime`, …) eligen backend en `er2/dispatch.py`. Los backends no se importan entre sí.
-- **Conversiones sólo en la frontera del backend** (`to_pari`/`from_pari`, `to_sympy`/`from_sympy`). El usuario no debe recibir `cypari2.gen` crudos.
-- **Nombres ER2 ≠ nombres PARI**: `phi→eulerphi`, `mu→moebius`, `Omega→bigomega`. `psi` en PARI es la digamma (ver D5). Mantener el mapeo en una tabla única.
-- **Salida**: notación matemática (`x^2`, `(x + 1)^2`), vía el printer de `er2/printing.py`.
-- Cuando una tarea toque una decisión abierta D1–D7, proponer la resolución al usuario y registrarla en ARCHITECTURE.md §6 — no decidir en silencio.
-- Precedente útil para dudas de diseño: el preparser de SageMath (`^`, `Integer`, `^^` para XOR).
+- **Preparser**: use the `tokenize` module, never regex over the text. Do not touch strings, comments, or f-strings. Preserve line numbers.
+- **Centralized dispatch**: public functions (`factor`, `isprime`, …) choose their backend in `er2/dispatch.py`. Backends never import each other.
+- **Conversions only at the backend boundary** (`to_pari`/`from_pari`, `to_sympy`/`from_sympy`). Users must not receive raw `cypari2.gen` objects.
+- **ER2 names ≠ PARI names**: `phi→eulerphi`, `mu→moebius`, `Omega→bigomega`. In PARI `psi` is digamma (see D5). Keep the mapping in a single table.
+- **Output**: mathematical notation (`x^2`, `(x + 1)^2`), via the printer in `er2/printing.py`.
+- When a task touches an open decision D1–D7, propose a resolution to the user and record it in ARCHITECTURE.md §6 — do not decide silently.
+- Useful precedent for design questions: the SageMath preparser (`^`, `Integer`, `^^` for XOR).
 
-## Entorno
+## Environment
 
-- Python 3.14 (requisito mínimo propuesto: 3.12). Gestor: `uv`.
-- SymPy 1.14 instalado. `cypari2` **no instalado** todavía (`uv add cypari2`; necesita libpari).
-- PARI/GP 2.17.3 disponible como `gp` — útil para verificar resultados esperados:
+- Python 3.14 (proposed minimum: 3.12). Package manager: `uv`.
+- SymPy 1.14 installed. `cypari2` **not installed** yet (`uv add cypari2`; needs libpari).
+- PARI/GP 2.17.3 available as `gp` — useful for checking expected results:
   `printf 'eulerphi(123456)\n' | gp -q -D colors=no`
-- No es todavía un repositorio git.
 
-## Comandos (previstos — actualizar cuando existan)
+## Commands (planned — update once they exist)
 
 ```bash
-uv sync                          # instalar dependencias
-uv run er2 examples/mvp.er2      # ejecutar un programa ER2
-uv run er2 --show-python f.er2   # ver el Python generado por el preparser
+uv sync                          # install dependencies
+uv run er2 examples/mvp.er2      # run an ER2 program
+uv run er2 --show-python f.er2   # show the Python generated by the preparser
 uv run er2                       # REPL
-uv run pytest                    # todos los tests
-uv run pytest tests/preparser    # sólo preparser
+uv run pytest                    # all tests
+uv run pytest tests/preparser    # preparser only
 ```
 
 ## Tests
 
-- Preparser: pares entrada `.er2` → Python esperado; incluir casos de strings/comentarios con `^` y `sym`.
-- Backends: comparar contra `gp` (teoría de números) y SymPy (CAS).
-- Golden tests: programas en `tests/examples/` con su salida esperada.
-- Evitar tests con factorizaciones que puedan tardar (ver D7).
+- Preparser: `.er2` input → expected Python pairs; include cases with `^` and `sym` inside strings/comments.
+- Backends: compare against `gp` (number theory) and SymPy (CAS).
+- Golden tests: programs in `tests/examples/` with their expected output.
+- Avoid tests with factorizations that may take long (see D7).
 
-## Idioma
+## Language
 
-Documentación y comunicación en español. Identificadores de código y API pública en inglés (convención Python/SymPy/PARI).
+**Everything in this project is in English**: code, identifiers, comments, docstrings, documentation, commit messages, and file names. (Conversation with the user may be in Spanish.)

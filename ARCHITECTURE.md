@@ -1,140 +1,139 @@
-# ER2 — Arquitectura
+# ER2 — Architecture
 
-> Documento de diseño técnico. Fuente de la idea: [draft/ER2_idea_resumen.md](draft/ER2_idea_resumen.md).
-> Estado: **pre-implementación** (no hay código todavía).
+> Technical design document. Source of the idea: [draft/ER2_idea_summary.md](draft/ER2_idea_summary.md).
+> Status: **pre-implementation** (no code yet).
 
-## 1. Qué es ER2
+## 1. What ER2 is
 
-ER2 es **Python matemático**: un superconjunto de Python que añade sintaxis simbólica
-(`sym x`, `x^2`, `_x`), aritmética exacta por defecto y acceso transparente a PARI/GP.
+ER2 is **mathematical Python**: a superset of Python that adds symbolic syntax
+(`sym x`, `x^2`, `_x`), exact arithmetic by default, and transparent access to PARI/GP.
 
-No es un lenguaje nuevo ni un intérprete nuevo. En las etapas 0.x, ER2 es:
+It is neither a new language nor a new interpreter. In the 0.x releases, ER2 is:
 
-1. un **preprocesador fuente→fuente** (`.er2` → Python válido),
-2. un **runtime** (paquete `er2`) que define tipos y funciones matemáticas,
-3. unos **backends** (SymPy para lo simbólico, PARI vía cypari2 para teoría de números).
+1. a **source-to-source preparser** (`.er2` → valid Python),
+2. a **runtime** (the `er2` package) that defines mathematical types and functions,
+3. a set of **backends** (SymPy for symbolic work, PARI via cypari2 for number theory).
 
-El código generado se ejecuta en CPython sin modificar. El fork de CPython sólo se
-considera en 2.0 (ver §9).
+The generated code runs on unmodified CPython. A CPython fork is only considered for 2.0 (see §9).
 
-Precedente directo: el *preparser* de SageMath hace exactamente esto
-(`^`→`**`, literales enteros envueltos en `Integer`). Conviene estudiarlo antes de reinventar.
+Direct precedent: the SageMath *preparser* does exactly this
+(`^`→`**`, integer literals wrapped in `Integer`). Study it before reinventing it.
 
-## 2. Vista general
+## 2. Overview
 
 ```text
- fuente .er2 / celda Jupyter / REPL
+ .er2 source / Jupyter cell / REPL
               │
               ▼
  ┌─────────────────────────────┐
- │ er2.preparser               │  tokenize → transformar tokens → untokenize
- │  - sym x, y   → asignaciones│  (NO regex sobre texto crudo: respeta strings,
- │  - ^          → **          │   comentarios, f-strings)
- │  - literales  → Integer(…)  │
+ │ er2.preparser               │  tokenize → transform tokens → untokenize
+ │  - sym x, y   → assignments │  (NO regex over raw text: respects strings,
+ │  - ^          → **          │   comments, f-strings)
+ │  - literals   → Integer(…)  │
  └──────────────┬──────────────┘
                 ▼
-        Python válido (str)  ──►  ast.parse / compile  ──►  CPython
+        valid Python (str)  ──►  ast.parse / compile  ──►  CPython
                                                                │
-                         namespace inicial = er2.prelude  ◄────┘
+                        initial namespace = er2.prelude  ◄─────┘
                                         │
  ┌──────────────────────────────────────┴────────────────────────┐
  │ er2.runtime                                                    │
- │  tipos: Integer, Rational, Symbol, Expr, …                     │
- │  funciones públicas: factor, expand, diff, isprime, phi, …     │
- │  er2.dispatch: elige backend según tipo de argumento           │
- │  er2.printing: salida estilo matemático (x^2, no x**2)         │
+ │  types: Integer, Rational, Symbol, Expr, …                     │
+ │  public functions: factor, expand, diff, isprime, phi, …       │
+ │  er2.dispatch: picks a backend based on argument type          │
+ │  er2.printing: mathematical output (x^2, not x**2)             │
  └───────────────┬────────────────────────────┬───────────────────┘
                  ▼                            ▼
      er2.backends.sympy            er2.backends.pari
           SymPy                  cypari2 → libpari
 ```
 
-## 3. Componentes
+## 3. Components
 
 ### 3.1 Preparser (`er2/preparser.py`)
 
-Entrada: texto ER2. Salida: texto Python equivalente. Función pura, sin estado, fácil de testear
-con pares entrada/salida.
+Input: ER2 text. Output: equivalent Python text. A pure, stateless function that is easy to test
+with input/output pairs.
 
-Transformaciones (0.1):
+Transformations (0.1):
 
-| ER2                | Python generado                                   | Notas |
+| ER2                | Generated Python                                  | Notes |
 |--------------------|---------------------------------------------------|-------|
-| `sym x, y`         | `x, y = __er2_symbols__("x y")`                   | sólo al inicio de sentencia (soft keyword, como `match`) |
-| `x^2`              | `x**2`                                            | ver D1 |
-| `a ^^ b`           | `a ^ b`                                           | XOR explícito (convención Sage) |
-| `1/3`              | `Integer(1)/Integer(3)` → `Rational(1, 3)`        | ver D2 |
-| `_x`               | sin cambio; `_x` está en el prelude               | ver D3 |
+| `sym x, y`         | `x, y = __er2_symbols__("x y")`                   | only at statement start (soft keyword, like `match`) |
+| `x^2`              | `x**2`                                            | see D1 |
+| `a ^^ b`           | `a ^ b`                                           | explicit XOR (Sage convention) |
+| `1/3`              | `Integer(1)/Integer(3)` → `Rational(1, 3)`        | see D2 |
+| `_x`               | unchanged; `_x` lives in the prelude              | see D3 |
 
-Requisitos:
-- Basado en el módulo `tokenize`; nunca tocar el contenido de strings ni comentarios.
-- Debe preservar números de línea (los errores deben apuntar a la línea del `.er2`).
-- Idempotente sobre Python puro que no use `^` ni `sym`.
-- `er2 --show-python archivo.er2` debe imprimir el Python generado (depuración).
+Requirements:
+- Built on the `tokenize` module; never touch the contents of strings or comments.
+- Must preserve line numbers (errors must point at the line in the `.er2` file).
+- Idempotent on plain Python that uses neither `^` nor `sym`.
+- `er2 --show-python file.er2` must print the generated Python (for debugging).
 
-### 3.2 Puntos de entrada
+### 3.2 Entry points
 
-- **CLI**: `er2 archivo.er2` y REPL `er2` (basado en `code.InteractiveConsole` con el preparser).
-- **Import hook**: `import modulo` encuentra `modulo.er2` (meta path finder + loader).
-- **Jupyter**: extensión IPython que registra el preparser en `input_transformers_post`
+- **CLI**: `er2 file.er2` and the `er2` REPL (built on `code.InteractiveConsole` plus the preparser).
+- **Import hook**: `import module` finds `module.er2` (meta path finder + loader).
+- **Jupyter**: an IPython extension that registers the preparser in `input_transformers_post`
   (`%load_ext er2`).
 
-Los tres comparten `er2.preparser` y `er2.prelude`; ninguno tiene lógica propia de traducción.
+All three share `er2.preparser` and `er2.prelude`; none of them contains its own translation logic.
 
-### 3.3 Runtime y prelude (`er2/runtime/`, `er2/prelude.py`)
+### 3.3 Runtime and prelude (`er2/runtime/`, `er2/prelude.py`)
 
-`prelude` define el namespace inicial: tipos, funciones públicas y símbolos `_x, _y, _z, _n, _k, _p`.
+`prelude` defines the initial namespace: types, public functions, and the symbols `_x, _y, _z, _n, _k, _p`.
 
-Tipo canónico de enteros: **uno solo** en el lado ER2 (propuesta: `sympy.Integer`, que usa gmpy2
-si está instalado). Requisitos: `__index__` (para que `range`, indexado y slicing sigan
-funcionando), conversión sin pérdida a/desde `cypari2.gen` y a/desde `int`.
+Canonical integer type: **exactly one** on the ER2 side (proposal: `sympy.Integer`, which uses gmpy2
+when installed). Requirements: `__index__` (so that `range`, indexing, and slicing keep working),
+lossless conversion to/from `cypari2.gen` and to/from `int`.
 
 ### 3.4 Dispatch (`er2/dispatch.py`)
 
-Las funciones públicas son genéricas y deciden backend por tipo:
+Public functions are generic and choose a backend by type:
 
 ```text
-factor(n: entero)        → PARI  factor / factorint
-factor(p: polinomio/Expr) → SymPy factor
-isprime(n)               → PARI  isprime (prueba) / ispseudoprime (opción)
+factor(n: integer)         → PARI  factor / factorint
+factor(p: polynomial/Expr) → SymPy factor
+isprime(n)                 → PARI  isprime (proof) / ispseudoprime (option)
 ```
 
-- La tabla de dispatch vive en un único sitio, no dispersa por funciones.
-- Toda conversión de tipos ocurre en la frontera del backend (`to_pari`, `from_pari`,
-  `to_sympy`, `from_sympy`). El usuario nunca ve un `cypari2.gen` ni un objeto SymPy "desnudo"
-  salvo que lo pida.
-- `factor(n)` entero devuelve un objeto `Factorization` propio (imprime `2^3 * 3^2`), no una matriz PARI.
+- The dispatch table lives in a single place, not scattered across functions.
+- All type conversion happens at the backend boundary (`to_pari`, `from_pari`,
+  `to_sympy`, `from_sympy`). Users never see a bare `cypari2.gen` or SymPy object unless
+  they ask for one.
+- `factor(n)` on an integer returns an ER2 `Factorization` object (prints `2^3 * 3^2`), not a PARI matrix.
 
-### 3.5 Tabla de nombres ER2 → PARI
+### 3.5 ER2 → PARI name table
 
-Los nombres del borrador no coinciden con PARI; hace falta un mapeo explícito
-(verificado con PARI 2.17.3):
+The names in the draft do not match PARI; an explicit mapping is required
+(verified against PARI 2.17.3):
 
-| ER2            | PARI              | Observación |
-|----------------|-------------------|-------------|
-| `phi(n)`       | `eulerphi(n)`     | `phi` está obsoleto en GP |
+| ER2            | PARI              | Note |
+|----------------|-------------------|------|
+| `phi(n)`       | `eulerphi(n)`     | `phi` is obsolete in GP |
 | `mu(n)`        | `moebius(n)`      | |
 | `sigma(n, k=1)`| `sigma(n, k)`     | |
 | `omega(n)`     | `omega(n)`        | |
 | `Omega(n)`     | `bigomega(n)`     | |
 | `valuation`    | `valuation`       | |
-| `znorder`, `znprimroot`, `nextprime`, `divisors`, `gcd`, `lcm` | igual | |
-| `psi(n)`       | **conflicto**     | en PARI `psi` es la digamma; en el borrador se lista como aritmética (¿ψ de Dedekind?). Ver D5 |
+| `znorder`, `znprimroot`, `nextprime`, `divisors`, `gcd`, `lcm` | same | |
+| `psi(n)`       | **conflict**      | in PARI `psi` is the digamma function; the draft lists it as arithmetic (Dedekind ψ?). See D5 |
 
 ### 3.6 Printing (`er2/printing.py`)
 
-`print(f)`, `str`, `repr` y la salida de Jupyter usan notación ER2: `x^2 + 2*x + 1`, `(x + 1)^2`.
-Implementar como subclase de `sympy.printing.str.StrPrinter` (`_print_Pow`) y `_repr_latex_`
-para Jupyter.
+`print(f)`, `str`, `repr`, and Jupyter output use ER2 notation: `x^2 + 2*x + 1`, `(x + 1)^2`.
+Implement as a subclass of `sympy.printing.str.StrPrinter` (`_print_Pow`), plus `_repr_latex_`
+for Jupyter.
 
 ### 3.7 Backends (`er2/backends/`)
 
 - `sympy_backend.py` — CAS: `expand, factor, simplify, collect, cancel, diff, integrate, limit, solve, series`.
-- `pari_backend.py` — teoría de números. Instancia única de `cypari2.Pari()`; tamaño de pila
-  configurable (`er2.config.pari_stack`).
-- Un backend no importa al otro. Sólo `dispatch` conoce ambos.
+- `pari_backend.py` — number theory. A single `cypari2.Pari()` instance; configurable stack size
+  (`er2.config.pari_stack`).
+- Neither backend imports the other. Only `dispatch` knows about both.
 
-## 4. Estructura de repositorio propuesta
+## 4. Proposed repository layout
 
 ```text
 er2/
@@ -144,26 +143,26 @@ er2/
   prelude.py
   dispatch.py
   printing.py
-  importer.py          # import hook .er2
+  importer.py          # .er2 import hook
   ipython_ext.py       # %load_ext er2
-  runtime/             # tipos: Integer, Rational, Symbol, Factorization, …
+  runtime/             # types: Integer, Rational, Symbol, Factorization, …
   backends/
     sympy_backend.py
     pari_backend.py
 tests/
-  preparser/           # pares .er2 → .py esperados
+  preparser/           # .er2 → expected .py pairs
   runtime/
   backends/
-  examples/            # programas .er2 completos con salida esperada (golden)
+  examples/            # complete .er2 programs with expected (golden) output
 examples/
   mvp.er2
-draft/                 # documentos de idea (no código)
+draft/                 # idea documents (not code)
 pyproject.toml
 ```
 
-## 5. MVP (objetivo de la primera iteración)
+## 5. MVP (target of the first iteration)
 
-Debe ejecutarse con `er2 examples/mvp.er2`:
+Must run with `er2 examples/mvp.er2`:
 
 ```er2
 sym x
@@ -182,58 +181,57 @@ for k in range(1, 20):
         print(k)
 ```
 
-Esto ejercita las cuatro piezas: preparser, printing, dispatch y ambos backends.
+This exercises all four pieces: preparser, printing, dispatch, and both backends.
 
-## 6. Decisiones de diseño abiertas
+## 6. Open design decisions
 
-Cada una debe resolverse (y registrarse aquí) antes o durante 0.1.
+Each must be resolved (and recorded here) before or during 0.1.
 
-- **D1 — `^` como potencia.** En Python `^` es XOR. Propuesta: en ficheros `.er2`, `^` es siempre
-  potencia y `^^` es XOR (como Sage). Consecuencia: código Python pegado que use XOR cambia de
-  significado; el preparser puede avisar si detecta `^` entre operandos claramente enteros-bitmask.
-  Precedencia: al convertir a `**` se hereda la de Python (`-x^2` = `-(x^2)`, `2^3^2` = `2^(3^2)`),
-  que es la matemática. Documentarlo.
-- **D2 — Exactitud por defecto.** Envolver literales enteros en `Integer` (y decimales en un
-  `Real`/`Float` de precisión controlada) hace que `1/3` sea racional. Riesgos: rendimiento en
-  bucles numéricos y compatibilidad con librerías que esperan `int` (NumPy). Requiere `__index__`
-  y probar `range`, `list[i]`, `numpy.zeros(n)`. Alternativa: sólo envolver cuando hay `/`.
-- **D3 — `_x` predefinidos.** `_`-prefijo significa "privado" en Python y `_` es el último
-  resultado en el REPL. Riesgo bajo pero existe. Si el usuario asigna `_n = 5`, se sombrea el
-  símbolo (comportamiento Python normal, aceptable).
-- **D4 — `sym` como soft keyword.** Sólo reconocido como `sym <nombre>[, <nombre>…]` al inicio
-  de línea lógica. `sym = 3` o `sym(x)` siguen siendo Python.
-- **D5 — `psi`.** Decidir si es ψ de Dedekind (aritmética) o digamma. Propuesta: `psi` = Dedekind
-  (coherente con la lista de funciones aritméticas) y `digamma` explícito.
-- **D6 — Tipo entero canónico.** `sympy.Integer` vs `gmpy2.mpz` vs clase propia. Afecta coste
-  de conversión con PARI y con SymPy. Medir antes de decidir.
-- **D7 — Factorizaciones costosas.** `factor(10^1000 - 1)` (ejemplo del borrador, §7) puede no
-  terminar en tiempo razonable. Definir política: timeout, `factor(n, partial=True)`, o dejarlo al
-  usuario.
+- **D1 — `^` as power.** In Python `^` is XOR. Proposal: in `.er2` files `^` always means power
+  and `^^` means XOR (as in Sage). Consequence: pasted Python code that uses XOR changes meaning;
+  the preparser could warn when `^` appears between obvious bitmask integers.
+  Precedence: translating to `**` inherits Python's (`-x^2` = `-(x^2)`, `2^3^2` = `2^(3^2)`),
+  which is the mathematical one. Document it.
+- **D2 — Exact by default.** Wrapping integer literals in `Integer` (and decimal literals in a
+  controlled-precision `Real`/`Float`) makes `1/3` rational. Risks: performance in numeric loops
+  and compatibility with libraries that expect `int` (NumPy). Requires `__index__`, and testing
+  `range`, `list[i]`, `numpy.zeros(n)`. Alternative: only wrap when `/` is involved.
+- **D3 — Predefined `_x`.** The `_` prefix means "private" in Python, and `_` is the last result
+  in the REPL. Low but real risk. If the user assigns `_n = 5`, the symbol is shadowed (normal
+  Python behavior, acceptable).
+- **D4 — `sym` as a soft keyword.** Only recognized as `sym <name>[, <name>…]` at the start of a
+  logical line. `sym = 3` or `sym(x)` remain plain Python.
+- **D5 — `psi`.** Decide between Dedekind ψ (arithmetic) and digamma. Proposal: `psi` = Dedekind
+  (consistent with the list of arithmetic functions) and an explicit `digamma`.
+- **D6 — Canonical integer type.** `sympy.Integer` vs `gmpy2.mpz` vs a custom class. Affects the
+  cost of converting to PARI and to SymPy. Measure before deciding.
+- **D7 — Expensive factorizations.** `factor(10^1000 - 1)` (the draft's example, §7) may not
+  finish in reasonable time. Define a policy: timeout, `factor(n, partial=True)`, or leave it to
+  the user.
 
-## 7. Observaciones sobre el roadmap del borrador
+## 7. Notes on the draft roadmap
 
-- 0.3 (teoría de números) precede a 0.4 (integración PARI), pero las funciones de 0.3 se
-  implementan *sobre* PARI. Propuesta: fusionar la integración básica con cypari2 en 0.3 y dejar
-  para 0.4 la selección automática de backend, tipos PARI avanzados y benchmarks.
-- El MVP (§11 del borrador) abarca 0.1–0.3. O se amplía 0.1, o el MVP se declara hito de 0.3.
+- 0.3 (number theory) comes before 0.4 (PARI integration), but the 0.3 functions are built
+  *on top of* PARI. Proposal: merge basic cypari2 integration into 0.3, and keep automatic backend
+  selection, advanced PARI types, and benchmarks for 0.4.
+- The MVP (draft §11) spans 0.1–0.3. Either widen 0.1, or declare the MVP a 0.3 milestone.
 
-## 8. Dependencias
+## 8. Dependencies
 
-- Python ≥ 3.12 (entorno actual: 3.14).
-- `sympy` (1.14 instalado), opcional `gmpy2`.
-- `cypari2` (no instalado) → requiere `libpari` (PARI 2.17 presente en el sistema como `gp`).
-- `ipython` (opcional, extensión Jupyter).
-- Gestión con `uv`.
+- Python ≥ 3.12 (current environment: 3.14).
+- `sympy` (1.14 installed), optional `gmpy2`.
+- `cypari2` (not installed) → requires `libpari` (PARI 2.17 is present on the system as `gp`).
+- `ipython` (optional, Jupyter extension).
+- Managed with `uv`.
 
-## 9. Evolución (2.0)
+## 9. Evolution (2.0)
 
-Sólo cuando la sintaxis sea estable: fork de `python/cpython` para mover las transformaciones del
-preparser a la gramática PEG real (tokens `sym`, `^`), AST específico y runtime matemático.
-Mientras tanto, **toda** extensión sintáctica debe ser expresable como transformación de tokens
-sobre Python válido; si una propuesta no lo es, es una señal de que se aleja del principio
-"Python matemático".
+Only once the syntax is stable: fork `python/cpython` to move the preparser transformations into
+the real PEG grammar (`sym`, `^` tokens), with a dedicated AST and mathematical runtime.
+Until then, **every** syntactic extension must be expressible as a token transformation over valid
+Python; if a proposal is not, that is a sign it is drifting from the "mathematical Python" principle.
 
-## 10. Integración OEIS (futuro)
+## 10. OEIS integration (future)
 
-Módulo `er2.oeis` (`search`, `identify`) y `sequence(f, n)`. Fuera del alcance hasta ≥ 0.6;
-reutilizará el trabajo previo sobre OEIS del autor.
+An `er2.oeis` module (`search`, `identify`) and `sequence(f, n)`. Out of scope until ≥ 0.6;
+it will reuse the author's previous OEIS work.

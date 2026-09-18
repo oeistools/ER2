@@ -21,6 +21,49 @@ The generated code runs on unmodified CPython. A CPython fork is only considered
 Direct precedent: the SageMath *preparser* does exactly this
 (`^`→`**`, integer literals wrapped in `Integer`). Study it before reinventing it.
 
+## 1.1 Python compatibility contract
+
+**Hard requirement:** ER2 must accept Python syntax without problems and give full access to the
+Python ecosystem through ordinary `import`. Chosen model: **the SageMath model** (decided 2026-09-18).
+
+1. **Only ER2 sources are preparsed**: `.er2` files, the `er2` REPL, and notebook cells with the ER2
+   extension loaded. Every `.py` module and every installed library (NumPy, pandas, SciPy,
+   Matplotlib, …) runs as plain, untouched Python.
+2. **Imports are standard.** `import numpy as np` inside a `.er2` file uses Python's normal import
+   system. The ER2 import hook only *adds* a finder for `.er2` modules; it never replaces or wraps
+   the existing finders.
+3. **Every Python construct is valid ER2**: classes, decorators, generators, `async`, `match`,
+   comprehensions, f-strings, type hints, `with`, exceptions, `if __name__ == "__main__"`, … The
+   preparser rewrites tokens, never syntax structure, so anything `ast.parse` accepts after
+   preparsing keeps its Python meaning.
+4. **The only semantic differences inside `.er2` sources** are, deliberately and exhaustively:
+
+   | Construct   | Python                 | ER2                                  |
+   |-------------|------------------------|--------------------------------------|
+   | `a ^ b`     | XOR                    | power (`a ** b`)                     |
+   | `a ^^ b`    | syntax error           | XOR (Python's `a ^ b`)               |
+   | `a ^= b`    | XOR-assign             | power-assign (`a **= b`)             |
+   | `a ^^= b`   | syntax error           | XOR-assign                           |
+   | int literal | `int`                  | ER2 `Integer` (exact), so `1/3` is the rational 1/3 |
+   | `sym x, y`  | syntax error           | symbol declaration                   |
+
+   Anything not in this table behaves exactly as in Python. Adding a row requires updating this
+   contract.
+5. **Values cross into the ecosystem transparently.** ER2 numbers implement `__index__`,
+   `__int__`, `__float__`, `__complex__`, `__hash__` (equal to the corresponding `int` hash) and
+   compare equal to Python numbers, so `range(n)`, `lst[n]`, `np.zeros(n)`, `math.sqrt(n)`,
+   dict keys and `json` keep working. See D6 for `isinstance(n, int)`.
+6. **Escape hatches**: `int(...)`/`float(...)` for explicit conversion; a raw-literal suffix such as
+   `5r` (Sage's convention) for a plain Python `int`, if needed (to be decided when implementing).
+7. **Known caveat**: Python code pasted into a `.er2` file that relies on `^` being XOR, or on
+   `int / int` returning `float`, changes meaning. Mitigations: the preparser warns on `^` between
+   obvious bitmask operands (hex/binary literals, `&`, `|`, `<<` in the same expression); keep such
+   code in `.py` modules and import it.
+
+A dedicated **compatibility test suite** (`tests/compat/`) enforces this contract: plain Python
+snippets whose behavior must be identical under ER2, imports of stdlib/third-party modules from
+`.er2` code, and ER2 values passed into library functions.
+
 ## 2. Overview
 
 ```text
@@ -86,8 +129,8 @@ All three share `er2.preparser` and `er2.prelude`; none of them contains its own
 
 `prelude` defines the initial namespace: types, public functions, and the symbols `_x, _y, _z, _n, _k, _p`.
 
-Canonical integer type: **exactly one** on the ER2 side (proposal: `sympy.Integer`, which uses gmpy2
-when installed). Requirements: `__index__` (so that `range`, indexing, and slicing keep working),
+Canonical integer type: **exactly one** on the ER2 side (see D6; must satisfy the compatibility
+contract in §1.1). Requirements: `__index__` (so that `range`, indexing, and slicing keep working),
 lossless conversion to/from `cypari2.gen` and to/from `int`.
 
 ### 3.4 Dispatch (`er2/dispatch.py`)
@@ -153,6 +196,7 @@ er2/
     pari_backend.py
 tests/
   preparser/           # .er2 → expected .py pairs
+  compat/              # Python compatibility contract (§1.1)
   runtime/
   backends/
   examples/            # complete .er2 programs with expected (golden) output
@@ -189,15 +233,14 @@ This exercises all four pieces: preparser, printing, dispatch, and both backends
 
 Each must be resolved (and recorded here) before or during 0.1.
 
-- **D1 — `^` as power.** In Python `^` is XOR. Proposal: in `.er2` files `^` always means power
-  and `^^` means XOR (as in Sage). Consequence: pasted Python code that uses XOR changes meaning;
-  the preparser could warn when `^` appears between obvious bitmask integers.
+- **D1 — `^` as power. ✅ Resolved (2026-09-18, Sage model, §1.1).** In `.er2` sources `^` means
+  power and `^^` means XOR; `.py` modules are never affected.
   Precedence: translating to `**` inherits Python's (`-x^2` = `-(x^2)`, `2^3^2` = `2^(3^2)`),
   which is the mathematical one. Document it.
-- **D2 — Exact by default.** Wrapping integer literals in `Integer` (and decimal literals in a
-  controlled-precision `Real`/`Float`) makes `1/3` rational. Risks: performance in numeric loops
-  and compatibility with libraries that expect `int` (NumPy). Requires `__index__`, and testing
-  `range`, `list[i]`, `numpy.zeros(n)`. Alternative: only wrap when `/` is involved.
+- **D2 — Exact by default. ✅ Resolved for integers (2026-09-18, Sage model, §1.1).** Every integer
+  literal in `.er2` sources becomes an ER2 `Integer`, so `1/3` is rational. Still open: decimal
+  literals (`0.1`) — keep Python `float` or use a controlled-precision `Real`. Watch performance in
+  numeric loops.
 - **D3 — Predefined `_x`.** The `_` prefix means "private" in Python, and `_` is the last result
   in the REPL. Low but real risk. If the user assigns `_n = 5`, the symbol is shadowed (normal
   Python behavior, acceptable).
@@ -206,7 +249,10 @@ Each must be resolved (and recorded here) before or during 0.1.
 - **D5 — `psi`.** Decide between Dedekind ψ (arithmetic) and digamma. Proposal: `psi` = Dedekind
   (consistent with the list of arithmetic functions) and an explicit `digamma`.
 - **D6 — Canonical integer type.** `sympy.Integer` vs `gmpy2.mpz` vs a custom class. Affects the
-  cost of converting to PARI and to SymPy. Measure before deciding.
+  cost of converting to PARI and to SymPy, and ecosystem compatibility (§1.1): with the Sage model
+  every literal is an `Integer`, so libraries that check `isinstance(n, int)` would reject it.
+  Proposal to evaluate: `class Integer(int)` (a real `int` subclass whose `/` returns `Rational`),
+  converted to SymPy/PARI only at the backend boundary. Verify behavior with NumPy before deciding.
 - **D7 — Expensive factorizations.** `factor(10^1000 - 1)` (the draft's example, §7) may not
   finish in reasonable time. Define a policy: timeout, `factor(n, partial=True)`, or leave it to
   the user.

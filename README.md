@@ -1,0 +1,105 @@
+# ER2 — Mathematical Python
+
+**ER2** is Python with mathematics built in: symbolic syntax, exact arithmetic by default, and
+computational number theory powered by [PARI/GP](https://pari.math.u-bordeaux.fr/).
+
+It is named after the Hungarian mathematician **Paul Erdős**. In Spanish, "Erdős" sounds like
+"ER-dos", which is where *ER2* comes from.
+
+> **Status: design stage.** There is no working code yet. This README describes what ER2 is meant to
+> be. See [ARCHITECTURE.md](ARCHITECTURE.md) for the technical design and the open decisions.
+
+## A taste of ER2
+
+```python
+import numpy as np            # any Python library, imported as usual
+
+sym x                         # declare a symbol
+f = x^2 + 2*x + 1             # ^ means power
+
+print(factor(f))              # (x + 1)^2
+print(diff(f, x))             # 2*x + 2
+
+print(1/3)                    # 1/3, exact and not 0.333...
+print(isprime(2^521 - 1))     # True  (PARI)
+print(phi(123456789))         # 82260072
+print(factor(2^127 - 1))      # 2^127 - 1 is prime
+
+for k in range(1, 20):        # ordinary Python
+    if isprime(k):
+        print(k)
+
+np.zeros(2^3)                 # ER2 numbers pass straight into libraries
+```
+
+## Python compatibility
+
+ER2 is a superset of Python and follows the same model as SageMath:
+
+- **All Python syntax works**: classes, decorators, generators, `async`, `match`, f-strings, type hints, and the rest.
+- **The whole ecosystem is available** through normal `import`: NumPy, SciPy, pandas, Matplotlib, and so on.
+- **Only `.er2` sources are translated.** Your `.py` modules and installed libraries run as ordinary Python and are never modified.
+- **Inside `.er2` files there are only a few deliberate differences**:
+
+  | Construct   | Python        | ER2                           |
+  |-------------|---------------|-------------------------------|
+  | `a ^ b`     | XOR           | power                         |
+  | `a ^^ b`    | syntax error  | XOR                           |
+  | `1/3`       | `0.333…`      | exact rational `1/3`          |
+  | `sym x, y`  | syntax error  | declares symbols `x`, `y`     |
+
+## How it works
+
+ER2 does not introduce a new interpreter. It has three parts:
+
+```text
+.er2 source ──► preparser ──► plain Python ──► CPython
+                                                  │
+                                    ER2 runtime (types, printing, dispatch)
+                                          │                 │
+                                        SymPy          cypari2 → PARI
+                                    (symbolic math)   (number theory)
+```
+
+1. **Preparser.** A token-level, source-to-source translation from `.er2` to Python.
+2. **Runtime.** The `er2` package provides the mathematical types and the functions (`factor`, `diff`, `phi`, …).
+3. **Backends.** [SymPy](https://www.sympy.org/) handles symbolic computation, and PARI is accessed through [cypari2](https://github.com/sagemath/cypari2). ER2 chooses the backend automatically, so `factor` works on both polynomials and integers.
+
+## Roadmap
+
+| Version | Focus |
+|---------|-------|
+| 0.1 | Preparser: `sym`, `^`, `_x`, exact integers and rationals |
+| 0.2 | CAS: `expand`, `factor`, `simplify`, `diff`, `integrate`, `solve` |
+| 0.3 | Number theory on PARI: primality, factorization, `phi`, `sigma`, `mu`, … |
+| 0.4 | Automatic backend selection, PARI types, benchmarks |
+| 0.5 | Algebra: matrices, finite fields, resultants, Gröbner bases |
+| 0.6 | Series: power, Dirichlet, Euler products |
+| 1.0 | Stable language: specification, Jupyter support, installable package |
+
+Later: OEIS integration (`oeis.search`, `oeis.identify`). Deeper CPython integration comes only
+after the syntax is stable.
+
+## Development
+
+Requirements: Python ≥ 3.12 and [uv](https://docs.astral.sh/uv/). There are no system dependencies,
+because the cypari2 wheel includes PARI.
+
+```bash
+git clone <repo-url> && cd ER2
+uv sync          # creates .venv with sympy, cypari2 and pytest
+uv run pytest
+```
+
+We keep dependencies deliberately minimal: `sympy` and `cypari2` at runtime, and `pytest` for
+development.
+
+## Documentation
+
+- [ARCHITECTURE.md](ARCHITECTURE.md): technical design, the compatibility contract, and open design decisions
+- [draft/ER2_idea_summary.md](draft/ER2_idea_summary.md): the original idea
+- [CLAUDE.md](CLAUDE.md): guidelines for AI-assisted development
+
+## License
+
+[MIT](LICENSE)

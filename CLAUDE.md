@@ -17,6 +17,8 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
 
 > Do not create a new language unnecessarily. Extend Python only where it is unnatural for mathematics.
 
+**Python compatibility is a hard requirement** (ARCHITECTURE.md §1.1, SageMath model): all Python syntax works in ER2, and any library is usable via normal `import`. Only `.er2` sources are preparsed — `.py` modules and installed libraries are never touched. The only intended differences inside `.er2` files are listed in the §1.1 table (`^` = power, `^^` = XOR, exact integer literals, `sym`); never add another without updating that table and asking the user.
+
 In practice:
 - ER2 = **source-to-source preparser** + **Python runtime** + **backends** (SymPy, cypari2/PARI). Do not write an interpreter, compiler, or custom grammar.
 - Do **not** fork CPython, SymPy, PARI, or cypari2 during 0.x. Use them as dependencies.
@@ -54,6 +56,7 @@ uv run pytest tests/preparser    # preparser only
 
 ## Tests
 
+- Compatibility (`tests/compat/`): plain Python must behave identically; imports and ER2 values passed to libraries must work. Any change to the preparser or number types must keep this suite green.
 - Preparser: `.er2` input → expected Python pairs; include cases with `^` and `sym` inside strings/comments.
 - Backends: expected values computed with cypari2's PARI (number theory) and SymPy (CAS), hard-coded in the tests.
 - Golden tests: programs in `tests/examples/` with their expected output.

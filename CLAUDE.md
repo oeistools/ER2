@@ -7,6 +7,8 @@ Guidance for Claude Code in this repository.
 **ER2 — mathematical Python.** A superset of Python with symbolic syntax (`sym x`, `x^2`, `_x`),
 exact arithmetic by default, and number theory via PARI/GP.
 
+The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős" sounds like "ER-dos", i.e. *ER2*.
+
 - Original idea: [draft/ER2_idea_summary.md](draft/ER2_idea_summary.md)
 - Technical design and open decisions (D1–D7): [ARCHITECTURE.md](ARCHITECTURE.md) — **read before implementing**.
 - Status: pre-implementation. First target: the MVP in ARCHITECTURE.md §5.
@@ -34,9 +36,10 @@ In practice:
 ## Environment
 
 - Python 3.14 (proposed minimum: 3.12). Package manager: `uv`.
-- Virtual env: `.venv/` managed by `uv sync` (sympy, cypari2 — bundles its own libpari 2.17.2 —, dev: pytest, ipython). Dependencies are declared in `pyproject.toml`.
-- PARI/GP 2.17.3 available as `gp` — useful for checking expected results:
-  `printf 'eulerphi(123456)\n' | gp -q -D colors=no`
+- Virtual env: `.venv/` managed by `uv sync`. Dependencies in `pyproject.toml`.
+- **Minimal dependencies**: runtime = `sympy` + `cypari2`; dev = `pytest`. Do not add a dependency unless a task truly needs it (e.g. `ipython` only when the Jupyter extension is implemented).
+- **PARI comes from cypari2** (its wheel bundles libpari 2.17.2). Do not depend on a system PARI/GP install or the `gp` binary — not for the code, not for tests. To check an expected value:
+  `uv run python -c "import cypari2; print(cypari2.Pari().eulerphi(123456))"`
 
 ## Commands (planned — update once they exist)
 
@@ -52,7 +55,7 @@ uv run pytest tests/preparser    # preparser only
 ## Tests
 
 - Preparser: `.er2` input → expected Python pairs; include cases with `^` and `sym` inside strings/comments.
-- Backends: compare against `gp` (number theory) and SymPy (CAS).
+- Backends: expected values computed with cypari2's PARI (number theory) and SymPy (CAS), hard-coded in the tests.
 - Golden tests: programs in `tests/examples/` with their expected output.
 - Avoid tests with factorizations that may take long (see D7).
 

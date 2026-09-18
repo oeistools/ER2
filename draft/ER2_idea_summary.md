@@ -601,6 +601,8 @@ Name:
 
 > **ER2**
 
+In honor of the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős" sounds like "ER-dos" — *ER2*.
+
 Provisional tagline:
 
 > **ER2 — Programming Mathematics**

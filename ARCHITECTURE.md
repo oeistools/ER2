@@ -5,6 +5,8 @@
 
 ## 1. What ER2 is
 
+The name honors the Hungarian mathematician **Paul Erdős** — in Spanish, "Erdős" is pronounced like "ER-dos", i.e. *ER2*.
+
 ER2 is **mathematical Python**: a superset of Python that adds symbolic syntax
 (`sym x`, `x^2`, `_x`), exact arithmetic by default, and transparent access to PARI/GP.
 
@@ -75,7 +77,7 @@ Requirements:
 
 - **CLI**: `er2 file.er2` and the `er2` REPL (built on `code.InteractiveConsole` plus the preparser).
 - **Import hook**: `import module` finds `module.er2` (meta path finder + loader).
-- **Jupyter**: an IPython extension that registers the preparser in `input_transformers_post`
+- **Jupyter** (later; adds the `ipython` dependency): an IPython extension that registers the preparser in `input_transformers_post`
   (`%load_ext er2`).
 
 All three share `er2.preparser` and `er2.prelude`; none of them contains its own translation logic.
@@ -107,7 +109,7 @@ isprime(n)                 → PARI  isprime (proof) / ispseudoprime (option)
 ### 3.5 ER2 → PARI name table
 
 The names in the draft do not match PARI; an explicit mapping is required
-(verified against PARI 2.17.3):
+(verified against the PARI 2.17.2 bundled with cypari2):
 
 | ER2            | PARI              | Note |
 |----------------|-------------------|------|
@@ -220,9 +222,13 @@ Each must be resolved (and recorded here) before or during 0.1.
 
 - Python ≥ 3.12 (current environment: 3.14).
 - `sympy` (1.14 installed), optional `gmpy2`.
-- `cypari2` (installed in `.venv`; the wheel bundles libpari 2.17.2; the system `gp` is 2.17.3).
-- `ipython` (optional, Jupyter extension).
+- `cypari2` — **the only source of PARI**. Its wheel bundles libpari (2.17.2), so no system
+  PARI/GP or `gp` binary is required, by the code or by the tests.
+- `ipython` — only when the Jupyter extension is implemented.
 - Managed with `uv`.
+
+Policy: **minimal dependencies**. Runtime = `sympy` + `cypari2`; dev = `pytest`. Anything else
+needs a concrete reason.
 
 ## 9. Evolution (2.0)
 

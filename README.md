@@ -19,6 +19,7 @@ f = x^2 + 2*x + 1             # ^ means power
 
 print(factor(f))              # (x + 1)^2
 print(diff(f, x))             # 2*x + 2
+print(latex(f))               # x^{2} + 2 x + 1  (any expression → LaTeX)
 
 print(1/3)                    # 1/3, exact and not 0.333...
 print(isprime(2^521 - 1))     # True  (PARI)
@@ -54,6 +55,8 @@ ER2 runs in notebooks and in Quarto documents:
 
 - **ER2 kernel**: run `er2 kernel install`, then pick "ER2" in Jupyter. In Quarto, set `jupyter: er2` in the front matter.
 - **Any Python kernel**: add `%load_ext er2` in the first cell.
+- **LaTeX everywhere**: expressions render as math. `show(f)` displays one, and
+  `` `{python} latex(f)` `` puts inline math in Quarto text.
 
 ````markdown
 ---

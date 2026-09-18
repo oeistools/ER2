@@ -80,12 +80,13 @@ Goal: ER2 syntax runs everywhere, even before the mathematics is complete.
    - XOR heuristic warning (§1.1, point 7)
 3. `er2/runtime/`: `Integer` and `Rational` (exact `/`), meeting the §1.1 contract.
 4. `er2/prelude.py`: the initial namespace, including `_x, _y, _z, _n, _k, _p` (D3).
-5. `er2/printing.py`: `x^2` notation, `__repr__`, `_repr_latex_`.
+5. `er2/printing.py`: `x^2` notation and `__repr__`; `latex()`, `Tex` and `show()`
+   (ARCHITECTURE §3.6), with `_repr_latex_` on every ER2 type.
 6. CLI (`er2/__main__.py`): `er2 file.er2`, `er2 --show-python file.er2`, and the `er2` REPL.
 7. `er2/importer.py`: an import hook for `.er2` modules, added to the finders and never
    replacing them.
 8. Notebooks: `er2/ipython_ext.py` (`%load_ext er2`), and `er2/kernel.py` with
-   `er2 kernel install`. Add the optional extra `er2[jupyter] = ipykernel`.
+   `er2 kernel install`. The kernel also preparses `user_expressions`, which is how Quarto evaluates inline code. Add the optional extra `er2[jupyter] = ipykernel`.
 9. Tests:
    - `tests/preparser/`: input/output pairs, including `^` and `sym` inside strings and comments
    - `tests/compat/`: plain Python snippets behave identically; stdlib imports work from `.er2`
@@ -96,6 +97,8 @@ Goal: ER2 syntax runs everywhere, even before the mathematics is complete.
 
 - `print(2^10)`, `print(1/3)`, `print(5 ^^ 3)` and `sym x; print(x^2 + 1)` give `1024`, `1/3`,
   `6` and `x^2 + 1` in the CLI, the REPL, Jupyter (both routes) and Quarto.
+- `latex(1/3)` gives `\frac{1}{3}`, and `` `{python} latex(x^2)` `` renders as inline math in
+  Quarto HTML with the `er2` kernel.
 - An error on line N of a `.er2` file or cell is reported at line N.
 - `tests/compat/` passes.
 
@@ -111,7 +114,9 @@ Goal: ER2 syntax runs everywhere, even before the mathematics is complete.
 3. Conversion boundary: `to_sympy` and `from_sympy`. ER2 `Integer` and `Rational` interoperate with
    SymPy expressions.
 4. Polynomials: `factor(x^4 - 1)`, and multivariate polynomials.
-5. LaTeX output checked in Jupyter and in Quarto HTML and PDF.
+5. `latex()` for every symbolic type, with golden LaTeX tests. A test walks the runtime's
+   public types and fails if any of them falls back to `\texttt`. Check rendering in Jupyter and
+   in Quarto HTML and PDF.
 
 **Acceptance:** the first half of the MVP (ARCHITECTURE.md §5) prints the expected output in all
 environments: `x^2 + 2*x + 1`, `x^2 + 2*x + 1`, `(x + 1)^2`.
@@ -130,7 +135,7 @@ environments: `x^2 + 2*x + 1`, `x^2 + 2*x + 1`, `(x + 1)^2`.
    namespace from the `namespace` rows. Add a test that every `prelude` and `namespace` row
    resolves to a callable.
 4. Dispatch `factor` by type: integers go to PARI and expressions go to SymPy. Add a
-   `Factorization` type that prints `2^3 * 3^2`.
+   `Factorization` type that prints `2^3 * 3^2` (LaTeX `2^{3} \cdot 3^{2}`).
 5. Exact `factorial`, since PARI's version returns a real.
 6. Add `examples/mvp.er2`, `examples/mvp.ipynb` and `examples/mvp.qmd`, plus golden tests.
 

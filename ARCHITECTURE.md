@@ -84,8 +84,18 @@ Details:
   and `"language": "er2"` (cells `` ```{er2} ``). Proposal (D9): declare `python`, so that
   syntax highlighting, the VS Code Quarto extension and editor tooling work unchanged, since ER2 is a
   Python superset. `language_info.file_extension` is `.er2`.
-- **Rich output.** ER2 objects implement `_repr_latex_` (math rendered by MathJax in Jupyter and in
-  Quarto HTML, and natively in Quarto PDF) in addition to plain-text `__repr__`.
+- **Rich output.** ER2 objects implement `_repr_latex_` (§3.6). Checked 2026-09-18: a cell that
+  evaluates to an expression renders as MathJax in Quarto HTML.
+- **Inline math in Quarto.** `` `{python} latex(f)` `` in text renders as inline math, because
+  `Tex._repr_markdown_` returns `$…$`. A plain `str` does not work, because Quarto escapes its braces
+  (`x^\{2\}`); this was checked.
+- **Inline expressions skip the input transformers.** Quarto evaluates `` `{python} …` `` through
+  ipykernel's `user_expressions`, not through cell execution. The **`er2` kernel** therefore
+  preparses `user_expressions` in `do_execute` as well; this was checked, and `x^2` works inline.
+  With **route B** (`%load_ext er2`) that is not possible, so inline expressions must use Python
+  syntax (`x**2`). Document this in the user guide.
+- **Development note.** Quarto keeps a kernel daemon running. After changing the kernel, use
+  `quarto render --execute-daemon-restart`.
 - **Tracebacks** point at the right cell line because the preparser preserves line numbers.
 - **Dependencies.** `ipykernel` is an optional extra (`er2[jupyter]`) and is not a core
   dependency. Quarto is an external tool and is not a Python dependency.
@@ -210,11 +220,42 @@ Main mappings where the names differ:
 | `znorder`, `znprimroot`, `nextprime`, `divisors`, `gcd`, `lcm` | same | |
 | `psi(n)`       | **conflict**      | in PARI `psi` is the digamma function; the draft lists it as arithmetic (Dedekind ψ?). See D5 |
 
-### 3.6 Printing (`er2/printing.py`)
+### 3.6 Printing and LaTeX (`er2/printing.py`)
 
-`print(f)`, `str`, `repr`, and Jupyter output use ER2 notation: `x^2 + 2*x + 1`, `(x + 1)^2`.
-Implement as a subclass of `sympy.printing.str.StrPrinter` (`_print_Pow`), plus `_repr_latex_`
-for Jupyter.
+**Plain text.** `print(f)`, `str` and `repr` use ER2 notation: `x^2 + 2*x + 1`, `(x + 1)^2`.
+This is implemented as a subclass of `sympy.printing.str.StrPrinter` (`_print_Pow`).
+
+**LaTeX (hard requirement).** Every symbolic expression, and every mathematical ER2 object, can be
+shown as LaTeX. The public API lives in the prelude:
+
+```python
+latex(obj, *, display=False, **options) -> Tex
+show(*objs)
+```
+
+- `latex(obj)` returns a `Tex`, which is a `str` subclass that holds the **bare** LaTeX (no `$`).
+  Because it is a string, it works in files, f-strings and Matplotlib labels
+  (`plt.title(f"${latex(f)}$")`). In notebooks it renders as math: `_repr_latex_` and
+  `_repr_markdown_` add the delimiters, `$…$` by default or `$$…$$` with `display=True`.
+  `options` are forwarded to SymPy's `LatexPrinter` (for example `mul_symbol`).
+- `show(*objs)` renders display math in Jupyter and Quarto, and prints plain ER2 text in a
+  terminal. `print(f)` always prints plain text, as in Python.
+- **Coverage.** `latex()` must work for every type in the ER2 runtime:
+  - numbers: `Integer`, `Rational`, `Real`, `Complex`
+  - symbolic objects: `Symbol`, `Expr`, `Equation`, polynomials, series
+  - collections: `Matrix`, `Vector`, `Set`
+  - `Factorization` (`2^{10} \cdot 3^{4}`)
+  - objects that come from PARI (`Mod` → `3 \pmod{7}`)
+
+  It also accepts Python numbers, `Fraction`, and `list`/`tuple`/`set`/`dict` (converted
+  recursively). Objects that already provide `_repr_latex_` are used as they are. Anything else
+  falls back to `\texttt{repr}`, so `latex()` never raises for printable objects.
+- **A single implementation.** Implement it as a subclass of `sympy.printing.latex.LatexPrinter`,
+  with `functools.singledispatch` for types that are not SymPy objects. Every ER2 type defines
+  `_repr_latex_` by calling `latex()`, so automatic rendering and explicit calls always agree.
+  The LaTeX output uses the same term order and notation as the plain-text printer.
+- **Never use PARI's `Strtex`.** It was checked on 2026-09-18 and produces `\pmatrix`, `\*` and
+  `3 mod 7`. PARI objects are converted at the backend boundary and then printed by ER2.
 
 ### 3.7 Backends (`er2/backends/`)
 
@@ -235,7 +276,7 @@ er2/
   printing.py
   importer.py          # .er2 import hook
   ipython_ext.py       # %load_ext er2
-  kernel.py            # er2 Jupyter kernel + `er2 kernel install`
+  kernel.py            # er2 Jupyter kernel + `er2 kernel install` (also preparses user_expressions)
   runtime/             # types: Integer, Rational, Symbol, Factorization, …
   backends/
     sympy_backend.py
@@ -268,6 +309,8 @@ f = x^2 + 2*x + 1
 print(f)            # x^2 + 2*x + 1
 print(expand(f))    # x^2 + 2*x + 1
 print(factor(f))    # (x + 1)^2
+show(factor(f))     # notebooks: rendered \left(x + 1\right)^{2}
+print(latex(f))     # x^{2} + 2 x + 1
 
 print(factor(2^127 - 1))
 print(phi(123456789))

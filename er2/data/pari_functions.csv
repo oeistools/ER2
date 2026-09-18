@@ -108,8 +108,8 @@ strjoin,1,strjoin,python,use Python,"joins the strings in vector v, separating t
 Strprintf,1,Strprintf,python,use Python,deprecated alias for strprintf
 strprintf,1,strprintf,python,use Python,returns a string built from the remaining arguments according to the format fmt
 strsplit,1,strsplit,python,use Python,"splits the string s into a vector of strings, with p acting as a delimiter between successive fields; if p is empty or o…"
-Strtex,1,Strtex,python,use Python,deprecated alias for strtex
-strtex,1,strtex,python,use Python,translates its (string) arguments to TeX format and returns the resulting string
+Strtex,1,Strtex,python,use ER2 latex() (§3.6),deprecated alias for strtex
+strtex,1,strtex,python,use ER2 latex() (§3.6),translates its (string) arguments to TeX format and returns the resulting string
 strtime,1,strtime,python,use Python,"return a string describing the time t in milliseconds, in the format used by the GP timer"
 system,1,system,python,use Python,"str being a string, execute the system command str"
 trap,1,trap,python,use Python,"this function is obsolete, use ""iferr"""

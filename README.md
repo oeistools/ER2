@@ -107,7 +107,7 @@ Requirements: Python ≥ 3.12 and [uv](https://docs.astral.sh/uv/). There are no
 because the cypari2 wheel includes PARI.
 
 ```bash
-git clone <repo-url> && cd ER2
+git clone https://github.com/oeistools/ER2.git && cd ER2
 uv sync          # creates .venv with sympy, cypari2, pytest and ruff
 uv run pytest
 ```

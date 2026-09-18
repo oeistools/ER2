@@ -13,6 +13,8 @@ abstract: >-
 authors:
   - alias: eph
 version: 0.0.1
+repository-code: "https://github.com/oeistools/ER2"
+url: "https://github.com/oeistools/ER2"
 license: MIT
 keywords:
   - python

@@ -52,13 +52,13 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 
 **Remaining:**
 
-- [ ] Create the GitHub repository and push it (waiting for `gh auth login` and a choice of public or private)
+- [X] GitHub repository: [oeistools/ER2](https://github.com/oeistools/ER2)
 - [ ] CI with GitHub Actions: `uv sync`, `ruff format --check`, `ruff check`, `pytest`
   (Quarto render tests are skipped when Quarto is not installed)
 - [ ] Settle the decisions M1 needs: **D3** (`_x` symbols), **D4** (`sym` soft keyword),
   **D6** (integer type), **D9** (kernelspec language), **D2b** (decimal literals)
 
-**Acceptance:** the repo is on GitHub, CI is green on an empty test suite, and D3, D4, D6, D9 and
+**Acceptance:** CI is green on an empty test suite, and D3, D4, D6, D9 and
 D2b are recorded in ARCHITECTURE.md §6.
 
 ---

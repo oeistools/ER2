@@ -11,6 +11,10 @@ dependencies = [
     "cypari2>=2.2",
 ]
 
+[project.urls]
+Repository = "https://github.com/oeistools/ER2"
+Issues = "https://github.com/oeistools/ER2/issues"
+
 [dependency-groups]
 dev = [
     "pytest>=8",

@@ -220,7 +220,7 @@ Each must be resolved (and recorded here) before or during 0.1.
 
 - Python ≥ 3.12 (current environment: 3.14).
 - `sympy` (1.14 installed), optional `gmpy2`.
-- `cypari2` (not installed) → requires `libpari` (PARI 2.17 is present on the system as `gp`).
+- `cypari2` (installed in `.venv`; the wheel bundles libpari 2.17.2; the system `gp` is 2.17.3).
 - `ipython` (optional, Jupyter extension).
 - Managed with `uv`.
 

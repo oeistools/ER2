@@ -1,0 +1,24 @@
+[project]
+name = "er2"
+version = "0.0.1"
+description = "ER2 — mathematical Python: symbolic syntax, exact arithmetic and PARI/GP number theory on top of Python."
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+dependencies = [
+    "sympy>=1.14",
+    "cypari2>=2.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ipython>=8",
+]
+
+[tool.uv]
+# No importable package yet; switch to true once er2/ exists.
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

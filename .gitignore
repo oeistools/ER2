@@ -1,9 +1,59 @@
+# Byte-compiled / cache
 __pycache__/
 *.py[cod]
+*$py.class
+
+# C extensions / Cython build output
+*.so
+*.c.bak
+
+# Virtual environments
 .venv/
-.pytest_cache/
-.ipynb_checkpoints/
-dist/
+venv/
+env/
+
+# Packaging / build
 build/
+dist/
 *.egg-info/
+.eggs/
+wheels/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# Type checkers / linters
+.mypy_cache/
+.ruff_cache/
+.pyright/
+
+# Jupyter / IPython
+.ipynb_checkpoints/
+profile_default/
+
+# PARI/GP
+.gprc.local
+gp_history
+
+# Benchmarks output
+.benchmarks/
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Environment files
+.env
+.env.*
+
+# Claude Code local settings
 .claude/settings.local.json

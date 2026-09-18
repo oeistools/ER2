@@ -34,7 +34,7 @@ In practice:
 ## Environment
 
 - Python 3.14 (proposed minimum: 3.12). Package manager: `uv`.
-- SymPy 1.14 installed. `cypari2` **not installed** yet (`uv add cypari2`; needs libpari).
+- Virtual env: `.venv/` managed by `uv sync` (sympy, cypari2 — bundles its own libpari 2.17.2 —, dev: pytest, ipython). Dependencies are declared in `pyproject.toml`.
 - PARI/GP 2.17.3 available as `gp` — useful for checking expected results:
   `printf 'eulerphi(123456)\n' | gp -q -D colors=no`
 

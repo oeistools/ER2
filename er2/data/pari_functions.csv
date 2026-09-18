@@ -1,0 +1,1169 @@
+pari_name,section,er2_name,status,note,summary
+addhelp,1,addhelp,python,use Python,add/change help message for the symbol sym
+alarm,1,alarm,python,use Python,"if code is omitted, trigger an ""e_ALARM"" exception after s seconds (wall-clock time), cancelling any previously set alar…"
+alias,1,alias,python,use Python,defines the symbol newsym as an alias for the symbol sym
+allocatemem,1,allocatemem,python,use Python,allocates a new stack of s bytes
+apply,1,apply,python,use Python,apply function f to each entry in A
+arity,1,arity,python,use Python,return the arity of the closure C
+break,1,break_,python,use Python,"interrupt execution of current instruction sequence, and exit from the n innermost enclosing loops"
+breakpoint,1,breakpoint,python,use Python,interrupt the program and enter the breakloop
+call,1,call,python,use Python,"A being a vector, evaluates f(A[1],...,A[#A])"
+dbg_x,1,dbg_x,python,use Python,"print inner structure of A, complete if n is omitted, up to level n otherwise"
+default,1,default,python,use Python,returns the current value of the default key
+errname,1,errname,python,use Python,returns the type of the error message E
+error,1,error,python,use Python,abort script with error message str
+export,1,export,python,use Python,"export the variables x,...,z to the parallel world"
+exportall,1,exportall,python,use Python,declare all current dynamic variables as exported variables
+extern,1,extern,python,use Python,"execute shell command str, and feeds the result to GP (as if loading from file)"
+externstr,1,externstr,python,use Python,"execute shell command str, and returns the result as a vector of GP strings, one component per output line"
+fileclose,1,fileclose,python,use Python,close the file descriptor n
+fileextern,1,fileextern,python,use Python,execute shell command str and returns a file descriptor attached to the command output as if it were read from a file
+fileflush,1,fileflush,python,use Python,flush the file descriptor n (all descriptors to output streams if n is omitted)
+fileopen,1,fileopen,python,use Python,open the file pointed to by 'path' and return a file descriptor which can be used with other file functions
+fileread,1,fileread,python,use Python,"read a logical line from the file attached to the descriptor n, opened for reading with fileopen"
+filereadstr,1,filereadstr,python,use Python,"read a raw line from the file attached to the descriptor n, opened for reading with fileopen"
+filewrite,1,filewrite,python,use Python,"write the string s to file attached to descriptor n, ending with a newline"
+filewrite1,1,filewrite1,python,use Python,write the string s to file number n without ending with newline
+fold,1,fold,python,use Python,"return f(...f(f(A[1],A[2]),A[3]),...,A[#A])"
+for,1,for_,python,use Python,"the sequence is evaluated, X going from a up to b"
+forcomposite,1,forcomposite,python,use Python,"the sequence is evaluated, n running over the composite numbers between a and b"
+fordiv,1,fordiv,python,use Python,"the sequence is evaluated, X running over the divisors of n"
+fordivfactored,1,fordivfactored,python,use Python,"the sequence is evaluated, X running over the [d, factor(d)], d a divisor of n"
+foreach,1,foreach,python,use Python,"the sequence is evaluated, X running over the components of V"
+forell,1,forell,python,use Python,execute seq for each elliptic curves E of conductor between a and b in the elldata database
+forfactored,1,forfactored,python,use Python,"the sequence is evaluated, N is of the form [n, factor(n)], n going from a up to b"
+forpart,1,forpart,python,use Python,evaluate seq where the Vecsmall X goes over the partitions of k
+forperm,1,forperm,python,use Python,"the sequence is evaluated, p going through permutations of a"
+forprime,1,forprime,python,use Python,"the sequence is evaluated, p running over the primes between a and b"
+forprimestep,1,forprimestep,python,use Python,"the sequence is evaluated, p running over the primes less than b in the arithmetic progression a + k*q, k >= 0"
+forsquarefree,1,forsquarefree,python,use Python,"the sequence is evaluated, N is of the form [n, factor(n)], n going through squarefree integers from a up to b"
+forstep,1,forstep,python,use Python,"the sequence is evaluated, X going from a to b in steps of s (can be a positive real number, an intmod for an arithmetic…"
+forsubgroup,1,forsubgroup,python,use Python,"execute seq for each subgroup H of the abelian group G, whose index is bounded by bound if not omitted"
+forsubset,1,forsubset,python,use Python,"if nk is an integer n, the sequence is evaluated, s going through all subsets of {1, 2, ..., n}; if nk is a pair [n,k] o…"
+forvec,1,forvec,python,use Python,"v being a two-component vectors of length n, the sequence is evaluated with X[i] going from v[i][1] to v[i][2] for i=n,.…"
+getabstime,1,getabstime,python,use Python,milliseconds of CPU time since startup
+getcache,1,getcache,python,use Python,returns information about various auto-growing caches
+getenv,1,getenv,python,use Python,"value of the environment variable s, 0 if it is not defined"
+getheap,1,getheap,python,use Python,2-component vector giving the current number of objects in the heap and the space they occupy (in long words)
+getlocalbitprec,1,getlocalbitprec,python,use Python,returns the current dynamic bit precision
+getlocalprec,1,getlocalprec,python,use Python,"returns the current dynamic precision, in decimal digits"
+getrand,1,getrand,python,use Python,current value of random number seed
+getstack,1,getstack,python,use Python,current value of stack pointer avma
+gettime,1,gettime,python,use Python,milliseconds of CPU time used since the last call to gettime
+getwalltime,1,getwalltime,python,use Python,time (in milliseconds) since the UNIX Epoch
+global,1,global_,python,use Python,obsolete
+if,1,if_,python,use Python,"if a is nonzero, seq1 is evaluated, otherwise seq2"
+iferr,1,iferr,python,use Python,evaluates the expression sequence seq1
+inline,1,inline,python,use Python,"declares x,...,z as inline variables"
+input,1,input,python,use Python,read an expression from the input file or standard input
+install,1,install,python,use Python,load from dynamic library 'lib' the function 'name'
+kill,1,kill,python,use Python,restores the symbol sym to its ``undefined'' status and kill attached help messages
+listcreate,1,listcreate,python,use Python,"this function is obsolete, use List()"
+listinsert,1,listinsert,python,use Python,"insert x at index n in list L, shifting the remaining elements to the right"
+listkill,1,listkill,python,use Python,"obsolete, retained for backward compatibility"
+listpop,1,listpop,python,use Python,removes n-th element from list
+listput,1,listput,python,use Python,sets n-th element of list equal to x
+listsort,1,listsort,python,use Python,sort the list L in place
+local,1,local,python,use Python,"declare x,...,z as (dynamically scoped) local variables"
+localbitprec,1,localbitprec,python,use Python,set the real precision to p bits in the dynamic scope
+localprec,1,localprec,python,use Python,set the real precision to p in the dynamic scope and return p
+mapapply,1,mapapply,python,use Python,applies the closure f to the image of x by the map M and returns the evaluation of f
+mapdelete,1,mapdelete,python,use Python,removes x from the domain of the map M
+mapget,1,mapget,python,use Python,returns the image of x by the map M
+mapisdefined,1,mapisdefined,python,use Python,"true (1) if x has an image by the map M, false (0) otherwise"
+mapput,1,mapput,python,use Python,associates x to y in the map M
+my,1,my,python,use Python,"declare x,...,z as lexically-scoped local variables"
+next,1,next,python,use Python,"interrupt execution of current instruction sequence, and start another iteration from the n-th innermost enclosing loops"
+parapply,1,parapply,python,use Python,parallel evaluation of f on the elements of x
+pareval,1,pareval,python,use Python,parallel evaluation of the elements of the vector of closures x
+parfor,1,parfor,python,use Python,"evaluates the expression expr1 in parallel for all i between a and b (if b is set to +oo, the loop will not stop), resul…"
+parforeach,1,parforeach,python,use Python,evaluates in parallel the expression expr1 for all components x of V
+parforprime,1,parforprime,python,use Python,"evaluates the expression expr1 in parallel for all primes p between a and b (if b is set to +oo, the loop will not stop)…"
+parforprimestep,1,parforprimestep,python,use Python,evaluates the expression expr1 in parallel for all primes p between a and b in an arithmetic progression of the form a +…
+parforstep,1,parforstep,python,use Python,"evaluates the expression expr1 in parallel for i going from a to b in steps of s (can be a positive real number, an intm…"
+parforvec,1,parforvec,python,use Python,"evaluates the sequence expr2 (dependent on X and j) for X as generated by forvec, in random order, computed in parallel"
+parselect,1,parselect,python,use Python,(parallel select) selects elements of A according to the selection function f which is tested in parallel
+parsum,1,parsum,python,use Python,"the sum (i goes from a to b) of expression expr, evaluated in parallel (in random order)"
+parvector,1,parvector,python,use Python,"as vector(N,i,expr) but the evaluations of expr are done in parallel"
+print,1,print,python,use Python,outputs its string arguments (in raw format) ending with a newline
+print1,1,print1,python,use Python,outputs its string arguments (in raw format) without ending with newline
+printf,1,printf,python,use Python,prints its arguments according to the format fmt
+printp,1,printp,python,use Python,outputs its string arguments (in prettymatrix format) ending with a newline
+printsep,1,printsep,python,use Python,"outputs its string arguments (in raw format), separated by 'sep', ending with a newline"
+printsep1,1,printsep1,python,use Python,"outputs its string arguments (in raw format), separated by 'sep', without ending with a newline"
+printtex,1,printtex,python,use Python,outputs its string arguments in TeX format
+read,1,read,python,use Python,read from the input file filename
+readstr,1,readstr,python,use Python,returns the vector of GP strings containing the lines in filename
+readvec,1,readvec,python,use Python,create a vector whose components are the evaluation of all the expressions found in the input file filename
+return,1,return_,python,use Python,return from current subroutine with result x
+select,1,select,python,use Python,selects elements of A according to the selection function f
+self,1,self,python,use Python,return the calling function or closure
+setdebug,1,setdebug,python,use Python,sets debug level for domain D to n (n must be between 0 and 20)
+setrand,1,setrand,python,use Python,reset the seed of the random number generator to n
+Strchr,1,Strchr,python,use Python,deprecated alias for strchr
+strchr,1,strchr,python,use Python,"converts integer or vector of integers x to a string, translating each integer into a character using ASCII encoding"
+Strexpand,1,Strexpand,python,use Python,deprecated alias for strexpand
+strexpand,1,strexpand,python,use Python,"concatenates its (string) arguments into a single string, performing tilde expansion"
+strjoin,1,strjoin,python,use Python,"joins the strings in vector v, separating them with delimiter p"
+Strprintf,1,Strprintf,python,use Python,deprecated alias for strprintf
+strprintf,1,strprintf,python,use Python,returns a string built from the remaining arguments according to the format fmt
+strsplit,1,strsplit,python,use Python,"splits the string s into a vector of strings, with p acting as a delimiter between successive fields; if p is empty or o…"
+Strtex,1,Strtex,python,use Python,deprecated alias for strtex
+strtex,1,strtex,python,use Python,translates its (string) arguments to TeX format and returns the resulting string
+strtime,1,strtime,python,use Python,"return a string describing the time t in milliseconds, in the format used by the GP timer"
+system,1,system,python,use Python,"str being a string, execute the system command str"
+trap,1,trap,python,use Python,"this function is obsolete, use ""iferr"""
+type,1,type,python,use Python,return the type of the GEN x
+unexport,1,unexport,python,use Python,"remove x,...,z from the list of variables exported to the parallel world"
+unexportall,1,unexportall,python,use Python,empty the list of variables exported to the parallel world
+uninline,1,uninline,python,use Python,forget all inline variables
+until,1,until,python,use Python,evaluate the expression sequence seq until a is nonzero
+version,1,version,python,use Python,"returns the PARI version as [major,minor,patch] or [major,minor,patch,GITversion]"
+warning,1,warning,python,use Python,display warning message str
+while,1,while_,python,use Python,while a is nonzero evaluate the expression sequence seq
+write,1,write,python,use Python,appends the remaining arguments (same output as print) to filename
+write1,1,write1,python,use Python,appends the remaining arguments (same output as print1) to filename
+writebin,1,writebin,python,use Python,write x as a binary object to file filename
+writetex,1,writetex,python,use Python,"appends the remaining arguments (same format as print) to filename, in TeX format"
+cmp,2,cmp,namespace,,"compare two arbitrary objects x and y (1 if x>y, 0 if x=y, -1 if x<y)"
+divrem,2,divrem,namespace,,"euclidean division of x by y giving as a 2-dimensional column vector the quotient and the remainder, with respect to v (…"
+lex,2,lex,namespace,,"compare x and y lexicographically (1 if x>y, 0 if x=y, -1 if x<y)"
+max,2,max,namespace,Python builtin: never shadowed in the prelude,maximum of x and y
+min,2,min,namespace,Python builtin: never shadowed in the prelude,minimum of x and y
+shift,2,shift,namespace,,"shift x left n bits if n>=0, right -n bits if n<0"
+shiftmul,2,shiftmul,namespace,,multiply x by 2^n (n>=0 or n<0)
+sign,2,sign,namespace,,"sign of x, of type integer, real or fraction"
+vecmax,2,vecmax,namespace,,largest entry in the vector/matrix x
+vecmin,2,vecmin,namespace,,smallest entry in the vector/matrix x
+binary,3,binary,namespace,,gives the vector formed by the binary digits of x (x integer)
+bitand,3,bitand,namespace,,"bitwise ""and"" of two integers x and y"
+bitneg,3,bitneg,namespace,,bitwise negation of an integers x truncated to n bits
+bitnegimply,3,bitnegimply,namespace,,"bitwise ""negated imply"" of two integers x and y, in other words, x BITAND BITNEG(y)"
+bitor,3,bitor,namespace,,"bitwise ""or"" of two integers x and y"
+bitprecision,3,bitprecision,namespace,,"if n is present and positive, return x at precision n bits"
+bittest,3,bittest,namespace,,gives bit number n (coefficient of 2^n) of the integer x
+bitxor,3,bitxor,namespace,,"bitwise ""exclusive or"" of two integers x and y"
+ceil,3,ceil,namespace,,ceiling of x = smallest integer >= x
+centerlift,3,centerlift,namespace,,centered lift of x
+characteristic,3,characteristic,namespace,,characteristic of the base ring over which x is defined
+Col,3,Col,namespace,type constructor (CapWords allowed by PEP 8),transforms the object x into a column vector of dimension n
+Colrev,3,Colrev,namespace,type constructor (CapWords allowed by PEP 8),"transforms the object x into a column vector of dimension n in reverse order with respect to Col(x,{n})"
+component,3,component,namespace,,the n'th component of the internal representation of x
+conj,3,conj,namespace,,the algebraic conjugate of x
+conjvec,3,conjvec,namespace,,conjugate vector of the algebraic number z
+denominator,3,denominator,namespace,,denominator of f
+digits,3,digits,namespace,,gives the vector formed by the digits of x in base b
+exponent,3,exponent,namespace,,binary exponent of x
+floor,3,floor,namespace,,floor of x = largest integer <= x
+frac,3,frac,namespace,,fractional part of x = x-floor(x)
+fromdigits,3,fromdigits,namespace,,gives the integer formed by the elements of x seen as the digits of a number in base b
+imag,3,imag,namespace,,imaginary part of x
+length,3,length,namespace,,"number of non code words in x, number of characters for a string"
+lift,3,lift,namespace,,"if v is omitted, lifts elements of Z/nZ to Z, of Qp to Q, and of K[x]/(P) to K[x]"
+liftall,3,liftall,namespace,,"lifts every element of Z/nZ to Z, of Qp to Q, and of K[x]/(P) to K[x]"
+liftint,3,liftint,namespace,,lifts every element of Z/nZ to Z and of Qp to Q
+liftpol,3,liftpol,namespace,,lifts every polmod component of x to polynomials
+List,3,List,namespace,type constructor (CapWords allowed by PEP 8),transforms the vector or list x into a list
+Map,3,Map,namespace,type constructor (CapWords allowed by PEP 8),"converts the matrix [a_1,b_1;a_2,b_2;...;a_n,b_n] to the map a_i->b_i"
+Mat,3,Mat,namespace,type constructor (CapWords allowed by PEP 8),transforms any GEN x into a matrix
+Mod,3,Mod,namespace,type constructor (CapWords allowed by PEP 8),create 'a modulo b'
+norm,3,norm,namespace,,norm of x
+numerator,3,numerator,namespace,,numerator of f
+oo,3,oo,namespace,,infinity
+padicprec,3,padicprec,namespace,,return the absolute p-adic precision of object x
+Pol,3,Pol,namespace,type constructor (CapWords allowed by PEP 8),"convert t (usually a vector or a power series) into a polynomial with variable v, starting with the leading coefficient"
+Polrev,3,Polrev,namespace,type constructor (CapWords allowed by PEP 8),"convert t (usually a vector or a power series) into a polynomial with variable v, starting with the constant term"
+precision,3,precision,namespace,,"if n is present, return x at precision n"
+Qfb,3,Qfb,namespace,type constructor (CapWords allowed by PEP 8),binary quadratic form a*x^2+b*x*y+c*y^2
+random,3,random,namespace,,"random object, depending on the type of N"
+real,3,real,namespace,,real part of x
+round,3,round,namespace,Python builtin: never shadowed in the prelude,take the nearest integer to all the coefficients of x
+Ser,3,Ser,namespace,type constructor (CapWords allowed by PEP 8),"convert s into a power series with variable v and precision d, starting with the constant coefficient"
+serchop,3,serchop,namespace,,remove all terms of degree strictly less than n in series s
+serprec,3,serprec,namespace,,return the absolute precision x with respect to power series in the variable v
+Set,3,Set,namespace,type constructor (CapWords allowed by PEP 8),"convert x into a set, i.e"
+simplify,3,simplify,namespace,,simplify the object x as much as possible
+sizebyte,3,sizebyte,namespace,,number of bytes occupied by the complete tree of the object x
+sizedigit,3,sizedigit,namespace,,rough upper bound for the number of decimal digits of (the components of) x
+Str,3,Str,namespace,type constructor (CapWords allowed by PEP 8),concatenates its (string) argument into a single string
+truncate,3,truncate,namespace,,"truncation of x; when x is a power series,take away the O(X^)"
+valuation,3,valuation,prelude,,valuation of x with respect to p
+varhigher,3,varhigher,namespace,,return a variable 'name' whose priority is higher than the priority of v (of all existing variables if v is omitted)
+variable,3,variable,namespace,,main variable of object x
+variables,3,variables,namespace,,"all variables occurring in object x, sorted by decreasing priority"
+varlower,3,varlower,namespace,,return a variable 'name' whose priority is lower than the priority of v (of all existing variables if v is omitted
+Vec,3,Vec,namespace,type constructor (CapWords allowed by PEP 8),transforms the object x into a vector of dimension n
+Vecrev,3,Vecrev,namespace,type constructor (CapWords allowed by PEP 8),"transforms the object x into a vector of dimension n in reverse order with respect to Vec(x,{n})"
+Vecsmall,3,Vecsmall,namespace,type constructor (CapWords allowed by PEP 8),transforms the object x into a VECSMALL of dimension n
+bernfrac,4,bernfrac,namespace,,"Bernoulli number B_n, as a rational number"
+bernpol,4,bernpol,namespace,,"Bernoulli polynomial B_n, evaluated at a"
+bernreal,4,bernreal,namespace,,"Bernoulli number B_n, as a real number with the current precision"
+bernvec,4,bernvec,namespace,,"returns a vector containing, as rational numbers, the Bernoulli numbers B_0, B_2, ..., B_{2n}"
+binomial,4,binomial,prelude,,binomial coefficient n*(n-1)...*(n-k+1)/k! defined for k in Z and any n
+eulerfrac,4,eulerfrac,namespace,,"Euler number E_n, as a rational number"
+eulerianpol,4,eulerianpol,namespace,,"Eulerian polynomial A_n, in variable v"
+eulerpol,4,eulerpol,namespace,,"Euler polynomial E_n, in variable v"
+eulerreal,4,eulerreal,namespace,,"Euler number E_n, as a real number"
+eulervec,4,eulervec,namespace,,"returns a vector containing the nonzero Euler numbers E_0, E_2, ..., E_{2n}"
+fibonacci,4,fibonacci,prelude,,Fibonacci number of index x
+hammingweight,4,hammingweight,namespace,,returns the Hamming weight of x
+harmonic,4,harmonic,namespace,,generalized harmonic number of index n in power r
+numbpart,4,numbpart,namespace,,number of partitions of n
+numtoperm,4,numtoperm,namespace,,permutation number k (mod n!) of n letters (n C-integer)
+partitions,4,partitions,namespace,,vector of partitions of the integer k
+permcycles,4,permcycles,namespace,,cycles of the permutation x
+permorder,4,permorder,namespace,,order of the permutation x
+permsign,4,permsign,namespace,,signature of the permutation x
+permtonum,4,permtonum,namespace,,ordinal (between 0 and n!-1) of permutation x
+stirling,4,stirling,namespace,,"if flag=1 (default) return the Stirling number of the first kind s(n,k), if flag=2, return the Stirling number of the se…"
+addprimes,5,addprimes,namespace,,add primes in the vector x to the prime table to be used in trial division
+bestappr,5,bestappr,namespace,,"return a rational approximation to x, whose denominator is limited by B, if present"
+bestapprPade,5,bestappr_pade,namespace,renamed for PEP 8,returns a rational function approximation to x
+bezout,5,bezout,namespace,,deprecated alias for gcdext
+bigomega,5,bigomega,prelude,"draft `Omega`, renamed for PEP 8 (D8)","number of prime divisors of x, counted with multiplicity"
+charconj,5,charconj,namespace,,"given a finite abelian group (by its elementary divisors cyc) and a character chi, return the conjugate character"
+chardiv,5,chardiv,namespace,,"given a finite abelian group (by its elementary divisors cyc) and two characters a and b, return the character a/b"
+chareval,5,chareval,namespace,,"given an abelian group structure affording a discrete logarithm method, e.g"
+chargalois,5,chargalois,namespace,,"let cyc represent a finite abelian group G by its elementary divisors cyc, return a list of representatives for the Galo…"
+charker,5,charker,namespace,,"given a finite abelian group (by its elementary divisors cyc) and a character chi, return its kernel"
+charmul,5,charmul,namespace,,"given a finite abelian group (by its elementary divisors cyc) and two characters a and b, return the product character a…"
+charorder,5,charorder,namespace,,"given a finite abelian group (by its elementary divisors cyc) and a character chi, return the order of chi"
+charpow,5,charpow,namespace,,given a finite abelian group (by its elementary divisors cyc) a character a and an integer n return the character a^n
+chinese,5,chinese,prelude,,"x,y being both intmods (or polmods) computes z in the same residue classes as x and y"
+content,5,content,namespace,,"gcd of all the components of x, when this makes sense"
+contfrac,5,contfrac,namespace,,"continued fraction expansion of x (x rational,real or rational function)"
+contfracpnqn,5,contfracpnqn,namespace,,"[p_n,p_{n-1}; q_n,q_{n-1}] corresponding to the continued fraction x"
+core,5,core,prelude,,unique squarefree integer d dividing n such that n/d is a square
+coredisc,5,coredisc,namespace,,discriminant of the quadratic field Q(sqrt(n))
+dirdiv,5,dirdiv,namespace,,division of the Dirichlet series x by the Dirichlet series y
+direuler,5,direuler,namespace,,"Dirichlet Euler product of expression expr from p=a to p=b, limited to b terms"
+dirmul,5,dirmul,namespace,,multiplication of the Dirichlet series x by the Dirichlet series y
+dirpowerssum,5,dirpowerssum,namespace,,return f(1)1^x + f(2)2^x + 
+divisors,5,divisors,prelude,,gives a vector formed by the divisors of x in increasing order
+divisorslenstra,5,divisorslenstra,namespace,,finds all divisors d of N such that d = r (mod s)
+eulerphi,5,phi,prelude,draft name,Euler's totient function of x
+factor,5,factor,prelude,"dispatch: integers -> PARI, Expr -> SymPy",factorization of x over domain D
+factorback,5,factorback,namespace,,"given a factorization f, gives the factored object back"
+factorcantor,5,factorcantor,namespace,,"this function is obsolete, use factormod"
+factorff,5,factorff,namespace,,"obsolete, use factormod"
+factorial,5,factorial,namespace,PARI returns a real; ER2 `factorial` must be exact,"factorial of x, the result being given as a real number"
+factorint,5,factorint,namespace,,factor the integer x
+factormod,5,factormod,namespace,,"factors the polynomial f over the finite field defined by the domain D; flag is optional, and can be 0: default or 1: on…"
+factormodcyclo,5,factormodcyclo,namespace,,factor n-th cyclotomic polynomial mod p
+factormodDDF,5,factormod_ddf,namespace,renamed for PEP 8,distinct-degree factorization of the squarefree polynomial f over the finite field defined by the domain D
+factormodSQF,5,factormod_sqf,namespace,renamed for PEP 8,squarefree factorization of the polynomial f over the finite field defined by the domain D
+ffcompomap,5,ffcompomap,namespace,,"Let k, l, m be three finite fields and f a (partial) map from l to m and g a partial map from k to l, return the (partia…"
+ffembed,5,ffembed,namespace,,"given two elements a and b in finite fields, return a map embedding the definition field of a to the definition field of…"
+ffextend,5,ffextend,namespace,,"extend the field K of definition of a by a root of the polynomial P, assumed to be irreducible over K"
+fffrobenius,5,fffrobenius,namespace,,return the n-th power of the Frobenius map over the field of definition of m
+ffgen,5,ffgen,namespace,,return a generator of the finite field k (not necessarily a generator of its multiplicative group) as a t_FFELT
+ffinit,5,ffinit,namespace,,monic irreducible polynomial of degree n in F_p[v]
+ffinvmap,5,ffinvmap,namespace,,"given a map m between finite fields, return a partial map that return the pre-images by the map m"
+fflog,5,fflog,namespace,,return the discrete logarithm of the finite field element x in base g
+ffmap,5,ffmap,namespace,,"given a (partial) map m between two finite fields, return the image of x by m"
+ffmaprel,5,ffmaprel,namespace,,"given a (partial) map m between two finite fields, express x as an algebraic element over the codomain of m in a way whi…"
+ffnbirred,5,ffnbirred,namespace,,"number of monic irreducible polynomials over F_q, of degree n (flag=0, default) or at most n (flag=1)"
+fforder,5,fforder,namespace,,multiplicative order of the finite field element x
+ffprimroot,5,ffprimroot,namespace,,return a primitive root of the multiplicative group of the definition field of the finite field element x (not necessari…
+gcd,5,gcd,prelude,,greatest common divisor of x and y
+gcdext,5,gcdext,namespace,,"returns [u,v,d] such that d=gcd(x,y) and u*x+v*y=d"
+halfgcd,5,halfgcd,namespace,,"return a vector [M, [a,b]~], where M is an invertible 2x2 matrix such that M*[x,y]~ = [a,b]~, where b is small"
+hilbert,5,hilbert,namespace,,"Hilbert symbol at p of x,y"
+isfundamental,5,isfundamental,namespace,,"true(1) if D is a fundamental discriminant (including 1), false(0) if not"
+ispolygonal,5,ispolygonal,namespace,,"true(1) if x is an s-gonal number, false(0) if not (s > 2)"
+ispower,5,ispower,prelude,,"if k > 0 is given, return true (1) if x is a k-th power, false (0) if not"
+ispowerful,5,ispowerful,namespace,,"true(1) if x is a powerful integer (valuation at all primes dividing x is greater than 1), false(0) if not"
+isprime,5,isprime,prelude,,"true(1) if x is a (proven) prime number, false(0) if not"
+isprimepower,5,isprimepower,prelude,,"if x = p^k is a prime power (p prime, k > 0), return k, else return 0"
+ispseudoprime,5,ispseudoprime,prelude,,"true(1) if x is a strong pseudoprime, false(0) if not"
+ispseudoprimepower,5,ispseudoprimepower,namespace,,"if x = p^k is a pseudo-prime power (p pseudo-prime, k > 0), return k, else return 0"
+issquare,5,issquare,prelude,,"true(1) if x is a square, false(0) if not"
+issquarefree,5,issquarefree,prelude,,"true(1) if x is squarefree, false(0) if not"
+istotient,5,istotient,namespace,,"true(1) if x = eulerphi(n) for some integer n, false(0) if not"
+kronecker,5,kronecker,prelude,,kronecker symbol (x/y)
+lcm,5,lcm,prelude,,"least common multiple of x and y, i.e"
+logint,5,logint,namespace,,"return the largest non-negative integer e so that b^e <= x, where b > 1 is an integer and x >= 1 is a real number"
+moebius,5,mu,prelude,draft name,Moebius function of x
+nextprime,5,nextprime,prelude,,smallest pseudoprime >= x
+numdiv,5,numdiv,prelude,,number of divisors of x
+omega,5,omega,prelude,,number of distinct prime divisors of x
+precprime,5,precprime,prelude,,"largest pseudoprime <= x, 0 if x<=1"
+prime,5,prime,prelude,,returns the n-th prime (n C-integer)
+primecert,5,primecert,namespace,,"If N is a prime, return a Primality Certificate"
+primecertexport,5,primecertexport,namespace,,Returns a string suitable for print/write to display a primality certificate
+primecertisvalid,5,primecertisvalid,namespace,,Verifies if cert is a valid PARI ECPP Primality certificate
+primepi,5,primepi,prelude,,"the prime counting function pi(x) = #{p <= x, p prime}"
+primes,5,primes,prelude,,"returns the vector of the first n primes (integer), or the primes in interval n = [a,b]"
+qfbclassno,5,qfbclassno,namespace,,class number of discriminant D using Shanks's method by default
+qfbcomp,5,qfbcomp,namespace,,Gaussian composition with reduction of the binary quadratic forms x and y
+qfbcompraw,5,qfbcompraw,namespace,,Gaussian composition without reduction of the binary quadratic forms x and y
+qfbcornacchia,5,qfbcornacchia,namespace,,Solves the equation x^2+dy^2 = n in integers x and y where d > 0 and n is prime or 4 times a prime
+qfbhclassno,5,qfbhclassno,namespace,,Hurwitz-Kronecker class number of x>0
+qfbnucomp,5,qfbnucomp,namespace,,"composite of primitive positive definite quadratic forms x and y using nucomp and nudupl, where L=[|D/4|^(1/4)] is preco…"
+qfbnupow,5,qfbnupow,namespace,,n-th power of primitive positive definite quadratic form x using nucomp and nudupl
+qfbpow,5,qfbpow,namespace,,n-th power with reduction of the binary quadratic form x
+qfbpowraw,5,qfbpowraw,namespace,,n-th power without reduction of the binary quadratic form x
+qfbprimeform,5,qfbprimeform,namespace,,"returns the prime form of discriminant x, whose first coefficient is p"
+qfbred,5,qfbred,namespace,,reduction of the binary quadratic form x
+qfbredsl2,5,qfbredsl2,namespace,,"reduction of the binary quadratic form x, returns [y,g] where y is reduced and g in Sl(2,Z) is such that g.x = y; isD, i…"
+qfbsolve,5,qfbsolve,namespace,,"Solve the equation Q(x,y)=n in coprime integers x and y where Q is a binary quadratic form, up to the action of the spec…"
+quadclassunit,5,quadclassunit,namespace,,compute the structure of the class group and the regulator of the quadratic field of discriminant D
+quaddisc,5,quaddisc,namespace,,discriminant of the quadratic field Q(sqrt(x))
+quadgen,5,quadgen,namespace,,standard generator g of quadratic order of discriminant D
+quadhilbert,5,quadhilbert,namespace,,relative equation for the Hilbert class field of the quadratic field of discriminant D (which can also be a bnf)
+quadpoly,5,quadpoly,namespace,,"quadratic polynomial corresponding to the discriminant D, in variable v"
+quadray,5,quadray,namespace,,relative equation for the ray class field of conductor f for the quadratic field of discriminant D (which can also be a …
+quadregulator,5,quadregulator,namespace,,regulator of the real quadratic field of discriminant D
+quadunit,5,quadunit,namespace,,fundamental unit u of the quadratic order of discriminant D where D must be positive
+quadunitindex,5,quadunitindex,namespace,,"given a fundamental discriminant D, returns the index of the unit group of the order of conductor f"
+quadunitnorm,5,quadunitnorm,namespace,,returns the norm of the fundamental unit of the quadratic order of discriminant D
+ramanujantau,5,ramanujantau,namespace,,"compute the value of Ramanujan's tau function at n, assuming the GRH"
+randomprime,5,randomprime,namespace,,"returns a strong pseudo prime in [2, N-1]"
+removeprimes,5,removeprimes,namespace,,remove primes in the vector x from the prime table
+sigma,5,sigma,prelude,,sum of the k-th powers of the divisors of x
+sqrtint,5,sqrtint,prelude,,"integer square root y of x, where x is a nonnegative real number"
+sqrtnint,5,sqrtnint,namespace,,"integer n-th root of x, where x is nonnegative real number"
+sumdedekind,5,sumdedekind,namespace,,"Dedekind sum attached to h,k"
+sumdigits,5,sumdigits,namespace,,"sum of digits in the integer n, when written in base B"
+znchar,5,znchar,namespace,,"given a datum D describing a group G = (Z/NZ)^* and a Dirichlet character chi, return the pair [G,chi]"
+zncharconductor,5,zncharconductor,namespace,,"let G be znstar(q,1) and chi be a Dirichlet character on (Z/qZ)*"
+znchardecompose,5,znchardecompose,namespace,,"given a znstar G = (Z/NZ)^* and a Dirichlet character chi, return the product of local characters chi_p for p | (N,Q)"
+znchargauss,5,znchargauss,namespace,,"given a Dirichlet character chi on G = (Z/NZ)^*, return the complex Gauss sum g(chi,a)"
+zncharinduce,5,zncharinduce,namespace,,"let G be znstar(q,1), let chi be a Dirichlet character mod q and let N be a multiple of q"
+zncharisodd,5,zncharisodd,namespace,,"let G be znstar(N,1), let chi be a Dirichlet character mod N, return 1 if and only if chi(-1) = -1 and 0 otherwise"
+znchartokronecker,5,znchartokronecker,namespace,,"let G be znstar(N,1), let chi be a Dirichlet character mod N, return the discriminant D if chi is real equal to the Kron…"
+znchartoprimitive,5,znchartoprimitive,namespace,,"let G be znstar(q,1) and chi be a Dirichlet character on (Z/qZ)* of conductor q0"
+znconreychar,5,znconreychar,namespace,,"Dirichlet character attached to m in (Z/qZ)* in Conrey's notation, where G is znstar(q,1)"
+znconreyconductor,5,znconreyconductor,namespace,,"let G be znstar(q,1) and chi be a Dirichlet character on (Z/qZ)* given by its Conrey logarithm"
+znconreyexp,5,znconreyexp,namespace,,"Conrey exponential attached to G = znstar(q, 1)"
+znconreylog,5,znconreylog,namespace,,"Conrey logarithm attached to m in (Z/qZ)*, where G is znstar(q,1)"
+zncoppersmith,5,zncoppersmith,namespace,,"finds all integers x with |x| <= X such that gcd(N, P(x)) >= B"
+znlog,5,znlog,prelude,,return the discrete logarithm of x in (Z/nZ)* in base g
+znorder,5,znorder,prelude,,order of the integermod x in (Z/nZ)*
+znprimroot,5,znprimroot,prelude,,returns a primitive root of n when it exists
+znstar,5,znstar,namespace,,"3-component vector v = [no,cyc,gen], giving the structure of the abelian group (Z/nZ)^*; no is the order (i.e"
+znsubgroupgenerators,5,znsubgroupgenerators,namespace,,finds generators of the subgroup H of (Z/fZ)^*; H is given by a vector of length f of 1/0 values: the a-th component is …
+bezoutres,6,bezoutres,namespace,,deprecated alias for polresultantext
+deriv,6,deriv,namespace,ER2 `diff` dispatches to SymPy,"derivative of x with respect to v, or to the main variable of x if v is omitted"
+derivn,6,derivn,namespace,,"n-th derivative of x with respect to v, or to the main variable of x if v is omitted"
+diffop,6,diffop,namespace,,"apply the differential operator D to x, where D is defined by D(v[i])=d[i], where v is a vector of variable names"
+eval,6,eval,namespace,Python builtin: never shadowed in the prelude,"evaluation of x, replacing variables by their value"
+factorpadic,6,factorpadic,namespace,,p-adic factorization of the polynomial pol to precision r
+fft,6,fft,namespace,,"given w from rootsof1, return the discrete Fourier transform of P"
+fftinv,6,fftinv,namespace,,"given w from rootsof1, return the inverse Fourier transform of P"
+intformal,6,intformal,namespace,,"formal integration of x with respect to v, or to the main variable of x if v is omitted"
+O,6,o,namespace,renamed for PEP 8,p-adic or power series zero with precision given by e
+padicappr,6,padicappr,namespace,,p-adic roots of the polynomial pol congruent to a mod p
+padicfields,6,padicfields,namespace,,returns polynomials generating all the extensions of degree N of the field of p-adic rational numbers; N is allowed to b…
+polchebyshev,6,polchebyshev,namespace,,"Chebyshev polynomial of the first (flag = 1) or second (flag = 2) kind, of degree n, evaluated at a"
+polclass,6,polclass,namespace,,return a polynomial generating the Hilbert class field of Q(sqrt(D)) for the discriminant D<0
+polcoef,6,polcoef,namespace,,coefficient of degree n of x
+polcoeff,6,polcoeff,namespace,,deprecated alias for polcoef
+polcyclo,6,polcyclo,namespace,,n-th cyclotomic polynomial evaluated at a
+polcyclofactors,6,polcyclofactors,namespace,,"returns a vector of polynomials, whose product is the product of distinct cyclotomic polynomials dividing f"
+poldegree,6,poldegree,namespace,,"degree of the polynomial or rational function x with respect to main variable if v is omitted, with respect to v otherwi…"
+poldisc,6,poldisc,namespace,,"discriminant of the polynomial pol, with respect to main variable if v is omitted, with respect to v otherwise"
+poldiscfactors,6,poldiscfactors,namespace,,"[D, faD], where D = discriminant of the polynomial T, and faD is a cheap partial factorization of D (entries are coprime…"
+poldiscreduced,6,poldiscreduced,namespace,,"vector of elementary divisors of Z[a]/f'(a)Z[a], where a is a root of the polynomial f"
+polfromroots,6,polfromroots,namespace,,returns the monic polynomial in variable v whose roots are the components of the vector a with multiplicities
+polgraeffe,6,polgraeffe,namespace,,"returns the Graeffe transform g of f, such that g(x^2) = f(x)f(-x)"
+polhensellift,6,polhensellift,namespace,,lift the factorization B of A modulo p to a factorization modulo p^e using Hensel lift
+polhermite,6,polhermite,namespace,,"Hermite polynomial H(n,v) of degree n, evaluated at a"
+polinterpolate,6,polinterpolate,namespace,,"polynomial interpolation at t according to data vectors X, Y, i.e., given P of minimal degree such that P(X[i]) = Y[i] f…"
+polisclass,6,polisclass,namespace,,"P being a monic irreducible polynomial with integer coefficients, return 0 if P is not a class polynomial for the j-inva…"
+poliscyclo,6,poliscyclo,namespace,,"returns 0 if f is not a cyclotomic polynomial, and n > 0 if f = Phi_n, the n-th cyclotomic polynomial"
+poliscycloprod,6,poliscycloprod,namespace,,"returns 1 if f is a product of cyclotomic polynonials, and 0 otherwise"
+polisirreducible,6,polisirreducible,namespace,,"true(1) if pol is an irreducible nonconstant polynomial, false(0) if pol is reducible or constant"
+pollaguerre,6,pollaguerre,namespace,,Laguerre polynomial of degree n and parameter a evaluated at b
+pollead,6,pollead,namespace,,"leading coefficient of polynomial or series x, or x itself if x is a scalar"
+pollegendre,6,pollegendre,namespace,,legendre polynomial of degree n evaluated at a
+polmodular,6,polmodular,namespace,,return the modular polynomial of level L and invariant inv
+polrecip,6,polrecip,namespace,,reciprocal polynomial of pol
+polresultant,6,polresultant,namespace,,"resultant of the polynomials x and y, with respect to the main variables of x and y if v is omitted, with respect to the…"
+polresultantext,6,polresultantext,namespace,,"return [U,V,R] such that R=polresultant(A,B,v) and U*A+V*B = R, where A and B are polynomials"
+polroots,6,polroots,namespace,,"complex roots of the polynomial T using Schonhage's method, as modified by Gourdon"
+polrootsbound,6,polrootsbound,namespace,,return a sharp upper bound for the modulus of the largest complex root of the polynomial T with relative error tau
+polrootsff,6,polrootsff,namespace,,"obsolete, use polrootsmod"
+polrootsmod,6,polrootsmod,namespace,,roots of the polynomial f over the finite field defined by the domain D
+polrootspadic,6,polrootspadic,namespace,,p-adic roots of the polynomial f to precision r
+polrootsreal,6,polrootsreal,namespace,,"real roots of the polynomial T with real coefficients, using Uspensky's method"
+polsturm,6,polsturm,namespace,,"number of distinct real roots of the polynomial T (in the interval ab = [a,b] if present)"
+polsubcyclo,6,polsubcyclo,namespace,,finds an equation (in variable v) for the d-th degree subfields of Q(zeta_n)
+polsubcyclofast,6,polsubcyclofast,namespace,,"If 1 <= d <= 6 or a prime, finds an equation for the subfields of Q(zeta_n) with galois group C_d"
+polsylvestermatrix,6,polsylvestermatrix,namespace,,forms the sylvester matrix attached to the two polynomials x and y
+polsym,6,polsym,namespace,,column vector of symmetric powers of the roots of x up to n
+poltchebi,6,poltchebi,namespace,,deprecated alias for polchebyshev
+polteichmuller,6,polteichmuller,namespace,,return the polynomial whose roots (resp
+poltomonic,6,poltomonic,namespace,,T in Q[x]; returns U monic in Z[x] such that U(x) = C T(x/L) for some rational C and L
+polzagier,6,polzagier,namespace,,"Zagier's polynomials of index n,m"
+seralgdep,6,seralgdep,namespace,,"find a linear relation between powers (1,s, ..., s^p) of the series s, with polynomial coefficients of degree <= r"
+serconvol,6,serconvol,namespace,,convolution (or Hadamard product) of two power series
+serdiffdep,6,serdiffdep,namespace,,"find an inhomogenous linear differential equation satisfied by the series s, with polynomial coefficients of degree <= r"
+serlaplace,6,serlaplace,namespace,,replaces the power series sum of a_n*x^n/n! by sum of a_n*x^n
+serreverse,6,serreverse,namespace,,reversion of the power series s
+subst,6,subst,namespace,,"in expression x, replace the variable y by the expression z"
+substpol,6,substpol,namespace,,"in expression x, replace the polynomial y by the expression z, using remainder decomposition of x"
+substvec,6,substvec,namespace,,"in expression x, make a best effort to replace the variables v1,...,vn by the expression w1,...,wn"
+sumformal,6,sumformal,namespace,,"formal sum of f with respect to v, or to the main variable of f if v is omitted"
+taylor,6,taylor,namespace,,"taylor expansion of x with respect to t, adding O(t^d) to all components of x"
+thue,6,thue,namespace,,"solve the equation P(x,y)=a, where tnf was created with thueinit(P), and sol, if present, contains the solutions of Norm…"
+thueinit,6,thueinit,namespace,,"initialize the tnf corresponding to P, that will be used to solve Thue equations P(x,y) = some-integer"
+algdep,7,algdep,namespace,,"algebraic relations up to degree k of z, using lindep([1,z,...,z^(k-1)], flag)"
+bestapprnf,7,bestapprnf,namespace,,"T being an integral polynomial and V being a scalar, vector, or matrix, return a reasonable approximation of V with polm…"
+charpoly,7,charpoly,namespace,,det(v*Id-A)=characteristic polynomial of the matrix or polmod A
+concat,7,concat,namespace,,"concatenation of x and y, which can be scalars, vectors or matrices, or lists (in this last case, both x and y have to b…"
+dirpowers,7,dirpowers,namespace,,"return the vector [1^x,2^x,...,n^x]"
+forqfvec,7,forqfvec,namespace,,"q being a square and symmetric integral matrix representing an positive definite quadratic form, evaluate expr for all p…"
+lindep,7,lindep,namespace,,integral linear dependencies between components of v
+matadjoint,7,matadjoint,namespace,,adjoint matrix of M using Leverrier-Faddeev's algorithm
+matcompanion,7,matcompanion,namespace,,companion matrix to polynomial x
+matconcat,7,matconcat,namespace,,concatenate the entries of v and return the resulting matrix
+matdet,7,matdet,namespace,,determinant of the matrix x using an appropriate algorithm depending on the coefficients
+matdetint,7,matdetint,namespace,,some multiple of the determinant of the lattice generated by the columns of B (0 if not of maximal rank)
+matdetmod,7,matdetmod,namespace,,determinant of the matrix x modulo d
+matdiagonal,7,matdiagonal,namespace,,creates the diagonal matrix whose diagonal entries are the entries of the vector x
+mateigen,7,mateigen,namespace,,complex eigenvectors of the matrix x given as columns of a matrix H
+matfrobenius,7,matfrobenius,namespace,,return the Frobenius form of the square matrix M
+mathess,7,mathess,namespace,,Hessenberg form of x
+mathilbert,7,mathilbert,namespace,,Hilbert matrix of order n
+mathnf,7,mathnf,namespace,,"(upper triangular) Hermite normal form of M, basis for the lattice formed by the columns of M"
+mathnfmod,7,mathnfmod,namespace,,"(upper triangular) Hermite normal form of x, basis for the lattice formed by the columns of x, where d is a multiple of …"
+mathnfmodid,7,mathnfmodid,namespace,,(upper triangular) Hermite normal form of x concatenated with matdiagonal(d)
+mathouseholder,7,mathouseholder,namespace,,applies a sequence Q of Householder transforms to the vector or matrix v
+matid,7,matid,namespace,,identity matrix of order n
+matimage,7,matimage,namespace,,basis of the image of the matrix x
+matimagecompl,7,matimagecompl,namespace,,vector of column indices not corresponding to the indices given by the function matimage
+matimagemod,7,matimagemod,namespace,,basis of the image of the matrix x modulo d
+matindexrank,7,matindexrank,namespace,,gives two extraction vectors (rows and columns) for the matrix M such that the extracted matrix is square of maximal ran…
+matintersect,7,matintersect,namespace,,intersection of the vector spaces whose bases are the columns of x and y
+matinverseimage,7,matinverseimage,namespace,,"an element of the inverse image of the vector y by the matrix x if one exists, the empty vector otherwise"
+matinvmod,7,matinvmod,namespace,,left inverse of the matrix x modulo d
+matisdiagonal,7,matisdiagonal,namespace,,"true(1) if x is a diagonal matrix, false(0) otherwise"
+matker,7,matker,namespace,,basis of the kernel of the matrix x
+matkerint,7,matkerint,namespace,,"LLL-reduced Z-basis of the kernel of the matrix x with integral entries; flag is deprecated, kept for backward compatibi…"
+matkermod,7,matkermod,namespace,,basis of the kernel of the matrix x modulo d
+matmuldiagonal,7,matmuldiagonal,namespace,,"product of matrix x by diagonal matrix whose diagonal coefficients are those of the vector d, equivalent but faster than…"
+matmultodiagonal,7,matmultodiagonal,namespace,,"product of matrices x and y, knowing that the result will be a diagonal matrix"
+matpascal,7,matpascal,namespace,,Pascal triangle of order n if q is omitted
+matpermanent,7,matpermanent,namespace,,permanent of the matrix x
+matqr,7,matqr,namespace,,"returns [Q,R], the QR-decomposition of the square invertible matrix M"
+matrank,7,matrank,namespace,,rank of the matrix x
+matreduce,7,matreduce,namespace,,reduce the factorization matrix m to canonical form (sorted first row with unique elements) matrix
+matrix,7,matrix,namespace,,"m x n matrix of expression expr, where the row variable X goes from 1 to m and the column variable Y goes from 1 to n"
+matrixqz,7,matrixqz,namespace,,"if p>=0, transforms the rational or integral mxn (m>=n) matrix A into an integral matrix with gcd of maximal determinant…"
+matsize,7,matsize,namespace,,number of rows and columns of the vector/matrix x as a 2-vector
+matsnf,7,matsnf,namespace,,Smith normal form (i.e
+matsolve,7,matsolve,namespace,,"solution of MX=B (M matrix, B column vector or matrix)"
+matsolvemod,7,matsolvemod,namespace,,"one solution of system of congruences MX=B mod D (M matrix, B and D column vectors)"
+matsupplement,7,matsupplement,namespace,,supplement the columns of the matrix x to an invertible matrix
+mattranspose,7,mattranspose,namespace,,x~ = transpose of x
+minpoly,7,minpoly,namespace,,minimal polynomial of the matrix or polmod A
+norml2,7,norml2,namespace,,square of the L2-norm of x
+normlp,7,normlp,namespace,,Lp-norm of x; sup norm if p is omitted
+powers,7,powers,namespace,,"return the vector [1,x,...,x^n] if x0 is omitted, and [x0, x0*x, ..., x0*x^n] otherwise"
+qfauto,7,qfauto,namespace,,automorphism group of the positive definite quadratic form G
+qfautoexport,7,qfautoexport,namespace,,"qfa being an automorphism group as output by qfauto, output a string representing the underlying matrix group in GAP not…"
+qfbil,7,qfbil,namespace,,"this function is obsolete, use qfeval"
+qfcholesky,7,qfcholesky,namespace,,"given a square symmetric matrix M, return R such that R~*R = M, or [] if there is no solution"
+qfcvp,7,qfcvp,namespace,,"x being a square and symmetric matrix representing a positive definite quadratic form, and t a vector of the same dimens…"
+qfeval,7,qfeval,namespace,,"evaluate the quadratic form q (symmetric matrix) at x; if y is present, evaluate the polar form at (x,y); if q omitted, …"
+qfgaussred,7,qfgaussred,namespace,,square reduction of the symmetric matrix q
+qfisom,7,qfisom,namespace,,find an isomorphism between the integral positive definite quadratic forms G and H if it exists
+qfisominit,7,qfisominit,namespace,,"G being a square and symmetric matrix representing an integral positive definite quadratic form, this function returns a…"
+qfjacobi,7,qfjacobi,namespace,,eigenvalues and orthogonal matrix of eigenvectors of the real symmetric matrix A
+qflll,7,qflll,namespace,,LLL reduction of the vectors forming the matrix x (gives the unimodular transformation matrix T such that x*T is LLL-red…
+qflllgram,7,qflllgram,namespace,,LLL reduction of the lattice whose gram matrix is G (gives the unimodular transformation matrix)
+qfminim,7,qfminim,namespace,,"x being a square and symmetric matrix representing a positive definite quadratic form, this function deals with the vect…"
+qfminimize,7,qfminimize,namespace,,"given a square symmetric matrix G with rational coefficients and non-zero determinant, of dimension n >= 1, return [H,U,…"
+qfnorm,7,qfnorm,namespace,,"this function is obsolete, use qfeval"
+qforbits,7,qforbits,namespace,,"return the orbits of V under the action of the group of linear transformation generated by the set G, which must stabili…"
+qfparam,7,qfparam,namespace,,"coefficients of binary quadratic forms that parametrize the solutions of the ternary quadratic form G, using the particu…"
+qfperfection,7,qfperfection,namespace,,rank of matrix of xx~ for x minimal vectors of a Gram matrix G
+qfrep,7,qfrep,namespace,,vector of (half) the number of vectors of norms from 1 to B for the integral and definite quadratic form q
+qfsign,7,qfsign,namespace,,signature of the symmetric matrix x
+qfsolve,7,qfsolve,namespace,,"solve over Q the quadratic equation X~ G X = 0, where G is a symmetric matrix"
+setbinop,7,setbinop,namespace,,"the set {f(x,y), x in X, y in Y}"
+setdelta,7,setdelta,namespace,,symmetric difference of the sets x and y
+setintersect,7,setintersect,namespace,,intersection of the sets x and y
+setisset,7,setisset,namespace,,"true(1) if x is a set (row vector with strictly increasing entries), false(0) if not"
+setminus,7,setminus,namespace,,set of elements of x not belonging to y
+setsearch,7,setsearch,namespace,,determines whether x belongs to the set (or sorted list) S
+setunion,7,setunion,namespace,,union of the sets x and y
+snfrank,7,snfrank,namespace,,assuming that D is a Smith normal form (i.e
+trace,7,trace,namespace,,trace of x
+vecextract,7,vecextract,namespace,,extraction of the components of the matrix or vector x according to y and z
+vecprod,7,vecprod,namespace,,return the product of the components of the vector v
+vecsearch,7,vecsearch,namespace,,determines whether x belongs to the sorted vector v
+vecsort,7,vecsort,namespace,,"sorts the vector x in ascending order, according to the comparison function cmpf, if not omitted"
+vecsum,7,vecsum,namespace,,return the sum of the components of the vector v
+vector,7,vector,namespace,,row vector with n components of expression expr (X ranges from 1 to n)
+vectorsmall,7,vectorsmall,namespace,,VECSMALL with n components of expression expr (X ranges from 1 to n) which must be small integers
+vectorv,7,vectorv,namespace,,column vector with n components of expression expr (X ranges from 1 to n)
+abs,8,abs,namespace,Python builtin: never shadowed in the prelude,absolute value (or modulus) of x
+acos,8,acos,namespace,,arc cosine of x
+acosh,8,acosh,namespace,,inverse hyperbolic cosine of x
+agm,8,agm,namespace,,arithmetic-geometric mean of x and y
+airy,8,airy,namespace,,"Airy [Ai,Bi] function of argument z"
+arg,8,arg,namespace,,"argument of x, such that -pi<arg(x)<=pi"
+asin,8,asin,namespace,,arc sine of x
+asinh,8,asinh,namespace,,inverse hyperbolic sine of x
+atan,8,atan,namespace,,arc tangent of x
+atanh,8,atanh,namespace,,inverse hyperbolic tangent of x
+besselh1,8,besselh1,namespace,,H^1-bessel function of index nu and argument x
+besselh2,8,besselh2,namespace,,H^2-bessel function of index nu and argument x
+besseli,8,besseli,namespace,,I-bessel function of index nu and argument x
+besselj,8,besselj,namespace,,J-bessel function of index nu and argument x
+besseljh,8,besseljh,namespace,,"J-bessel function of index n+1/2 and argument x, where n is a nonnegative integer"
+besseljzero,8,besseljzero,namespace,,k-th zero of the J-bessel function of index nu
+besselk,8,besselk,namespace,,K-bessel function of index nu and argument x
+besseln,8,besseln,namespace,,deprecated alias for bessely
+bessely,8,bessely,namespace,,Y-bessel function of index nu and argument x
+besselyzero,8,besselyzero,namespace,,k-th zero of the Y-bessel function of index nu
+Catalan,8,catalan,namespace,constant; SymPy name,Catalan's number with current precision
+cos,8,cos,namespace,,cosine of x
+cosh,8,cosh,namespace,,hyperbolic cosine of x
+cotan,8,cotan,namespace,,cotangent of x
+cotanh,8,cotanh,namespace,,hyperbolic cotangent of x
+dilog,8,dilog,namespace,,dilogarithm of x
+eint1,8,eint1,namespace,,exponential integral E1(x)
+ellE,8,ell_e,namespace,renamed for PEP 8,Complete elliptic integral of the second kind for the complex parameter k using the agm
+ellK,8,ell_k,namespace,renamed for PEP 8,Complete elliptic integral of the first kind for the complex parameter k using the agm
+erfc,8,erfc,namespace,,complementary error function
+eta,8,eta,namespace,,"if flag=0, returns prod(n=1,oo, 1-q^n), where q = exp(2 i Pi z) if z is a complex scalar (belonging to the upper half pl…"
+Euler,8,euler_gamma,namespace,constant; SymPy name,Euler's constant with current precision
+exp,8,exp,namespace,,exponential of x
+expm1,8,expm1,namespace,,exp(x)-1
+gamma,8,gamma,namespace,,"gamma function at s, a complex or p-adic number, or a series"
+gammah,8,gammah,namespace,,gamma of x+1/2 (x integer)
+gammamellininv,8,gammamellininv,namespace,,"returns G(t), where G is as output by gammamellininvinit (its m-th derivative if m is present)"
+gammamellininvasymp,8,gammamellininvasymp,namespace,,return the first n terms of the asymptotic expansion at infinity of the m-th derivative K^m(t) of the inverse Mellin tra…
+gammamellininvinit,8,gammamellininvinit,namespace,,initialize data for the computation by gammamellininv() of the m-th derivative of the inverse Mellin transform of the fu…
+hypergeom,8,hypergeom,namespace,,"general hypergeometric function, where N and D are the vector of parameters in the numerator and denominator respectivel…"
+hyperu,8,hyperu,namespace,,U-confluent hypergeometric function
+I,8,I,namespace,constant; SymPy name,square root of -1
+incgam,8,incgam,namespace,,incomplete gamma function
+incgamc,8,incgamc,namespace,,complementary incomplete gamma function
+lambertw,8,lambertw,namespace,,solution of the implicit equation x*exp(x)=y
+lerchphi,8,lerchphi,namespace,,Lerch transcendent equal to sum for n >= 0 of z^n / (n+a)^s for reasonable values of the arguments
+lerchzeta,8,lerchzeta,namespace,,Lerch zeta function equal to sum for n >= 0 of e^(2 pi i lam n) / (n+a)^s for reasonable values of the arguments
+lngamma,8,lngamma,namespace,,logarithm of the gamma function of x
+log,8,log,namespace,,natural logarithm of x
+log1p,8,log1p,namespace,,log(1+x)
+Pi,8,pi,namespace,constant; lowercase like SymPy,"the constant pi, with current precision"
+polylog,8,polylog,namespace,,m-th polylogarithm of x
+polylogmult,8,polylogmult,namespace,,"multiple polylogarithm value at integral s = [s1,...,sr] with argument z = [z1,...,zr]"
+psi,8,digamma,conflict,PARI psi = digamma; draft psi (D5),psi-function at x (der-th derivative of psi if der is set)
+rootsof1,8,rootsof1,namespace,,column vector of complex N-th roots of 1
+sin,8,sin,namespace,,sine of x
+sinc,8,sinc,namespace,,sinc function of x
+sinh,8,sinh,namespace,,hyperbolic sine of x
+sqr,8,sqr,namespace,,square of x
+sqrt,8,sqrt,namespace,,square root of x
+sqrtn,8,sqrtn,namespace,,"nth-root of x, n must be integer"
+tan,8,tan,namespace,,tangent of x
+tanh,8,tanh,namespace,,hyperbolic tangent of x
+teichmuller,8,teichmuller,namespace,,Teichmuller character of p-adic number x
+theta,8,theta,namespace,,Jacobi sine theta-function
+thetanullk,8,thetanullk,namespace,,"k-th derivative at z=0 of theta(q,z)"
+weber,8,weber,namespace,,one of Weber's f function of x
+zeta,8,zeta,namespace,,Riemann zeta function at s with s a complex or a p-adic number
+zetahurwitz,8,zetahurwitz,namespace,,"Hurwitz zeta function at s, x, with s not 1 and x not a negative or zero integer"
+zetamult,8,zetamult,namespace,,"multiple zeta value at integral s = [s1,...,sk]; more generally, return Yamamoto's t-MZV interpolation (star value for t…"
+zetamultall,8,zetamultall,namespace,,list of all multiple zeta values for weight up to k
+zetamultconvert,8,zetamultconvert,namespace,,"a being either an evec, avec, or index m, converts into evec (flag=0), avec (flag=1), or index m (flag=2)"
+zetamultdual,8,zetamultdual,namespace,,"s being either an evec, avec, or index m, return the dual sequence in avec format"
+asympnum,9,asympnum,namespace,,asymptotic expansion of expr assuming it has rational coefficients with reasonable height; alpha is as in limitnum
+asympnumraw,9,asympnumraw,namespace,,N+1 first terms of asymptotic expansion of expr as floating point numbers; alpha is as in limitnum
+contfraceval,9,contfraceval,namespace,,"given a continued fraction CF from contfracinit, evaluate the first lim terms of the continued fraction at t (all terms …"
+contfracinit,9,contfracinit,namespace,,"given M representing the power series S = sum_{n>=0} M[n+1]z^n, transform it into a continued fraction suitable for eval…"
+derivnum,9,derivnum,namespace,,numerical derivation of expr with respect to X at X = a
+intcirc,9,intcirc,namespace,,"numerical integration of expr on the circle |z-a|=R, divided by 2*I*Pi"
+intfuncinit,9,intfuncinit,namespace,,initialize tables for integrations from a to b using a weight f(t)
+intnum,9,intnum,namespace,,numerical integration of expr from a to b with respect to X
+intnumgauss,9,intnumgauss,namespace,,"numerical integration of expr from a to b, a compact interval, with respect to X using Gauss-Legendre quadrature"
+intnumgaussinit,9,intnumgaussinit,namespace,,initialize tables for n-point Gauss-Legendre integration on a compact interval
+intnuminit,9,intnuminit,namespace,,initialize tables for integrations from a to b
+intnumosc,9,intnumosc,namespace,,numerical integration from a to oo of oscillating quasi-periodic function expr of half-period H
+intnumromb,9,intnumromb,namespace,,"numerical integration of expr (smooth in ]a,b[) from a to b with respect to X"
+laurentseries,9,laurentseries,namespace,,expand f around 0 as a Laurent series in x to order M
+limitnum,9,limitnum,namespace,,numerical limit of sequence expr using Lagrange-Zagier extrapolation; assume u(n) ~ sum a_i n^(-alpha*i)
+prod,9,prod,namespace,,x times the product (X runs from a to b) of expression
+prodeuler,9,prodeuler,namespace,,"Euler product (p runs over the primes between a and b) of real or complex expression, as a floating point approximation"
+prodeulerrat,9,prodeulerrat,namespace,,"product from primes p = a to infinity of F(p^s), where F is a rational function"
+prodinf,9,prodinf,namespace,,infinite product (X goes from a to infinity) of real or complex expression
+prodnumrat,9,prodnumrat,namespace,,"product from n = a to infinity of F(n), where F-1 is a rational function of degree less than or equal to -2"
+solve,9,solve,namespace,,"real root of expression expr (X between a and b), where either a or b is infinite or expr(a)*expr(b)<=0"
+solvestep,9,solvestep,namespace,,"find zeros of a function in the real interval [a,b] by naive interval splitting"
+sum,9,sum,namespace,Python builtin: never shadowed in the prelude,x plus the sum (X goes from a to b) of expression expr
+sumalt,9,sumalt,namespace,,"Cohen-Villegas-Zagier's acceleration of alternating series expr, X starting at a"
+sumdiv,9,sumdiv,namespace,,"sum of expression expr, X running over the divisors of n"
+sumdivmult,9,sumdivmult,namespace,,"sum of multiplicative function expr, d running over the divisors of n"
+sumeulerrat,9,sumeulerrat,namespace,,"sum from primes p = a to infinity of F(p^s), where F is a rational function"
+suminf,9,suminf,namespace,,naive summation (X goes from a to infinity) of real or complex expression expr
+sumnum,9,sumnum,namespace,,numerical summation of f(n) from n = a to +infinity using Euler-MacLaurin summation
+sumnumap,9,sumnumap,namespace,,numerical summation of f(n) from n = a to +infinity using Abel-Plana formula
+sumnumapinit,9,sumnumapinit,namespace,,initialize tables for Abel-Plana summation of a series
+sumnuminit,9,sumnuminit,namespace,,initialize tables for Euler-MacLaurin delta summation of a series with positive terms
+sumnumlagrange,9,sumnumlagrange,namespace,,numerical summation of f(n) from n = a to +infinity using Lagrange summation
+sumnumlagrangeinit,9,sumnumlagrangeinit,namespace,,initialize tables for Lagrange summation of a series
+sumnummonien,9,sumnummonien,namespace,,numerical summation from n = a to +infinity using Monien summation
+sumnummonieninit,9,sumnummonieninit,namespace,,initialize tables for Monien summation of a series with positive terms
+sumnumrat,9,sumnumrat,namespace,,"sum from n = a to infinity of F(n), where F is a rational function of degree less than or equal to -2"
+sumnumsidi,9,sumnumsidi,namespace,,numerical summation of f(n) from n = a to +infinity using Sidi summation; a must be an integer
+sumpos,9,sumpos,namespace,,"sum of positive (or negative) series expr, the formal variable X starting at a"
+bnfcertify,10,bnfcertify,namespace,,certify the correctness (i.e
+bnfdecodemodule,10,bnfdecodemodule,namespace,,"given a coded module m as in bnrdisclist, gives the true module"
+bnfinit,10,bnfinit,namespace,,"compute the necessary data for future use in ideal and unit group computations, including fundamental units if they are …"
+bnfisintnorm,10,bnfisintnorm,namespace,,"compute a complete system of solutions (modulo units of positive norm) of the absolute norm equation N(a)=x, where a bel…"
+bnfisnorm,10,bnfisnorm,namespace,,tries to tell whether x (in Q) is the norm of some fractional y (in bnf)
+bnfisprincipal,10,bnfisprincipal,namespace,,"bnf being output by bnfinit, gives [e,t], where e is the vector of exponents on the class group generators and t is the …"
+bnfissunit,10,bnfissunit,namespace,,"this function is obsolete, use bnfisunit"
+bnfisunit,10,bnfisunit,namespace,,"bnf being output by bnfinit, give the column vector of exponents of x on the fundamental units and the roots of unity if…"
+bnflog,10,bnflog,namespace,,let bnf be attached to a number field F and let l be a prime number
+bnflogdegree,10,bnflogdegree,namespace,,"let A be an ideal, return exp(deg_F A) the exponential of the l-adic logarithmic degree"
+bnflogef,10,bnflogef,namespace,,"return [e~, f~] the logarithmic ramification and residue degrees for the maximal ideal pr"
+bnfnarrow,10,bnfnarrow,namespace,,"given a big number field as output by bnfinit, gives as a 3-component vector the structure of the narrow class group"
+bnfsignunit,10,bnfsignunit,namespace,,matrix of signs of the real embeddings of the system of fundamental units found by bnfinit
+bnfsunit,10,bnfsunit,namespace,,"compute the fundamental S-units of the number field bnf output by bnfinit, S being a list of prime ideals"
+bnfunits,10,bnfunits,namespace,,"return the fundamental units of the number field bnf output by bnfinit; if S is present and is a list of prime ideals, c…"
+bnrchar,10,bnrchar,namespace,,"returns all characters chi on G such that chi(g[i]) = e(v[i]); if v is omitted, returns all characters that are trivial …"
+bnrclassfield,10,bnrclassfield,namespace,,"bnr being as output by bnrinit, find a relative equation for the class field corresponding to the congruence subgroup de…"
+bnrclassno,10,bnrclassno,namespace,,"relative degree of the class field defined by A,B,C"
+bnrclassnolist,10,bnrclassnolist,namespace,,"if list is as output by ideallist or similar, gives list of corresponding ray class numbers"
+bnrcompositum,10,bnrcompositum,namespace,,"compositum [bnr,H] of the two abelian extensions given by A = [bnr1,H1] and B = [bnr2,H2], where bnr1 and bnr2 are attac…"
+bnrconductor,10,bnrconductor,namespace,,"conductor f of the subfield of the ray class field given by A,B,C"
+bnrconductorofchar,10,bnrconductorofchar,namespace,,"this function is obsolete, use bnrconductor"
+bnrdisc,10,bnrdisc,namespace,,"absolute or relative [N,R1,discf] of the field defined by A,B,C"
+bnrdisclist,10,bnrdisclist,namespace,,list of discriminants of ray class fields of all conductors up to norm bound
+bnrgaloisapply,10,bnrgaloisapply,namespace,,apply the automorphism given by its matrix mat to the congruence subgroup H given as a HNF matrix
+bnrgaloismatrix,10,bnrgaloismatrix,namespace,,return the matrix of the action of the automorphism aut of the base field bnf.nf on the generators of the ray class fiel…
+bnrinit,10,bnrinit,namespace,,"given a bnf as output by bnfinit and a modulus f, initializes data linked to the ray class group structure corresponding…"
+bnrisconductor,10,bnrisconductor,namespace,,"returns 1 if the modulus is the conductor of the subfield of the ray class field given by A,B,C (see bnrdisc), and 0 oth…"
+bnrisgalois,10,bnrisgalois,namespace,,check whether the class field attached to the subgroup H is Galois over the subfield of bnr.nf fixed by the Galois group…
+bnrisprincipal,10,bnrisprincipal,namespace,,"bnr being output by bnrinit and x being an ideal coprime to bnr.mod, returns [v,alpha], where v is the vector of exponen…"
+bnrL1,10,bnr_l1,namespace,renamed for PEP 8,bnr being output by bnrinit and H being a square matrix defining a congruence subgroup of bnr (the trivial subgroup if o…
+bnrmap,10,bnrmap,namespace,,"if A and B are bnr structures for the same bnf attached to moduli mA and mB with mB | mA, return the canonical surjectio…"
+bnrrootnumber,10,bnrrootnumber,namespace,,"returns the so-called Artin Root Number, i.e"
+bnrstark,10,bnrstark,namespace,,"bnr being as output by bnrinit, finds a relative equation for the class field corresponding to the module in bnr and the…"
+bnrstarkunit,10,bnrstarkunit,namespace,,"bnr being as output by bnrinit, returns the characteristic polynomial of the (conjectural) Stark unit corresponding to t…"
+dirzetak,10,dirzetak,namespace,,Dirichlet series of the Dedekind zeta function of the number field nf up to the bound b-1
+factornf,10,factornf,namespace,,"this function is obsolete, use nffactor"
+galoischardet,10,galoischardet,namespace,,return the determinant character of the character chi
+galoischarpoly,10,galoischarpoly,namespace,,return the list of characteristic polynomials of the representation attached to the character chi
+galoischartable,10,galoischartable,namespace,,return the character table of the underlying group of gal
+galoisconjclasses,10,galoisconjclasses,namespace,,"gal being output by galoisinit, return the list of conjugacy classes"
+galoisexport,10,galoisexport,namespace,,"gal being a Galois group as output by galoisinit, output a string representing the underlying permutation group in GAP n…"
+galoisfixedfield,10,galoisfixedfield,namespace,,"gal being a Galois group as output by galoisinit and perm a subgroup, an element of gal.group or a vector of such elemen…"
+galoisgetgroup,10,galoisgetgroup,namespace,,query the galpol package for a group of order a with index b in the GAP4 Small Group library
+galoisgetname,10,galoisgetname,namespace,,query the galpol package for a string describing the group of order a with index b in the GAP4 Small Group library
+galoisgetpol,10,galoisgetpol,namespace,,"query the galpol package for a polynomial with Galois group isomorphic to GAP4(a,b), totally real if s=1 (default) and t…"
+galoisidentify,10,galoisidentify,namespace,,"gal being a Galois group as output by galoisinit, output the isomorphism class of the underlying abstract group as a two…"
+galoisinit,10,galoisinit,namespace,,"pol being a polynomial or a number field as output by nfinit defining a Galois extension of Q, compute the Galois group …"
+galoisisabelian,10,galoisisabelian,namespace,,"gal being as output by galoisinit, return 0 if gal is not abelian, the HNF matrix of gal over gal.gen if flag=0, 1 if fl…"
+galoisisnormal,10,galoisisnormal,namespace,,"gal being as output by galoisinit, and subgrp a subgroup of gal as output by galoissubgroups, return 1 if subgrp is a no…"
+galoispermtopol,10,galoispermtopol,namespace,,"gal being a Galois group as output by galoisinit and perm a element of gal.group, return the polynomial defining the cor…"
+galoissplittinginit,10,galoissplittinginit,namespace,,"Galois group over Q of the splitting field of P, for P integral, monic and irreducible or given by a nf structure"
+galoissubcyclo,10,galoissubcyclo,namespace,,computes a polynomial (in variable v) defining the subfield of Q(zeta_n) fixed by the subgroup H of (Z/nZ)*
+galoissubfields,10,galoissubfields,namespace,,output all the subfields of G; flag has the same meaning as for galoisfixedfield
+galoissubgroups,10,galoissubgroups,namespace,,output all the subgroups of G
+gcharalgebraic,10,gcharalgebraic,namespace,,returns a matrix whose columns form a basis of the algebraic Grossencharacters in gc
+gcharconductor,10,gcharconductor,namespace,,"returns the conductor of chi, as a modulus over gc.bnf"
+gcharduallog,10,gcharduallog,namespace,,returns logarithm vector of character chi in R^n
+gchareval,10,gchareval,namespace,,computes the evaluation chi(x) in C* if flag=1 and in C/Z if flag=0
+gcharidentify,10,gcharidentify,namespace,,returns a Grossencharacter chi belonging to gc that approximately satisfies the constraints that chi_v is Lchiv[i] at th…
+gcharinit,10,gcharinit,namespace,,"given a bnf as output by bnfinit and a modulus f, initializes data related to the group of Grossencharacters of conducto…"
+gcharisalgebraic,10,gcharisalgebraic,namespace,,returns 1 if chi is an algebraic (type A0) character
+gcharlocal,10,gcharlocal,namespace,,"if v is a place, return the local character chi_v"
+gcharlog,10,gcharlog,namespace,,"returns the internal representation (logarithm) of the ideal x suitable for computations in gc, as a column vector"
+gcharnewprec,10,gcharnewprec,namespace,,"given a Grossencharacter group \kbd{gc}, recomputes its invariants to ensure accurate results to current precision"
+idealadd,10,idealadd,namespace,,sum of two ideals x and y in the number field defined by nf
+idealaddtoone,10,idealaddtoone,namespace,,"if y is omitted, when the sum of the ideals in the number field K defined by nf and given in the vector x is equal to Z_…"
+idealappr,10,idealappr,namespace,,"x being a fractional ideal, gives an element b such that v_p(b)=v_p(x) for all prime ideals p dividing x, and v_p(b)>=0 …"
+idealchinese,10,idealchinese,namespace,,"x being a prime ideal factorization and y a vector of elements, gives an element b such that v_p(b-y_p)>=v_p(x) for all …"
+idealcoprime,10,idealcoprime,namespace,,gives an element b in nf such that b
+idealdiv,10,idealdiv,namespace,,quotient x/y of two ideals x and y in HNF in the number field nf
+idealdown,10,idealdown,namespace,,finds the intersection of the ideal x with Q
+idealfactor,10,idealfactor,namespace,,factorization of the ideal x into prime ideals in the number field nf
+idealfactorback,10,idealfactorback,namespace,,"given a factorization f, gives the ideal product back"
+idealfrobenius,10,idealfrobenius,namespace,,"returns the Frobenius element (pr|nf/Q) attached to the unramified prime ideal pr in prid format, in the Galois group ga…"
+idealhnf,10,idealhnf,namespace,,hermite normal form of the ideal u in the number field nf if v is omitted
+idealintersect,10,idealintersect,namespace,,intersection of two ideals A and B in the number field defined by nf
+idealinv,10,idealinv,namespace,,inverse of the ideal x in the number field nf
+idealismaximal,10,idealismaximal,namespace,,"if x is a maximal ideal, return it in prid form, else return 0"
+idealispower,10,idealispower,namespace,,return 1 if A = B^n is an n-th power else return 0
+ideallist,10,ideallist,namespace,,vector of vectors L of all idealstar of all ideals of norm<=bound
+ideallistarch,10,ideallistarch,namespace,,list is a vector of vectors of bid's as output by ideallist
+ideallog,10,ideallog,namespace,,"if bid is a big ideal, as given by idealstar(nf,D,...), gives the vector of exponents on the generators bid.gen (even if…"
+idealmin,10,idealmin,namespace,,pseudo-minimum of the ideal ix in the direction vdir in the number field nf
+idealmul,10,idealmul,namespace,,product of the two ideals x and y in the number field nf
+idealnorm,10,idealnorm,namespace,,norm of the ideal x in the number field nf
+idealnumden,10,idealnumden,namespace,,"returns [A,B], where A,B are coprime integer ideals such that x = A/B"
+idealpow,10,idealpow,namespace,,k-th power of the ideal x in HNF in the number field nf
+idealprimedec,10,idealprimedec,namespace,,prime ideal decomposition of the prime number p in the number field nf as a vector of prime ideals
+idealprincipalunits,10,idealprincipalunits,namespace,,"returns the structure [no, cyc, gen] of the multiplicative group (1 + pr) / (1 + pr^k)"
+idealramgroups,10,idealramgroups,namespace,,"let pr be a prime ideal in prid format, and gal the Galois group of the number field nf, return a vector g such that g[1…"
+idealred,10,idealred,namespace,,"LLL reduction of the ideal I in the number field nf along direction v, in HNF"
+idealredmodpower,10,idealredmodpower,namespace,,return b such that x * b^n = v is small
+idealstar,10,idealstar,namespace,,"gives the structure of (Z_K/N)^*, where N is a modulus (an ideal in any form or a vector [f0, foo], where f0 is an ideal…"
+idealtwoelt,10,idealtwoelt,namespace,,two-element representation of an ideal x in the number field nf
+idealval,10,idealval,namespace,,valuation at pr given in idealprimedec format of the ideal x in the number field nf
+matalgtobasis,10,matalgtobasis,namespace,,nfalgtobasis applied to every element of the vector or matrix x
+matbasistoalg,10,matbasistoalg,namespace,,nfbasistoalg applied to every element of the matrix or vector x
+modreverse,10,modreverse,namespace,,"reverse polmod of the polmod z, if it exists"
+newtonpoly,10,newtonpoly,namespace,,Newton polygon of polynomial x with respect to the prime p
+nfalgtobasis,10,nfalgtobasis,namespace,,transforms the algebraic number x into a column vector on the integral basis nf.zk
+nfbasis,10,nfbasis,namespace,,"integral basis of the field Q[a], where a is a root of the polynomial T, using the round 4 algorithm"
+nfbasistoalg,10,nfbasistoalg,namespace,,transforms the column vector x on the integral basis into an algebraic number
+nfcertify,10,nfcertify,namespace,,returns a vector of composite integers used to certify nf.zk and nf.disc unconditionally (both are correct when the outp…
+nfcompositum,10,nfcompositum,namespace,,"vector of all possible compositums of the number fields defined by the polynomials P and Q; flag is optional, whose bina…"
+nfdetint,10,nfdetint,namespace,,multiple of the ideal determinant of the pseudo generating set x
+nfdisc,10,nfdisc,namespace,,discriminant of the number field defined by the polynomial T
+nfdiscfactors,10,nfdiscfactors,namespace,,"[D, faD], where D = nfdisc(T), and faD is the factorization of |D|"
+nfeltadd,10,nfeltadd,namespace,,element x+y in nf
+nfeltdiv,10,nfeltdiv,namespace,,element x/y in nf
+nfeltdiveuc,10,nfeltdiveuc,namespace,,gives algebraic integer q such that x-qy is small
+nfeltdivmodpr,10,nfeltdivmodpr,namespace,,"this function is obsolete, use nfmodpr"
+nfeltdivrem,10,nfeltdivrem,namespace,,"gives [q,r] such that r=x-qy is small"
+nfeltembed,10,nfeltembed,namespace,,complex embeddings of x at places given by vector pl
+nfeltispower,10,nfeltispower,namespace,,"returns 1 if x is an n-th power in nf (and set y to an n-th root if present), else returns 0"
+nfeltissquare,10,nfeltissquare,namespace,,"returns 1 if x is a square in nf (and sets y to a square root if present), else returns 0"
+nfeltmod,10,nfeltmod,namespace,,gives r such that r=x-qy is small with q algebraic integer
+nfeltmul,10,nfeltmul,namespace,,element x.y in nf
+nfeltmulmodpr,10,nfeltmulmodpr,namespace,,"this function is obsolete, use nfmodpr"
+nfeltnorm,10,nfeltnorm,namespace,,norm of x
+nfeltpow,10,nfeltpow,namespace,,element x^k in nf
+nfeltpowmodpr,10,nfeltpowmodpr,namespace,,"this function is obsolete, use nfmodpr"
+nfeltreduce,10,nfeltreduce,namespace,,gives r such that a-r is in the ideal id and r is small
+nfeltreducemodpr,10,nfeltreducemodpr,namespace,,"this function is obsolete, use nfmodpr"
+nfeltsign,10,nfeltsign,namespace,,signs of real embeddings of x at places given by vector pl
+nfelttrace,10,nfelttrace,namespace,,trace of x
+nfeltval,10,nfeltval,namespace,,valuation of element x at the prime pr as output by idealprimedec
+nffactor,10,nffactor,namespace,,factor polynomial T in number field nf
+nffactorback,10,nffactorback,namespace,,"given a factorization f, returns the factored object back as an nf element"
+nffactormod,10,nffactormod,namespace,,"this routine is obsolete, use nfmodpr and factormod"
+nfgaloisapply,10,nfgaloisapply,namespace,,apply the Galois automorphism aut to the object x (element or ideal) in the number field nf
+nfgaloisconj,10,nfgaloisconj,namespace,,list of conjugates of a root of the polynomial x=nf.pol in the same number field
+nfgrunwaldwang,10,nfgrunwaldwang,namespace,,a polynomial in the variable v defining a cyclic extension of nf (given in nf or bnf form) with local behavior prescribe…
+nfhilbert,10,nfhilbert,namespace,,"if pr is omitted, global Hilbert symbol (a,b) in nf, that is 1 if X^2-aY^2-bZ^2 has a nontrivial solution (X,Y,Z) in nf,…"
+nfhnf,10,nfhnf,namespace,,"if x=[A,I], gives a pseudo-basis [B,J] of the module sum A_jI_j"
+nfhnfmod,10,nfhnfmod,namespace,,"if x=[A,I], and detx is a multiple of the ideal determinant of x, gives a pseudo-basis of the module sum A_jI_j"
+nfinit,10,nfinit,namespace,,"pol being a nonconstant irreducible polynomial in Q[X], returns an nf structure attached to the number field Q[X] / (pol…"
+nfisideal,10,nfisideal,namespace,,"true(1) if x is an ideal in the number field nf, false(0) if not"
+nfisincl,10,nfisincl,namespace,,"let f and g define number fields, either irreducible rational polynomials or number fields as output by nfinit; tests wh…"
+nfisisom,10,nfisisom,namespace,,as nfisincl but tests whether f is isomorphic to g
+nfislocalpower,10,nfislocalpower,namespace,,"true(1) if a is an n-th power in the local field K_v, false(0) if not"
+nfkermodpr,10,nfkermodpr,namespace,,"this function is obsolete, use nfmodpr"
+nflist,10,nflist,namespace,,"finds number fields (up to isomorphism) with Galois group of Galois closure isomorphic to G, and s complex places"
+nfmodpr,10,nfmodpr,namespace,,map x to the residue field mod pr
+nfmodprinit,10,nfmodprinit,namespace,,transform the prime ideal pr into modpr format necessary for all operations mod pr in the number field nf
+nfmodprlift,10,nfmodprlift,namespace,,lift x from residue field mod pr to nf
+nfnewprec,10,nfnewprec,namespace,,transform the number field data nf into new data using the current (usually larger) precision
+nfpolsturm,10,nfpolsturm,namespace,,number of distinct real roots of the polynomial s(T) where s runs through the real embeddings given by vector pl
+nfresolvent,10,nfresolvent,namespace,,"In the case where the Galois closure of the number field defined by pol is S3, Dl, A4, S4, F5, A5, M21, or M42, gives th…"
+nfroots,10,nfroots,namespace,,roots of polynomial x belonging to nf (Q if omitted) without multiplicity
+nfrootsof1,10,nfrootsof1,namespace,,number of roots of unity and primitive root of unity in the number field nf
+nfsnf,10,nfsnf,namespace,,"if x=[A,I,J], outputs D=[d_1,...d_n] Smith normal form of x"
+nfsolvemodpr,10,nfsolvemodpr,namespace,,"this function is obsolete, use nfmodpr"
+nfsplitting,10,nfsplitting,namespace,,"defining polynomial S over Q for the splitting field of P, that is the smallest field over which P is totally split"
+nfsubfields,10,nfsubfields,namespace,,finds all subfields of degree d of number field defined by pol (all subfields if d is null or omitted)
+nfsubfieldscm,10,nfsubfieldscm,namespace,,computes the maximal CM subfield of nf
+nfsubfieldsmax,10,nfsubfieldsmax,namespace,,computes the list of maximal subfields of nf
+nfweilheight,10,nfweilheight,namespace,,return the absolute Weil height of the vector v seen as an element of the projective space over the number field nf give…
+polcompositum,10,polcompositum,namespace,,"vector of all possible compositums of the number fields defined by the polynomials P and Q; flag is optional, whose bina…"
+polgalois,10,polgalois,namespace,,Galois group of the polynomial T (see manual for group coding)
+polred,10,polred,namespace,,"deprecated, use polredbest"
+polredabs,10,polredabs,namespace,,"a smallest generating polynomial of the number field for the T2 norm on the roots, with smallest index for the minimal T…"
+polredbest,10,polredbest,namespace,,reduction of the polynomial T (gives minimal polynomials only)
+polredord,10,polredord,namespace,,"this function is obsolete, use polredbest"
+poltschirnhaus,10,poltschirnhaus,namespace,,random Tschirnhausen transformation of the polynomial x
+rnfalgtobasis,10,rnfalgtobasis,namespace,,"relative version of nfalgtobasis, where rnf is a relative numberfield"
+rnfbasis,10,rnfbasis,namespace,,"given a projective Z_K-module M as output by rnfpseudobasis or rnfsteinitz, gives either a basis of M if it is free, or …"
+rnfbasistoalg,10,rnfbasistoalg,namespace,,"relative version of nfbasistoalg, where rnf is a relative numberfield"
+rnfcharpoly,10,rnfcharpoly,namespace,,"characteristic polynomial of a over nf, where a belongs to the algebra defined by T over nf"
+rnfconductor,10,rnfconductor,namespace,,conductor of the Abelian extension of bnf defined by T
+rnfdedekind,10,rnfdedekind,namespace,,"relative Dedekind criterion over the number field K, represented by nf, applied to the order Z_K[X]/(P), modulo the prim…"
+rnfdet,10,rnfdet,namespace,,"given a pseudo-matrix M, compute its determinant"
+rnfdisc,10,rnfdisc,namespace,,"given a polynomial T with coefficients in nf, gives a 2-component vector [D,d], where D is the relative ideal discrimina…"
+rnfeltabstorel,10,rnfeltabstorel,namespace,,transforms the element x from absolute to relative representation
+rnfeltdown,10,rnfeltdown,namespace,,expresses x on the base field if possible; returns an error otherwise
+rnfeltnorm,10,rnfeltnorm,namespace,,"returns the relative norm N_{L/K}(x), as an element of K"
+rnfeltreltoabs,10,rnfeltreltoabs,namespace,,transforms the element x from relative to absolute representation
+rnfelttrace,10,rnfelttrace,namespace,,"returns the relative trace Tr_{L/K}(x), as an element of K"
+rnfeltup,10,rnfeltup,namespace,,expresses x (belonging to the base field) on the relative field
+rnfequation,10,rnfequation,namespace,,"given a pol with coefficients in nf, gives an absolute equation z of the number field defined by pol"
+rnfhnfbasis,10,rnfhnfbasis,namespace,,"given a bnf attached to a number field K and a projective Z_K module M given by a pseudo-matrix, returns either a true H…"
+rnfidealabstorel,10,rnfidealabstorel,namespace,,transforms the ideal x from absolute to relative representation
+rnfidealdown,10,rnfidealdown,namespace,,finds the intersection of the ideal x with the base field
+rnfidealfactor,10,rnfidealfactor,namespace,,factor the ideal x into prime ideals in the number field nfinit(rnf)
+rnfidealhnf,10,rnfidealhnf,namespace,,"relative version of idealhnf, where rnf is a relative numberfield"
+rnfidealmul,10,rnfidealmul,namespace,,"relative version of idealmul, where rnf is a relative numberfield"
+rnfidealnormabs,10,rnfidealnormabs,namespace,,absolute norm of the ideal x
+rnfidealnormrel,10,rnfidealnormrel,namespace,,relative norm of the ideal x
+rnfidealprimedec,10,rnfidealprimedec,namespace,,"return prime ideal decomposition of the maximal ideal pr of K in L/K; pr is also allowed to be a prime number p, in whic…"
+rnfidealreltoabs,10,rnfidealreltoabs,namespace,,transforms the ideal x from relative to absolute representation
+rnfidealtwoelt,10,rnfidealtwoelt,namespace,,"relative version of idealtwoelt, where rnf is a relative numberfield"
+rnfidealup,10,rnfidealup,namespace,,lifts the ideal x (of the base field) to the relative field
+rnfinit,10,rnfinit,namespace,,"T being an irreducible polynomial defined over the number field nf, initializes a vector of data necessary for working i…"
+rnfisabelian,10,rnfisabelian,namespace,,"T being a relative polynomial with coefficients in nf, return 1 if it defines an abelian extension, and 0 otherwise"
+rnfisfree,10,rnfisfree,namespace,,"given a bnf attached to a number field K and a projective Z_K module M given by a pseudo-matrix, return true (1) if M is…"
+rnfislocalcyclo,10,rnfislocalcyclo,namespace,,true(1) if the l-extension attached to rnf is locally cyclotomic (locally contained in the Z_l extension of K_v at all p…
+rnfisnorm,10,rnfisnorm,namespace,,T is as output by rnfisnorminit applied to L/K
+rnfisnorminit,10,rnfisnorminit,namespace,,"let K be defined by a root of pol, L/K the extension defined by polrel"
+rnfkummer,10,rnfkummer,namespace,,this function is deprecated
+rnflllgram,10,rnflllgram,namespace,,"given a pol with coefficients in nf and an order as output by rnfpseudobasis or similar, gives [[neworder],U], where new…"
+rnfnormgroup,10,rnfnormgroup,namespace,,"norm group (or Artin or Takagi group) corresponding to the Abelian extension of bnr.bnf defined by pol, where the module…"
+rnfpolred,10,rnfpolred,namespace,,"given a pol with coefficients in nf, finds a list of relative polynomials defining some subfields, hopefully simpler"
+rnfpolredabs,10,rnfpolredabs,namespace,,"given an irreducible pol with coefficients in nf, finds a canonical relative polynomial defining the same field"
+rnfpolredbest,10,rnfpolredbest,namespace,,"given a pol with coefficients in nf, finds a relative polynomial P defining the same field, hopefully simpler than pol; …"
+rnfpseudobasis,10,rnfpseudobasis,namespace,,"given an irreducible polynomial T with coefficients in nf, returns [A,J,D,d] where [A,J] is a pseudo basis of the maxima…"
+rnfsteinitz,10,rnfsteinitz,namespace,,"given a nf attached to a number field K and a projective module M given by a pseudo-matrix, returns [A,I,D,d] where (A,I…"
+subcyclohminus,10,subcyclohminus,namespace,,Let F be the abelian number field contained in Q(zeta_f) corresponding to the subgroup H of (Z/fZ)^*
+subcycloiwasawa,10,subcycloiwasawa,namespace,,Let F be the abelian number field contained in Q(zeta_f) corresponding to the subgroup H of (Z/fZ)^*
+subcyclopclgp,10,subcyclopclgp,namespace,,Let F be the abelian number field contained in Q(zeta_f) corresponding to the subgroup H of (Z/fZ)^*
+subgrouplist,10,subgrouplist,namespace,,"cyc being any object which has a '.cyc' method giving the cyclic components for a finite Abelian group G, outputs the li…"
+algadd,11,algadd,namespace,,element x+y in al (Hamilton quaternions if omitted)
+algalgtobasis,11,algalgtobasis,namespace,,transforms the element x of the algebra al into a column vector on the integral basis of al
+algaut,11,algaut,namespace,,the stored automorphism of the splitting field of the cyclic algebra al
+algb,11,algb,namespace,,the element b of the center of the cyclic algebra al used to define it
+algbasis,11,algbasis,namespace,,basis of the stored order of the central simple algebra al
+algbasistoalg,11,algbasistoalg,namespace,,transforms the column vector x on the integral basis of al into an element of al in algebraic form
+algcenter,11,algcenter,namespace,,center of the algebra al
+algcentralproj,11,algcentralproj,namespace,,projections of the algebra al on the orthogonal central idempotents z[i]
+algchar,11,algchar,namespace,,characteristic of the algebra al
+algcharpoly,11,algcharpoly,namespace,,"(reduced) characteristic polynomial of b in al (Hamilton quaternions if omitted), with respect to the variable v"
+algdegree,11,algdegree,namespace,,degree of the central simple algebra al
+algdim,11,algdim,namespace,,dimension of the algebra al
+algdisc,11,algdisc,namespace,,discriminant of the stored order of the algebra al
+algdivl,11,algdivl,namespace,,element x\y in al (Hamilton quaternions if omitted)
+algdivr,11,algdivr,namespace,,element x/y in al (Hamilton quaternions if omitted)
+alggroup,11,alggroup,namespace,,constructs the group algebra of gal over Q (resp
+alggroupcenter,11,alggroupcenter,namespace,,constructs the center of the group algebra of gal over Q (resp
+alghasse,11,alghasse,namespace,,the hasse invariant of the central simple algebra al at the place pl
+alghassef,11,alghassef,namespace,,the hasse invariant of the central simple algebra al at finite places
+alghassei,11,alghassei,namespace,,the hasse invariant of the central simple algebra al at infinite places
+algindex,11,algindex,namespace,,the index of the central simple algebra al
+alginit,11,alginit,namespace,,"initializes the central simple algebra defined by data B, C"
+alginv,11,alginv,namespace,,element 1/x in al (Hamilton quaternions if omitted)
+alginvbasis,11,alginvbasis,namespace,,basis of the natural order of the central simple algebra al in terms of the stored order
+algisassociative,11,algisassociative,namespace,,"true (1) if the multiplication table mt is suitable for algtableinit(mt,p), false (0) otherwise"
+algiscommutative,11,algiscommutative,namespace,,test whether the algebra al is commutative
+algisdivision,11,algisdivision,namespace,,tests whether the central simple algebra al is a division algebra
+algisdivl,11,algisdivl,namespace,,tests whether y is left divisible by x and sets z to the left quotient x\y
+algisinv,11,algisinv,namespace,,tests whether x is invertible in al (Hamilton quaternions if omitted) and sets ix to the inverse of x
+algisramified,11,algisramified,namespace,,"tests whether the central simple algebra al is ramified, i.e"
+algissemisimple,11,algissemisimple,namespace,,test whether the algebra al is semisimple
+algissimple,11,algissimple,namespace,,test whether the algebra al is simple
+algissplit,11,algissplit,namespace,,"tests whether the central simple algebra al is split, i.e"
+alglatadd,11,alglatadd,namespace,,the sum of the lattices lat1 and lat2
+alglatcontains,11,alglatcontains,namespace,,tests whether the lattice lat contains the element x
+alglatelement,11,alglatelement,namespace,,returns the element of al whose coordinates on the Z-basis of lat are c
+alglathnf,11,alglathnf,namespace,,"the lattice generated by the columns of m, assuming that this lattice contains d times the integral basis of al"
+alglatindex,11,alglatindex,namespace,,the generalized index (lat2:lat1)
+alglatinter,11,alglatinter,namespace,,the intersection of the lattices lat1 and lat2
+alglatlefttransporter,11,alglatlefttransporter,namespace,,the set of x in al such that x*lat1 is contained in lat2
+alglatmul,11,alglatmul,namespace,,the lattice generated by the products of elements of lat1 and lat2
+alglatrighttransporter,11,alglatrighttransporter,namespace,,the set of x in al such that lat1*x is contained in lat2
+alglatsubset,11,alglatsubset,namespace,,"tests whether lat1 is contained in lat2 and if true and ptindex is present, sets it to the index (lat2:lat1)"
+algmakeintegral,11,algmakeintegral,namespace,,computes an integral multiplication table for an isomorphic algebra
+algmul,11,algmul,namespace,,element x*y in al (Hamilton quaternions if omitted)
+algmultable,11,algmultable,namespace,,multiplication table of al over its prime subfield
+algneg,11,algneg,namespace,,element -x in al (Hamilton quaternions if omitted)
+algnorm,11,algnorm,namespace,,(reduced) norm of x
+algpoleval,11,algpoleval,namespace,,T in K[X] evaluate T(b) in al (Hamilton quaternions if omitted)
+algpow,11,algpow,namespace,,element x^n in al (Hamilton quaternions if omitted)
+algprimesubalg,11,algprimesubalg,namespace,,"prime subalgebra of the positive characteristic, semisimple algebra al"
+algquotient,11,algquotient,namespace,,quotient of the algebra al by the two-sided ideal I
+algradical,11,algradical,namespace,,Jacobson radical of the algebra al
+algramifiedplaces,11,algramifiedplaces,namespace,,vector of the places of the center of al that ramify in al
+algrandom,11,algrandom,namespace,,"random element in al (Hamilton quaternions if omitted) with coefficients in [-b,b]"
+algrelmultable,11,algrelmultable,namespace,,multiplication table of the central simple algebra al over its center
+algsimpledec,11,algsimpledec,namespace,,"[J,dec] where J is the Jacobson radical of al and dec is the decomposition into simple algebras of the semisimple algebr…"
+algsplit,11,algsplit,namespace,,computes an isomorphism between al and M_d(F_q)
+algsplittingdata,11,algsplittingdata,namespace,,data stored in the central simple algebra al to compute a splitting of al over an extension
+algsplittingfield,11,algsplittingfield,namespace,,the stored splitting field of the central simple algebra al
+algsqr,11,algsqr,namespace,,element x^2 in al (Hamilton quaternions if omitted)
+algsub,11,algsub,namespace,,element x-y in al (Hamilton quaternions if omitted)
+algsubalg,11,algsubalg,namespace,,subalgebra of al with basis B
+algtableinit,11,algtableinit,namespace,,initializes the associative algebra over Q (resp
+algtensor,11,algtensor,namespace,,tensor product of al1 and al2
+algtomatrix,11,algtomatrix,namespace,,left multiplication table of x (table algebra or abs=1) or image of x under a splitting of al (CSA and abs=0)
+algtrace,11,algtrace,namespace,,(reduced) trace of x
+algtype,11,algtype,namespace,,type of the algebra al
+ell2cover,12,ell2cover,namespace,,"if E is an elliptic curve over Q, returns a basis of the set of everywhere locally soluble 2-covers of the curve E"
+elladd,12,elladd,namespace,,sum of the points z1 and z2 on elliptic curve E
+ellak,12,ellak,namespace,,computes the n-th Fourier coefficient of the L-function of the elliptic curve E (assumes E is an integral model)
+ellan,12,ellan,namespace,,computes the first n Fourier coefficients of the L-function of the elliptic curve E defined over a number field
+ellanalyticrank,12,ellanalyticrank,namespace,,returns the order of vanishing at s=1 of the L-function of the elliptic curve E and the value of the first nonzero deriv…
+ellap,12,ellap,namespace,,"given an elliptic curve E defined over a finite field Fq, return the trace of Frobenius a_p = q+1-#E(Fq); for other fiel…"
+ellbil,12,ellbil,namespace,,"deprecated alias for ellheight(E,P,Q)"
+ellbsd,12,ellbsd,namespace,,"E being an elliptic curve over a number field, returns a real number c such that the BSD conjecture predicts that lfun(E…"
+ellcard,12,ellcard,namespace,,"given an elliptic curve E defined over a finite field Fq, return the order of the group E(Fq); for other fields of defin…"
+ellchangecurve,12,ellchangecurve,namespace,,"change data on elliptic curve according to v=[u,r,s,t]"
+ellchangepoint,12,ellchangepoint,namespace,,"change data on point or vector of points x on an elliptic curve according to v=[u,r,s,t]"
+ellchangepointinv,12,ellchangepointinv,namespace,,"change data on point or vector of points x on an elliptic curve according to v=[u,r,s,t], inverse of ellchangepoint"
+ellconvertname,12,ellconvertname,namespace,,"convert an elliptic curve name (as found in the elldata database) from a string to a triplet [conductor, isogeny class, …"
+elldivpol,12,elldivpol,namespace,,n-division polynomial f_n for the curve E in the variable v
+elleisnum,12,elleisnum,namespace,,"k being an even positive integer, computes the numerical value of the Eisenstein series of weight k at the lattice w, as…"
+elleta,12,elleta,namespace,,"w=[w1,w2], returns the vector [eta1,eta2] of quasi-periods attached to [w1,w2]"
+ellformaldifferential,12,ellformaldifferential,namespace,,"E elliptic curve, n integer"
+ellformalexp,12,ellformalexp,namespace,,"E elliptic curve, returns n terms of the formal elliptic exponential on E as a series in z"
+ellformallog,12,ellformallog,namespace,,"E elliptic curve, returns n terms of the elliptic logarithm as a series of t =-x/y"
+ellformalpoint,12,ellformalpoint,namespace,,"E elliptic curve, n integer; return the coordinates [x(t), y(t)] on the elliptic curve as a formal expansion in the form…"
+ellformalw,12,ellformalw,namespace,,"E elliptic curve, n integer; returns n terms of the formal expansion of w = -1/y in the formal parameter t = -x/y"
+ellfromeqn,12,ellfromeqn,namespace,,"given a genus 1 plane curve, defined by the affine equation f(x,y) = 0, return the coefficients [a1,a2,a3,a4,a6] of a We…"
+ellfromj,12,ellfromj,namespace,,"returns the coefficients [a1,a2,a3,a4,a6] of a fixed elliptic curve with j-invariant j"
+ellgenerators,12,ellgenerators,namespace,,"if E is an elliptic curve over the rationals, return the generators of the Mordell-Weil group attached to the curve"
+ellglobalred,12,ellglobalred,namespace,,"E being an elliptic curve over a number field, returns [N, v, c, faN, L], where N is the conductor of E, c is the produc…"
+ellgroup,12,ellgroup,namespace,,"given an elliptic curve E defined over a finite field Fq, returns the structure of the group E(Fq); for other fields of …"
+ellheegner,12,ellheegner,namespace,,return a rational nontorsion point on the elliptic curve E assumed to be of rank 1
+ellheight,12,ellheight,namespace,,"Faltings height of the curve E, resp"
+ellheightmatrix,12,ellheightmatrix,namespace,,gives the height matrix for vector of points x on elliptic curve E
+ellidentify,12,ellidentify,namespace,,"look up the elliptic curve E in the elldata database and return [[N, M, ...], C] where N is the name of the curve in Cre…"
+ellinit,12,ellinit,namespace,,"let x be a vector [a1,a2,a3,a4,a6], or [a4,a6] if a1=a2=a3=0, defining the curve Y^2 + a1.XY + a3.Y = X^3 + a2.X^2 + a4.…"
+ellintegralmodel,12,ellintegralmodel,namespace,,"given an elliptic curve E defined over a number field or Qp, returns an integral model"
+elliscm,12,elliscm,namespace,,"return 0 if the elliptic curve E, defined over a number field, is not CM, otherwise return the discriminant of its endom…"
+ellisdivisible,12,ellisdivisible,namespace,,"given E/K and P in E(K), checks whether P = [n]R for some R in E(K) and sets Q to one such R if so; the integer n >= 0 m…"
+ellisisom,12,ellisisom,namespace,,"return 0 if the elliptic curves E and F defined over the same number field are not isomorphic, otherwise return [u,r,s,t…"
+ellisogeny,12,ellisogeny,namespace,,compute the image and isogeny corresponding to the quotient of E by the subgroup G
+ellisogenyapply,12,ellisogenyapply,namespace,,"given an isogeny f and g either a point P (in the domain of f) or an isogeny, apply f to g: return the image of P under …"
+ellisomat,12,ellisomat,namespace,,"E being an elliptic curve over a number field K, returns a list of representatives of the isomorphism classes of ellipti…"
+ellisoncurve,12,ellisoncurve,namespace,,"true(1) if z is on elliptic curve E, false(0) if not"
+ellisotree,12,ellisotree,namespace,,"E being an elliptic curve over Q or a set of isogenous rational curves as given by ellisomat, return minimal models of t…"
+ellissupersingular,12,ellissupersingular,namespace,,"return 1 if the elliptic curve E, defined over a number field or a finite field, is supersingular at p, and 0 otherwise"
+ellj,12,ellj,namespace,,elliptic j invariant of x
+ellL1,12,ell_l1,namespace,renamed for PEP 8,returns the value at s=1 of the derivative of order r of the L-function of the elliptic curve E
+elllocalred,12,elllocalred,namespace,,"E being an elliptic curve, returns [f,kod,[u,r,s,t],c], where f is the conductor's exponent, kod is the Kodaira type for…"
+elllog,12,elllog,namespace,,return the discrete logarithm of the point P of the elliptic curve E in base G
+elllseries,12,elllseries,namespace,,"L-series at s of the elliptic curve E, where A a cut-off point close to 1"
+ellmaninconstant,12,ellmaninconstant,namespace,,let E be an elliptic curve over Q given by ellinit or a rational isogeny class given by ellisomat
+ellminimaldisc,12,ellminimaldisc,namespace,,"E being an elliptic curve defined over a number field output by ellinit, return the minimal discriminant ideal of E"
+ellminimalmodel,12,ellminimalmodel,namespace,,determines whether the elliptic curve E defined over a number field admits a global minimal model
+ellminimaltwist,12,ellminimaltwist,namespace,,"E being an elliptic curve defined over Q, return a discriminant D such that the twist of E by D is minimal among all pos…"
+ellmoddegree,12,ellmoddegree,namespace,,"e being an elliptic curve defined over Q output by ellinit, compute the modular degree of e divided by the square of the…"
+ellmodulareqn,12,ellmodulareqn,namespace,,"given a prime N < 500, return a vector [P, t] where P(x,y) is a modular equation of level N"
+ellmul,12,ellmul,namespace,,n times the point z on elliptic curve E (n in Z)
+ellneg,12,ellneg,namespace,,opposite of the point z on elliptic curve E
+ellnonsingularmultiple,12,ellnonsingularmultiple,namespace,,"given E/Q and P in E(Q), returns the pair [R,n] where n is the least positive integer such that R = [n]P has everywhere …"
+ellorder,12,ellorder,namespace,,"order of the point z on the elliptic curve E over a number field or a finite field, 0 if nontorsion"
+ellordinate,12,ellordinate,namespace,,y-coordinates corresponding to x-ordinate x on elliptic curve E
+ellpadicbsd,12,ellpadicbsd,namespace,,"returns [r,Lp] where r is the (conjectural) analytic rank of the p-adic L-function attached to the quadratic twist E_D a…"
+ellpadicfrobenius,12,ellpadicfrobenius,namespace,,matrix of the Frobenius at p>2 in the standard basis of H^1_dR(E) to absolute p-adic precision p^n
+ellpadicheight,12,ellpadicheight,namespace,,"E elliptic curve/Q, P in E(Q), p prime, n an integer; returns the cyclotomic p-adic heights of P"
+ellpadicheightmatrix,12,ellpadicheightmatrix,namespace,,gives the height-pairing matrix for vector of points Q on elliptic curve E
+ellpadicL,12,ellpadic_l,namespace,renamed for PEP 8,"returns the value on a character of Z_{p}^* represented by an integer s or a vector [s1,s2] of the derivative of order r…"
+ellpadiclambdamu,12,ellpadiclambdamu,namespace,,"returns the Iwasawa invariants for the p-adic L-function attached to E, twisted by (D,.) and the i-th power of the Teich…"
+ellpadiclog,12,ellpadiclog,namespace,,returns the logarithm of P (in the kernel of reduction) to relative p-adic precision p^n
+ellpadicregulator,12,ellpadicregulator,namespace,,"E elliptic curve/Q, S a vector of points in E(Q), p prime, n an integer; returns the p-adic cyclotomic regulator of the …"
+ellpadics2,12,ellpadics2,namespace,,returns s2 to absolute p-adic precision p^n
+ellperiods,12,ellperiods,namespace,,"w describes a complex period lattice ([w1,w2] or an ellinit structure)"
+ellpointtoz,12,ellpointtoz,namespace,,lattice point z corresponding to the point P on the elliptic curve E
+ellpow,12,ellpow,namespace,,deprecated alias for ellmul
+ellrank,12,ellrank,namespace,,"if E is an elliptic curve over Q, attempts to compute the Mordell-Weil group attached to the curve"
+ellrankinit,12,ellrankinit,namespace,,"if E is an elliptic curve over Q, initialize data for further calls to ellrank"
+ellratpoints,12,ellratpoints,namespace,,"E being an rational model of an elliptic curve, return a vector containing the affine rational points on the curve of na…"
+ellrootno,12,ellrootno,namespace,,"root number for the L-function of the elliptic curve E/Q at a prime p (including 0, for the infinite place); global root…"
+ellsaturation,12,ellsaturation,namespace,,let E be an elliptic curve over Q and V be a vector of independent rational points on E of infinite order that generate …
+ellsea,12,ellsea,namespace,,"computes the order of the group E(Fq) for the elliptic curve E, defined over a finite field, using SEA algorithm, with e…"
+ellsearch,12,ellsearch,namespace,,"returns all curves in the elldata database matching constraint N: given name (N = ""11a1"" or [11,0,1]), given isogeny cla…"
+ellsigma,12,ellsigma,namespace,,"computes the value at z of the Weierstrass sigma function attached to the lattice L, as given by ellperiods(,1)"
+ellsub,12,ellsub,namespace,,difference of the points z1 and z2 on elliptic curve E
+ellsupersingularj,12,ellsupersingularj,namespace,,"return a random supersingular j-invariant defined over F_p^2 if p is prime number, over the (finite) field of definition…"
+elltamagawa,12,elltamagawa,namespace,,"E being an elliptic curve over a number field, returns the global Tamagawa number of the curve"
+elltaniyama,12,elltaniyama,namespace,,modular parametrization of elliptic curve E/Q
+elltatepairing,12,elltatepairing,namespace,,computes the Tate pairing of the two points P and Q on the elliptic curve E
+elltors,12,elltors,namespace,,"torsion subgroup of elliptic curve E: order, structure, generators"
+elltrace,12,elltrace,namespace,,sum of the Galois conjugates of the point P on elliptic curve E
+elltwist,12,elltwist,namespace,,returns an ell structure for the twist of the elliptic curve E by the quadratic extension defined by P (when P is a poly…
+ellweilcurve,12,ellweilcurve,namespace,,let E be an elliptic curve over Q given by ellinit or a rational isogeny class given by ellisomat
+ellweilpairing,12,ellweilpairing,namespace,,computes the Weil pairing of the two points of m-torsion P and Q on the elliptic curve E
+ellwp,12,ellwp,namespace,,"computes the value at z of the Weierstrass P function attached to the lattice w, as given by ellperiods"
+ellxn,12,ellxn,namespace,,"return polynomials [A,B] in the variable v such that x([n]P) = (A/B)(t) for any P = [t,u] on E outside of n-torsion"
+ellzeta,12,ellzeta,namespace,,"computes the value at z of the Weierstrass Zeta function attached to the lattice w, as given by ellperiods(,1)"
+ellztopoint,12,ellztopoint,namespace,,inverse of ellpointtoz
+genus2igusa,12,genus2igusa,namespace,,"let PQ be a polynomial P, resp"
+genus2red,12,genus2red,namespace,,"let PQ be a polynomial P, resp"
+hyperellchangecurve,12,hyperellchangecurve,namespace,,"C being a nonsingular hyperelliptic model of a curve, apply the change of coordinate given by m"
+hyperellcharpoly,12,hyperellcharpoly,namespace,,"X being a nonsingular hyperelliptic curve defined over a finite field, return the characteristic polynomial of the Frobe…"
+hyperelldisc,12,hyperelldisc,namespace,,"X being a nonsingular hyperelliptic model of a curve, defined over a field of characteristic distinct from 2, returns it…"
+hyperellisoncurve,12,hyperellisoncurve,namespace,,"X being a nonsingular hyperelliptic model of a curve, test whether the point p is on the curve"
+hyperellminimaldisc,12,hyperellminimaldisc,namespace,,"C being a nonsingular integral hyperelliptic model of a curve, return the minimal discrminant of an integral model of C"
+hyperellminimalmodel,12,hyperellminimalmodel,namespace,,"C being a nonsingular integral hyperelliptic model of a curve, return an integral model of C with minimal discriminant"
+hyperellordinate,12,hyperellordinate,namespace,,y-coordinates corresponding to x-ordinate x on hyperelliptic curve H
+hyperellpadicfrobenius,12,hyperellpadicfrobenius,namespace,,"Q being a rational polynomial of degree d and X being the curve defined by y^2=Q(x), return the matrix of the Frobenius …"
+hyperellratpoints,12,hyperellratpoints,namespace,,"X being a nonsingular hyperelliptic curve given by an rational model, return a vector containing the affine rational poi…"
+hyperellred,12,hyperellred,namespace,,"C being a nonsingular integral hyperelliptic model of a curve, return an integral model of C with the same discriminant …"
+lfun,13,lfun,namespace,,"compute the L-function value L(s), or if D is set, the derivative of order D at s"
+lfunan,13,lfunan,namespace,,"compute the first n terms of the Dirichlet series attached to the L-function given by L (Lmath, Ldata or Linit)"
+lfunartin,13,lfunartin,namespace,,returns the Ldata structure attached to the Artin L-function provided by the representation rho of the Galois group of t…
+lfuncheckfeq,13,lfuncheckfeq,namespace,,"given an L-function (Lmath, Ldata or Linit), check whether the functional equation is satisfied"
+lfunconductor,13,lfunconductor,namespace,,"gives the conductor of the given L-function, expecting to find it in the interval [1,setN]"
+lfuncost,13,lfuncost,namespace,,"estimate the cost of running lfuninit(L,sdom,der) at current bit precision"
+lfuncreate,13,lfuncreate,namespace,,"given either an object such as a polynomial, elliptic curve, Dirichlet or Hecke character, eta quotient, etc., or an exp…"
+lfundiv,13,lfundiv,namespace,,creates the Ldata structure (without initialization) corresponding to the quotient of the Dirichlet series given by L1 a…
+lfundual,13,lfundual,namespace,,creates the Ldata structure (without initialization) corresponding to the dual L-function of L
+lfunetaquo,13,lfunetaquo,namespace,,"returns the Ldata structure attached to the modular form z->prod(i=1,#M[,1],eta(M[i,1]*z)^M[i,2])"
+lfuneuler,13,lfuneuler,namespace,,"return the Euler factor at p of the L-function given by L (Lmath, Ldata or Linit) assuming the L-function admits an Eule…"
+lfungenus2,13,lfungenus2,namespace,,returns the Ldata structure attached to the L-function attached to the genus-2 curve defined by y^2=F(x) or y^2+Q(x)*y=P…
+lfunhardy,13,lfunhardy,namespace,,"variant of the Hardy L-function attached to L, used for plotting on the critical line"
+lfuninit,13,lfuninit,namespace,,"precompute data for evaluating the L-function given by 'L' (and its derivatives of order der, if set) in rectangular dom…"
+lfunlambda,13,lfunlambda,namespace,,"compute the completed L function Lambda(s), or if D is set, the derivative of order D at s"
+lfunmfspec,13,lfunmfspec,namespace,,"L corresponding to a modular eigenform, returns [ve,vo,om,op] in even weight, where ve (resp., vo) is the vector of even…"
+lfunmul,13,lfunmul,namespace,,creates the Ldata structure (without initialization) corresponding to the product of the Dirichlet series given by L1 an…
+lfunorderzero,13,lfunorderzero,namespace,,computes the order of the possible zero of the L-function at the center k/2 of the critical strip
+lfunparams,13,lfunparams,namespace,,"returns the parameters [N, k, vga] of the L-function defined by ldata (see lfuncreate)"
+lfunqf,13,lfunqf,namespace,,returns the Ldata structure attached to the theta function of the lattice attached to the definite positive quadratic fo…
+lfunrootres,13,lfunrootres,namespace,,"given the Ldata attached to an L-function (or the output of lfunthetainit), compute the root number and the residues"
+lfunshift,13,lfunshift,namespace,,creates the Ldata structure (without initialization) corresponding to the function Ld such that Ld(s) = L(s-d)
+lfunsympow,13,lfunsympow,namespace,,returns the Ldata structure attached to the L-function attached to m-th symmetric power of the elliptic curve E defined …
+lfuntheta,13,lfuntheta,namespace,,compute the value of the m-th derivative at t of the theta function attached to the L-function given by data
+lfunthetacost,13,lfunthetacost,namespace,,"estimates the cost of running lfunthetainit(L,tdom,m) at current bit precision"
+lfunthetainit,13,lfunthetainit,namespace,,precompute data for evaluating the m-th derivative of theta functions with argument in domain tdom (by default t is real…
+lfuntwist,13,lfuntwist,namespace,,creates the Ldata structure (without initialization) corresponding to the twist of L by the primitive character attached…
+lfunzeros,13,lfunzeros,namespace,,"lim being either an upper limit or a real interval, computes an ordered list of zeros of L(s) on the critical line up to…"
+hgmalpha,14,hgmalpha,namespace,,returns the alpha and beta parameters of the hypergeometric motive template H
+hgmbydegree,14,hgmbydegree,namespace,,"outputs [L(0),...,L(n-1)] where L(w) is the list of cyclotomic parameters of all possible hypergeometric motive template…"
+hgmcoef,14,hgmcoef,namespace,,"(H,t) being a hypergeometric motive, returns the n-th coefficient of its L-function"
+hgmcoefs,14,hgmcoefs,namespace,,"(H,t) being a hypergeometric motive, returns the first n coefficients of its L-function, where Euler factors at wild pri…"
+hgmcyclo,14,hgmcyclo,namespace,,"returns the cyclotomic parameters (D,E) of the hypergeometric motive template H"
+hgmeulerfactor,14,hgmeulerfactor,namespace,,"(H,t) being a hypergeometric motive, returns the Euler factor P_p at the prime p; if present, set e to the valuation of …"
+hgmgamma,14,hgmgamma,namespace,,returns the gamma vector of the hypergeometric motive template H
+hgminit,14,hgminit,namespace,,Create the template for a hypergeometric motive with parameters a and possibly b
+hgmissymmetrical,14,hgmissymmetrical,namespace,,is the hypergeometric motive template H symmetrical at t=1?
+hgmparams,14,hgmparams,namespace,,"H being a hypergeometric motive template, returns [d, w, [P, T], M], where d is the degree, w the weight, P the Hodge po…"
+hgmtwist,14,hgmtwist,namespace,,twist by 1/2 of alpha and beta of the hypergeometric motive template H
+lfunhgm,14,lfunhgm,namespace,,"(H,t) being a hypergeometric motive, returns the corresponding lfuncreate data for use with the L function package"
+lfunmf,15,lfunmf,namespace,,"If F is a modular form in mf, output the L-functions corresponding to its complex embeddings"
+mfatkin,15,mfatkin,namespace,,"Given an mfatk output by mfatk = mfatkininit(mf,Q) and a modular form f belonging to the space mf, returns the modular f…"
+mfatkineigenvalues,15,mfatkineigenvalues,namespace,,"given a modular form space mf and a primitive divisor Q of the level of mf, outputs the corresponding Atkin-Lehner eigen…"
+mfatkininit,15,mfatkininit,namespace,,"initializes data necessary for working with Atkin--Lehner operators W_Q, for now only the function mfatkin"
+mfbasis,15,mfbasis,namespace,,"If NK=[N,k,CHI] as in mfinit, gives a basis of the corresponding subspace of M_k(G_0(N),CHI)"
+mfbd,15,mfbd,namespace,,"F being a generalized modular form, return B(d)(F), where B(d) is the expanding operator tau -> d tau"
+mfbracket,15,mfbracket,namespace,,compute the m-th Rankin-Cohen bracket of the generalized modular forms F and G
+mfcoef,15,mfcoef,namespace,,Compute the n-th Fourier coefficient a(n) of the generalized modular form F
+mfcoefs,15,mfcoefs,namespace,,"Compute the vector of coefficients [a[0],a[d],...,a[nd]] of the modular form F"
+mfconductor,15,mfconductor,namespace,,"mf being output by mfinit and F a modular form, gives the smallest level at which F is defined"
+mfcosets,15,mfcosets,namespace,,"list of right cosets of G_0(N)\G, i.e., matrices g_j in G such that G = U G_0(N) g_j"
+mfcuspisregular,15,mfcuspisregular,namespace,,"In the space defined by NK = [N,k,CHI] or NK = mf, determine if cusp in canonical format (oo or denominator dividing N) …"
+mfcusps,15,mfcusps,namespace,,list of cusps of G_0(N) in the form a/b with b dividing N
+mfcuspval,15,mfcuspval,namespace,,"valuation of modular form F in the space mf at cusp, which can be either oo or any rational number"
+mfcuspwidth,15,mfcuspwidth,namespace,,width of cusp in Gamma_0(N)
+mfDelta,15,mf_delta,namespace,renamed for PEP 8,mf corresponding to the Ramanujan Delta function
+mfderiv,15,mfderiv,namespace,,"m-th formal derivative of the power series corresponding to the generalized modular form F, with respect to the differen…"
+mfderivE2,15,mfderiv_e2,namespace,renamed for PEP 8,"compute the Serre derivative (q.d/dq)F - kE_2F/12 of the generalized modular form F of weight k; and if m > 1, the m-th …"
+mfdescribe,15,mfdescribe,namespace,,"gives a human-readable description of F, which is either a modular form space or a modular form"
+mfdim,15,mfdim,namespace,,"If NK=[N,k,CHI] as in mfinit, gives the dimension of the corresponding subspace of M_k(G_0(N),chi)"
+mfdiv,15,mfdiv,namespace,,compute F/G for two modular forms F and G assuming that the quotient will not have poles at infinity
+mfEH,15,mf_eh,namespace,renamed for PEP 8,"k>0 being in 1/2+Z, mf corresponding to the Cohen-Eisenstein series H_k of weight k on G_0(4)"
+mfeigenbasis,15,mfeigenbasis,namespace,,vector of the eigenforms for the space mf
+mfeigensearch,15,mfeigensearch,namespace,,search for normalized rational eigen cuspforms with quadratic characters given a few initial coefficients
+mfeisenstein,15,mfeisenstein,namespace,,"create the Eisenstein E_k(CHI1,CHI2), where an omitted character is considered as trivial"
+mfEk,15,mf_ek,namespace,renamed for PEP 8,mf corresponding to the standard Eisenstein series E_k for nonnegative even integer k
+mfembed,15,mfembed,namespace,,"if v is omitted, f must be a modular form or a modular form space with parameters [N,k,chi] and we return a vector of co…"
+mfeval,15,mfeval,namespace,,computes the numerical value of the modular form F at the point vtau or the vector vtau of points in the completed upper…
+mffields,15,mffields,namespace,,"If mf is output by mfinit, gives the vector of polynomials defining each Galois orbit of the new space"
+mffromell,15,mffromell,namespace,,"E being an elliptic curve defined over Q given by an integral model in ellinit format, computes a 3-component vector [mf…"
+mffrometaquo,15,mffrometaquo,namespace,,modular form corresponding to the eta quotient matrix eta
+mffromlfun,15,mffromlfun,namespace,,"L being an L-function representing a self-dual modular form, return [NK,space,v] where mf=mfinit(NK,space) contains the …"
+mffromqf,15,mffromqf,namespace,,"Q being an even positive definite quadratic form and P a homogeneous spherical polynomial for Q, computes a 3-component …"
+mfgaloisprojrep,15,mfgaloisprojrep,namespace,,"mf being an mf output by mfinit in weight 1, and F an eigenform, returns a polynomial defining the field fixed by the ke…"
+mfgaloistype,15,mfgaloistype,namespace,,"NK being either [N,1,CHI] or an mf output by mfinit in weight 1 , gives the vector of types of Galois representations at…"
+mfhecke,15,mfhecke,namespace,,"F being a modular form in space mf, returns T(n)F, where T(n) is the n-th Hecke operator"
+mfheckemat,15,mfheckemat,namespace,,"if vecn is an integer, matrix of the Hecke operator T(n) on the basis formed by mfbasis(mf), if it is a vector, vector o…"
+mfinit,15,mfinit,namespace,,Create the space of modular forms corresponding to the data contained in NK and space
+mfisCM,15,mfis_cm,namespace,renamed for PEP 8,Tests whether the eigenform F is a CM form
+mfisequal,15,mfisequal,namespace,,Checks whether the modular forms F and G are equal
+mfisetaquo,15,mfisetaquo,namespace,,"if the generalized modular form f is a holomorphic eta quotient, return the eta quotient matrix, else return 0"
+mfkohnenbasis,15,mfkohnenbasis,namespace,,"mf being a cuspidal space of half-integral weight k >= 3/2, gives a basis B of the Kohnen + space of mf as a matrix whos…"
+mfkohnenbijection,15,mfkohnenbijection,namespace,,"mf being a cuspidal space of half-integral weight returns [mf2,M,K,shi], where M is a matrix giving a Hecke-module isomo…"
+mfkohneneigenbasis,15,mfkohneneigenbasis,namespace,,"mf being a cuspidal space of half-integral weight k >= 3/2 and bij being the output of mfkohnenbijection(mf), outputs a …"
+mflinear,15,mflinear,namespace,,"vF being a vector of modular forms and v a vector of coefficients of same length, compute the linear combination of the …"
+mfmanin,15,mfmanin,namespace,,"Given the modular symbol FS associated to an eigenform F by mfsymbol(mf,F), computes the even and odd special polynomial…"
+mfmul,15,mfmul,namespace,,Multiply the two forms F and G
+mfnumcusps,15,mfnumcusps,namespace,,number of cusps of Gamma_0(N)
+mfparams,15,mfparams,namespace,,"If F is a modular form space, returns [N,k,CHI,space,Phi]: level, weight, character, and space code; where Phi is the cy…"
+mfperiodpol,15,mfperiodpol,namespace,,"period polynomial of the cuspidal part of the form f, in other words integral from 0 to ioo of (X-tau)^(k-2)f(tau)"
+mfperiodpolbasis,15,mfperiodpolbasis,namespace,,basis of period polynomials for weight k
+mfpetersson,15,mfpetersson,namespace,,"Petersson scalar product of the modular forms f and g belonging to the same modular form space mf, given by the correspo…"
+mfpow,15,mfpow,namespace,,compute F^n
+mfsearch,15,mfsearch,namespace,,"NK being of the form [N,k] with k possibly half-integral, search for a modular form with rational coefficients, of weigh…"
+mfshift,15,mfshift,namespace,,Divide the form F by q^s omitting the remainder if there is one; s can be negative
+mfshimura,15,mfshimura,namespace,,"F being a modular form of half-integral weight k >= 3/2 and D a positive squarefree integer, computes the Shimura lift G…"
+mfslashexpansion,15,mfslashexpansion,namespace,,"g being in M_2^+(Q), computes the Fourier expansion of f|_k g to n terms"
+mfspace,15,mfspace,namespace,,"identify the modular space mf, resp"
+mfsplit,15,mfsplit,namespace,,"mf containing the new space split the new space into Galois orbits of eigenforms of the newspace and return [vF,vK], whe…"
+mfsturm,15,mfsturm,namespace,,"Sturm bound for modular forms on G_0(N) and weight k, i.e., an upper bound for the order of the zero at infinity of a no…"
+mfsymbol,15,mfsymbol,namespace,,Initialize data for working with all period polynomials of the modular form f: this is essential for efficiency for func…
+mfsymboleval,15,mfsymboleval,namespace,,"evaluation of the modular symbol fs output by mfsymbol on the given path, where path is either a vector [s1,s2] or an in…"
+mftaylor,15,mftaylor,namespace,,"F being a modular form in M_k(SL_2(Z)), computes the first n+1 canonical Taylor expansion of F around tau=I"
+mfTheta,15,mf_theta,namespace,renamed for PEP 8,"the unary theta function corresponding to the primitive Dirichlet character psi, hence of weight 1/2 if psi is even, of …"
+mftobasis,15,mftobasis,namespace,,coefficients of the form F on the basis given by the mfbasis(mf)
+mftocoset,15,mftocoset,namespace,,"M being a matrix in SL_2(Z) and Lcosets being mfcosets(N), find the right coset of G_0(N) to which M belongs"
+mftonew,15,mftonew,namespace,,"mf being a full or cuspidal space with parameters [N,k,chi] and F a cusp form in that space, returns a vector of 3-compo…"
+mftraceform,15,mftraceform,namespace,,"If NK=[N,k,CHI,.] as in mfinit with k integral, gives the trace form in the corresponding subspace of S_k(G_0(N),chi)"
+mftwist,15,mftwist,namespace,,"returns the twist of the form F by the integer D, i.e., the form G such that mfcoef(G,n)=(D/n)mfcoef(F,n), where (D/n) i…"
+msatkinlehner,16,msatkinlehner,namespace,,"M being a full modular symbol space of level N, as given by msinit, let Q | N, (Q,N/Q) = 1, and let H be a subspace stab…"
+mscosets,16,mscosets,namespace,,"gen being a system of generators for a group G and H being a subgroup of finite index of G, return a list of right coset…"
+mscuspidal,16,mscuspidal,namespace,,"M being a full modular symbol space, as given by msinit, return its cuspidal part S"
+msdim,16,msdim,namespace,,"M being a modular symbol space or subspace, return its dimension as a Q-vector space"
+mseisenstein,16,mseisenstein,namespace,,"M being a full modular symbol space, as given by msinit, return its Eisenstein subspace"
+mseval,16,mseval,namespace,,"M being a full modular symbol space, as given by msinit, s being a modular symbol from M and p being a path between two …"
+msfarey,16,msfarey,namespace,,"F being a Farey symbol attached to a group G contained in SL2(Z) and H a subgroup of G, return a Farey symbol attached t…"
+msfromcusp,16,msfromcusp,namespace,,"returns the modular symbol attached to the cusp c, where M is a modular symbol space of level N"
+msfromell,16,msfromell,namespace,,"return the [M, x], where M is msinit(N,2) and x is the modular symbol in M attached to the elliptic curve E/Q"
+msfromhecke,16,msfromhecke,namespace,,"given a msinit M and a vector v of pairs [p, P] (where p is prime and P is a polynomial with integer coefficients), retu…"
+msgetlevel,16,msgetlevel,namespace,,"M being a full modular symbol space, as given by msinit, return its level N"
+msgetsign,16,msgetsign,namespace,,"M being a full modular symbol space, as given by msinit, return its sign"
+msgetweight,16,msgetweight,namespace,,"M being a full modular symbol space, as given by msinit, return its weight k"
+mshecke,16,mshecke,namespace,,"M being a full modular symbol space, as given by msinit, p being a prime number, and H being a Hecke-stable subspace (M …"
+msinit,16,msinit,namespace,,"given G a finite index subgroup of SL(2,Z) and a finite dimensional representation V of GL(2,Q), creates a space of modu…"
+msissymbol,16,msissymbol,namespace,,"M being a full modular symbol space, as given by msinit, check whether s is a modular symbol attached to M"
+mslattice,16,mslattice,namespace,,"M being a full modular symbol space, as given by msinit, H a Q-subspace or a matrix of modular symbols"
+msnew,16,msnew,namespace,,"M being a full modular symbol space, as given by msinit, return its new cuspidal subspace"
+msomseval,16,msomseval,namespace,,return the vectors of moments of the p-adic distribution attached to the path 'path' via the overconvergent modular symb…
+mspadicinit,16,mspadicinit,namespace,,"M being a full modular symbol space, as given by msinit and a prime p, initialize technical data needed to compute with …"
+mspadicL,16,mspadic_l,namespace,renamed for PEP 8,given mu from mspadicmoments (p-adic distributions attached to an overconvergent symbol PHI) returns the value on a char…
+mspadicmoments,16,mspadicmoments,namespace,,"given Mp from mspadicinit, an overconvergent eigensymbol PHI, and optionally a fundamental discriminant D coprime to p, …"
+mspadicseries,16,mspadicseries,namespace,,"given mu from mspadicmoments, returns the attached p-adic series with maximal p-adic precision, depending on the precisi…"
+mspathgens,16,mspathgens,namespace,,"M being a full modular symbol space, as given by msinit, return a set of Z[G]-generators for Div^0(P^1 Q)"
+mspathlog,16,mspathlog,namespace,,"M being a full modular symbol space, as given by msinit and p being a path between two elements in P^1(Q), return (p_i) …"
+mspetersson,16,mspetersson,namespace,,"M being a full modular symbol space, as given by msinit, calculate the intersection product {F,G} of modular symbols F a…"
+mspolygon,16,mspolygon,namespace,,"M describes a subgroup G of finite index in the modular group PSL2(Z), as given by msinit or a positive integer N (encod…"
+msqexpansion,16,msqexpansion,namespace,,"M being a full modular symbol space, as given by msinit, and projH being a projector on a Hecke-simple subspace, return …"
+mssplit,16,mssplit,namespace,,"M being a full modular symbol space, as given by msinit, and H being a subspace (the new subspace if omitted), split H i…"
+msstar,16,msstar,namespace,,"M being a full modular symbol space, as given by msinit, return the matrix of the * involution, induced by complex conju…"
+mstooms,16,mstooms,namespace,,"given Mp from mspadicinit, lift the (classical) eigen symbol phi to a distribution-valued overconvergent symbol in the s…"
+parploth,17,parploth,python,use Matplotlib,parallel version of ploth
+parplothexport,17,parplothexport,python,use Matplotlib,parallel version of plothexport
+plot,17,plot,python,use Matplotlib,"crude plot of expression expr, X goes from a to b, with Y ranging from Ymin to Ymax"
+plotarc,17,plotarc,python,use Matplotlib,"if the cursor is at position (x1,y1), draws the ellipse that fits inside the box with diagonal (x1,y1) and (x2,y2) in re…"
+plotbox,17,plotbox,python,use Matplotlib,"if the cursor is at position (x1,y1), draw a box with diagonal (x1,y1) and (x2,y2) in rectwindow w (cursor does not move…"
+plotclip,17,plotclip,python,use Matplotlib,clip the contents of the rectwindow to the bounding box (except strings)
+plotcolor,17,plotcolor,python,use Matplotlib,"in rectwindow w, set default color to c"
+plotcopy,17,plotcopy,python,use Matplotlib,"copy the contents of rectwindow sourcew to rectwindow destw with offset (dx,dy)"
+plotcursor,17,plotcursor,python,use Matplotlib,current position of cursor in rectwindow w
+plotdraw,17,plotdraw,python,use Matplotlib,draw rectwindow w
+plotexport,17,plotexport,python,use Matplotlib,"draw vector of rectwindows list as in plotdraw, returning the resulting picture as a character string; fmt is either ""ps…"
+ploth,17,ploth,python,use Matplotlib,"plot of expression expr, X goes from a to b in high resolution"
+plothexport,17,plothexport,python,use Matplotlib,"plot of expression expr, X goes from a to b in high resolution, returning the resulting picture as a character string wh…"
+plothraw,17,plothraw,python,use Matplotlib,plot in high resolution points whose x (resp
+plothrawexport,17,plothrawexport,python,use Matplotlib,plot in high resolution points whose x (resp
+plothsizes,17,plothsizes,python,use Matplotlib,"returns array of 8 elements: terminal width and height, sizes for ticks in horizontal and vertical directions, width and…"
+plotinit,17,plotinit,python,use Matplotlib,"initialize rectwindow w to size x,y"
+plotkill,17,plotkill,python,use Matplotlib,erase the rectwindow w
+plotlines,17,plotlines,python,use Matplotlib,draws an open polygon in rectwindow w where X and Y contain the x (resp
+plotlinetype,17,plotlinetype,python,use Matplotlib,this function is obsolete; no graphing engine implement this functionality
+plotmove,17,plotmove,python,use Matplotlib,"move cursor to position x,y in rectwindow w"
+plotpoints,17,plotpoints,python,use Matplotlib,draws in rectwindow w the points whose x (resp y) coordinates are in X (resp Y)
+plotpointsize,17,plotpointsize,python,use Matplotlib,"change the ""size"" of following points in rectwindow w"
+plotpointtype,17,plotpointtype,python,use Matplotlib,this function is obsolete; no graphing engine implement this functionality
+plotrbox,17,plotrbox,python,use Matplotlib,"if the cursor is at (x1,y1), draw a box with diagonal (x1,y1)-(x1+dx,y1+dy) in rectwindow w (cursor does not move)"
+plotrecth,17,plotrecth,python,use Matplotlib,"writes to rectwindow w the curve output of ploth(w,X=a,b,expr,flag,n)"
+plotrecthraw,17,plotrecthraw,python,use Matplotlib,"plot graph(s) for data in rectwindow w, where data is a vector of vectors"
+plotrline,17,plotrline,python,use Matplotlib,"if the cursor is at (x1,y1), draw a line from (x1,y1) to (x1+dx,y1+dy) (and move the cursor) in the rectwindow w"
+plotrmove,17,plotrmove,python,use Matplotlib,"move cursor to position (dx,dy) relative to the present position in the rectwindow w"
+plotrpoint,17,plotrpoint,python,use Matplotlib,"draw a point (and move cursor) at position dx,dy relative to present position of the cursor in rectwindow w"
+plotscale,17,plotscale,python,use Matplotlib,scale the coordinates in rectwindow w so that x goes from x1 to x2 and y from y1 to y2 (y2<y1 is allowed)
+plotstring,17,plotstring,python,use Matplotlib,draw in rectwindow w the string corresponding to x
+psdraw,17,psdraw,python,use Matplotlib,obsolete function
+psploth,17,psploth,python,use Matplotlib,obsolete function
+psplothraw,17,psplothraw,python,use Matplotlib,obsolete function

@@ -14,11 +14,22 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=8",
+    "ruff>=0.6",
 ]
 
 [tool.uv]
 # No importable package yet; switch to true once er2/ exists.
 package = false
+
+[tool.ruff]
+line-length = 79  # PEP 8
+
+[tool.ruff.lint]
+# pycodestyle (E, W), pyflakes (F), isort (I), pep8-naming (N), pydocstyle/PEP 257 (D)
+select = ["E", "W", "F", "I", "N", "D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

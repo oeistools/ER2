@@ -48,6 +48,24 @@ ER2 is a superset of Python and follows the same model as SageMath:
   | `1/3`       | `0.333…`      | exact rational `1/3`          |
   | `sym x, y`  | syntax error  | declares symbols `x`, `y`     |
 
+## Jupyter and Quarto
+
+ER2 runs in notebooks and in Quarto documents:
+
+- **ER2 kernel**: run `er2 kernel install`, then pick "ER2" in Jupyter. In Quarto, set `jupyter: er2` in the front matter.
+- **Any Python kernel**: add `%load_ext er2` in the first cell.
+
+````markdown
+---
+title: "Mersenne primes"
+jupyter: er2
+---
+
+```{python}
+[p for p in range(2, 130) if isprime(2^p - 1)]
+```
+````
+
 ## How it works
 
 ER2 does not introduce a new interpreter. It has three parts:
@@ -69,13 +87,13 @@ ER2 does not introduce a new interpreter. It has three parts:
 
 | Version | Focus |
 |---------|-------|
-| 0.1 | Preparser: `sym`, `^`, `_x`, exact integers and rationals |
+| 0.1 | Preparser: `sym`, `^`, `_x`, exact integers and rationals; Jupyter kernel, `%load_ext er2`, Quarto |
 | 0.2 | CAS: `expand`, `factor`, `simplify`, `diff`, `integrate`, `solve` |
 | 0.3 | Number theory on PARI: primality, factorization, `phi`, `sigma`, `mu`, … |
 | 0.4 | Automatic backend selection, PARI types, benchmarks |
 | 0.5 | Algebra: matrices, finite fields, resultants, Gröbner bases |
 | 0.6 | Series: power, Dirichlet, Euler products |
-| 1.0 | Stable language: specification, Jupyter support, installable package |
+| 1.0 | Stable language: specification, installable package |
 
 Later: OEIS integration (`oeis.search`, `oeis.identify`). Deeper CPython integration comes only
 after the syntax is stable.
@@ -87,16 +105,19 @@ because the cypari2 wheel includes PARI.
 
 ```bash
 git clone <repo-url> && cd ER2
-uv sync          # creates .venv with sympy, cypari2 and pytest
+uv sync          # creates .venv with sympy, cypari2, pytest and ruff
 uv run pytest
 ```
 
-We keep dependencies deliberately minimal: `sympy` and `cypari2` at runtime, and `pytest` for
-development.
+We keep dependencies deliberately minimal: `sympy` and `cypari2` at runtime, plus `ipykernel` as
+the optional `er2[jupyter]` extra. Development uses `pytest` and `ruff`. The code follows
+[PEP 8](https://peps.python.org/pep-0008/), enforced with `uv run ruff format` and `uv run ruff check`.
 
 ## Documentation
 
 - [ARCHITECTURE.md](ARCHITECTURE.md): technical design, the compatibility contract, and open design decisions
+- [PLAN.md](PLAN.md): project plan, with phases and acceptance criteria
+- [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTIONS.md): all PARI functions and their ER2 names
 - [draft/ER2_idea_summary.md](draft/ER2_idea_summary.md): the original idea
 - [CLAUDE.md](CLAUDE.md): guidelines for AI-assisted development
 

@@ -64,6 +64,34 @@ A dedicated **compatibility test suite** (`tests/compat/`) enforces this contrac
 snippets whose behavior must be identical under ER2, imports of stdlib/third-party modules from
 `.er2` code, and ER2 values passed into library functions.
 
+## 1.2 Notebooks: Jupyter and Quarto
+
+**Hard requirement:** ER2 code must run in Jupyter notebooks and in Quarto documents (`.qmd`).
+Both use Jupyter kernels, so a single mechanism covers both: register the ER2 preparser as an
+IPython input transformer (`shell.input_transformers_post`). IPython runs its own transforms first
+(magics `%`, `!`, `?`), so the ER2 preparser receives valid, tokenizable Python.
+
+There are two supported routes, and both were verified with a prototype on 2026-09-18 (Quarto
+1.9.38, ipykernel, `print(2^10)` → `1024`):
+
+| Route | Jupyter | Quarto |
+|-------|---------|--------|
+| **A. `er2` kernel**: an `IPythonKernel` subclass that installs the transformer at startup. Installed with `er2 kernel install`. | Select the "ER2" kernel | Front matter `jupyter: er2`, code cells `` ```{python} `` |
+| **B. Extension**: `%load_ext er2` in a standard `python3` kernel | First cell `%load_ext er2` | Same, as the first `` ```{python} `` cell |
+
+Details:
+- **Kernelspec language.** Quarto accepted both `"language": "python"` (cells `` ```{python} ``)
+  and `"language": "er2"` (cells `` ```{er2} ``). Proposal (D9): declare `python`, so that
+  syntax highlighting, the VS Code Quarto extension and editor tooling work unchanged, since ER2 is a
+  Python superset. `language_info.file_extension` is `.er2`.
+- **Rich output.** ER2 objects implement `_repr_latex_` (math rendered by MathJax in Jupyter and in
+  Quarto HTML, and natively in Quarto PDF) in addition to plain-text `__repr__`.
+- **Tracebacks** point at the right cell line because the preparser preserves line numbers.
+- **Dependencies.** `ipykernel` is an optional extra (`er2[jupyter]`) and is not a core
+  dependency. Quarto is an external tool and is not a Python dependency.
+- **Tests.** Execute `examples/mvp.ipynb` through both routes (`nbclient`). Render
+  `examples/mvp.qmd` with Quarto when it is installed; otherwise skip that test.
+
 ## 2. Overview
 
 ```text
@@ -120,10 +148,10 @@ Requirements:
 
 - **CLI**: `er2 file.er2` and the `er2` REPL (built on `code.InteractiveConsole` plus the preparser).
 - **Import hook**: `import module` finds `module.er2` (meta path finder + loader).
-- **Jupyter** (later; adds the `ipython` dependency): an IPython extension that registers the preparser in `input_transformers_post`
-  (`%load_ext er2`).
+- **Jupyter / Quarto** (§1.2): the `er2` kernel (`er2 kernel install`) and the `%load_ext er2`
+  extension. Both register the preparser in `input_transformers_post`.
 
-All three share `er2.preparser` and `er2.prelude`; none of them contains its own translation logic.
+All of them share `er2.preparser` and `er2.prelude`; none of them contains its own translation logic.
 
 ### 3.3 Runtime and prelude (`er2/runtime/`, `er2/prelude.py`)
 
@@ -151,8 +179,25 @@ isprime(n)                 → PARI  isprime (proof) / ispseudoprime (option)
 
 ### 3.5 ER2 → PARI name table
 
-The names in the draft do not match PARI; an explicit mapping is required
-(verified against the PARI 2.17.2 bundled with cypari2):
+**Single source of truth:** [er2/data/pari_functions.csv](er2/data/pari_functions.csv). It lists
+all 1,168 PARI functions from sections 1–17 with the columns `pari_name, section, er2_name,
+status, note, summary`. Readable view: [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTIONS.md).
+
+- `tools/sync_pari_functions.py` reads PARI's own function table (`functions_basic`) from the
+  libpari bundled with cypari2. It adds new functions and refreshes the summaries, but it
+  **never overwrites** the hand-edited columns (`er2_name`, `status`, `note`). Then it
+  regenerates the Markdown. Running it twice gives the same output. It reads a C struct through
+  `ctypes`; the script checks the layout and fails loudly if a PARI upgrade changes it.
+- `status`: `prelude` (a top-level name), `namespace` (reachable as `pari.<er2_name>`),
+  `python` (not exposed: GP programming and plotting, which Python and Matplotlib already
+  cover), `conflict` (not exposed until a decision is made).
+- Default naming: keep the PARI name when it is PEP 8-compliant. Otherwise convert camelCase to
+  snake_case (`mfDelta` → `mf_delta`) and keep CapWords for type constructors (`Mod`, `Pol`).
+  Python keywords get a trailing `_`. Python builtins (`abs`, `max`, `sum`, …) are never
+  shadowed.
+- The runtime will build the prelude and the `pari` namespace from this CSV (D10).
+
+Main mappings where the names differ:
 
 | ER2            | PARI              | Note |
 |----------------|-------------------|------|
@@ -160,7 +205,7 @@ The names in the draft do not match PARI; an explicit mapping is required
 | `mu(n)`        | `moebius(n)`      | |
 | `sigma(n, k=1)`| `sigma(n, k)`     | |
 | `omega(n)`     | `omega(n)`        | |
-| `Omega(n)`     | `bigomega(n)`     | |
+| `bigomega(n)`  | `bigomega(n)`     | draft's `Omega` renamed for PEP 8 (D8) |
 | `valuation`    | `valuation`       | |
 | `znorder`, `znprimroot`, `nextprime`, `divisors`, `gcd`, `lcm` | same | |
 | `psi(n)`       | **conflict**      | in PARI `psi` is the digamma function; the draft lists it as arithmetic (Dedekind ψ?). See D5 |
@@ -190,6 +235,7 @@ er2/
   printing.py
   importer.py          # .er2 import hook
   ipython_ext.py       # %load_ext er2
+  kernel.py            # er2 Jupyter kernel + `er2 kernel install`
   runtime/             # types: Integer, Rational, Symbol, Factorization, …
   backends/
     sympy_backend.py
@@ -202,13 +248,19 @@ tests/
   examples/            # complete .er2 programs with expected (golden) output
 examples/
   mvp.er2
+  mvp.ipynb
+  mvp.qmd
+er2/data/pari_functions.csv   # PARI → ER2 name table (§3.5)
+tools/sync_pari_functions.py  # regenerates the table and docs/PARI_FUNCTIONS.md
+docs/PARI_FUNCTIONS.md        # generated reference
 draft/                 # idea documents (not code)
 pyproject.toml
 ```
 
 ## 5. MVP (target of the first iteration)
 
-Must run with `er2 examples/mvp.er2`:
+Must run in all three environments: `er2 examples/mvp.er2`, `examples/mvp.ipynb` in Jupyter
+(both routes of §1.2), and `quarto render examples/mvp.qmd`:
 
 ```er2
 sym x
@@ -256,6 +308,28 @@ Each must be resolved (and recorded here) before or during 0.1.
 - **D7 — Expensive factorizations.** `factor(10^1000 - 1)` (the draft's example, §7) may not
   finish in reasonable time. Define a policy: timeout, `factor(n, partial=True)`, or leave it to
   the user.
+- **D8 — `Omega` violates PEP 8.** PEP 8 requires lowercase function names (§11), and the draft's
+  `Omega(n)` does not follow that. Proposal: `bigomega(n)` (the PARI name), keeping `omega(n)`.
+- **D9 — Kernelspec language.** `python` (proposed) vs `er2`. See §1.2.
+- **D10 — Exposure of PARI functions.** Proposal: only the curated `prelude` rows (~30) are
+  top-level names. Every other PARI function is reachable as `pari.<name>`, with ER2 type
+  conversions applied. Exposing ~1,000 top-level names would shadow user variables and
+  library imports, which conflicts with §1.1.
+
+## 6.1 Code style: PEP 8
+
+**Hard requirement:** ER2 follows [PEP 8](https://peps.python.org/pep-0008/).
+
+- **Implementation** (the `er2` package, tests, tools) follows PEP 8 and PEP 257 docstrings, and is
+  enforced with `ruff check` and `ruff format` (line length 79, as PEP 8 specifies).
+- **Public API names** follow PEP 8: functions and variables `lower_case`, classes `CapWords`
+  (`Integer`, `Rational`, `Factorization`), constants `UPPER_CASE`. Mathematical names that break
+  this rule are renamed (D8).
+- **ER2 code** (examples, docs, notebooks, the draft) is written in PEP 8 style. The ER2
+  additions follow Python's conventions: `sym x, y` is spaced like an `import`, and `^` follows
+  PEP 8's operator-spacing rule for precedence (`x^2 + 2*x + 1`, like `x**2 + 2*x + 1`).
+- `ruff` cannot parse `.er2` files (`sym`, `^^`). Lint them by preparsing to Python first
+  (`er2 --show-python`) and running ruff on the output. A native `er2 fmt` can come later.
 
 ## 7. Notes on the draft roadmap
 
@@ -263,6 +337,8 @@ Each must be resolved (and recorded here) before or during 0.1.
   *on top of* PARI. Proposal: merge basic cypari2 integration into 0.3, and keep automatic backend
   selection, advanced PARI types, and benchmarks for 0.4.
 - The MVP (draft §11) spans 0.1–0.3. Either widen 0.1, or declare the MVP a 0.3 milestone.
+- The draft puts Jupyter in 1.0. It is now a hard requirement (§1.2) and part of the MVP; the
+  transformer is cheap once the preparser exists.
 
 ## 8. Dependencies
 
@@ -270,10 +346,11 @@ Each must be resolved (and recorded here) before or during 0.1.
 - `sympy` (1.14 installed), optional `gmpy2`.
 - `cypari2` — **the only source of PARI**. Its wheel bundles libpari (2.17.2), so no system
   PARI/GP or `gp` binary is required, by the code or by the tests.
-- `ipython` — only when the Jupyter extension is implemented.
+- `ipykernel` — optional extra `er2[jupyter]`, added when the kernel/extension is implemented.
+- `ruff` — dev tool for PEP 8 enforcement (§6.1).
 - Managed with `uv`.
 
-Policy: **minimal dependencies**. Runtime = `sympy` + `cypari2`; dev = `pytest`. Anything else
+Policy: **minimal dependencies**. Runtime = `sympy` + `cypari2`; dev = `pytest` + `ruff`. Anything else
 needs a concrete reason.
 
 ## 9. Evolution (2.0)

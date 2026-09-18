@@ -1,0 +1,57 @@
+cff-version: 1.2.0
+message: >-
+  If you use ER2 in your work, please cite it using the metadata below.
+  Please also cite PARI/GP and SymPy, which ER2 builds on.
+type: software
+title: "ER2: Mathematical Python"
+abstract: >-
+  ER2 is a superset of Python for mathematics. It adds symbolic syntax
+  (sym x, x^2), exact arithmetic by default, and computational number theory
+  through PARI/GP (via cypari2) and SymPy. The whole Python ecosystem stays
+  available, and ER2 code runs in Jupyter and Quarto. It is named after
+  the mathematician Paul Erdős.
+authors:
+  - alias: eph
+version: 0.0.1
+license: MIT
+keywords:
+  - python
+  - programming language
+  - computer algebra
+  - symbolic computation
+  - number theory
+  - PARI/GP
+  - SymPy
+  - Jupyter
+  - Quarto
+references:
+  - type: software
+    title: "PARI/GP"
+    authors:
+      - name: "The PARI Group"
+    version: "2.17.2"
+    institution:
+      name: "Université de Bordeaux"
+    url: "https://pari.math.u-bordeaux.fr/"
+  - type: software
+    title: "cypari2"
+    authors:
+      - name: "The SageMath developers"
+    url: "https://github.com/sagemath/cypari2"
+  - type: article
+    title: "SymPy: symbolic computing in Python"
+    authors:
+      - family-names: Meurer
+        given-names: Aaron
+      - family-names: Smith
+        given-names: Christopher P.
+      - family-names: Paprocki
+        given-names: Mateusz
+      - family-names: Čertík
+        given-names: Ondřej
+      - name: "et al."
+    journal: "PeerJ Computer Science"
+    volume: 3
+    start: e103
+    year: 2017
+    doi: 10.7717/peerj-cs.103

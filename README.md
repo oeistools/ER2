@@ -121,6 +121,13 @@ the optional `er2[jupyter]` extra. Development uses `pytest` and `ruff`. The cod
 - [draft/ER2_idea_summary.md](draft/ER2_idea_summary.md): the original idea
 - [CLAUDE.md](CLAUDE.md): guidelines for AI-assisted development
 
+## Citation
+
+If you use ER2 in your work, please cite it. The metadata is in [CITATION.cff](CITATION.cff), and
+GitHub shows it through **"Cite this repository"**. Please also cite
+[PARI/GP](https://pari.math.u-bordeaux.fr/) and [SymPy](https://doi.org/10.7717/peerj-cs.103),
+which ER2 builds on.
+
 ## License
 
 [MIT](LICENSE)

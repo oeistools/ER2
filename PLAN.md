@@ -23,38 +23,40 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 
 ## Status overview
 
-| Milestone | Focus | Status |
-|-----------|-------|--------|
-| M0 | Foundations | in progress |
-| M1 (0.1) | Preparser, number types, CLI, Jupyter, Quarto | not started |
-| M2 (0.2) | CAS on SymPy | not started |
-| M3 (0.3) | Number theory on PARI → **MVP** | not started |
-| M4 (0.4) | Backend selection, PARI types, benchmarks | not started |
-| M5 (0.5) | Algebra | not started |
-| M6 (0.6) | Series | not started |
-| M7 (1.0) | Stable language and release | not started |
-| — (2.0) | Deep CPython integration | long term |
+| Milestone | Focus                                         | Status      |
+| --------- | --------------------------------------------- | ----------- |
+| M0        | Foundations                                   | in progress |
+| M1 (0.1)  | Preparser, number types, CLI, Jupyter, Quarto | not started |
+| M2 (0.2)  | CAS on SymPy                                  | not started |
+| M3 (0.3)  | Number theory on PARI →**MVP**         | not started |
+| M4 (0.4)  | Backend selection, PARI types, benchmarks     | not started |
+| M5 (0.5)  | Algebra                                       | not started |
+| M6 (0.6)  | Series                                        | not started |
+| M7 (1.0)  | Stable language and release                   | not started |
+| — (2.0)  | Deep CPython integration                      | long term   |
 
 ---
 
 ## M0 — Foundations
 
 **Done:**
-- [x] Idea draft translated to English: [draft/ER2_idea_summary.md](draft/ER2_idea_summary.md)
-- [x] ARCHITECTURE.md, CLAUDE.md, README.md, MIT LICENSE, .gitignore
-- [x] Local git repository
-- [x] `uv` environment: sympy, cypari2 (bundled PARI 2.17.2), pytest, ruff
-- [x] Python compatibility model chosen: SageMath model (D1 resolved, D2 resolved for integers)
-- [x] Prototype showing that an IPython input transformer works in Jupyter and Quarto (§1.2)
-- [x] PARI → ER2 function table: [er2/data/pari_functions.csv](er2/data/pari_functions.csv),
-      with its generator and [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTIONS.md)
+
+- [X] Idea draft translated to English: [draft/ER2_idea_summary.md](draft/ER2_idea_summary.md)
+- [X] ARCHITECTURE.md, CLAUDE.md, README.md, MIT LICENSE, .gitignore, CITATION.cff
+- [X] Local git repository
+- [X] `uv` environment: sympy, cypari2 (bundled PARI 2.17.2), pytest, ruff
+- [X] Python compatibility model chosen: SageMath model (D1 resolved, D2 resolved for integers)
+- [X] Prototype showing that an IPython input transformer works in Jupyter and Quarto (§1.2)
+- [X] PARI → ER2 function table: [er2/data/pari_functions.csv](er2/data/pari_functions.csv),
+  with its generator and [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTIONS.md)
 
 **Remaining:**
+
 - [ ] Create the GitHub repository and push it (waiting for `gh auth login` and a choice of public or private)
 - [ ] CI with GitHub Actions: `uv sync`, `ruff format --check`, `ruff check`, `pytest`
-      (Quarto render tests are skipped when Quarto is not installed)
+  (Quarto render tests are skipped when Quarto is not installed)
 - [ ] Settle the decisions M1 needs: **D3** (`_x` symbols), **D4** (`sym` soft keyword),
-      **D6** (integer type), **D9** (kernelspec language), **D2b** (decimal literals)
+  **D6** (integer type), **D9** (kernelspec language), **D2b** (decimal literals)
 
 **Acceptance:** the repo is on GitHub, CI is green on an empty test suite, and D3, D4, D6, D9 and
 D2b are recorded in ARCHITECTURE.md §6.
@@ -66,6 +68,7 @@ D2b are recorded in ARCHITECTURE.md §6.
 Goal: ER2 syntax runs everywhere, even before the mathematics is complete.
 
 **Tasks:**
+
 1. **D6 spike.** Prototype `class Integer(int)` against the §1.1 contract: `range`, indexing,
    `hash`, `json`, `math`, and NumPy (`np.zeros(n)`, `np.array([n])` dtype). NumPy is used only in
    the spike environment. Then decide D6.
@@ -90,6 +93,7 @@ Goal: ER2 syntax runs everywhere, even before the mathematics is complete.
      in §8); render a `.qmd` when Quarto is available
 
 **Acceptance:**
+
 - `print(2^10)`, `print(1/3)`, `print(5 ^^ 3)` and `sym x; print(x^2 + 1)` give `1024`, `1/3`,
   `6` and `x^2 + 1` in the CLI, the REPL, Jupyter (both routes) and Quarto.
 - An error on line N of a `.er2` file or cell is reported at line N.
@@ -100,6 +104,7 @@ Goal: ER2 syntax runs everywhere, even before the mathematics is complete.
 ## M2 — 0.2: CAS on SymPy
 
 **Tasks:**
+
 1. `er2/backends/sympy_backend.py`: `expand`, `factor` (on `Expr`), `simplify`, `collect`,
    `cancel`, `diff`, `integrate`, `limit`, `solve`, `series`.
 2. `er2/dispatch.py`: a single dispatch table, with only the SymPy backend at this point.
@@ -116,6 +121,7 @@ environments: `x^2 + 2*x + 1`, `x^2 + 2*x + 1`, `(x + 1)^2`.
 ## M3 — 0.3: Number theory on PARI → MVP
 
 **Tasks:**
+
 1. Settle **D5** (`psi`), **D7** (policy for expensive factorizations), **D8** (`bigomega`) and
    **D10** (prelude vs `pari.` namespace).
 2. `er2/backends/pari_backend.py`: a single `cypari2.Pari()` instance, a configurable stack, and
@@ -168,27 +174,27 @@ Revisit this only if the preparser shows real limits.
 
 ## Decision schedule
 
-| ID  | Topic | Needed by | Status |
-|-----|-------|-----------|--------|
-| D1  | `^` as power | — | ✅ resolved (Sage model) |
-| D2  | exact integer literals | — | ✅ resolved (Sage model) |
-| D2b | decimal literals: `float` or `Real` | M1 | open |
-| D3  | predefined `_x` symbols | M1 | open (proposal: keep, and allow shadowing) |
-| D4  | `sym` as a soft keyword | M1 | open (proposal: only at the start of a statement) |
-| D6  | canonical integer type | M1 | open (proposal: `Integer(int)`, pending the spike) |
-| D9  | kernelspec language | M1 | open (proposal: `python`) |
-| D5  | `psi`: Dedekind or digamma | M3 | open |
-| D7  | expensive factorizations | M3 | open |
-| D8  | `Omega` → `bigomega` | M3 | open (proposal: `bigomega`) |
-| D10 | exposure of PARI functions | M3 | open (proposal: curated prelude plus `pari.`) |
+| ID  | Topic                                  | Needed by | Status                                              |
+| --- | -------------------------------------- | --------- | --------------------------------------------------- |
+| D1  | `^` as power                         | —        | ✅ resolved (Sage model)                            |
+| D2  | exact integer literals                 | —        | ✅ resolved (Sage model)                            |
+| D2b | decimal literals:`float` or `Real` | M1        | open                                                |
+| D3  | predefined`_x` symbols               | M1        | open (proposal: keep, and allow shadowing)          |
+| D4  | `sym` as a soft keyword              | M1        | open (proposal: only at the start of a statement)   |
+| D6  | canonical integer type                 | M1        | open (proposal:`Integer(int)`, pending the spike) |
+| D9  | kernelspec language                    | M1        | open (proposal:`python`)                          |
+| D5  | `psi`: Dedekind or digamma           | M3        | open                                                |
+| D7  | expensive factorizations               | M3        | open                                                |
+| D8  | `Omega` → `bigomega`              | M3        | open (proposal:`bigomega`)                        |
+| D10 | exposure of PARI functions             | M3        | open (proposal: curated prelude plus`pari.`)      |
 
 ## Risks
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| `Integer` literals slow down numeric loops | Performance | M4 benchmarks; an `int` subclass keeps the fast paths; raw literals as an escape hatch |
-| Libraries reject ER2 numbers (`isinstance(n, int)`) | Ecosystem compatibility | D6 spike before writing code; compat tests |
-| A cypari2 wheel is missing for a new Python version | Installation | Pin the supported Python versions in CI; cypari2 can build from source |
-| The `functions_basic` struct layout changes in a PARI upgrade | Table generator breaks | The script checks the layout and fails loudly; re-check after each cypari2 bump |
-| Pasted Python code that uses `^` as XOR | Silent wrong results | Preparser warning; document the difference; keep such code in `.py` modules |
-| Changes in the ipykernel or Quarto APIs | Notebook support breaks | Notebook tests in CI |
+| Risk                                                           | Impact                  | Mitigation                                                                              |
+| -------------------------------------------------------------- | ----------------------- | --------------------------------------------------------------------------------------- |
+| `Integer` literals slow down numeric loops                   | Performance             | M4 benchmarks; an`int` subclass keeps the fast paths; raw literals as an escape hatch |
+| Libraries reject ER2 numbers (`isinstance(n, int)`)          | Ecosystem compatibility | D6 spike before writing code; compat tests                                              |
+| A cypari2 wheel is missing for a new Python version            | Installation            | Pin the supported Python versions in CI; cypari2 can build from source                  |
+| The`functions_basic` struct layout changes in a PARI upgrade | Table generator breaks  | The script checks the layout and fails loudly; re-check after each cypari2 bump         |
+| Pasted Python code that uses`^` as XOR                       | Silent wrong results    | Preparser warning; document the difference; keep such code in`.py` modules            |
+| Changes in the ipykernel or Quarto APIs                        | Notebook support breaks | Notebook tests in CI                                                                    |

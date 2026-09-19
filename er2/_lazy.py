@@ -6,8 +6,9 @@ never import it at module level; they call ``sympy()`` when they need it.
 
 ``sympy_loaded()`` is True once SymPy has been imported by anyone, ER2 or
 user code.  Until then no object can be a SymPy object, so type checks
-can skip it.  ``when_sympy_loaded(hook)`` runs ``hook`` as soon as SymPy
-is imported (ER2's printer is installed this way, D11).
+can skip it (``is_sympy``, ``is_symbolic``).  ``when_sympy_loaded(hook)``
+runs ``hook`` as soon as SymPy is imported (ER2's printer is installed
+this way, D11).
 """
 
 import importlib.abc
@@ -21,6 +22,18 @@ def sympy_loaded():
     """Whether SymPy has been imported (by ER2 or by user code)."""
     module = sys.modules.get("sympy")
     return module is not None and hasattr(module, "Basic")
+
+
+def is_symbolic(obj):
+    """Whether ``obj`` is a SymPy object other than a plain number."""
+    if not sympy_loaded():
+        return False  # no SymPy object can exist yet
+    return isinstance(obj, sys.modules["sympy"].Basic) and not obj.is_Number
+
+
+def is_sympy(obj):
+    """Whether ``obj`` is a SymPy object (always False before SymPy loads)."""
+    return sympy_loaded() and isinstance(obj, sys.modules["sympy"].Basic)
 
 
 def sympy():

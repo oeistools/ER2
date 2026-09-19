@@ -133,6 +133,7 @@ def to_pari(obj):
 # are ever parsed by GP; user values are passed as arguments.
 _GP_REAL = PARI("(q, bits) -> localbitprec(bits); q * 1.")
 _GP_SERIES = PARI("(p, v, n) -> p + O(v^n)")
+_GP_FACTORIAL = PARI("(n) -> n!")
 _GP_INFINITY = {1: PARI("+oo"), -1: PARI("-oo")}
 _IDENTIFIER = re.compile(r"[A-Za-z][A-Za-z0-9_]*")
 # Names created with ``varhigher`` because GP reserves them.
@@ -286,7 +287,7 @@ def _series(obj):
 
 
 def _matrix(obj):
-    rows, cols = int(PARI.matsize(obj)[0]), int(PARI.matsize(obj)[1])
+    rows, cols = map(int, PARI.matsize(obj))
     return sympy.Matrix(
         rows, cols, lambda i, j: _sympify(from_pari(obj[i, j]))
     )
@@ -321,6 +322,20 @@ _FROM_PARI = {
 }
 
 
+def _factor_rows(matrix):
+    """Yield the ``(factor, exponent)`` rows of a PARI factorization."""
+    for i in range(int(PARI.matsize(matrix)[0])):
+        yield matrix[i, 0], int(matrix[i, 1])
+
+
+def _positive_integer(n, function):
+    """Return ``n`` in PARI, or raise if it is not a positive integer."""
+    n = to_pari(n)
+    if n.type() != "t_INT" or n <= 0:
+        raise ValueError(f"{function}() needs a positive integer")
+    return n
+
+
 def _call(pari_name, *args, **kwargs):
     function = getattr(PARI, pari_name)
     args = [to_pari(arg) for arg in args]
@@ -341,10 +356,7 @@ def factor(n, limit=None):
         matrix = PARI.factor(n)
     else:
         matrix = PARI.factor(n, to_pari(limit))
-    pairs = [
-        (int(matrix[i, 0]), int(matrix[i, 1]))
-        for i in range(int(PARI.matsize(matrix)[0]))
-    ]
+    pairs = [(int(p), e) for p, e in _factor_rows(matrix)]
     unit = 1
     if pairs and pairs[0][0] == -1:
         unit = -1
@@ -378,10 +390,7 @@ def factor_polynomial(expr):
 
     poly = to_pari(expr)
     matrix = PARI.factor(poly)
-    factors = [
-        (from_pari(matrix[i, 0]), int(matrix[i, 1]))
-        for i in range(int(PARI.matsize(matrix)[0]))
-    ]
+    factors = [(from_pari(f), e) for f, e in _factor_rows(matrix)]
     unit = from_pari(poly / PARI.factorback(matrix))
     product = sympy.Mul(*(f**e for f, e in factors))
     return _keep_coeff(sympy.sympify(unit), product)
@@ -391,7 +400,7 @@ def factorial(n):
     """Return ``n!`` exactly (GP's ``n!``; PARI's ``factorial`` is real)."""
     if isinstance(n, bool) or int(n) != n or n < 0:
         raise ValueError("factorial() needs a nonnegative integer")
-    return from_pari(PARI("(n) -> n!")(int(n)))
+    return from_pari(_GP_FACTORIAL(int(n)))
 
 
 def dedekind_psi(n):
@@ -400,9 +409,7 @@ def dedekind_psi(n):
     ``psi`` is not used as a name, because PARI's ``psi`` is the digamma
     function (``pari.digamma``), as is SciPy's (D5).
     """
-    n = to_pari(n)
-    if n.type() != "t_INT" or n <= 0:
-        raise ValueError("dedekind_psi() needs a positive integer")
+    n = _positive_integer(n, "dedekind_psi")
     result = n
     for p in PARI.factor(n)[0]:
         result = result / p * (p + 1)
@@ -416,9 +423,7 @@ def jordan_totient(n, k):
     is 1.  ``J_1`` is ``phi``, and ``J_2(n) / phi(n)`` is
     ``dedekind_psi(n)``.
     """
-    n, k = to_pari(n), to_pari(k)
-    if n.type() != "t_INT" or n <= 0:
-        raise ValueError("jordan_totient() needs a positive integer n")
+    n, k = _positive_integer(n, "jordan_totient"), to_pari(k)
     if k.type() != "t_INT" or k < 0:
         raise ValueError("jordan_totient() needs a nonnegative integer k")
     result = n**k
@@ -433,9 +438,7 @@ def radical(n):
 
     GP: ``factorback(factorint(n)[, 1])``.
     """
-    n = to_pari(n)
-    if n.type() != "t_INT" or n <= 0:
-        raise ValueError("radical() needs a positive integer")
+    n = _positive_integer(n, "radical")
     return from_pari(PARI.factorback(PARI.factor(n)[0]))
 
 

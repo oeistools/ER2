@@ -55,6 +55,34 @@ def test_divmod_and_pow_mod():
     assert pow(Integer(3), 4, 5) == 1
 
 
+def test_divmod_with_other_number_types():
+    # int.__divmod__ returns NotImplemented for these; Python then asks
+    # the other operand instead of failing.
+    assert divmod(Integer(7), Rational(1, 3)) == (21, 0)
+    assert divmod(Integer(2), 7.5) == (0.0, 2.0)
+    q, r = divmod(Rational(7, 2), Rational(1, 3))
+    assert (q, r) == (10, Rational(1, 6))
+    assert type(q) is Integer and type(r) is Rational
+    assert all(type(v) is Integer for v in divmod(7, Rational(2, 1)))
+
+
+def test_rounding_stays_exact():
+    """``floor``, ``ceil``, ``trunc`` and ``round`` return ER2 numbers."""
+    half = Rational(7, 2)
+    for result, expected in (
+        (math.floor(half), 3),
+        (math.ceil(half), 4),
+        (math.trunc(-half), -3),
+        (round(half), 4),
+        (math.floor(Integer(7)), 7),
+        (round(Integer(17), -1), 20),
+    ):
+        assert result == expected and type(result) is Integer
+    assert math.floor(half) / 2 == Rational(3, 2)
+    assert round(Rational(7, 3), 1) == Rational(23, 10)
+    assert type(round(Rational(7, 3), 1)) is Rational
+
+
 def test_division_by_zero():
     with pytest.raises(ZeroDivisionError, match="division by zero"):
         Integer(1) / 0
@@ -119,6 +147,8 @@ def test_operators_return_integer():
         3 & a,
         3 | a,
         3 ^ a,
+        3 << a,
+        3 >> a,
     ):
         assert type(result) is Integer
     assert a + 0.5 == 7.5 and type(a + 0.5) is float

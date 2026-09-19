@@ -29,12 +29,6 @@ def _backend():
     return pari_backend
 
 
-def _is_symbolic(obj):
-    if not _lazy.sympy_loaded():
-        return False  # no SymPy object can exist yet
-    return isinstance(obj, sys.modules["sympy"].Basic) and not obj.is_Number
-
-
 def _from_sympy_number(obj):
     """Turn a SymPy integer or rational into a Python one."""
     if not _lazy.sympy_loaded():
@@ -59,7 +53,7 @@ class Mod:
         a rational number, and a polynomial when the modulus is one.
         """
         modulus, value = _from_sympy_number(modulus), _from_sympy_number(value)
-        if _is_symbolic(modulus):
+        if _lazy.is_symbolic(modulus):
             self._init_polynomial(value, modulus)
             return
         if isinstance(modulus, bool) or not isinstance(modulus, int):
@@ -98,7 +92,7 @@ class Mod:
     @property
     def is_polynomial(self):
         """Whether the modulus is a polynomial (PARI's ``t_POLMOD``)."""
-        return _is_symbolic(self._modulus)
+        return _lazy.is_symbolic(self._modulus)
 
     def lift(self):
         """Return the representative: in ``[0, n)``, or of lower degree."""
@@ -147,7 +141,7 @@ class Mod:
         """Whether ``self`` and ``other`` combine as PARI polynomials."""
         if isinstance(other, Mod):
             return self.is_polynomial or other.is_polynomial
-        return self.is_polynomial or _is_symbolic(other)
+        return self.is_polynomial or _lazy.is_symbolic(other)
 
     def _coerce(self, other):
         """Return ``(a, b, n)``: both operands modulo a common ``n``."""

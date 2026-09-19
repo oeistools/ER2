@@ -40,6 +40,20 @@ def _exact(op):
     return method
 
 
+def _exact_pair(op):
+    """Wrap ``divmod`` so that both parts of the result are ER2 numbers."""
+
+    def method(self, other):
+        result = op(self, other)
+        if result is NotImplemented:
+            return result
+        return tuple(map(normalize, result))
+
+    method.__name__ = op.__name__
+    method.__doc__ = f"Exact version of ``{op.__name__}``."
+    return method
+
+
 # ``Integer`` operators are the hot path of numeric loops (D2 risk, M4):
 # they call the ``int`` slot directly and wrap the result, with no generic
 # ``normalize`` step.
@@ -62,8 +76,8 @@ def _int_binary(op):
 def _int_unary(op):
     """Wrap a unary ``int`` operator so that it returns an ``Integer``."""
 
-    def method(self):
-        return Integer(op(self))
+    def method(self, *args):
+        return Integer(op(self, *args))
 
     method.__name__ = op.__name__
     method.__doc__ = f"Return ``{op.__name__}`` as an ``Integer``."
@@ -126,19 +140,20 @@ class Integer(int):
     __xor__ = _int_binary(int.__xor__)
     __rxor__ = _int_binary(int.__rxor__)
     __lshift__ = _int_binary(int.__lshift__)
+    __rlshift__ = _int_binary(int.__rlshift__)
     __rshift__ = _int_binary(int.__rshift__)
+    __rrshift__ = _int_binary(int.__rrshift__)
     __neg__ = _int_unary(int.__neg__)
     __pos__ = _int_unary(int.__pos__)
     __abs__ = _int_unary(int.__abs__)
     __invert__ = _int_unary(int.__invert__)
-
-    def __divmod__(self, other):
-        """Return ``(self // other, self % other)`` as ER2 numbers."""
-        return tuple(map(normalize, int.__divmod__(self, other)))
-
-    def __rdivmod__(self, other):
-        """Return ``(other // self, other % self)`` as ER2 numbers."""
-        return tuple(map(normalize, int.__rdivmod__(self, other)))
+    # ``math.floor``, ``math.ceil``, ``math.trunc`` and ``round``.
+    __floor__ = _int_unary(int.__floor__)
+    __ceil__ = _int_unary(int.__ceil__)
+    __trunc__ = _int_unary(int.__trunc__)
+    __round__ = _int_unary(int.__round__)
+    __divmod__ = _exact_pair(int.__divmod__)
+    __rdivmod__ = _exact_pair(int.__rdivmod__)
 
 
 class Rational(Fraction):
@@ -171,6 +186,13 @@ class Rational(Fraction):
     __neg__ = _exact(Fraction.__neg__)
     __pos__ = _exact(Fraction.__pos__)
     __abs__ = _exact(Fraction.__abs__)
+    # ``math.floor``, ``math.ceil``, ``math.trunc`` and ``round``.
+    __floor__ = _exact(Fraction.__floor__)
+    __ceil__ = _exact(Fraction.__ceil__)
+    __trunc__ = _exact(Fraction.__trunc__)
+    __round__ = _exact(Fraction.__round__)
+    __divmod__ = _exact_pair(Fraction.__divmod__)
+    __rdivmod__ = _exact_pair(Fraction.__rdivmod__)
 
 
 class _LiteralCache(dict):

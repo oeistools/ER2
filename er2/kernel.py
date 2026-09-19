@@ -20,6 +20,7 @@ except ImportError as exc:  # pragma: no cover - depends on the extra
         "the ER2 kernel needs ipykernel: install 'er2[jupyter]'"
     ) from exc
 
+import er2
 from er2 import session
 from er2.preparser import preparse
 
@@ -31,7 +32,7 @@ class ER2Kernel(IPythonKernel):
     """IPython kernel that runs ER2 code."""
 
     implementation = "er2"
-    implementation_version = "0.0.1"
+    implementation_version = er2.__version__
     # D9: declare Python, so Quarto cells are ```{python} and editors
     # highlight ER2 as the Python superset it is.
     language_info = {

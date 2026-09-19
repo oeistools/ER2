@@ -30,7 +30,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M2 (0.2)  | CAS on SymPy                                  | ✅ done     |
 | M3 (0.3)  | Number theory on PARI →**MVP**         | ✅ done     |
 | M4 (0.4)  | Backend selection, PARI types, benchmarks     | ✅ done     |
-| M5 (0.5)  | Algebra                                       | planned (D12–D15 open) |
+| M5 (0.5)  | Algebra                                       | planned (D12–D15 resolved) |
 | M6 (0.6)  | Series                                        | not started |
 | M7 (1.0)  | Stable language and release                   | not started |
 | — (2.0)  | Deep CPython integration                      | long term   |
@@ -312,12 +312,14 @@ handle `t_FFELT`, and it turns `nf`/`bnf` structures into plain lists.
 
 **Tasks:**
 
-1. Settle **D12** (matrix type), **D13** (finite-field syntax), **D14** (number-field API) and
-   **D15** (scope of 0.5), ARCHITECTURE §6. Tasks 2–7 depend on them.
+1. ✅ Settle **D12** (matrix type), **D13** (finite-field syntax), **D14** (number-field API)
+   and **D15** (scope of 0.5), ARCHITECTURE §6. Done 2026-09-19: SymPy `Matrix` with PARI
+   dispatch; `GF(q)` with generator `a` and `ffinit`; a `NumberField` class with a cached `bnf`;
+   all of M5 in 0.5, with number fields allowed to slip to 0.5.1.
 2. **Linear algebra.** `det`, `inverse`, `rank`, `kernel` (null space), `charpoly`, `minpoly`,
    `echelon_form`, `hermite_form`, `smith_form`, `solve` for linear systems. Matrices with integer
    or rational entries go to PARI; symbolic entries go to SymPy. Both give the same results.
-3. **Finite fields.** `GF(p)` and `GF(p^k)` (syntax per D13): elements with `+ - * / ^`, `==`,
+3. **Finite fields.** `GF(p)` and `GF(p^k)` (D13): elements with `+ - * / ^`, `==`,
    `order`, `minpoly`, `charpoly`, `trace`, `norm`, `sqrt`, `log`, and a primitive element.
    Computed by PARI (`t_FFELT`); `from_pari` returns the ER2 element type. `Mod` stays the type of
    `Z/nZ` residues; `GF(p)(a)` and `Mod(a, p)` interoperate.
@@ -327,7 +329,7 @@ handle `t_FFELT`, and it turns `nf`/`bnf` structures into plain lists.
    polynomials over Q, SymPy for symbolic coefficients.
 6. **Gröbner bases.** `groebner(F, *gens, order="lex")` through SymPy, returning SymPy's
    `GroebnerBasis` printed with ER2's printer; `reduce` of a polynomial modulo a basis.
-7. **Number fields** (API per D14). Build from an irreducible polynomial over Q: degree,
+7. **Number fields** (D14; may slip to 0.5.1 per D15). Build from an irreducible polynomial over Q: degree,
    discriminant, integral basis, class number and class group, fundamental units, ideal
    factorization of a rational prime, elements as `Mod(poly, x^2 + 5)` (`t_POLMOD`, from M4).
    `bnfinit` is computed once per field and cached; heavy calls follow the D7 policy (Ctrl-C).
@@ -391,10 +393,10 @@ Revisit this only if the preparser shows real limits.
 | D7  | expensive factorizations               | M3        | ✅ resolved: full + Ctrl-C + `limit=`              |
 | D8  | `Omega` → `bigomega`              | M3        | ✅ resolved: `bigomega`                            |
 | D10 | exposure of PARI functions             | M3        | ✅ resolved: curated prelude plus `pari.`          |
-| D12 | matrix type                            | M5        | open (proposal: SymPy `Matrix`, backend in `dispatch`) |
-| D13 | finite-field syntax                    | M5        | open (proposal: `GF(9)`, generator name `a`)       |
-| D14 | number-field API                       | M5        | open (proposal: `NumberField` class, cached `bnf`) |
-| D15 | scope of 0.5                           | M5        | open (proposal: all of M5; number fields may slip to 0.5.1) |
+| D12 | matrix type                            | M5        | ✅ resolved: SymPy `Matrix`, backend in `dispatch` |
+| D13 | finite-field syntax                    | M5        | ✅ resolved: `GF(9)`, generator `a`, `ffinit`       |
+| D14 | number-field API                       | M5        | ✅ resolved: `NumberField` class, cached `bnf`     |
+| D15 | scope of 0.5                           | M5        | ✅ resolved: all of M5; number fields may slip to 0.5.1 |
 
 ## Risks
 

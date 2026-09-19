@@ -34,10 +34,7 @@ class _SympyBackend:
 
 def symbolic(args, kwargs):
     """Whether an argument is a symbolic (non-numeric) SymPy object."""
-    if not _lazy.sympy_loaded():
-        return False  # no SymPy object can exist yet
-    basic = sys.modules["sympy"].Basic
-    return any(isinstance(arg, basic) and not arg.is_Number for arg in args)
+    return any(_lazy.is_symbolic(arg) for arg in args)
 
 
 def number(args, kwargs):

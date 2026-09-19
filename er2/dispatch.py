@@ -193,7 +193,8 @@ def dedekind_psi(n):
 def jordan_totient(n, k):
     """Jordan's totient ``J_k(n)``: ``n^k * prod(1 - 1/p^k)`` over ``p | n``.
 
-    ``jordan_totient(n, 1)`` is ``phi(n)``.  GP has no built-in; this is
+    ``jordan_totient(n, 1)`` is Euler's totient ``phi(n)`` (PARI
+    ``eulerphi``).  GP has no built-in; this is
     ``sumdiv(n, d, d^k * moebius(n/d))``.
     """
     return _call("jordan_totient", n, k)

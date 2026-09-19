@@ -1,0 +1,31 @@
+name: Feature request
+description: A new function, type or improvement.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: example
+    attributes:
+      label: What you would like to write in ER2
+      description: An example of the code you want to work, and what it should give.
+      render: python
+      placeholder: |
+        K = NumberField(x^2 + 5)
+        K.class_number()    # 2
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Why
+      description: The mathematical problem it solves. Links to PARI, SageMath or SymPy equivalents help.
+    validations:
+      required: true
+  - type: checkboxes
+    id: syntax
+    attributes:
+      label: Syntax
+      options:
+        - label: >
+            This needs new syntax in .er2 files (not only a new function). New syntax must be
+            expressible as a token transformation into Python and is discussed first
+            (ARCHITECTURE.md §1.1).

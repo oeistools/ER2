@@ -420,8 +420,8 @@ def jordan_totient(n, k):
     """Jordan's totient ``J_k(n) = n^k * prod(1 - 1/p^k)`` over ``p | n``.
 
     ``J_k(n)`` counts the ``k``-tuples in ``[1, n]`` whose gcd with ``n``
-    is 1.  ``J_1`` is ``phi``, and ``J_2(n) / phi(n)`` is
-    ``dedekind_psi(n)``.
+    is 1.  ``J_1`` is Euler's totient ``phi`` (PARI ``eulerphi``), and
+    ``J_2(n) / phi(n)`` is ``dedekind_psi(n)``.
     """
     n, k = _positive_integer(n, "jordan_totient"), to_pari(k)
     if k.type() != "t_INT" or k < 0:

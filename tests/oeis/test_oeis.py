@@ -78,7 +78,7 @@ def test_sequence_lookup(offline):
     assert all(type(t) is Integer for t in s.terms)
     assert "nonn" in s.keywords and "core" in s.keywords
     assert oeis.sequence(45) is s  # the same (cached) entry
-    assert oeis.sequence("a000045") is not None
+    assert oeis.sequence("a000045") is s  # identifiers are normalized
 
 
 def test_terms_use_the_offset_and_the_bfile(offline):

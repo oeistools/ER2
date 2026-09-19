@@ -116,6 +116,15 @@ def test_partial_factor():
     assert f.value() == n
 
 
+def test_factorial():
+    # GP: 30!
+    assert pari_backend.factorial(30) == 265252859812191058636308480000000
+    assert type(pari_backend.factorial(0)) is Integer
+    for bad in (-1, Rational(1, 2), True):
+        with pytest.raises(ValueError):
+            pari_backend.factorial(bad)
+
+
 def test_dedekind_psi():
     # psi(n) = n * prod(1 + 1/p): psi(1..12)
     values = [1, 3, 4, 6, 6, 12, 8, 12, 12, 18, 12, 24]

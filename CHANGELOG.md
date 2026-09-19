@@ -1,0 +1,109 @@
+# Changelog
+
+All notable changes to ER2 are listed here. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/). [PLAN.md](PLAN.md) has the full detail of
+each milestone, and [ARCHITECTURE.md](ARCHITECTURE.md) §6 has the design decisions (D1–D15).
+
+## Versioning policy
+
+ER2 follows [Semantic Versioning](https://semver.org/) with the usual rule for 0.x releases:
+
+| Version | Meaning |
+|---------|---------|
+| **0.x** (now) | Early development. A minor release (0.4 → 0.5) may change the public API. Each such change is listed here under **Changed** or **Removed**. |
+| **0.x.y** | Additions and fixes only: no intended breaking change. |
+| **1.0** | The language is stable (PLAN.md, M7): a normative preparser specification, a PyPI release and a deprecation policy. |
+
+What is stable already, and what is not:
+
+- **Stable:** the ER2 syntax in the §1.1 table of ARCHITECTURE.md (`^`, `^^`, exact integer
+  literals, `sym`, `5r`). Any change to it requires updating that table and a changelog entry.
+  Python compatibility (all Python syntax, any library through `import`) is a hard requirement.
+- **Stable in intent, may still change before 1.0:** the curated prelude (`factor`, `phi`,
+  `isprime`, `Mod`, …), `latex()` and `show()`, and the `er2` command.
+- **Experimental:** `pari.<name>` (it follows PARI's own API and the PARI table), the `oeis`
+  module, and the printed form of results (`repr`, LaTeX), which may improve between releases.
+
+## [Unreleased]
+
+### Added
+- `jordan_totient(n, k)`: Jordan's totient J_k (GP: `sumdiv(n, d, d^k*moebius(n/d))`).
+- `radical(n)`: the product of the distinct primes of `n` (GP: `factorback(factorint(n)[, 1])`).
+- Example gallery: `examples/hello.er2`, `examples/syntax.er2` and `examples/factorization.er2`,
+  checked by the golden tests.
+- `CONTRIBUTING.md`, this changelog, and GitHub issue templates.
+- The M5 (0.5, Algebra) plan, with decisions D12–D15.
+
+### Changed
+- The preparser is much faster on large files (a 16,000-line file: 22.6 s → 1.1 s).
+- Requires `oeis-tools` ≥ 0.2.1, so `OEISSequence.bibtex()` works.
+
+### Fixed
+- `divmod(7, 1/3)` and `divmod(2, 7.5)` raised `TypeError`.
+- `math.floor`, `math.ceil`, `math.trunc`, `round`, `divmod` of a `Rational` and reflected shifts
+  (`3r << n`) returned plain `int`/`Fraction` instead of `Integer`/`Rational`.
+- The ER2 Jupyter kernel reported version `0.0.1`.
+
+## [0.4.2] — 2026-09-19
+
+### Added
+- The `oeis` module in the prelude: `oeis.sequence`, `search`, `identify`, `check` and
+  `write_bfile`, built on [oeis-tools](https://github.com/oeistools/oeis-tools) (optional extra
+  `er2[oeis]`).
+- ER2 types (`Mod`, `Qfb`, `Factorization`, `OEISSequence`) format their own LaTeX, so it does not
+  load SymPy.
+
+## [0.4.1] — 2026-09-19
+
+### Added
+- Raw literals: `5r` is a plain Python `int` (a new row in the §1.1 table).
+- A `Makefile` for the common tasks, and a CI job that runs the Jupyter, HTML and PDF tests.
+
+### Changed
+- SymPy loads only when a program needs it: a number theory program starts in 0.16 s, not 0.40 s.
+- `factorial(n)` of an integer uses PARI's exact `n!`.
+- The version has a single source, `pyproject.toml`.
+
+### Fixed
+- `f"{2^3=}"` printed the preparsed Python text; it now prints `2^3=8`.
+- `er2 file.er2` did not put the file's directory on `sys.path`.
+
+## [0.4.0] — 2026-09-19
+
+### Added
+- Automatic backend choice for `factor`: univariate polynomials over Q go to PARI (×1.2–14 faster
+  from degree 9).
+- PARI ↔ SymPy conversions for polynomials, rational functions, series, reals, complex numbers and
+  matrices; `Mod` with polynomial moduli; `Qfb` binary quadratic forms.
+- 26 PARI functions that take Python callables (`pari.sum(lambda n: 1/n^2, 1, 10)`).
+- Benchmarks in [docs/BENCHMARKS.md](docs/BENCHMARKS.md).
+
+### Changed
+- `Integer` arithmetic is 1.4–1.6× faster.
+
+### Fixed
+- `case 0:` patterns never matched, because the preparser wrapped their literals.
+- Notebook tracebacks showed ER2's internal frames.
+
+## [0.3.0] — 2026-09-19 (MVP)
+
+### Added
+- Number theory on PARI: `factor` of integers and rationals (with `limit=` for partial
+  factorizations), `isprime`, `phi`, `sigma`, `mu`, `bigomega`, `dedekind_psi`, `Mod`, and the
+  rest of the curated prelude.
+- Every other PARI function as `pari.<name>`, from the table `er2/data/pari_functions.csv`.
+
+## [0.2.0] — 2026-09-19
+
+### Added
+- The CAS on SymPy: `expand`, `factor`, `simplify`, `collect`, `cancel`, `diff`, `integrate`,
+  `limit`, `solve`, `series`, and the constants and functions `pi`, `E`, `I`, `oo`, `sqrt`, `exp`,
+  `log`, `sin`, `cos`, `tan`, `Eq`.
+
+## [0.1.0] — 2026-09-18
+
+### Added
+- The preparser: `^` as power, `^^` as XOR, exact integer literals, `sym`.
+- `Integer` and `Rational`, `latex()` and `show()`.
+- The `er2` command (programs, `--show-python`, the REPL), `.er2` imports, the ER2 Jupyter
+  kernel, `%load_ext er2`, and Quarto support.

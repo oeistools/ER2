@@ -83,9 +83,21 @@ def test_rounding_stays_exact():
     assert type(round(Rational(7, 3), 1)) is Rational
 
 
+def test_integer_divided_by_other_numbers():
+    for result, expected, kind in (
+        (Integer(1) / Rational(1, 2), 2, Integer),
+        (Integer(3) / Rational(2, 5), Rational(15, 2), Rational),
+        (Integer(3) / 0.5, 6.0, float),
+        (1.5 / Integer(3), 0.5, float),
+    ):
+        assert result == expected and type(result) is kind
+
+
 def test_division_by_zero():
     with pytest.raises(ZeroDivisionError, match="division by zero"):
         Integer(1) / 0
+    with pytest.raises(ZeroDivisionError, match="division by zero"):
+        1 / Integer(0)
 
 
 def test_rational_repr():
@@ -161,7 +173,11 @@ def test_raw_literals_are_plain_ints():
     from er2.preparser import preparse
 
     ns = prelude.namespace()
-    exec(preparse("a = 5r\nb = 5\nc = 5r / 2\nd = f'{2^3=}'\n"), ns)
+    source = "a = 5r\nb = 5\nc = 5r / 2r\nd = 5r / 2\ne = f'{2^3=}'\n"
+    exec(preparse(source), ns)
     assert type(ns["a"]) is int and type(ns["b"]) is Integer
-    assert ns["c"] == 2.5  # Python's true division
-    assert ns["d"] == "2^3=8"
+    # Only raw operands give Python's true division; with an ER2 number
+    # the result is ER2's, as in Sage (``5r / 2`` is ``5/2``).
+    assert ns["c"] == 2.5 and type(ns["c"]) is float
+    assert ns["d"] == Rational(5, 2) and type(ns["d"]) is Rational
+    assert ns["e"] == "2^3=8"

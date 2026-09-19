@@ -32,6 +32,10 @@ def test_construction_and_attributes():
         (lambda: -Mod(3, 7), Mod(4, 7)),
         (lambda: Mod(1, 4) + Mod(1, 6), Mod(0, 2)),
         (lambda: Mod(3, 7) * Rational(1, 3), Mod(1, 7)),
+        (lambda: 3 * Mod(2, 7), Mod(6, 7)),
+        (lambda: +Mod(3, 7), Mod(3, 7)),
+        # Mod(Mod(3, 6), 4) in PARI: the gcd of the moduli.
+        (lambda: Mod(Mod(3, 6), 4), Mod(1, 2)),
     ],
 )
 def test_arithmetic_matches_pari(result, expected):
@@ -47,6 +51,14 @@ def test_errors():
         Mod(1.5, 7)
     with pytest.raises(TypeError):
         Mod(1, 7.0)
+    for unsupported in (
+        lambda: Mod(2, 7) ** 0.5,
+        lambda: pow(Mod(2, 7), 2, 5),
+        lambda: Mod(2, 7) * "a",
+        lambda: Mod(2, 7) + 1.5,
+    ):
+        with pytest.raises(TypeError):
+            unsupported()
 
 
 def test_equality_and_hash():

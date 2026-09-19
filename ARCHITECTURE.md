@@ -58,7 +58,8 @@ Python ecosystem through ordinary `import`. Chosen model: **the SageMath model**
 6. **Escape hatches**: `int(...)`/`float(...)` for explicit conversion, and the raw-literal suffix
    `5r` (Sage's convention) for a plain Python `int` (implemented 2026-09-19, user decision), for
    example in hot numeric loops (D2). It works for every integer literal (`0x1Fr`, `1_000r`); there
-   must be no space before the `r`.
+   must be no space before the `r`. An operation with an ER2 number gives an ER2 result, as in
+   Sage: `5r / 2` is `5/2`, while `5r / 2r` is Python's `2.5`.
 7. **Known caveat**: Python code pasted into a `.er2` file that relies on `^` being XOR, or on
    `int / int` returning `float`, changes meaning. Mitigations: the preparser warns on `^` between
    obvious bitmask operands (hex/binary literals, `&`, `|`, `<<` in the same expression); keep such
@@ -294,7 +295,7 @@ Main mappings where the names differ:
 | `znorder`, `znprimroot`, `nextprime`, `divisors`, `gcd`, `lcm` | same | |
 | `dedekind_psi(n)` | —              | Dedekind ψ, computed from PARI's `factor`; there is no bare `psi` (D5) |
 | `radical(n)`  | —                 | product of the distinct primes of `n`; GP: `factorback(factorint(n)[, 1])` |
-| `jordan_totient(n, k)` | —         | Jordan's totient J_k, from PARI's `factor`; GP: `sumdiv(n, d, d^k*moebius(n/d))`. `J_2(n)/phi(n)` = `dedekind_psi(n)` |
+| `jordan_totient(n, k)` | —         | Jordan's totient J_k, from PARI's `factor`; GP: `sumdiv(n, d, d^k*moebius(n/d))`. `J_2(n)/phi(n)` = `dedekind_psi(n)`, with `phi` = Euler's totient |
 | `pari.digamma(x)` | `psi(x)`       | PARI's `psi` is the digamma function (D5) |
 
 ### 3.6 Printing and LaTeX (`er2/printing.py`)

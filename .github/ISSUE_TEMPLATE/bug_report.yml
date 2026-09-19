@@ -1,0 +1,63 @@
+name: Bug report
+description: ER2 gives a wrong result, an error, or behaves differently from Python.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting. A minimal `.er2` program is the most useful thing you can give us.
+  - type: textarea
+    id: program
+    attributes:
+      label: Minimal ER2 program
+      description: The shortest program that shows the problem.
+      render: python
+      placeholder: |
+        print(divmod(7, 1/3))
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: The output or the full traceback.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: >
+        For a wrong mathematical value, say where the expected value comes from
+        (GP, SageMath, SymPy, the OEIS, a reference).
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where does it happen?
+      multiple: true
+      options:
+        - er2 command (er2 file.er2)
+        - er2 REPL
+        - Jupyter, ER2 kernel
+        - Jupyter, %load_ext er2
+        - Quarto
+        - Importing an .er2 module
+    validations:
+      required: true
+  - type: textarea
+    id: version
+    attributes:
+      label: Versions
+      description: The output of `er2 --version` and `python --version`, and your operating system.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: python
+    attributes:
+      label: Generated Python (optional)
+      description: If the translation looks wrong, the output of `er2 --show-python bug.er2`.
+      render: python

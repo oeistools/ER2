@@ -1,0 +1,25 @@
+# ER2 syntax: the only differences from Python (README, "Python compatibility").
+# Run with `er2 examples/syntax.er2`; `er2 --show-python` shows the Python.
+
+# ^ is power and ^^ is XOR.
+print(2^10, 5 ^^ 3)
+
+# Integer literals are exact: / gives a rational, not a float.
+a = 1/3
+print(a, a + 2/3, type(a).__name__)
+print(2^-3, (2/3)^2)
+
+# 5r is a raw Python int, for Python's own behavior.  Mixed with an ER2
+# number, the result is ER2's (as in Sage).
+print(type(7r).__name__, 7r / 2r, 7r / 2)
+
+# sym declares symbols; _x, _y, ... are predefined.
+sym t, u
+print((t + u)^2, expand((t + u)^2), _x^2)
+
+# Strings, comments and f-strings are never translated.
+print("2^10 stays text", f"{2^10=}")
+
+# Everything else is plain Python.
+squares = {k: k^2 for k in range(1, 6)}
+print(squares, sum(squares.values()))

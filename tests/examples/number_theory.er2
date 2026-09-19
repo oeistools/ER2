@@ -8,6 +8,8 @@ print(latex(factor(720)))
 
 print(phi(36), mu(30), sigma(12), sigma(12, 2), omega(360), bigomega(360))
 print(dedekind_psi(12), numdiv(360), core(360), valuation(48, 2))
+# phi is Euler's totient (eulerphi): J_2(n) / phi(n) = dedekind_psi(n).
+print(jordan_totient(12, 2), jordan_totient(12, 2) / phi(12), radical(360))
 print(divisors(28), primes(8), prime(100), primepi(1000))
 print(nextprime(10^12), precprime(100), sqrtint(10^20 + 1))
 print(gcd(12, 18), lcm(4, 6), binomial(50, 25), fibonacci(100))

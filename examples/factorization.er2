@@ -1,0 +1,21 @@
+# Factorization: one `factor` for integers, rationals and polynomials.
+# Integers go to PARI, polynomials to PARI or SymPy (ARCHITECTURE.md §3.4).
+
+f = factor(2^64 + 1)
+print(f)                        # 274177 * 67280421310721
+print(list(f), f.value() == 2^64 + 1)
+print(factor(-360), factor(3/20))
+print(latex(factor(720)))       # 2^{4} \cdot 3^{2} \cdot 5
+
+# A partial factorization stops trial division at the limit (D7).
+g = factor(10^60 + 1, limit=10^5)
+print(g.is_complete, g.unfactored)
+
+sym x, y
+print(factor(x^4 - 1))          # univariate over Q: PARI
+print(factor(x^2 - y^2))        # multivariate: SymPy
+print(factor(x^2 + 1, extension=I))
+
+# Arithmetic functions read the factorization.
+n = 360
+print(divisors(n)[:6], numdiv(n), sigma(n), phi(n), radical(n))

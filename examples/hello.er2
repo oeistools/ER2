@@ -1,0 +1,6 @@
+# Hello, ER2: run with `er2 examples/hello.er2`.
+print("Hello from ER2")
+print(2^10, 1/3 + 1/6)      # ^ is power; division is exact
+sym x
+print(expand((x + 1)^3))    # symbolic algebra
+print(isprime(2^127 - 1))   # number theory, by PARI

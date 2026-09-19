@@ -11,7 +11,14 @@ abstract: >-
   available, and ER2 code runs in Jupyter and Quarto. It is named after
   the mathematician Paul Erdős.
 authors:
-  - alias: eph
+  - given-names: Enrique
+    family-names: Pérez Herrero
+    alias: eph
+    email: energycode.org@gmail.com
+contact:
+  - given-names: Enrique
+    family-names: Pérez Herrero
+    email: energycode.org@gmail.com
 version: 0.4.2
 repository-code: "https://github.com/oeistools/ER2"
 url: "https://github.com/oeistools/ER2"

@@ -1,7 +1,7 @@
 # ER2 — Mathematical Python
 
 [![CI](https://github.com/oeistools/ER2/actions/workflows/ci.yml/badge.svg)](https://github.com/oeistools/ER2/actions/workflows/ci.yml)
-[![Status: early development](https://img.shields.io/badge/status-0.1%20early%20development-orange)](PLAN.md)
+[![Status: early development](https://img.shields.io/badge/status-0.3%20MVP-orange)](PLAN.md)
 [![Python 3.12 | 3.13 | 3.14](https://img.shields.io/badge/python-3.12%20%7C%203.13%20%7C%203.14-blue?logo=python&logoColor=white)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Code style: PEP 8](https://img.shields.io/badge/code%20style-PEP%208-blue)](https://peps.python.org/pep-0008/)
@@ -18,11 +18,15 @@ computational number theory powered by [PARI/GP](https://pari.math.u-bordeaux.fr
 It is named after the Hungarian mathematician **Paul Erdős**. In Spanish, "Erdős" sounds like
 "ER-dos", which is where *ER2* comes from.
 
-> **Status: early development (0.1, milestone M1 done).** The ER2 language layer already works:
-> `^`, `^^`, exact integers and rationals, `sym`, `_x`, `latex()`/`show()`, `.er2` imports, the
-> `er2` command and REPL, the Jupyter kernel, `%load_ext er2`, and Quarto. The mathematical
-> functions used below (`factor`, `diff`, `isprime`, `phi`, …) arrive in M2 and M3. See
-> [PLAN.md](PLAN.md).
+> **Status: MVP (0.3, milestones M1–M3 done).** The program below runs in the `er2` command,
+> in Jupyter and in Quarto. Working now:
+> - **The language:** `^`, `^^`, exact integers and rationals, `sym`, `_x`, `latex()`/`show()`,
+>   and `.er2` imports.
+> - **The CAS on SymPy:** `expand`, `factor`, `diff`, `integrate`, `limit`, `solve`, `series`, and more.
+> - **Number theory on PARI:** `factor` of integers, `isprime`, `phi`, `sigma`, `Mod`, and so on, plus
+>   every other PARI function as `pari.<name>`.
+>
+> For a tour, render [examples/demo.qmd](examples/demo.qmd). See [PLAN.md](PLAN.md) for what comes next.
 
 ## A taste of ER2
 
@@ -40,6 +44,7 @@ print(1/3)                    # 1/3, exact and not 0.333...
 print(isprime(2^521 - 1))     # True  (PARI)
 print(phi(123456789))         # 82260072
 print(factor(2^127 - 1))      # 2^127 - 1 is prime
+print(factor(360))            # 2^3 * 3^2 * 5
 
 for k in range(1, 20):        # ordinary Python
     if isprime(k):
@@ -106,7 +111,7 @@ ER2 does not introduce a new interpreter. It has three parts:
 | Version | Focus |
 |---------|-------|
 | 0.1 | Preparser: `sym`, `^`, `_x`, exact integers and rationals; Jupyter kernel, `%load_ext er2`, Quarto |
-| 0.2 | CAS: `expand`, `factor`, `simplify`, `diff`, `integrate`, `solve` |
+| 0.2 | CAS on SymPy: `expand`, `factor`, `simplify`, `diff`, `integrate`, `limit`, `solve`, `series` |
 | 0.3 | Number theory on PARI: primality, factorization, `phi`, `sigma`, `mu`, … |
 | 0.4 | Automatic backend selection, PARI types, benchmarks |
 | 0.5 | Algebra: matrices, finite fields, resultants, Gröbner bases |

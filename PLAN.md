@@ -27,8 +27,8 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | --------- | --------------------------------------------- | ----------- |
 | M0        | Foundations                                   | ✅ done (CI result not yet checked) |
 | M1 (0.1)  | Preparser, number types, CLI, Jupyter, Quarto | ✅ done     |
-| M2 (0.2)  | CAS on SymPy                                  | not started |
-| M3 (0.3)  | Number theory on PARI →**MVP**         | not started |
+| M2 (0.2)  | CAS on SymPy                                  | ✅ done     |
+| M3 (0.3)  | Number theory on PARI →**MVP**         | ✅ done     |
 | M4 (0.4)  | Backend selection, PARI types, benchmarks     | not started |
 | M5 (0.5)  | Algebra                                       | not started |
 | M6 (0.6)  | Series                                        | not started |
@@ -138,6 +138,21 @@ Known limitations, carried forward:
    public types and fails if any of them falls back to `\texttt`. Check rendering in Jupyter and
    in Quarto HTML and PDF.
 
+**Status: ✅ done (2026-09-19).** There are 177 tests. New ones cover the conversion boundary, every CAS
+function (values checked against SymPy 1.14), the dispatch table, golden LaTeX for the symbolic
+types, the first half of the MVP in the CLI and in both notebook routes, and Quarto renders to
+HTML and PDF (the PDF test is skipped without a TeX installation).
+
+Done while building M2:
+- The public functions return exact numbers as ER2 `Integer`/`Rational`
+  (`integrate(f, (x, 0, 1))` is the ER2 `7/3`). Symbolic results stay SymPy objects (D11).
+- The prelude also exposes SymPy's `pi, E, I, oo, sqrt, exp, log, sin, cos, tan, Eq`, because
+  `integrate`, `limit` and `series` are hardly usable without them (ARCHITECTURE §3.3).
+- `Integer` and `Rational` now define `_repr_latex_` (M1 gap), so a cell ending in `1/3`
+  renders as math.
+- `Poly` prints with `^` (SymPy's `_print_Poly` hard-codes `**`).
+- `factor` of a number raises `TypeError` until the PARI backend exists (M3).
+
 **Acceptance:** the first half of the MVP (ARCHITECTURE.md §5) prints the expected output in all
 environments: `x^2 + 2*x + 1`, `x^2 + 2*x + 1`, `(x + 1)^2`.
 
@@ -159,6 +174,31 @@ environments: `x^2 + 2*x + 1`, `x^2 + 2*x + 1`, `(x + 1)^2`.
 5. Exact `factorial`, since PARI's version returns a real.
 6. Add `examples/mvp.er2`, `examples/mvp.ipynb` and `examples/mvp.qmd`, plus golden tests.
 
+**Status: ✅ done (2026-09-19).** There are 268 tests. They cover the PARI conversion boundary, factorizations
+(full, negative, rational, partial), the predicates, `Mod` (checked against PARI), `Factorization`,
+every `prelude`/`namespace` row as a callable, golden LaTeX for every public function, the golden
+programs `examples/mvp.er2` and `tests/examples/number_theory.er2`, `examples/mvp.ipynb` through
+both routes, and `examples/mvp.qmd` in Quarto.
+
+Done while building M3:
+- D5, D7, D8 and D10 are resolved (ARCHITECTURE §6).
+- **`Mod` was moved up from M4.** Four curated prelude functions (`znprimroot`, `znorder`,
+  `znlog`, `chinese`) take or return residues. `Mod` is a pure-Python type with PARI's semantics
+  (mixed moduli reduce to the gcd).
+- `factorial` is exact through SymPy, so `factorial(x)` stays symbolic. `pari.factorial` is still
+  PARI's real-valued function.
+- **PARI setup.** The maximum stack was raised from ~8 MB to 1 GiB (reserved, not allocated), and
+  real precision was set to GP's 38 digits (cypari2 uses 15). `pari.set_stack` and
+  `pari.set_precision` change them.
+- `dispatch` entries are now predicates over all the arguments, so `gcd(4, x)` goes to SymPy.
+- Ruff excludes `examples/*.ipynb`, because it cannot parse ER2 syntax (§6.1).
+
+Known limitations, carried forward:
+- `from_pari` raises `TypeError` for `t_POLMOD`, `t_SER`, `t_QFB`, `t_PADIC` and other types
+  (M4). `pari.raw` gives raw PARI objects.
+- `to_pari` does not convert SymPy polynomials yet (M4, `Pol`).
+- The 30 `wrapper` rows (`sum`, `intnum`, `prodeuler`, …) are not exposed yet.
+
 **Acceptance: MVP.** The full program in ARCHITECTURE.md §5 gives the expected output in the CLI,
 Jupyter (both routes) and Quarto. Values are checked against cypari2:
 `phi(123456789) = 82260072`, `sigma(123456789) = 178422816`, `isprime(2^521 - 1) = True`.
@@ -169,7 +209,10 @@ Jupyter (both routes) and Quarto. Values are checked against cypari2:
 
 - Automatic backend selection beyond `factor`, for example integer polynomials going to PARI when
   that is faster.
-- PARI types exposed with ER2 semantics: `Mod`, `Pol`, `Ser`, `Qfb`, and vectors and matrices.
+- PARI types exposed with ER2 semantics: `Pol` (including SymPy → PARI), `Ser`, `Qfb`, `POLMOD`,
+  and vectors and matrices. (`Mod` came in M3.)
+- The 30 `wrapper` functions that take GP closures (`sum`, `intnum`, `prodeuler`, `direuler`, …),
+  accepting Python callables.
 - Benchmarks comparing ER2, raw cypari2 and SymPy, with the ER2 overhead reported.
 - Performance of `Integer` literals in numeric loops (D2 risk).
 
@@ -209,10 +252,10 @@ Revisit this only if the preparser shows real limits.
 | D6  | canonical integer type | M1 | ✅ resolved: `Integer(int)` (spike) |
 | D9  | kernelspec language | M1 | ✅ resolved: `python` |
 | D11 | `x^2` in `print()` | M1 | ✅ resolved: only in ER2 sessions |
-| D5  | `psi`: Dedekind or digamma           | M3        | open                                                |
-| D7  | expensive factorizations               | M3        | open                                                |
-| D8  | `Omega` → `bigomega`              | M3        | open (proposal:`bigomega`)                        |
-| D10 | exposure of PARI functions             | M3        | open (proposal: curated prelude plus`pari.`)      |
+| D5  | `psi`: Dedekind or digamma           | M3        | ✅ resolved: `dedekind_psi` + `pari.digamma`, no `psi` |
+| D7  | expensive factorizations               | M3        | ✅ resolved: full + Ctrl-C + `limit=`              |
+| D8  | `Omega` → `bigomega`              | M3        | ✅ resolved: `bigomega`                            |
+| D10 | exposure of PARI functions             | M3        | ✅ resolved: curated prelude plus `pari.`          |
 
 ## Risks
 

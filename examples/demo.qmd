@@ -1,0 +1,151 @@
+---
+title: "ER2 demo: what works today (M1–M3)"
+format:
+  html:
+    code-tools: true
+jupyter: er2
+---
+
+ER2 is Python with mathematics built in. Every cell below is ER2 code,
+run by the `er2` Jupyter kernel.
+
+## Exact arithmetic
+
+Integer literals are exact, so `/` gives a rational and `^` is a power.
+
+```{python}
+print(2^10)
+print(1/3 + 1/6)
+print(2^-3)
+print(5 ^^ 3)   # ^^ is Python's XOR
+```
+
+The last value of a cell is rendered as math:
+
+```{python}
+(1/3)^5
+```
+
+## Symbols and printing
+
+```{python}
+sym x, y
+f = x^2 + 2*x + 1
+print(f)
+f
+```
+
+`latex()` gives the LaTeX source, and `show()` renders it:
+
+```{python}
+print(latex(f))
+show((x + 1)^2 / (y - 1))
+```
+
+## Computer algebra (SymPy)
+
+```{python}
+print(expand((x + 1)^3))
+print(factor(f))
+print(factor(x^4 - 1))
+print(factor(x^2*y - y^3))
+```
+
+```{python}
+show(factor(x^6 - 1))
+```
+
+Calculus:
+
+```{python}
+print(diff(x^3 * sin(x), x))
+print(integrate(f, (x, 0, 1)))      # the exact rational 7/3
+print(limit(sin(x) / x, x, 0))
+print(limit((1 + 1/x)^x, x, oo))
+```
+
+```{python}
+show(integrate(exp(-x^2), (x, -oo, oo)))
+show(series(sin(x), x, 0, 10))
+```
+
+Equations:
+
+```{python}
+print(solve(x^2 - 4, x))
+print(solve(Eq(x^2 + x, 1), x))
+print(solve([x + y - 3, x - y - 1], [x, y]))
+```
+
+Simplification:
+
+```{python}
+print(simplify(sin(x)^2 + cos(x)^2))
+print(cancel((x^2 - 1) / (x - 1)))
+print(collect(x*y + x - 3 + 2*x^2 - x^2*y, x))
+```
+
+## Inline math
+
+The integral of $f$ from 0 to 1 is `{python} latex(integrate(f, (x, 0, 1)))`,
+and $f$ factors as `{python} latex(factor(f))`.
+
+## Python still works
+
+```{python}
+import math
+from collections import Counter
+
+n = 10
+print(list(range(n)), math.sqrt(n))
+print(Counter("mississippi").most_common(2))
+print([k^2 for k in range(1, 8) if k % 2])
+```
+
+## Number theory (PARI)
+
+`factor` chooses its backend: integers go to PARI, expressions to SymPy.
+
+```{python}
+print(factor(2^127 - 1))            # a Mersenne prime
+print(factor(2^64 + 1))
+factor(10^20 - 1)
+```
+
+Arithmetic functions:
+
+```{python}
+n = 123456789
+print(phi(n), sigma(n), mu(30), omega(360), bigomega(360))
+print(divisors(28), dedekind_psi(12), numdiv(360))
+print(isprime(2^521 - 1), nextprime(10^12), prime(100), primepi(10^6))
+```
+
+Modular arithmetic:
+
+```{python}
+g = znprimroot(23)
+print(g, znorder(g), chinese(Mod(2, 3), Mod(3, 5)))
+Mod(3, 7)^-1
+```
+
+Very large numbers can take long to factor (Ctrl-C interrupts).
+`limit=` gives a partial factorization by trial division:
+
+```{python}
+f = factor(10^60 + 1, limit=10^5)
+print(f)
+print(f.is_complete, f.unfactored)
+```
+
+Every other PARI function is in the `pari` namespace, with ER2 numbers in
+and out:
+
+```{python}
+print(pari.zeta(2))
+print(pari.polcyclo(12))
+print(len(dir(pari)), "PARI functions")
+```
+
+The exponents p ≤ 127 for which 2^p − 1 is a Mersenne prime:
+`{python} latex([p for p in primes(31) if isprime(2^p - 1)])`.

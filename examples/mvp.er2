@@ -1,0 +1,17 @@
+# The ER2 MVP (ARCHITECTURE.md §5): run with `er2 examples/mvp.er2`.
+sym x
+f = x^2 + 2*x + 1
+print(f)            # x^2 + 2*x + 1
+print(expand(f))    # x^2 + 2*x + 1
+print(factor(f))    # (x + 1)^2
+show(factor(f))     # notebooks: rendered \left(x + 1\right)^{2}
+print(latex(f))     # x^{2} + 2 x + 1
+
+print(factor(2^127 - 1))
+print(phi(123456789))
+print(sigma(123456789))
+print(isprime(2^521 - 1))
+
+for k in range(1, 20):
+    if isprime(k):
+        print(k)

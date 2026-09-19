@@ -45,6 +45,35 @@ def test_m1_acceptance_program(tmp_path):
     assert result.stdout == "1024\n1/3\n6\nx^2 + 1\n\\frac{1}{3}\n"
 
 
+def test_m2_acceptance_program(tmp_path):
+    """The first half of the MVP (ARCHITECTURE.md §5)."""
+    program = write(
+        tmp_path / "m2.er2",
+        """
+        sym x
+        f = x^2 + 2*x + 1
+        print(f)
+        print(expand(f))
+        print(factor(f))
+        show(factor(f))
+        print(latex(f))
+        print(integrate(f, (x, 0, 1)), solve(x^2 - 4, x))
+        print(series(sin(x), x, 0, 6))
+        """,
+    )
+    result = er2(program)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == (
+        "x^2 + 2*x + 1\n"
+        "x^2 + 2*x + 1\n"
+        "(x + 1)^2\n"
+        "(x + 1)^2\n"
+        "x^{2} + 2 x + 1\n"
+        "7/3 [-2, 2]\n"
+        "x - x^3/6 + x^5/120 + O(x^6)\n"
+    )
+
+
 def test_script_arguments_and_main(tmp_path):
     program = write(
         tmp_path / "args.er2",

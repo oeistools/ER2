@@ -7,9 +7,31 @@ user code such as ``from sympy import *`` can never shadow them.
 
 import sympy
 
-from er2 import preparser
+from er2 import dispatch, preparser
+from er2.backends.pari_backend import pari
 from er2.printing import latex, show
+from er2.runtime.factorization import Factorization
+from er2.runtime.modular import Mod
 from er2.runtime.numbers import Integer, Rational
+
+# Public functions (CAS and number theory); they choose their backend in
+# ``er2.dispatch``.
+FUNCTIONS = tuple(dispatch.FUNCTIONS)
+
+# SymPy constants and elementary functions, exposed as they are.
+SYMPY_NAMES = (
+    "pi",
+    "E",
+    "I",
+    "oo",
+    "sqrt",
+    "exp",
+    "log",
+    "sin",
+    "cos",
+    "tan",
+    "Eq",
+)
 
 # Predefined symbols (D3): ``_x`` is the symbol ``x``, and so on.
 PREDEFINED_SYMBOLS = ("x", "y", "z", "n", "k", "p")
@@ -28,10 +50,16 @@ def namespace():
         preparser.SYMBOLS: symbols,
         "Integer": Integer,
         "Rational": Rational,
+        "Mod": Mod,
+        "Factorization": Factorization,
+        "pari": pari,
         "symbols": symbols,
         "latex": latex,
         "show": show,
     }
+    ns.update(dispatch.FUNCTIONS)
+    for name in SYMPY_NAMES:
+        ns[name] = getattr(sympy, name)
     for name in PREDEFINED_SYMBOLS:
         ns[f"_{name}"] = sympy.Symbol(name)
     return ns

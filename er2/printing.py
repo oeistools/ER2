@@ -38,6 +38,15 @@ class ER2StrPrinter(sympy_str.StrPrinter):
         exp = self.parenthesize(expr.exp, prec, strict=False)
         return f"{base}^{exp}"
 
+    def _print_Poly(self, expr):  # noqa: N802 (SymPy API)
+        """Print a polynomial with ``^`` for the powers of its generators.
+
+        SymPy's method prints coefficients and generators through
+        ``self._print`` and writes ``**`` only between a generator and its
+        exponent, so replacing ``**`` changes exactly those.
+        """
+        return super()._print_Poly(expr).replace("**", "^")
+
 
 def er2_str(expr, **settings):
     """Return ``expr`` as a string in ER2 notation."""
@@ -99,7 +108,13 @@ def latex(obj, *, display=False, **options):
 
 @functools.singledispatch
 def _latex(obj, options):
-    r"""Return the LaTeX body of ``obj`` (fallback: ``\texttt{repr}``)."""
+    r"""Return the LaTeX body of ``obj`` (fallback: ``\texttt{repr}``).
+
+    ER2 types implement SymPy's printer protocol (a ``_latex(printer)``
+    method), so their LaTeX is also correct inside SymPy containers.
+    """
+    if callable(getattr(obj, "_latex", None)):
+        return sympy.latex(obj, **options)
     rich = getattr(obj, "_repr_latex_", None)
     if callable(rich):
         body = rich()

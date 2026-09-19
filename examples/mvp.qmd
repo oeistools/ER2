@@ -1,0 +1,43 @@
+---
+title: "The ER2 MVP"
+jupyter: er2
+---
+
+The program of ARCHITECTURE.md §5, run by the `er2` kernel
+(`er2 kernel install` registers it).
+
+## Computer algebra (SymPy)
+
+```{python}
+sym x
+f = x^2 + 2*x + 1
+print(f)
+print(expand(f))
+print(factor(f))
+```
+
+```{python}
+show(factor(f))
+```
+
+```{python}
+print(latex(f))
+```
+
+## Number theory (PARI)
+
+```{python}
+print(factor(2^127 - 1))
+print(phi(123456789))
+print(sigma(123456789))
+print(isprime(2^521 - 1))
+```
+
+```{python}
+for k in range(1, 20):
+    if isprime(k):
+        print(k)
+```
+
+Inline: $\varphi(123456789) =$ `{python} latex(phi(123456789))`, and
+$2^{127} - 1$ is prime: `{python} latex(isprime(2^127 - 1))`.

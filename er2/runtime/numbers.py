@@ -9,6 +9,8 @@ return a ``Rational`` instead of a ``float``.
 
 from fractions import Fraction
 
+from er2.printing import latex
+
 
 def normalize(value):
     """Return ``value`` as an ER2 number when it is an exact integer/ratio.
@@ -42,6 +44,10 @@ class Integer(int):
     """Exact integer; ``/`` and negative powers give a ``Rational``."""
 
     __slots__ = ()
+
+    def _repr_latex_(self):
+        """Render as math in Jupyter and Quarto."""
+        return latex(self)._repr_latex_()
 
     def __truediv__(self, other):
         """Return ``self / other``, exactly when ``other`` is an integer."""
@@ -113,6 +119,10 @@ class Rational(Fraction):
     def __repr__(self):
         """Return ``1/3`` instead of ``Rational(1, 3)``."""
         return str(self)
+
+    def _repr_latex_(self):
+        """Render as math in Jupyter and Quarto."""
+        return latex(self)._repr_latex_()
 
     __add__ = _exact(Fraction.__add__)
     __radd__ = _exact(Fraction.__radd__)

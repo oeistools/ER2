@@ -1,0 +1,23 @@
+# Number theory on PARI (M3).  Values checked against cypari2.
+print(factor(360), factor(-360), factor(1/12))
+f = factor(2^64 + 1)
+print(f, list(f), f.value() == 2^64 + 1)
+g = factor(10^60 + 1, limit=10^5)
+print(g.is_complete, len(g.unfactored))
+print(latex(factor(720)))
+
+print(phi(36), mu(30), sigma(12), sigma(12, 2), omega(360), bigomega(360))
+print(dedekind_psi(12), numdiv(360), core(360), valuation(48, 2))
+print(divisors(28), primes(8), prime(100), primepi(1000))
+print(nextprime(10^12), precprime(100), sqrtint(10^20 + 1))
+print(gcd(12, 18), lcm(4, 6), binomial(50, 25), fibonacci(100))
+print(factorial(25), kronecker(2, 7))
+print(isprime(561), ispseudoprime(2^89 - 1), issquare(144), ispower(3^7))
+
+g = znprimroot(23)
+print(g, znorder(g), znlog(Mod(7, 23), g), chinese(Mod(2, 3), Mod(3, 5)))
+a = Mod(3, 7)
+print(a^-1, a^100, a * 5, 2 / a, latex(a))
+
+print(pari.zeta(2))
+print(pari.polcyclo(12), pari.factorint(1001))

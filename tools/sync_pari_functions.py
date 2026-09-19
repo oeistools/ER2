@@ -67,7 +67,11 @@ CURATED = {
         "prelude",
         "draft `Omega`, renamed for PEP 8 (D8)",
     ),
-    "psi": ("digamma", "conflict", "PARI psi = digamma; draft psi (D5)"),
+    "psi": (
+        "digamma",
+        "namespace",
+        "PARI psi = digamma; Dedekind psi is dedekind_psi (D5)",
+    ),
     "factor": (
         "factor",
         "prelude",
@@ -77,7 +81,7 @@ CURATED = {
     "factorial": (
         "factorial",
         "namespace",
-        "PARI returns a real; ER2 `factorial` must be exact",
+        "PARI returns a real; the exact `factorial` is in the prelude",
     ),
     "Pi": ("pi", "namespace", "constant; lowercase like SymPy"),
     "Euler": ("euler_gamma", "namespace", "constant; SymPy name"),

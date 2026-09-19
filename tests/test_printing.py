@@ -29,6 +29,16 @@ def installed():
         (sympy.sqrt(x), "sqrt(x)"),
         (x ** sympy.Rational(1, 3), "x^(1/3)"),
         (-(x**2), "-x^2"),
+        ((x**2 - 1) / (x + 1), "(x^2 - 1)/(x + 1)"),
+        (sympy.Derivative(x**2, x), "Derivative(x^2, x)"),
+        (
+            sympy.series(sympy.exp(x), x, 0, 3),
+            "1 + x + x^2/2 + O(x^3)",
+        ),
+        (
+            sympy.Poly(x**2 + 3 * x * y**2, x),
+            "Poly(x^2 + 3*y^2*x, x, domain='ZZ[y]')",
+        ),
     ],
 )
 def test_er2_notation(installed, expr, text):
@@ -67,6 +77,33 @@ def test_plain_import_does_not_change_sympy():
             r"\left[\begin{matrix}1 & x\end{matrix}\right]",
         ),
         (sympy.Eq(x, 1), "x = 1"),
+        # Symbolic types (M2).
+        (x * y, "x y"),
+        ((x**2 - 1) / (x + 1), r"\frac{x^{2} - 1}{x + 1}"),
+        (sympy.sqrt(2) * x, r"\sqrt{2} x"),
+        (sympy.exp(x), "e^{x}"),
+        (sympy.I * x, "i x"),
+        (sympy.oo, r"\infty"),
+        (sympy.log(x), r"\log{\left(x \right)}"),
+        (sympy.Derivative(x**2, x), r"\frac{d}{d x} x^{2}"),
+        (
+            sympy.Integral(sympy.sin(x), (x, 0, sympy.pi)),
+            r"\int\limits_{0}^{\pi} \sin{\left(x \right)}\, dx",
+        ),
+        (
+            sympy.Limit(sympy.sin(x) / x, x, 0),
+            r"\lim_{x \to 0^+}\left(\frac{\sin{\left(x \right)}}{x}\right)",
+        ),
+        (
+            sympy.series(sympy.exp(x), x, 0, 3),
+            r"1 + x + \frac{x^{2}}{2} + O\left(x^{3}\right)",
+        ),
+        (sympy.Lt(x, 1), "x < 1"),
+        (
+            sympy.Poly(x**2 + 1, x),
+            r"\operatorname{Poly}{\left( x^{2} + 1, x, "
+            r"domain=\mathbb{Z} \right)}",
+        ),
     ],
 )
 def test_latex(obj, tex):

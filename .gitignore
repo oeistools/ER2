@@ -57,3 +57,9 @@ gp_history
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Quarto output
+examples/*.html
+examples/*_files/
+*.quarto_ipynb
+.quarto/

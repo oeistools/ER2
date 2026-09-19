@@ -1,7 +1,7 @@
 # ER2 — Architecture
 
 > Technical design document. Source of the idea: [draft/ER2_idea_summary.md](draft/ER2_idea_summary.md).
-> Status: **pre-implementation** (no code yet).
+> Status: **0.3, MVP done** (M1–M3). See [PLAN.md](PLAN.md).
 
 ## 1. What ER2 is
 
@@ -180,6 +180,16 @@ All of them share `er2.preparser` and `er2.prelude`; none of them contains its o
 
 `prelude` defines the initial namespace: types, public functions, and the symbols `_x, _y, _z, _n, _k, _p`.
 
+Since M2 the prelude also holds the CAS functions from `er2.dispatch` (`expand`, `factor`,
+`simplify`, `collect`, `cancel`, `diff`, `integrate`, `limit`, `solve`, `series`). It also holds
+a small set of SymPy names, exposed unchanged: `pi, E, I, oo, sqrt, exp, log, sin, cos, tan, Eq`.
+Like every prelude name, they are defaults: an assignment or an import (`from math import *`)
+shadows them, as in Python.
+
+Since M3 the prelude holds the curated PARI functions (the `prelude` rows of §3.5, D10),
+`factorial` (exact, from SymPy), `dedekind_psi` (D5), the types `Mod` and `Factorization`, and the
+`pari` namespace.
+
 Canonical integer type: **exactly one** on the ER2 side (see D6; must satisfy the compatibility
 contract in §1.1). Requirements: `__index__` (so that `range`, indexing, and slicing keep working),
 lossless conversion to/from `cypari2.gen` and to/from `int`.
@@ -199,6 +209,10 @@ isprime(n)                 → PARI  isprime (proof) / ispseudoprime (option)
   `to_sympy`, `from_sympy`). Users never see a bare `cypari2.gen` or SymPy object unless
   they ask for one.
 - `factor(n)` on an integer returns an ER2 `Factorization` object (prints `2^3 * 3^2`), not a PARI matrix.
+- **SymPy results (M2).** `from_sympy` turns SymPy integers and rationals into ER2 `Integer` and
+  `Rational`, including inside lists, tuples, sets and dicts (`solve` results). Symbolic
+  results stay SymPy expressions, printed in ER2 notation (D11). Methods called on a SymPy object
+  (`f.subs(x, 2)`) bypass the boundary and return SymPy numbers.
 
 ### 3.5 ER2 → PARI name table
 
@@ -215,7 +229,8 @@ status, note, summary`. Readable view: [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTI
   `wrapper` (30 functions that take GP expressions or closures, such as `sum`, `intnum`,
   `prodeuler`, `direuler`, `sumdiv` and `O`; they are not cypari2 methods, so ER2 needs a wrapper
   that accepts Python callables), `python` (not exposed: GP programming and plotting, which Python
-  and Matplotlib already cover), `conflict` (not exposed until a decision is made).
+  and Matplotlib already cover), `conflict` (not exposed until a decision is made; no row has
+  this status since D5 was resolved).
 - `tests/test_pari_functions.py` checks the table: known statuses, unique PEP 8 names, no
   keywords, no shadowed builtins in the prelude, and every `prelude`/`namespace` row exists in
   cypari2. CI also fails if the generated files are out of date.
@@ -223,7 +238,9 @@ status, note, summary`. Readable view: [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTI
   snake_case (`mfDelta` → `mf_delta`) and keep CapWords for type constructors (`Mod`, `Pol`).
   Python keywords get a trailing `_`. Python builtins (`abs`, `max`, `sum`, …) are never
   shadowed.
-- The runtime will build the prelude and the `pari` namespace from this CSV (D10).
+- The runtime builds the prelude and the `pari` namespace from this CSV (D10, M3):
+  `er2.backends.pari_backend` reads the `prelude` and `namespace` rows, and a test checks that
+  every one of them resolves to a callable.
 
 Main mappings where the names differ:
 
@@ -236,7 +253,8 @@ Main mappings where the names differ:
 | `bigomega(n)`  | `bigomega(n)`     | draft's `Omega` renamed for PEP 8 (D8) |
 | `valuation`    | `valuation`       | |
 | `znorder`, `znprimroot`, `nextprime`, `divisors`, `gcd`, `lcm` | same | |
-| `psi(n)`       | **conflict**      | in PARI `psi` is the digamma function; the draft lists it as arithmetic (Dedekind ψ?). See D5 |
+| `dedekind_psi(n)` | —              | Dedekind ψ, computed from PARI's `factor`; there is no bare `psi` (D5) |
+| `pari.digamma(x)` | `psi(x)`       | PARI's `psi` is the digamma function (D5) |
 
 ### 3.6 Printing and LaTeX (`er2/printing.py`)
 
@@ -278,13 +296,26 @@ show(*objs)
 ### 3.7 Backends (`er2/backends/`)
 
 - `sympy_backend.py` — CAS: `expand, factor, simplify, collect, cancel, diff, integrate, limit, solve, series`.
-- `pari_backend.py` — number theory. A single `cypari2.Pari()` instance; configurable stack size
-  (`er2.config.pari_stack`).
+- `pari_backend.py` — number theory. A single `cypari2.Pari()` instance.
+  - **Stack.** PARI's default maximum stack is only ~8 MB. ER2 reserves up to 1 GiB, which is
+    address space that the stack grows into only when needed. `pari.set_stack(size, max_size)`
+    changes it.
+  - **Precision.** cypari2 lowers PARI's real precision to 15 digits, like a Python `float`.
+    ER2 uses GP's default of 38 digits (`pari.set_precision(digits)`). cypari2 methods don't read
+    that default, so ER2 passes it to the 183 methods that take `precision`.
+  - **Conversions.** `to_pari` accepts ER2, Python and SymPy numbers, `Mod`, and lists.
+    `from_pari` gives ER2 numbers (`t_INT`, `t_FRAC`), `Mod` (`t_INTMOD`), SymPy `Float` with
+    PARI's exact value (`t_REAL`), SymPy expressions (`t_COMPLEX`, `t_POL`, `t_RFRAC`), lists
+    (vectors), and SymPy matrices (`t_MAT`). Other types (`t_POLMOD`, `t_SER`, `t_QFB`, …)
+    raise `TypeError` until M4; `pari.raw` is the cypari2 instance, for users who explicitly
+    want raw PARI objects.
+  - **Predicates.** `isprime`, `ispseudoprime`, `issquare` and `issquarefree` return a Python
+    `bool`. `ispower` and `isprimepower` return the exponent, as in PARI (0 when false).
 - Neither backend imports the other. Only `dispatch` knows about both.
 
 ## 4. Repository layout
 
-The layout below is the target. The files marked ✅ exist (M1).
+The layout below is the target. The files marked ✅ exist (M1–M3).
 
 ```text
 er2/
@@ -293,25 +324,26 @@ er2/
   preparser.py         # ✅
   prelude.py           # ✅
   session.py           # ✅ session start, file runner, REPL, IPython extension
-  dispatch.py
+  dispatch.py          # ✅
   printing.py          # ✅
   importer.py          # ✅ .er2 path hook
   kernel.py            # ✅ er2 Jupyter kernel + `er2 kernel install` (also preparses user_expressions)
-  runtime/             # types: Integer ✅, Rational ✅, Factorization, …
+  runtime/             # types: Integer ✅, Rational ✅, Mod ✅, Factorization ✅, …
   backends/
-    sympy_backend.py
-    pari_backend.py
+    sympy_backend.py   # ✅
+    pari_backend.py    # ✅
 tests/
   preparser/           # .er2 → expected .py pairs
   compat/              # Python compatibility contract (§1.1)
   notebooks/           # er2 kernel, %load_ext er2, Quarto render (§1.2)
   runtime/
-  backends/
-  examples/            # complete .er2 programs with expected (golden) output
+  backends/            # ✅
+  examples/            # ✅ complete .er2 programs with expected (golden) output
 examples/
-  mvp.er2
-  mvp.ipynb
-  mvp.qmd
+  mvp.er2              # ✅
+  mvp.ipynb            # ✅
+  mvp.qmd              # ✅
+  demo.qmd             # ✅ a tour of what works today
 er2/data/pari_functions.csv   # PARI → ER2 name table (§3.5)
 tools/sync_pari_functions.py  # regenerates the table and docs/PARI_FUNCTIONS.md
 docs/PARI_FUNCTIONS.md        # generated reference
@@ -361,8 +393,9 @@ Each must be resolved (and recorded here) before or during 0.1.
   Python behavior, acceptable).
 - **D4 — `sym` as a soft keyword. ✅ Resolved (2026-09-18) as proposed.** Only recognized as `sym <name>[, <name>…]` at the start of a
   logical line. `sym = 3` or `sym(x)` remain plain Python.
-- **D5 — `psi`.** Decide between Dedekind ψ (arithmetic) and digamma. Proposal: `psi` = Dedekind
-  (consistent with the list of arithmetic functions) and an explicit `digamma`.
+- **D5 — `psi`. ✅ Resolved (2026-09-19): no bare `psi`.** Dedekind ψ is `dedekind_psi(n)`
+  (prelude) and PARI's `psi` is `pari.digamma`. The name `psi` is ambiguous: PARI and
+  `scipy.special.psi` use it for digamma, and the draft used it for an arithmetic function.
 - **D6 — Canonical integer type. ✅ Resolved (2026-09-18): `class Integer(int)` (candidate A).** `sympy.Integer` vs `gmpy2.mpz` vs a custom class. Affects the
   cost of converting to PARI and to SymPy, and ecosystem compatibility (§1.1): with the Sage model
   every literal is an `Integer`, so libraries that check `isinstance(n, int)` would reject it.
@@ -387,11 +420,14 @@ Each must be resolved (and recorded here) before or during 0.1.
   A is the only candidate that meets the whole §1.1 contract. Its overhead comes from the
   pure-Python operator wrappers, and a C/Cython implementation can reduce it later (M4). Large-number
   work is not affected, because it runs inside PARI.
-- **D7 — Expensive factorizations.** `factor(10^1000 - 1)` (the draft's example, §7) may not
-  finish in reasonable time. Define a policy: timeout, `factor(n, partial=True)`, or leave it to
-  the user.
-- **D8 — `Omega` violates PEP 8.** PEP 8 requires lowercase function names (§11), and the draft's
-  `Omega(n)` does not follow that. Proposal: `bigomega(n)` (the PARI name), keeping `omega(n)`.
+- **D7 — Expensive factorizations. ✅ Resolved (2026-09-19): full factorization, Ctrl-C and
+  `limit=`.** `factor(n)` always factors completely. Ctrl-C interrupts it; this was checked, and
+  cypari2 stops within about a second and raises `KeyboardInterrupt`. `factor(n, limit=B)` gives a partial
+  factorization by trial division up to `B`. Factors that may be composite are listed in
+  `Factorization.unfactored`, and `is_complete` is `False`. There are no timeouts. Tests avoid slow
+  factorizations.
+- **D8 — `Omega` violates PEP 8. ✅ Resolved (2026-09-19): `bigomega(n)`** (the PARI name),
+  with `omega(n)` for distinct prime factors. PEP 8 requires lowercase function names.
 - **D9 — Kernelspec language. ✅ Resolved (2026-09-18): `python`.** Quarto cells are `` ```{python} `` with
   `jupyter: er2`. See §1.2.
 - **D11 — `x^2` in `print()`. ✅ Resolved (2026-09-18): only in ER2 sessions.** SymPy results
@@ -400,10 +436,10 @@ Each must be resolved (and recorded here) before or during 0.1.
   default for that process. The change can be undone with `uninstall()`. A plain `import er2` from
   Python changes nothing. Side effect, accepted: inside an ER2 session, SymPy objects created by
   libraries also print as `x^2`. `sympify("x^2")` still reads that correctly.
-- **D10 — Exposure of PARI functions.** Proposal: only the curated `prelude` rows (~30) are
-  top-level names. Every other PARI function is reachable as `pari.<name>`, with ER2 type
-  conversions applied. Exposing ~1,000 top-level names would shadow user variables and
-  library imports, which conflicts with §1.1.
+- **D10 — Exposure of PARI functions. ✅ Resolved (2026-09-19): curated prelude plus `pari.`**
+  Only the curated `prelude` rows (31) are top-level names. Every `prelude` and `namespace` row
+  (977) is reachable as `pari.<er2_name>`, with ER2 conversions applied. Exposing ~1,000
+  top-level names would shadow user variables and library imports, which conflicts with §1.1.
 
 ## 6.1 Code style: PEP 8
 

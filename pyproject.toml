@@ -42,6 +42,9 @@ module-root = ""
 
 [tool.ruff]
 line-length = 79  # PEP 8
+# ER2 notebooks contain ER2 syntax (`sym x`, `^^`), which ruff cannot parse
+# (ARCHITECTURE.md §6.1).
+extend-exclude = ["examples/*.ipynb"]
 
 [tool.ruff.lint]
 # pycodestyle (E, W), pyflakes (F), isort (I), pep8-naming (N), pydocstyle/PEP 257 (D)

@@ -246,7 +246,7 @@ factor,5,factor,prelude,"dispatch: integers -> PARI, Expr -> SymPy",factorizatio
 factorback,5,factorback,namespace,,"given a factorization f, gives the factored object back"
 factorcantor,5,factorcantor,namespace,,"this function is obsolete, use factormod"
 factorff,5,factorff,namespace,,"obsolete, use factormod"
-factorial,5,factorial,namespace,PARI returns a real; ER2 `factorial` must be exact,"factorial of x, the result being given as a real number"
+factorial,5,factorial,namespace,PARI returns a real; the exact `factorial` is in the prelude,"factorial of x, the result being given as a real number"
 factorint,5,factorint,namespace,,factor the integer x
 factormod,5,factormod,namespace,,"factors the polynomial f over the finite field defined by the domain D; flag is optional, and can be 0: default or 1: on…"
 factormodcyclo,5,factormodcyclo,namespace,,factor n-th cyclotomic polynomial mod p
@@ -552,7 +552,7 @@ log1p,8,log1p,namespace,,log(1+x)
 Pi,8,pi,namespace,constant; lowercase like SymPy,"the constant pi, with current precision"
 polylog,8,polylog,namespace,,m-th polylogarithm of x
 polylogmult,8,polylogmult,namespace,,"multiple polylogarithm value at integral s = [s1,...,sr] with argument z = [z1,...,zr]"
-psi,8,digamma,conflict,PARI psi = digamma; draft psi (D5),psi-function at x (der-th derivative of psi if der is set)
+psi,8,digamma,namespace,PARI psi = digamma; Dedekind psi is dedekind_psi (D5),psi-function at x (der-th derivative of psi if der is set)
 rootsof1,8,rootsof1,namespace,,column vector of complex N-th roots of 1
 sin,8,sin,namespace,,sine of x
 sinc,8,sinc,namespace,,sinc function of x

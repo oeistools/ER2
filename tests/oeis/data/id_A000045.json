@@ -1,0 +1,60 @@
+[
+ {
+  "number": 45,
+  "id": "M0692 N0256",
+  "data": "0,1,1,2,3,5,8,13,21,34,55,89,144,233,377,610,987,1597,2584,4181,6765,10946,17711,28657,46368,75025,121393,196418,317811,514229,832040,1346269,2178309,3524578,5702887,9227465,14930352,24157817,39088169,63245986,102334155",
+  "name": "Fibonacci numbers: F(n) = F(n-1) + F(n-2) with F(0) = 0 and F(1) = 1.",
+  "comment": [
+   "D. E. Knuth writes: \"Before Fibonacci wrote his work, the sequence F_{n} had already been discussed by Indian scholars, who had long been interested in rhythmic patterns that are formed from one-beat and two-beat notes. The number of such rhythms having n beats altogether is F_{n+1}; therefore both Gopāla (before 1135) and Hemachandra (c. 1150) mentioned the numbers 1, 2, 3, 5, 8, 13, 21, ... explicitly.\" (TAOCP Vol. 1, 2nd ed.) - _Peter Luschny_, Jan 11 2015",
+   "In keeping with historical accounts (see the references by P. Singh and S. Kak), the generalized Fibonacci sequence a, b, a + b, a + 2b, 2a + 3b, 3a + 5b, ... can also be described as the Gopala-Hemachandra numbers H(n) = H(n-1) + H(n-2), with F(n) = H(n) for a = b = 1, and Lucas sequence L(n) = H(n) for a = 2, b = 1. - _Lekraj Beedassy_, Jan 11 2015",
+   "Susantha Goonatilake writes: \"[T]his sequence was well known in South Asia and used in the metrical sciences. Its development is attributed in part to Pingala (200 BC), later being associated with Virahanka (circa 700 AD), Gopala (circa 1135), and Hemachandra (circa 1150)—all of whom lived and worked prior to Fibonacci.\" (Toward a Global Science: Mining Civilizational Knowledge, p. 126) - _Russ Cox_, Sep 08 2021"
+  ],
+  "reference": [
+   "Mohammad K. Azarian, The Generating Function for the Fibonacci Sequence, Missouri Journal of Mathematical Sciences, Vol. 2, No. 2, Spring 1990, pp. 78-79. Zentralblatt MATH, Zbl 1097.11516.",
+   "Mohammad K. Azarian, A Generalization of the Climbing Stairs Problem II, Missouri Journal of Mathematical Sciences, Vol. 16, No. 1, Winter 2004, pp. 12-17.",
+   "P. Bachmann, Niedere Zahlentheorie (1902, 1910), reprinted Chelsea, NY, 1968, vol. 2, p. 70."
+  ],
+  "link": [
+   "N. J. A. Sloane, <a href=\"/A000045/b000045.txt\">The first 2000 Fibonacci numbers: Table of n, F(n) for n = 0..2000</a>",
+   "William Boyles, <a href=\"/A000045/a000045_3.txt\">Table of n, a(n) for n = 0..9983</a>",
+   "Marco Abrate, Stefano Barbero, Umberto Cerruti, and Nadir Murru, <a href=\"https://doi.org/10.1016/j.disc.2014.06.026\">Colored compositions, Invert operator and elegant compositions with the \"black tie\"</a>, Discrete Math. 335 (2014), 1--7. MR3248794."
+  ],
+  "formula": [
+   "G.f.: x / (1 - x - x^2).",
+   "G.f.: Sum_{n>=0} x^n * Product_{k=1..n} (k + x)/(1 + k*x). - _Paul D. Hanna_, Oct 26 2013",
+   "F(n) = ((1+sqrt(5))^n - (1-sqrt(5))^n)/(2^n*sqrt(5))."
+  ],
+  "example": [
+   "For x = 0,1,2,3,4, x=1/(x+1) = 1, 1/2, 2/3, 3/5, 5/8. These fractions have numerators 1,1,2,3,5, which are the 2nd to 6th terms of the sequence. - _Cino Hilliard_, Sep 15 2008",
+   "From _Joerg Arndt_, May 21 2013: (Start)",
+   "There are a(7)=13 compositions of 7 where there is a drop between every second pair of parts, starting with the first and second part:"
+  ],
+  "maple": [
+   "A000045 := proc(n) combinat[fibonacci](n); end;",
+   "# Alternative:",
+   "ZL:=[S, {a = Atom, b = Atom, S = Prod(X,Sequence(Prod(X,b))), X = Sequence(b,card >= 1)}, unlabelled]: seq(combstruct[count](ZL, size=n), n=0..38); # _Zerinvary Lajos_, Apr 04 2008"
+  ],
+  "mathematica": [
+   "Table[Fibonacci[k], {k, 0, 50}] (* _Mohammad K. Azarian_, Jul 11 2015 *)",
+   "(* Alternative: *)",
+   "Table[2^n Sqrt @ Product[(Cos[Pi k/(n + 1)]^2 + 1/4), {k, n}] // FullSimplify, {n, 15}]; (* Kasteleyn's formula specialized, _Sarah-Marie Belcastro_, Jul 04 2009 *)"
+  ],
+  "program": [
+   "(Axiom) [fibonacci(n) for n in 0..50]",
+   "(Magma) [Fibonacci(n): n in [0..38]];",
+   "(Maxima) makelist(fib(n),n,0,100); /* _Martin Ettl_, Oct 21 2012 */"
+  ],
+  "xref": [
+   "Cf. A001622 (phi), A039834 (signed Fibonacci numbers), A001519 (F(2n-1)), A001906 (F(2n)), A001690 (complement), A000213, A000288, A000322, A000383, A060455, A030186, A020695, A020701, A060280 (inv. Eul. Trans), A071679, A099731, A100492, A094216, A094638, A000108, A101399, A101400, A001611, A000071, A157725, A001911, A157726, A006327, A157727, A157728, A157729, A167616, A059929, A144152, A152063, A114690, A003893, A000032, A060441, A000930, A003269, A000957, A057078, A007317, A091867, A104597, A249548, A262342, A001060, A022095, A072649, A163733, A073133, A166861 (Euler Transform), A337009 (Multiset Transf.).",
+   "First row of arrays A103323, A172236, A234357. Second row of arrays A099390, A048887, and A092921 (k-generalized Fibonacci numbers).",
+   "Cf. also A001175 (Pisano periods), A001177 (Entry points), A001176 (number of zeros in a fundamental period)."
+  ],
+  "keyword": "nonn,core,nice,easy,hear",
+  "offset": "0,4",
+  "author": "_N. J. A. Sloane_, 1964",
+  "references": 6157,
+  "revision": 2589,
+  "time": "2026-08-27T10:07:07-04:00",
+  "created": "1991-04-30T03:00:00-04:00"
+ }
+]

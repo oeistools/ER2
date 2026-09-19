@@ -1,0 +1,413 @@
+[
+ {
+  "number": 58094,
+  "data": "1,1,2,5,14,42,132,429,1426,4806,16329,55740,190787,654044,2244153,7704047,26455216,90860572,312090478,1072034764,3682565575,12650266243,43456340025,149282561256,512821712570,1761669869321,6051779569463,20789398928496,71416886375493",
+  "name": "Number of 321-hexagon-avoiding permutations in S_n, i.e., permutations of 1..n with no submatrix equivalent to 321, 56781234, 46781235, 56718234 or 46718235.",
+  "comment": [
+   "If y is 321-hexagon avoiding, there are simple explicit formulas for all the Kazhdan-Lusztig polynomials P_{x,y} and the Kazhdan-Lusztig basis element C_y is the product of C_{s_i}'s corresponding to any reduced word for y."
+  ],
+  "link": [
+   "Alois P. Heinz, <a href=\"/A058094/b058094.txt\">Table of n, a(n) for n = 0..1000</a>",
+   "S. C. Billey and G. S. Warrington, <a href=\"https://arxiv.org/abs/math/0005052\">Kazhdan-Lusztig Polynomials for 321-hexagon-avoiding permutations</a>, arXiv:math/0005052 [math.CO], 2000; J. Alg. Combinatorics, Vol. 13, No. 2 (March 2001), 111-136, DOI:<a href=\"https://doi.org/10.1023/A:1011279130416\">10.1023/A:1011279130416</a>.",
+   "Z. Stankova and J. West, <a href=\"https://doi.org/10.1016/j.disc.2003.06.003\">Explicit enumeration of 321, hexagon-avoiding permutations</a>, Discrete Math., 280 (2004), 165-189."
+  ],
+  "formula": [
+   "a(n+1) = 6a(n) - 11a(n-1) + 9a(n-2) - 4a(n-3) - 4a(n-4) + a(n-5) for n >= 5.",
+   "O.g.f.: 1 -x*(1-4*x+4*x^2-3*x^3-x^4+x^5)/(-1+6*x-11*x^2+9*x^3-4*x^4 -4*x^5 +x^6). - _R. J. Mathar_, Dec 02 2007"
+  ],
+  "example": [
+   "Since the Catalan numbers count 321-avoiding permutations in S_n, a(8) = 1430 - 4 = 1426 subtracting the four forbidden hexagon patterns."
+  ],
+  "maple": [
+   "a[0]:=1: a[1]:=1: a[2]:=2: a[3]:=5: a[4]:=14: a[5]:=42: for n from 5 to 35 do a[n+1]:=6*a[n]-11*a[n-1]+9*a[n-2]-4*a[n-3]-4*a[n-4]+a[n-5] od: seq(a[n], n=0..35);"
+  ],
+  "mathematica": [
+   "LinearRecurrence[{6,-11,9,-4,-4,1},{1,2,5,14,42,132},40] (* _Harvey P. Dale_, Nov 09 2012 *)"
+  ],
+  "xref": [
+   "Cf. A000108, A092489, A092490, A092491, A092492, A092493."
+  ],
+  "keyword": "nice,nonn,easy",
+  "offset": "0,3",
+  "author": "_Sara Billey_, Dec 03 2000",
+  "ext": [
+   "More terms from _Emeric Deutsch_, May 04 2004",
+   "a(0) prepended by _Alois P. Heinz_, Sep 21 2014"
+  ],
+  "references": 9,
+  "revision": 30,
+  "time": "2019-08-21T03:08:46-04:00",
+  "created": "2003-05-16T03:00:00-04:00"
+ },
+ {
+  "number": 80938,
+  "data": "1,1,2,5,14,42,132,429,1429,4846,16645,57686,201158,704420,2473785,8704089,30664890,108126325,381478030,1346396146,4753200932,16783118309,59266297613,209302921830,739203970773,2610763825782,9221050139566,32568630376132",
+  "name": "Number of Catalan paths (nonnegative, starting and ending at 0, step +-1) of 2*n steps with all values less than or equal to 7.",
+  "comment": [
+   "From _Wolfdieter Lang_, Mar 27 2020: (Start)",
+   "a(n) also gives the upper left entry of the n-th power of the 4 X 4 tridiagonal matrix M_4, given in A332602: M_4 = Matrix([1,1,0,0], [1,2,1,0], [0,1,2,1], [0,0,1,2]): a(n) = (M_4)^n[1,1]. Proof from the formula for (M_4)^n, given in a comment in A094256, derived from the Cayley-Hamilton theorem, which leads to the recurrence. The formula for a(n) in terms of A094256 is given below.",
+   "For A094256(n+1)/A094256(n), like for A094829(n+1)/A094829(n), the limit for n -> infinity is rho(9)^2 = A332438 = 3.53208888..., with rho(9) = 2*cos(Pi/9) = A332437. Therefore the formula of a(n) in terms of A094256 shows that the same limit is reached for a(n+1)/a(n). See this conjecture by _Gary W. Adamson_ in A332602."
+  ],
+  "link": [
+   "Vincenzo Librandi, <a href=\"/A080938/b080938.txt\">Table of n, a(n) for n = 0..1000</a>",
+   "Jean-Luc Baril, Toufik Mansour, José L. Ramírez, and Mark Shattuck, <a href=\"http://jl.baril.u-bourgogne.fr/bmrs.pdf\">Catalan words avoiding a pattern of length four</a>, Univ. de Bourgogne (France, 2024). See p. 3.",
+   "Wei Chen, <a href=\"http://summit.sfu.ca/item/14626\">Enumeration of Set Partitions Refined by Crossing and Nesting Numbers</a>, MS Thesis, Department of Mathematics. Simon Fraser University, Fall 2014. Table 4.1, k=4."
+  ],
+  "formula": [
+   "a(n) = A080934(n,7).",
+   "G.f.: -(2*x - 1)*(2*x^2 - 4*x + 1) / ( (x - 1)*(x^3 - 9*x^2 + 6*x - 1) ). - _Ralf Stephan_, May 13 2003",
+   "a(n) = 7*a(n-1) - 15*a(n-2) + 10*a(n-3) - a(n-4). - _Herbert Kociemba_, Jun 13 2004"
+  ],
+  "example": [
+   "1 + x + 2*x^2 + 5*x^3 + 14*x^4 + 42*x^5 + 132*x^6 + 429*x^7 + ..."
+  ],
+  "mathematica": [
+   "CoefficientList[Series[(1 - 2 x) (2 x^2 - 4 x + 1) / ((x - 1) (x^3 - 9 x^2 + 6 x - 1)), {x, 0, 40}], x] (* _Vincenzo Librandi_, Nov 30 2018 *)",
+   "LinearRecurrence[{7, -15, 10, -1}, {1, 1, 2, 5}, 30] (* _Jean-François Alcover_, Jan 07 2019 *)"
+  ],
+  "program": [
+   "(PARI) {a(n) = local(A); A = 1; for( i=1, 7, A = 1 / (1 - x*A)); polcoeff( A + x * O(x^n), n)} /* _Michael Somos_, May 12 2012 */",
+   "(Magma) I:=[1,1,2,5]; [n le 4 select I[n] else 7*Self(n-1)-15*Self(n-2)+10*Self(n-3)-Self(n-4): n in [1..30]]; // _Vincenzo Librandi_, Nov 30 2018"
+  ],
+  "xref": [
+   "Cf. A000007, A000012, A011782, A001519, A007051, A080937, A024175, A033191 which essentially provide the same sequence for different limits and tend to A000108.",
+   "Cf. A211216, A094826 (first differences), A094829, A094829, A332602, A332437, A332438."
+  ],
+  "keyword": "nonn,easy",
+  "offset": "0,3",
+  "author": "_Henry Bottomley_, Feb 25 2003",
+  "references": 9,
+  "revision": 80,
+  "time": "2026-02-26T12:25:59-05:00",
+  "created": "2003-05-16T03:00:00-04:00"
+ },
+ {
+  "number": 295679,
+  "data": "1,1,1,1,1,1,1,1,2,1,1,1,2,4,1,1,1,2,5,8,1,1,1,2,5,13,16,1,1,1,2,5,14,35,32,1,1,1,2,5,14,41,96,64,1,1,1,2,5,14,42,124,267,128,1,1,1,2,5,14,42,131,384,750,256,1,1,1,2,5,14,42,132,420,1210,2123,512,1",
+  "name": "Array read by antidiagonals: T(n,k) = k-Modular Catalan numbers C_{n,k} (n >= 0, k > 0).",
+  "comment": [
+   "Definition: Given a primitive k-th root of unity w, a binary operation a*b=a+wb, and sufficiently general fixed complex numbers x_0, ..., x_n, the k-modular Catalan numbers C_{n,k} enumerate parenthesizations of x_0*x_1*...*x_n that give distinct values.",
+   "Theorem: C_{n,k} enumerates the following objects:",
+   "(1) binary trees with n internal nodes avoiding a certain subtree (i.e., comb_k^{+1}),"
+  ],
+  "link": [
+   "Andrew Howroyd, <a href=\"/A295679/b295679.txt\">Table of n, a(n) for n = 0..1274</a>",
+   "Nickolas Hein, Jia Huang, <a href=\"https://doi.org/10.1016/j.ejc.2016.11.004\">Modular Catalan Numbers</a>, European Journal of Combinatorics, 61 (2017), 197-218, <a href=\"https://arxiv.org/abs/1508.01688\">arXiv:1508.01688</a> [math.CO], 2015-2016."
+  ],
+  "formula": [
+   "G.f. of column k: 1/(1-G(x)) where G(x) is the reversion of x*(1-x)/(1-x^k)."
+  ],
+  "example": [
+   "Array begins (n >= 0, k > 0):",
+   "======================================================",
+   "n\\k| 1   2    3    4    5    6    7    8    9   10"
+  ],
+  "maple": [
+   "A295679 := proc(n,k)",
+   "    if n = 0 then",
+   "        1;"
+  ],
+  "mathematica": [
+   "rows = cols = 12;",
+   "col[k_] := Module[{G}, G = InverseSeries[x*(1-x)/(1-x^k) + O[x]^cols, x]; CoefficientList[1/(1 - G), x]];",
+   "A = Array[col, cols];"
+  ],
+  "program": [
+   "(PARI)",
+   "T(n,k)=polcoeff(1/(1-serreverse(x*(1-x)/(1-x^k) + O(x^max(2,n+1)))), n);",
+   "for(n=0, 10, for(k=1, 10, print1(T(n, k), \", \")); print);"
+  ],
+  "xref": [
+   "Columns 3..9 are A005773, A159772, A261588, A261589, A261590, A261591, A261592.",
+   "Cf. A288942, A000108, A001453."
+  ],
+  "keyword": "nonn,tabl,easy",
+  "offset": "0,9",
+  "author": "_Andrew Howroyd_, Nov 30 2017",
+  "references": 8,
+  "revision": 36,
+  "time": "2025-11-05T15:22:41-05:00",
+  "created": "2017-12-02T03:20:59-05:00"
+ },
+ {
+  "number": 137560,
+  "data": "1,0,1,0,1,1,0,1,1,2,1,0,1,1,2,5,6,6,4,1,0,1,1,2,5,14,26,44,69,94,114,116,94,60,28,8,1,0,1,1,2,5,14,42,100,221,470,958,1860,3434,6036,10068,15864,23461,32398,41658,49700,54746,55308,50788,41944,30782,19788",
+  "name": "Let f(z) = z^2 + c, then row k lists the expansion of the n-fold composition f(f(...f(0)...)) in rising powers of c.",
+  "comment": [
+   "The root of one of these polynomials gives Julia Douady's rabbit.",
+   "These polynomials are basic to the theory of \"cycles\" in complex dynamics.",
+   "These polynomials are also described in a comment by Donald D. Cross in the entry for the Catalan numbers, A000108."
+  ],
+  "reference": [
+   "Lennart Carleson and Theodore W. Gamelin, Complex Dynamics, Springer, New York, 1993, pp 128-129"
+  ],
+  "link": [
+   "Alois P. Heinz, <a href=\"/A137560/b137560.txt\">Rows n = 0..13, flattened</a> (rows n=0..8 from Roger L. Bagula)",
+   "Neil J. Calkin, Eunice Y. S. Chan, and Robert M. Corless, <a href=\"https://ojs.lib.uwo.ca/index.php/maple/article/view/14037\">Some Facts and Conjectures about Mandelbrot Polynomials</a>, Maple Trans., Vol. 1, No. 1, Article 1 (July 2021).",
+   "Robert Munafo, <a href=\"http://www.mrob.com/pub/muency/lemniscates.html\">Lemniscates</a> [From _Robert Munafo_, Oct 29 2009]"
+  ],
+  "example": [
+   "Triangle starts:",
+   "  {1},",
+   "  {0, 1},"
+  ],
+  "maple": [
+   "b:= proc(n) option remember; `if`(n=0, 1, (g-> (f-> expand(",
+   "      x^n+b(f)*b(n-1-f)))(min(g-1, n-g/2)))(2^ilog2(n)))",
+   "    end:"
+  ],
+  "mathematica": [
+   "f[z_] = z^2 + x; g = Join[{1}, ExpandAll[NestList[f, x, 7]]]; a = Table[CoefficientList[g[[n]], x], {n, 1, Length[g]}]; Flatten[a] Table[Apply[Plus, CoefficientList[g[[n]], x]], {n, 1, Length[g]}];"
+  ],
+  "program": [
+   "(PARI) p = vector(6); p[1] = x; for(n=2,6, p[n] = p[n-1]^2 + x); print1(\"1\"); for(n=1,6, for(m=0,poldegree(p[n]), print1(\", \",polcoeff(p[n],m)))) \\\\ _Gerald McGarvey_, Sep 26 2008"
+  ],
+  "xref": [
+   "A052154 gives the same array read by antidiagonals.",
+   "A137867 gives the related Misiurewicz polynomials. [From _Robert Munafo_, Dec 12 2009]",
+   "Cf. A202019 (reversed rows)."
+  ],
+  "keyword": "nonn,tabf,look",
+  "offset": "0,10",
+  "author": "_Roger L. Bagula_, Apr 25 2008",
+  "ext": [
+   "Edited by _N. J. A. Sloane_, Apr 26 2008",
+   "Offset set to 0 and new name from _Joerg Arndt_, Jun 04 2016"
+  ],
+  "references": 7,
+  "revision": 53,
+  "time": "2024-10-29T14:17:16-04:00",
+  "created": "2008-06-29T03:00:00-04:00"
+ },
+ {
+  "number": 380237,
+  "data": "1,2,5,14,42,140,473,1670,5969,21679,79419,293496,1091006,4078213,15312150,57721030,218333832,828408842,3151769615,12020870753,45949957412,176001205559,675384194565,2596119292840,9994894356158,38535398284100,148772774499015,575079507042663",
+  "name": "Number of sensed planar maps with n vertices and 2 faces.",
+  "comment": [
+   "Also, by duality the number of sensed planar maps with n faces and 2 vertices.",
+   "The number of edges is n."
+  ],
+  "link": [
+   "Andrew Howroyd, <a href=\"/A380237/b380237.txt\">Table of n, a(n) for n = 1..1000</a>"
+  ],
+  "formula": [
+   "a(n) = (A210736(n) + A060404(n))/2.",
+   "a(n) = (1/(2*n))*(n*binomial(n-1, floor((n-1)/2)) + Sum_{d|n} phi(n/d)*(2^(2*d-1) - binomial(2*d-1, d))).",
+   "G.f.: (1/2)*(1/(1 - x*C(x^2)) - 1 - Sum_{k>=1} log(1 - C(x^k)) * phi(k)/k), where C(x) is the g.f. of A000108."
+  ],
+  "program": [
+   "(PARI) a(n) = {(binomial(n - 1, (n - 1)\\2) + sumdiv(n, d, eulerphi(n/d)*(2^(2*d-1) - binomial(2*d-1, d)))/n)/2}",
+   "(PARI) seq(n)={my(c(d)=(1-sqrt(1-4*x^d + O(x*x^(n+d))))/(2*x^d)); Vec(1/(1 - x*c(2)) - 1 - sum(k=1, n, log(2 - c(k))*eulerphi(k)/k))/2}"
+  ],
+  "xref": [
+   "Column 2 of A379430.",
+   "Cf. A000346 (rooted), A380238 (achiral), A380239 (unsensed), A060404 (with a distinguished face), A103943 (with a distinguished vertex).",
+   "Cf. A000108, A210736."
+  ],
+  "keyword": "nonn",
+  "offset": "1,2",
+  "author": "_Andrew Howroyd_, Jan 19 2025",
+  "references": 7,
+  "revision": 10,
+  "time": "2025-01-21T21:29:50-05:00",
+  "created": "2025-01-21T21:29:50-05:00"
+ },
+ {
+  "number": 744,
+  "data": "1,2,5,14,42,144,563,2526,12877,73778,469616,3288428,25121097,207902202,1852961189,17694468210,180234349762,1950592724756,22352145975707,270366543452702,3442413745494957,46021681757269830",
+  "name": "Boustrophedon transform (second version) of Fibonacci numbers 1,1,2,3,...",
+  "link": [
+   "Reinhard Zumkeller, <a href=\"/A000744/b000744.txt\">Table of n, a(n) for n = 0..400</a>",
+   "Peter Luschny, <a href=\"https://oeis.org/wiki/User:Peter_Luschny/SeidelTransform\">An old operation on sequences: the Seidel transform</a>.",
+   "J. Millar, N. J. A. Sloane and N. E. Young, A new operation on sequences: the Boustrophedon transform, J. Combin. Theory Ser. A, 76(1) (1996), 44-54 (<a href=\"http://neilsloane.com/doc/bous.txt\">Abstract</a>, <a href=\"http://neilsloane.com/doc/bous.pdf\">pdf</a>, <a href=\"http://neilsloane.com/doc/bous.ps\">ps</a>)."
+  ],
+  "formula": [
+   "a(n) = Sum_{k=0..n} A109449(n,k)*A000045(k+1). - _Reinhard Zumkeller_, Nov 03 2013",
+   "E.g.f.: (1/10)*(sec(x)+tan(x))*((5^(1/2)+1)*exp(1/2*x*(5^(1/2)+1))+(5^(1/2)-1)*exp(1/2*x*(-5^(1/2)+1)))*5^(1/2). - _Sergei N. Gladkovskii_, Oct 30 2014",
+   "a(n) ~ n! * (sqrt(5) - 1 + (1+sqrt(5)) * exp(sqrt(5)*Pi/2)) * 2^(n+1) / (sqrt(5) * exp((sqrt(5)-1)*Pi/4) * Pi^(n+1)). - _Vaclav Kotesovec_, Jun 12 2015"
+  ],
+  "example": [
+   "G.f. = 1 + 2*x + 5*x^2 + 14*x^3 + 42*x^4 + 144*x^5 + 563*x^6 + 2526*x^7 + ..."
+  ],
+  "maple": [
+   "read(transforms);",
+   "with(combinat):",
+   "F:=fibonacci;"
+  ],
+  "mathematica": [
+   "s[k_] := SeriesCoefficient[(1 + Sin[x])/Cos[x], {x, 0, k}] k!;",
+   "b[n_, k_] := Binomial[n, k] s[n - k];",
+   "a[n_] := Sum[b[n, k] Fibonacci[k + 1], {k, 0, n}];"
+  ],
+  "program": [
+   "(Haskell)",
+   "a000744 n = sum $ zipWith (*) (a109449_row n) $ tail a000045_list",
+   "-- _Reinhard Zumkeller_, Nov 03 2013"
+  ],
+  "xref": [
+   "Cf. A000045, A000687, A000738, A092073."
+  ],
+  "keyword": "nonn",
+  "offset": "0,2",
+  "author": "_N. J. A. Sloane_",
+  "ext": [
+   "Entry revised by _N. J. A. Sloane_, Mar 16 2011"
+  ],
+  "references": 6,
+  "revision": 53,
+  "time": "2025-11-10T21:50:37-05:00",
+  "created": "1996-03-15T03:00:00-05:00"
+ },
+ {
+  "number": 61922,
+  "data": "1,1,2,5,14,42,132,421,1382,4478,15580,54114,181676,650484,2289320,8028901,28045302,103229014,372640460,1336511110,4882492452,17534836812,63692926552,234287550818,868236370364,3281589811404",
+  "name": "Xcatalans - produced as a self-convolved sequence like Catalan numbers (A000108) but use carryless GF(2)[ X ] polynomial multiplication.",
+  "comment": [
+   "Shifts one place left when Xmult-convolved (XMULTCONV) with itself."
+  ],
+  "maple": [
+   "Xcatalans(30); Xcatalans := proc(upto_n) local a,i,k; a := [1]; for i from 1 to upto_n do a := [ op(a), add(Xmult(a[k],a[i-k+1]), k=1..i)]; od; RETURN(a); end;",
+   "XMULTCONV := proc(a,b) local c,i,k,n; n := min( nops(a), nops(b) ); c := []; for i from 0 to n-1 do c := [ op(c), add(Xmult(a[k+1],b[i-k+1]), k=0..i)]; od; RETURN(c); end;"
+  ],
+  "xref": [
+   "For Xmult, see A048720 (Xmult table) or A048631 (Xfactorials). Other self-convolved sequences: A000108, A007460 - A007464, A025192."
+  ],
+  "keyword": "nonn,easy,eigen",
+  "offset": "0,3",
+  "author": "_Antti Karttunen_, May 15 2001",
+  "references": 6,
+  "revision": 3,
+  "time": "2014-05-01T02:47:11-04:00",
+  "created": "2003-05-16T03:00:00-04:00"
+ },
+ {
+  "number": 261588,
+  "data": "1,1,2,5,14,42,131,420,1375,4576,15431,52603,180957,627340,2189430,7685785,27118855,96123508,342099955,1221979374,4379357895,15742077045,56742085710,205041235750,742647580815,2695585363122,9803561513316,35720226039252,130373533268780",
+  "name": "5-Modular Catalan Numbers C_{n,5}.",
+  "comment": [
+   "Definition: Given a primitive k-th root of unity w, a binary operation a*b=a+wb, and sufficiently general fixed complex numbers x_0, ..., x_n, the k-modular Catalan numbers C_{n,k} enumerate parenthesizations of x_0*x_1*...*x_n that give distinct values.",
+   "Theorem: C_{n,k} enumerates the following objects:",
+   "(1) binary trees with n internal nodes avoiding a certain subtree (i.e., comb_k^{+1}),"
+  ],
+  "link": [
+   "Andrew Howroyd, <a href=\"/A261588/b261588.txt\">Table of n, a(n) for n = 0..200</a>",
+   "Nickolas Hein and Jia Huang, <a href=\"https://arxiv.org/abs/1508.01688\">Modular Catalan Numbers</a>, arXiv:1508.01688 [math.CO], 2015.",
+   "Nickolas Hein and Jia Huang, <a href=\"https://doi.org/10.1016/j.ejc.2016.11.004\">Modular Catalan Numbers</a>, European Journal of Combinatorics 61 (2017), 197-218."
+  ],
+  "formula": [
+   "sum( 1<=l<=n, (l/n)sum( m_1+...+m_k=n and m_2+2m_3+...+(k-1)m_k=n-l, MC(n;m_1,...,m_k) ) ), where MC(n;m_1,...,m_k) is the multinomial coefficient associated to the multiset (m_1,...,m_k).",
+   "G.f.: 1/(1-x*G(x)) where G(x) is g.f. of A036766. - _Andrew Howroyd_, Dec 04 2017",
+   "Recurrence: 3*n*(3*n - 2)*(3*n - 1)*(1309*n^5 - 14388*n^4 + 60934*n^3 - 124236*n^2 + 121825*n - 45948)*a(n) = (299761*n^8 - 3779182*n^7 + 19492177*n^6 - 53378731*n^5 + 84116656*n^4 - 77081911*n^3 + 39268230*n^2 - 9775512*n + 829440)*a(n-1) - 5*(119119*n^8 - 1601215*n^7 + 8920729*n^6 - 26755339*n^5 + 46820344*n^4 - 48217102*n^3 + 27785664*n^2 - 7773768*n + 712800)*a(n-2) - 25*(n-3)*(1309*n^7 - 11770*n^6 + 38824*n^5 - 62344*n^4 + 74887*n^3 - 107794*n^2 + 101952*n - 33120)*a(n-3) - 125*(n-4)*(n-3)*(1309*n^6 - 10461*n^5 + 28528*n^4 - 30261*n^3 + 7999*n^2 + 3390*n - 1080)*a(n-4) - 625*(n-5)*(n-4)*(n-3)*(1309*n^5 - 7843*n^4 + 16472*n^3 - 14672*n^2 + 5148*n - 504)*a(n-5). - _Vaclav Kotesovec_, Dec 05 2017"
+  ],
+  "example": [
+   "The Catalan number C_6=132 counts the parenthesizations of x_1*...*x_7 where * is arbitrary. Defining * and w as above and writing x_i compactly as xi, we have x1*(x2*(x3*(x4*(x5*(x6*(x7)))))) = x1+wx2+w^2x3+w^3x4+w^4x5+x6+wx7 = x1*(x2*(x3*(x4*(x5*(x6)))))*(x7). For n=6 and k=5, these are the only parenthesizations that give the same value for x1*...*x7, so C_{6,5}=132-1=131."
+  ],
+  "mathematica": [
+   "terms = 30; col[k_] := Module[{G}, G = InverseSeries[x*(1 - x)/(1 - x^k) + O[x]^terms, x]; CoefficientList[1/(1 - G), x]];",
+   "col[5] (* _Jean-François Alcover_, Dec 05 2017, after _Andrew Howroyd_ *)"
+  ],
+  "program": [
+   "(PARI) Vec(1/(1-serreverse(x*(1-x)/(1-x^5) + O(x*x^25)))) \\\\ _Andrew Howroyd_, Dec 04 2017",
+   "(SageMath)",
+   "def C(k):"
+  ],
+  "xref": [
+   "Column k=5 of A295679.",
+   "C_{n,1} is the all 1's sequence A000012. For C_{n,k} with k=2,3,4 see A011782, A005773, A159772. For k=6,7,8,9 see A261589, A261590, A261591, A261592.",
+   "Cf. A036766."
+  ],
+  "keyword": "nonn",
+  "offset": "0,3",
+  "author": "_Nickolas Hein_, Aug 25 2015",
+  "references": 6,
+  "revision": 33,
+  "time": "2025-11-05T15:22:29-05:00",
+  "created": "2015-09-07T12:31:08-04:00"
+ },
+ {
+  "number": 261589,
+  "data": "1,1,2,5,14,42,132,428,1420,4796,16432,56966,199444,704146,2504000,8960445,32241670,116580200,423372684,1543542369,5647383786,20728481590,76305607480,281648344965,1042139463066,3864822037106,14362983740692,53481776523398",
+  "name": "6-Modular Catalan Numbers C_{n,6}.",
+  "comment": [
+   "Definition: Given a primitive k-th root of unity w, a binary operation a*b=a+wb, and sufficiently general fixed complex numbers x_0, ..., x_n, the k-modular Catalan numbers C_{n,k} enumerate parenthesizations of x_0*x_1*...*x_n that give distinct values.",
+   "Theorem: C_{n,k} enumerates the following objects:",
+   "(1) binary trees with n internal nodes avoiding a certain subtree (i.e., comb_k^{+1}),"
+  ],
+  "link": [
+   "Andrew Howroyd, <a href=\"/A261589/b261589.txt\">Table of n, a(n) for n = 0..200</a>",
+   "Nickolas Hein, Jia Huang, <a href=\"https://arxiv.org/abs/1508.01688\">Modular Catalan Numbers</a>, arXiv:1508.01688 [math.CO], 2015-2016."
+  ],
+  "formula": [
+   "sum( 1<=l<=n, (l/n)sum( m_1+...+m_k=n and m_2+2m_3+...+(k-1)m_k=n-l , MC(n;m_1,...,m_k) ) ), where MC(n;m_1,...,m_k) is the multinomial coefficient associated to the multiset (m_1,...,m_k).",
+   "G.f.: 1/(1-x*G(x)) where G(x) is g.f. of A036767. - _Andrew Howroyd_, Dec 04 2017",
+   "Recurrence: 8*n*(2*n - 1)*(4*n - 3)*(4*n - 1)*(10916887*n^9 - 249224042*n^8 + 2469255538*n^7 - 13933215932*n^6 + 49334513763*n^5 - 113647334214*n^4 + 170286019860*n^3 - 160004333492*n^2 + 85539013792*n - 19822693440)*a(n) = 3*(9508608577*n^13 - 237215797097*n^12 + 2623858643982*n^11 - 16999631384890*n^10 + 71778494499061*n^9 - 207873203457553*n^8 + 423002845054480*n^7 - 609054955793764*n^6 + 616019881995932*n^5 - 427963644130760*n^4 + 195602628794128*n^3 - 54415561156256*n^2 + 7923069832320*n - 416553984000)*a(n-1) - 6*(12412500519*n^13 - 321587757141*n^12 + 3711217654502*n^11 - 25208616228279*n^10 + 112156507241451*n^9 - 344001598358364*n^8 + 745080116604760*n^7 - 1147205777244243*n^6 + 1245874269527820*n^5 - 932293147229545*n^4 + 459871406685588*n^3 - 138195004254428*n^2 + 21782980665360*n - 1261019808000)*a(n-2) + 36*(n-3)*(687763881*n^12 - 16781886459*n^11 + 179899148857*n^10 - 1116006568486*n^9 + 4439364432038*n^8 - 11848465605195*n^7 + 21556040876457*n^6 - 26592812193824*n^5 + 21678236082931*n^4 - 11083403407596*n^3 + 3237388989236*n^2 - 458954256240*n + 24454886400)*a(n-3) - 216*(n-4)*(n-3)*(10916887*n^11 - 205556494*n^10 + 1637060823*n^9 - 7312163106*n^8 + 20993566701*n^7 - 44229711078*n^6 + 78086672677*n^5 - 116636175274*n^4 + 128035289512*n^3 - 87494286088*n^2 + 31392748560*n - 4319092800)*a(n-4) - 1296*(n-5)*(n-4)*(n-3)*(10916887*n^10 - 183722720*n^9 + 1276350867*n^8 - 4759019384*n^7 + 10358683545*n^6 - 13414621556*n^5 + 10161953673*n^4 - 4442494876*n^3 + 1316475548*n^2 - 382696304*n + 67140480)*a(n-5) - 7776*(n-6)*(n-5)*(n-4)*(n-3)*(10916887*n^9 - 150972059*n^8 + 868471134*n^7 - 2709681834*n^6 + 5008565879*n^5 - 5619215727*n^4 + 3761917980*n^3 - 1414279492*n^2 + 261591168*n - 17081280)*a(n-6). - _Vaclav Kotesovec_, Dec 05 2017"
+  ],
+  "example": [
+   "The Catalan number C_7=429 counts the parenthesizations of x_1*...*x_8 where * is arbitrary. Defining * and w as above and writing x_i compactly as xi, we have x1*(x2*(x3*(x4*(x5*(x6*(x7*(x8))))))) = x1+wx2+w^2x3+w^3x4+w^4x5+w^5x6+x7+wx8 = x1*(x2*(x3*(x4*(x5*(x6*(x7))))))*(x8). For n=7 and k=6, these are the only parenthesizations that give the same value for x1*...*x8, so C_{7,6}=429-1=428."
+  ],
+  "mathematica": [
+   "terms = 30; col[k_] := Module[{G}, G = InverseSeries[x*(1 - x)/(1 - x^k) + O[x]^terms, x]; CoefficientList[1/(1 - G), x]];",
+   "col[6] (* _Jean-François Alcover_, Dec 05 2017, after _Andrew Howroyd_ *)"
+  ],
+  "program": [
+   "(PARI) Vec(1/(1-serreverse(x*(1-x)/(1-x^6) + O(x*x^25)))) \\\\ _Andrew Howroyd_, Dec 04 2017",
+   "(SageMath)",
+   "def C(k):"
+  ],
+  "xref": [
+   "Column k=6 of A295679.",
+   "C_{n,1} is the all 1's sequence A000012. For C_{n,k} with k=2,3,4 see A011782, A005773, A159772. For k=5,7,8,9 see A261588, A261590, A261591, A261592.",
+   "Cf. A036767."
+  ],
+  "keyword": "nonn",
+  "offset": "0,3",
+  "author": "_Nickolas Hein_, Aug 25 2015",
+  "references": 6,
+  "revision": 29,
+  "time": "2025-11-05T15:22:29-05:00",
+  "created": "2015-09-07T12:30:23-04:00"
+ },
+ {
+  "number": 261590,
+  "data": "1,1,2,5,14,42,132,429,1429,4851,16718,58331,205632,731272,2620176,9449695,34276230,124959485,457621780,1682686509,6209928010,22993696620,85396852670,318034472365,1187429860461,4443824658798,16666506959312,62632954529054",
+  "name": "7-Modular Catalan Numbers C_{n,7}.",
+  "comment": [
+   "Definition: Given a primitive k-th root of unity w, a binary operation a*b=a+wb, and sufficiently general fixed complex numbers x_0, ..., x_n, the k-modular Catalan numbers C_{n,k} enumerate parenthesizations of x_0*x_1*...*x_n that give distinct values.",
+   "Theorem: C_{n,k} enumerates the following objects:",
+   "(1) binary trees with n internal nodes avoiding a certain subtree (i.e., comb_k^{+1}),"
+  ],
+  "link": [
+   "Andrew Howroyd, <a href=\"/A261590/b261590.txt\">Table of n, a(n) for n = 0..200</a>",
+   "Nickolas Hein, Jia Huang, <a href=\"https://arxiv.org/abs/1508.01688\">Modular Catalan Numbers</a>, arXiv:1508.01688 [math.CO], 2015-2016.",
+   "Vaclav Kotesovec, <a href=\"/A261590/a261590.txt\">Recurrence (of order 7)</a>"
+  ],
+  "formula": [
+   "sum( 1<=l<=n, (l/n)sum( m_1+...+m_k=n and m_2+2m_3+...+(k-1)m_k=n-l , MC(n;m_1,...,m_k) ) ), where MC(n;m_1,...,m_k) is the multinomial coefficient associated to the multiset (m_1,...,m_k).",
+   "G.f.: 1/(1-x*G(x)) where G(x) is g.f. of A036768. - _Andrew Howroyd_, Dec 04 2017"
+  ],
+  "example": [
+   "The Catalan number C_8=1430 counts the parenthesizations of x_1*...*x_9 where * is arbitrary. Defining * and w as above and writing x_i compactly as xi, we have x1*(x2*(x3*(x4*(x5*(x6*(x7*(x8*(x9)))))))) = x1+wx2+w^2x3+w^3x4+w^4x5+w^5x6+w^6x7+x8+wx9 = x1*(x2*(x3*(x4*(x5*(x6*(x7*(x8)))))))*(x9). For n=8 and k=7, these are the only parenthesizations that give the same value for x1*...*x9, so C_{8,7}=1430-1=1429."
+  ],
+  "mathematica": [
+   "terms = 30; col[k_] := Module[{G}, G = InverseSeries[x*(1 - x)/(1 - x^k) + O[x]^terms, x]; CoefficientList[1/(1 - G), x]];",
+   "col[7] (* _Jean-François Alcover_, Dec 05 2017, after _Andrew Howroyd_ *)"
+  ],
+  "program": [
+   "(PARI) Vec(1/(1-serreverse(x*(1-x)/(1-x^7) + O(x*x^25)))) \\\\ _Andrew Howroyd_, Dec 04 2017",
+   "(SageMath)",
+   "def C(k):"
+  ],
+  "xref": [
+   "Column k=7 of A295679.",
+   "C_{n,1} is the all 1's sequence A000012. For C_{n,k} with k=2,3,4 see A011782, A005773, A159772. For k=5,6,8,9 see A261588, A261589, A261591, A261592.",
+   "Cf. A036768."
+  ],
+  "keyword": "nonn",
+  "offset": "0,3",
+  "author": "_Nickolas Hein_, Aug 25 2015",
+  "references": 6,
+  "revision": 29,
+  "time": "2025-11-05T15:22:29-05:00",
+  "created": "2015-09-07T12:31:24-04:00"
+ }
+]

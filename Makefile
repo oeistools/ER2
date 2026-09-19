@@ -25,7 +25,7 @@ install:  ## Create .venv and register the ER2 kernel in it (for Quarto)
 	uv run er2 kernel install --sys-prefix
 
 install-global:  ## Install the `er2` command for your user (editable)
-	$(USER_ENV) uv tool install --editable '.[jupyter]' --force
+	$(USER_ENV) uv tool install --editable '.[jupyter,oeis]' --force
 	$(USER_ENV) $(HOME)/.local/bin/er2 kernel install
 
 uninstall-global:  ## Remove the user-wide `er2` command

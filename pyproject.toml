@@ -1,6 +1,6 @@
 [project]
 name = "er2"
-version = "0.4.1"
+version = "0.4.2"
 description = "ER2 — mathematical Python: symbolic syntax, exact arithmetic and PARI/GP number theory on top of Python."
 readme = "README.md"
 license = "MIT"
@@ -14,6 +14,8 @@ dependencies = [
 [project.optional-dependencies]
 # ER2 Jupyter kernel and %load_ext er2 (ARCHITECTURE.md §1.2).
 jupyter = ["ipykernel>=6.29"]
+# er2.oeis: OEIS lookup, search, checks and b-files (ARCHITECTURE.md §10).
+oeis = ["oeis-tools>=0.2"]
 
 [project.scripts]
 er2 = "er2.__main__:main"
@@ -31,6 +33,8 @@ dev = [
     "nbclient>=0.10",
     # Quarto's Jupyter bridge runs on this Python and imports yaml.
     "pyyaml>=6",
+    # er2.oeis tests (they use recorded OEIS responses, not the network).
+    "oeis-tools>=0.2",
 ]
 
 [build-system]

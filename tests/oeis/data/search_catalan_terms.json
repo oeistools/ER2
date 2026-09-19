@@ -1,0 +1,476 @@
+[
+ {
+  "number": 108,
+  "id": "M1459 N0577",
+  "data": "1,1,2,5,14,42,132,429,1430,4862,16796,58786,208012,742900,2674440,9694845,35357670,129644790,477638700,1767263190,6564120420,24466267020,91482563640,343059613650,1289904147324,4861946401452,18367353072152,69533550916004,263747951750360,1002242216651368,3814986502092304",
+  "name": "Catalan numbers: C(n) = binomial(2n,n)/(n+1) = (2n)!/(n!(n+1)!).",
+  "comment": [
+   "These were formerly sometimes called Segner numbers.",
+   "A very large number of combinatorial interpretations are known - see references, esp. R. P. Stanley, \"Catalan Numbers\", Cambridge University Press, 2015. This is probably the longest entry in the OEIS, and rightly so.",
+   "The solution to Schröder's first problem: number of ways to insert n pairs of parentheses in a word of n+1 letters. E.g., for n=2 there are 2 ways: ((ab)c) or (a(bc)); for n=3 there are 5 ways: ((ab)(cd)), (((ab)c)d), ((a(bc))d), (a((bc)d)), (a(b(cd)))."
+  ],
+  "reference": [
+   "The large number of references and links demonstrates the ubiquity of the Catalan numbers.",
+   "R. Alter, Some remarks and results on Catalan numbers, pp. 109-132 in Proceedings of the Louisiana Conference on Combinatorics, Graph Theory and Computer Science. Vol. 2, edited R. C. Mullin et al., 1971.",
+   "Miklos Bona, editor, Handbook of Enumerative Combinatorics, CRC Press, 2015, many references."
+  ],
+  "link": [
+   "Robert G. Wilson v, <a href=\"/A000108/b000108.txt\">Table of n, a(n) for n = 0..1000</a> (first 200 terms from N. J. A. Sloane, first 351 from K. D. Bajpai)",
+   "James Abello, <a href=\"https://doi.org/10.1137/0404001\">The weak Bruhat order of S_Sigma, consistent sets, and Catalan numbers</a>, SIAM J. Discrete Math. 4 (1991), 1-16.",
+   "Marco Abrate, Stefano Barbero, Umberto Cerruti and Nadir Murru, <a href=\"https://doi.org/10.1016/j.disc.2014.06.026\">Colored compositions, Invert operator and elegant compositions with the \"black tie\"</a>, Discrete Mathematics, 335 (2014), 1-7."
+  ],
+  "formula": [
+   "a(n) = binomial(2*n, n)/(n+1) = (2*n)!/(n!*(n+1)!) = A000984(n)/(n+1).",
+   "Recurrence: a(n) = 2*(2*n-1)*a(n-1)/(n+1) with a(0) = 1.",
+   "Recurrence: a(n) = Sum_{k=0..n-1} a(k)a(n-1-k)."
+  ],
+  "example": [
+   "From _Joerg Arndt_ and Greg Stevenson, Jul 11 2011: (Start)",
+   "The following products of 3 transpositions lead to a 4-cycle in S_4:",
+   "  (1,2)*(1,3)*(1,4);"
+  ],
+  "maple": [
+   "A000108 := n->binomial(2*n,n)/(n+1);",
+   "# Alternative:",
+   "spec := [ A, {A=Prod(Z,Sequence(A))}, unlabeled ]: [ seq(combstruct[count](spec, size=n+1), n=0..42) ];"
+  ],
+  "mathematica": [
+   "Table[(2 n)!/n!/(n + 1)!, {n, 0, 20}]",
+   "(* Alternative: *)",
+   "Table[4^n Gamma[n + 1/2]/(Sqrt[Pi] Gamma[n + 2]), {n, 0, 20}] (* _Eric W. Weisstein_, Oct 31 2024 *)"
+  ],
+  "program": [
+   "(PARI) a(n)=binomial(2*n,n)/(n+1) \\\\ _M. F. Hasler_, Aug 25 2012",
+   "(PARI) a(n) = (2*n)! / n! / (n+1)!",
+   "(PARI) a(n) = my(A, m); if( n<0, 0, m=1; A = 1 + x + O(x^2); while(m<=n, m*=2; A = sqrt(subst(A, x, 4*x^2)); A += (A - 1) / (2*x*A)); polcoeff(A, n));"
+  ],
+  "xref": [
+   "Cf. A000142, A000245, A000344, A000588, A000957, A000984, A001392, A001453, A001791, A002057, A002420, A003046, A003517, A003518, A003519, A006480, A008276, A008549, A014137, A014138, A014140, A022553 (inv. Eul. trans.), A024492, A032357, A032443, A039599, A048990, A059288, A068875, A069640, A086117, A088327 (Eul. trans.), A094216, A094638, A094639, A098597, A099731, A119822, A120304, A124926, A129763, A137697, A154559, A161581, A167892, A167893, A179277, A211611, A275431 (multisets).",
+   "A row of A060854.",
+   "See A001003, A001190, A001699, A000081 for other ways to count parentheses."
+  ],
+  "keyword": "core,nonn,easy,eigen,nice,changed",
+  "offset": "0,3",
+  "author": "_N. J. A. Sloane_",
+  "references": 4431,
+  "revision": 2253,
+  "time": "2026-09-15T21:11:07-04:00",
+  "created": "1991-04-30T03:00:00-04:00"
+ },
+ {
+  "number": 120588,
+  "data": "1,1,1,2,5,14,42,132,429,1430,4862,16796,58786,208012,742900,2674440,9694845,35357670,129644790,477638700,1767263190,6564120420,24466267020,91482563640,343059613650,1289904147324,4861946401452,18367353072152",
+  "name": "G.f. is 1 + x*c(x), where c(x) is the g.f. of the Catalan numbers (A000108).",
+  "comment": [
+   "Previous name was: G.f. satisfies: 3*A(x) = 2 + x + A(x)^2, with A(0) = 1.",
+   "This is essentially a duplicate of entry A000108, the Catalan numbers (a(n) = A000108(n-1) for n>0).",
+   "In order for the g.f. of an integer sequence to satisfy a functional equation of the form: r*A(x) = c + b*x + A(x)^n, where n > 1, it is necessary that the sequence start with [1, d, m*n*(n-1)/2], where d divides m*n*(n-1)/2 (m>0) and that the coefficients are given by r = n + d^2/m, c = r-1 and b = d^3/m. The remaining terms may then be integer and still satisfy: a_n(k) = r*a(k), where a_n(k) is the k-th term of the n-th self-convolution of the sequence."
+  ],
+  "link": [
+   "G. C. Greubel, <a href=\"/A120588/b120588.txt\">Table of n, a(n) for n = 0..1000</a>"
+  ],
+  "formula": [
+   "G.f.: A(x) = 1 + Series_Reversion(1+3*x - (1+x)^2).",
+   "Lagrange Inversion yields g.f.: A(x) = Sum_{n>=0} C(2*n,n)/(n+1)*(2+x)^(n+1)/3^(2*n+1).",
+   "G.f.: (3 - sqrt(1-4*x))/2. - Maksym Voznyy (voznyy(AT)mail.ru), Aug 11 2009"
+  ],
+  "example": [
+   "A(x) = 1 + x + x^2 + 2*x^3 + 5*x^4 + 14*x^5 + 42*x^6 + 132*x^7 +...",
+   "A(x)^3 = 1 + 2*x + 3*x^2 + 6*x^3 + 15*x^4 + 42*x^5 + 126*x^6 + 396*x^7 +..",
+   "More generally, given the functional equation:"
+  ],
+  "mathematica": [
+   "a[ n_] := SeriesCoefficient[ 1 + (1 - Sqrt[1 - 4 x]) / 2, {x, 0, n}]; (* _Michael Somos_, May 18 2015 *)"
+  ],
+  "program": [
+   "(PARI) {a(n)=local(A=1+x+x^2+x*O(x^n));for(i=0,n,A=A-3*A+2+x+A^2);polcoeff(A,n)}",
+   "(PARI) {a(n) = my(A); if( n<1, n==0, A = vector(n); A[1] = 1; for( k=2, n, A[k] = sum( j=1, k-1, A[j] * A[k-j])); A[n])} /* _Michael Somos_, Jul 23 2011 */",
+   "(Magma) m:=30; R<x>:=PowerSeriesRing(Rationals(), m); Coefficients(R!( (3 - Sqrt(1-4*x))/2 )); // _G. C. Greubel_, Feb 18 2019"
+  ],
+  "xref": [
+   "Cf. A000108, A120589 (A(x)^2); A120590 - A120607.",
+   "Cf. A001850, A026641."
+  ],
+  "keyword": "nonn,easy",
+  "offset": "0,4",
+  "author": "_Paul D. Hanna_, Jun 16 2006, Jan 24 2008",
+  "ext": [
+   "New name by _Wolfdieter Lang_, Feb 06 2020"
+  ],
+  "references": 30,
+  "revision": 51,
+  "time": "2025-09-22T16:00:50-04:00",
+  "created": "2006-09-29T03:00:00-04:00"
+ },
+ {
+  "number": 80937,
+  "data": "1,1,2,5,14,42,131,417,1341,4334,14041,45542,147798,479779,1557649,5057369,16420730,53317085,173118414,562110290,1825158051,5926246929,19242396629,62479659622,202870165265,658715265222,2138834994142,6944753544643,22549473023585",
+  "name": "Number of Catalan paths (nonnegative, starting and ending at 0, step +/-1) of 2*n steps with all values <= 5.",
+  "comment": [
+   "With interpolated zeros (1,0,1,0,2,...), counts closed walks of length n at start or end node of P_6. The sequence (0,1,0,2,...) counts walks of length n between the start and second node. - _Paul Barry_, Jan 26 2005",
+   "HANKEL transform of sequence and the sequence omitting a(0) is the sequence A130716. This is the unique sequence with that property. - _Michael Somos_, May 04 2012",
+   "From _Wolfdieter Lang_, Mar 30 2020: (Start)"
+  ],
+  "link": [
+   "Alois P. Heinz, <a href=\"/A080937/b080937.txt\">Table of n, a(n) for n = 0..600</a>",
+   "Jean Luc Baril, Rigoberto Flórez, and José L. Ramirez, <a href=\"http://jl.baril.u-bourgogne.fr/narayana.pdf\">Generalized Narayana arrays, restricted Dyck paths, and related bijections</a>, Univ. Bourgogne (France, 2025). See p. 27.",
+   "Jean-Luc Baril, Toufik Mansour, José L. Ramírez, and Mark Shattuck, <a href=\"http://jl.baril.u-bourgogne.fr/bmrs.pdf\">Catalan words avoiding a pattern of length four</a>, Univ. de Bourgogne (France, 2024). See p. 3."
+  ],
+  "formula": [
+   "a(n) = A080934(n,5).",
+   "G.f.: (1-4*x+3*x^2)/(1-5*x+6*x^2-x^3). - _Ralf Stephan_, May 13 2003",
+   "a(n) = 5*a(n-1) - 6*a(n-2) + a(n-3). - _Herbert Kociemba_, Jun 11 2004"
+  ],
+  "example": [
+   "G.f. = 1 + x + 2*x^2 + 5*x^3 + 14*x^4 + 42*x^5 + 131*x^6 + 417*x^7 + 1341*x^8 + ..."
+  ],
+  "maple": [
+   "a:= n-> (<<0|1|0>, <0|0|1>, <1|-6|5>>^n. <<1, 1, 2>>)[1, 1]:",
+   "seq(a(n), n=0..35);  # _Alois P. Heinz_, Nov 09 2012"
+  ],
+  "mathematica": [
+   "nn=56;Select[CoefficientList[Series[(1-4x^2+3x^4)/(1-5x^2+6x^4-x^6), {x,0,nn}], x],#>0 &] (* _Geoffrey Critzer_, Jan 26 2014 *)",
+   "(* Alternative: *)",
+   "LinearRecurrence[{5,-6,1},{1,1,2},30] (* _Jean-François Alcover_, Jan 09 2016 *)"
+  ],
+  "program": [
+   "(PARI) a=vector(99); a[1]=1; a[2]=2;a[3]=5; for(n=4,#a,a[n]=5*a[n-1]-6*a[n-2] +a[n-3]); a \\\\ _Charles R Greathouse IV_, Jun 10 2011",
+   "(PARI) {a(n) = if( n<0, n = -n; polcoeff( (1 - 3*x + x^2) / (1 - 6*x + 5*x^2 - x^3) + x * O(x^n), n), polcoeff( (1 - 4*x + 3*x^2) / (1 - 5*x + 6*x^2 - x^3) + x * O(x^n), n))} /* _Michael Somos_, May 04 2012 */",
+   "(Magma) I:=[1,1,2]; [n le 3 select I[n] else 5*Self(n-1)-6*Self(n-2)+Self(n-3): n in [1..30]]; // _Vincenzo Librandi_, Jan 09 2016"
+  ],
+  "xref": [
+   "Cf. A000007, A000012, A001519, A007051, A011782, A024175, A080937, A080938.",
+   "Cf. A033191 which essentially provide the same sequence for different limits and tend to A000108.",
+   "Cf. A005021, A094790, A094789."
+  ],
+  "keyword": "nonn,easy",
+  "offset": "0,3",
+  "author": "_Henry Bottomley_, Feb 25 2003",
+  "references": 21,
+  "revision": 162,
+  "time": "2026-05-30T04:29:00-04:00",
+  "created": "2003-05-16T03:00:00-04:00"
+ },
+ {
+  "number": 211216,
+  "data": "1,1,2,5,14,42,132,429,1430,4862,16795,58766,207783,740924,2660139,9603089,34818270,126676726,462125928,1689438278,6186432967,22682699779,83249302471,305773834030,1123771473120,4131947428007,15197952958467,55915691993228",
+  "name": "Expansion of (1-8*x+21*x^2-20*x^3+5*x^4)/(1-9*x+28*x^2-35*x^3+15*x^4-x^5).",
+  "comment": [
+   "In the paper of Kitaev, Remmel and Tiefenbruck (see the Links section), Q_(132)^(k,0,0,0)(x,0) represents a generating function depending on k and x.",
+   "For successive values of k we have:",
+   "k=1, the g.f. of A000012: 1/(1-x);"
+  ],
+  "link": [
+   "Bruno Berselli, <a href=\"/A211216/b211216.txt\">Table of n, a(n) for n = 0..1000</a>",
+   "Paul Drube, <a href=\"https://arxiv.org/abs/2206.01194\">Raised k-Dyck paths</a>, arXiv:2206.01194 [math.CO], 2022. See Appendix pp. 14-15.",
+   "Sergey Kitaev, Jeffrey Remmel and Mark Tiefenbruck, <a href=\"https://arxiv.org/abs/1201.6243\">Marked mesh patterns in 132-avoiding permutations I,</a> arXiv:1201.6243v1 [math.CO], 2012 (page 10, Corollary 3)."
+  ],
+  "formula": [
+   "G.f.: (1-3*x+x^2)*(1-5*x+5*x^2)/(1-9*x+28*x^2-35*x^3+15*x^4-x^5).",
+   "G.f.: 1/(1-x/(1-x/(1-x/(1-x/(1-x/(1-x/(1-x/(1-x/(1-x))))))))). - _Philippe Deléham_, Mar 14 2013",
+   "a(n) = A000108(n) + Sum_{k=1..n} (4*binomial(2*n, n+11*k) - binomial(2*n+2, n+11*k+1)). - _Greg Dresden_, Jan 28 2023"
+  ],
+  "mathematica": [
+   "CoefficientList[Series[(1 - 8 x + 21 x^2 - 20 x^3 + 5 x^4)/(1 - 9 x + 28 x^2 - 35 x^3 + 15 x^4 - x^5), {x, 0, 27}], x]"
+  ],
+  "program": [
+   "(PARI) Vec((1-8*x+21*x^2-20*x^3+5*x^4)/(1-9*x+28*x^2-35*x^3+15*x^4-x^5)+O(x^28))",
+   "(Magma) m:=28; R<x>:=PowerSeriesRing(Integers(), m); Coefficients(R!((1-8*x+21*x^2-20*x^3+5*x^4)/(1-9*x+28*x^2-35*x^3+15*x^4-x^5)));"
+  ],
+  "xref": [
+   "Cf. A000108, A001519, A011782, A024175, A033191, A080937, A080938, A124302.",
+   "Cf. square array in A080934."
+  ],
+  "keyword": "nonn,easy",
+  "offset": "0,3",
+  "author": "_Bruno Berselli_, May 11 2012",
+  "references": 16,
+  "revision": 76,
+  "time": "2026-01-20T22:32:00-05:00",
+  "created": "2012-05-11T17:32:48-04:00"
+ },
+ {
+  "number": 60795,
+  "data": "1,2,5,14,42,165,714,3094,14858,79534,447051,2714690,17395070,114371070,783152070,5708587335,43848093003,342444658094,2803119896185,23619540863730,201813981102615,1793779293633437,16342050964565645,154170926013430326,1518409177581024365",
+  "name": "Write product of first n primes as x*y with x<y and x maximal; sequence gives value of x.",
+  "comment": [
+   "Or, lower central divisor of n-th primorial.",
+   "Subsequence of A005117 (squarefree numbers). - _Michel Marcus_, Feb 22 2016"
+  ],
+  "link": [
+   "Max Alekseyev, <a href=\"/A060795/b060795.txt\">Table of n, a(n) for n = 1..70</a>"
+  ],
+  "formula": [
+   "a(n) = A060775(A002110(n)). - _Labos Elemer_, Apr 27 2001",
+   "a(n) = A002110(n)/A060796(n). - _M. F. Hasler_, Mar 21 2022"
+  ],
+  "example": [
+   "n = 8: q(8) = 2*3*5*7*11*13*17*19 = 9699690. Its 128th and 129th divisors are {3094, 3135}: a(8) = 3094 and 3094 < A000196(9699690) = 3114 < 3135. [Corrected by _Colin Barker_, Oct 22 2010]",
+   "2*3*5*7 = 210 = 14*15 with difference of 1, so a(4) = 14."
+  ],
+  "maple": [
+   "F:= proc(n) local P,N,M;",
+   "     P:= {seq(ithprime(i),i=1..n)};",
+   "     N:= floor(sqrt(convert(P,`*`)));"
+  ],
+  "mathematica": [
+   "a[n_] := (m = Times @@ Prime[Range[n]] ; dd = Divisors[m]; dd[[Length[dd]/2 // Floor]]); Table[Print[an = a[n]]; an, {n, 1, 25}] (* _Jean-François Alcover_, Oct 15 2016 *)"
+  ],
+  "program": [
+   "(PARI) a(n) = my(m=prod(i=1, n, prime(i))); divisors(m)[numdiv(m)\\2]; \\\\ _Michel Marcus_, Feb 22 2016"
+  ],
+  "xref": [
+   "Cf. A000196, A060776, A060777, A061057, A060796 (y), A061060 (y-x), A182987 (x+y), A061030, A061031, A061032, A061033, A060755, A033677, A200743."
+  ],
+  "keyword": "nonn",
+  "offset": "1,2",
+  "author": "_Labos Elemer_, Apr 27 2001",
+  "ext": [
+   "More terms from _Ed Pegg Jr_, May 28 2001",
+   "a(16)-a(23) computed by _Jud McCranie_, Apr 15 2000",
+   "a(24) and a(25) from _Robert Israel_, Feb 22 2016",
+   "a(25) corrected by _Jean-François Alcover_, Oct 15 2016",
+   "a(26)-a(33) in b-file from _Amiram Eldar_, Apr 09 2020",
+   "Up to a(38) using b-file of A060796, by _M. F. Hasler_, Mar 21 2022",
+   "a(39)-a(70) in b-file from _Max Alekseyev_, Apr 20 2022"
+  ],
+  "references": 14,
+  "revision": 59,
+  "time": "2024-01-14T12:34:26-05:00",
+  "created": "2003-05-16T03:00:00-04:00"
+ },
+ {
+  "number": 288942,
+  "data": "1,1,0,1,1,0,1,1,1,0,1,1,2,1,0,1,1,2,4,1,0,1,1,2,5,9,1,0,1,1,2,5,13,21,1,0,1,1,2,5,14,36,51,1,0,1,1,2,5,14,41,104,127,1,0,1,1,2,5,14,42,125,309,323,1,0,1,1,2,5,14,42,131,393,939,835,1,0",
+  "name": "Number A(n,k) of ordered rooted trees with n non-root nodes and all outdegrees <= k; square array A(n,k), n >= 0, k >= 0, read by antidiagonals.",
+  "comment": [
+   "Also the number of Dyck paths of semilength n with all ascent lengths <= k. A(4,2) = 9: /\\/\\/\\/\\, //\\\\/\\/\\, /\\//\\\\/\\, /\\/\\//\\\\, //\\/\\\\/\\, //\\/\\/\\\\, /\\//\\/\\\\, //\\\\//\\\\, //\\//\\\\\\.",
+   "Also the number of permutations p of [n] such that in 0p all up-jumps are <= k and no down-jump is larger than 1. An up-jump j occurs at position i in p if p_{i} > p_{i-1} and j is the index of p_i in the increasingly sorted list of those elements in {p_{i}, ..., p_{n}} that are larger than p_{i-1}. A down-jump j occurs at position i in p if p_{i} < p_{i-1} and j is the index of p_i in the decreasingly sorted list of those elements in {p_{i}, ..., p_{n}} that are smaller than p_{i-1}. First index in the lists is 1 here. A(4,2) = 9: 1234, 1243, 1324, 1342, 2134, 2143, 2314, 2341, 2431."
+  ],
+  "link": [
+   "Alois P. Heinz, <a href=\"/A288942/b288942.txt\">Rows n = 0..140, flattened</a>",
+   "N. Hein and J. Huang, <a href=\"https://arxiv.org/abs/1508.01688\">Modular Catalan Numbers</a>, arXiv:1508.01688 [math.CO], 2015",
+   "<a href=\"/index/Ro#rooted\">Index entries for sequences related to rooted trees</a>"
+  ],
+  "formula": [
+   "A(n,k) = Sum_{j=0..k} A203717(n,j).",
+   "G.f. of column k: G(x)/x where G(x) is the reversion of x*(1-x)/(1-x^(k+1)). - _Andrew Howroyd_, Nov 30 2017",
+   "G.f. g_k(x) of column k satisfies: g_k(x) = Sum_{j=0..k} (x*g_k(x))^j. - _Alois P. Heinz_, May 05 2019"
+  ],
+  "example": [
+   "A(4,2) = 9:",
+   ".",
+   ".   o    o      o      o      o      o       o      o       o"
+  ],
+  "maple": [
+   "b:= proc(u, o, k) option remember; `if`(u+o=0, 1,",
+   "      add(b(u-j, o+j-1, k), j=1..min(1, u))+",
+   "      add(b(u+j-1, o-j, k), j=1..min(k, o)))"
+  ],
+  "mathematica": [
+   "b[u_, o_, k_] := b[u, o, k] = If[u + o == 0, 1, Sum[b[u - j, o + j - 1, k], {j, 1, Min[1, u]}] + Sum[b[u + j - 1, o - j, k], {j, 1, Min[k, o]}]];",
+   "A[n_, k_] := b[0, n, k];",
+   "Table[Table[A[n, d-n], {n, 0, d}], {d, 0, 12}] // Flatten (* _Jean-François Alcover_, Oct 27 2017, translated from Maple *)"
+  ],
+  "program": [
+   "(PARI)",
+   "T(n,k)=polcoeff(serreverse(x*(1-x)/(1-x*x^k) + O(x^2*x^n)), n+1);",
+   "for(n=0, 10, for(k=0, 10, print1(T(n, k), \", \")); print); \\\\ _Andrew Howroyd_, Nov 29 2017"
+  ],
+  "xref": [
+   "Columns k=0..10 give: A000007, A000012, A001006, A036765, A036766, A036767, A036768, A036769, A291823, A291824, A291825.",
+   "Main diagonal (and upper diagonals) give A000108.",
+   "First lower diagonal gives A001453."
+  ],
+  "keyword": "nonn,tabl",
+  "offset": "0,13",
+  "author": "_Alois P. Heinz_, Sep 01 2017",
+  "references": 14,
+  "revision": 61,
+  "time": "2025-11-05T15:22:40-05:00",
+  "created": "2017-09-01T19:12:26-04:00"
+ },
+ {
+  "number": 287847,
+  "data": "1,1,0,1,1,0,1,1,1,0,1,1,2,3,0,1,1,2,4,5,0,1,1,2,5,12,13,0,1,1,2,5,13,31,31,0,1,1,2,5,14,40,90,71,0,1,1,2,5,14,41,119,264,181,0,1,1,2,5,14,42,130,376,797,447,0,1,1,2,5,14,42,131,414,1202,2402,1111,0",
+  "name": "Number A(n,k) of Dyck paths of semilength n such that no level has more than k peaks; square array A(n,k), n >= 0, k >= 0, read by descending antidiagonals.",
+  "link": [
+   "Alois P. Heinz, <a href=\"/A287847/b287847.txt\">Antidiagonals n = 0..140, flattened</a>",
+   "Wikipedia, <a href=\"https://en.wikipedia.org/wiki/Lattice_path#Counting_lattice_paths\">Counting lattice paths</a>"
+  ],
+  "formula": [
+   "A(n,k) = Sum_{j=0..k} A287822(n,j)."
+  ],
+  "example": [
+   ". A(3,1) = 3:                    /\\",
+   ".                 /\\    /\\      /  \\",
+   ".              /\\/  \\  /  \\/\\  /    \\   ."
+  ],
+  "maple": [
+   "b:= proc(n, k, j) option remember; `if`(j=n, 1, add(",
+   "      b(n-j, k, i)*add(binomial(i, m)*binomial(j-1, i-1-m),",
+   "       m=max(0, i-j)..min(k, i-1)), i=1..min(j+k, n-j)))"
+  ],
+  "mathematica": [
+   "b[n_, k_, j_] := b[n, k, j] = If[j == n, 1, Sum[b[n - j, k, i]*Sum[ Binomial[i, m]*Binomial[j - 1, i - 1 - m], {m, Max[0, i - j], Min[k, i - 1]}], {i, 1, Min[j + k, n - j]}]];",
+   "A[n_, k_] := A[n, k] = If[n==0, 1, Sum[b[n, #, j], {j, 1, #}]&[Min[n, k]]];",
+   "Table[A[n, d - n], {d, 0, 14}, {n, 0, d}] // Flatten (* _Jean-François Alcover_, May 25 2018, translated from Maple *)"
+  ],
+  "program": [
+   "(Python)",
+   "from sympy.core.cache import cacheit",
+   "from sympy import binomial"
+  ],
+  "xref": [
+   "Columns k=0-10 give: A000007, A281874, A287966, A287967, A287968, A287969, A287970, A287971, A287972, A287973, A287974.",
+   "Main diagonal and first two lower diagonals give: A000108, A001453, A120304.",
+   "Cf. A287822."
+  ],
+  "keyword": "nonn,tabl",
+  "offset": "0,13",
+  "author": "_Alois P. Heinz_, Jun 01 2017",
+  "references": 13,
+  "revision": 31,
+  "time": "2021-03-21T13:06:50-04:00",
+  "created": "2017-06-03T15:19:48-04:00"
+ },
+ {
+  "number": 80934,
+  "data": "1,1,0,1,1,0,1,1,1,0,1,1,2,1,0,1,1,2,4,1,0,1,1,2,5,8,1,0,1,1,2,5,13,16,1,0,1,1,2,5,14,34,32,1,0,1,1,2,5,14,41,89,64,1,0,1,1,2,5,14,42,122,233,128,1,0,1,1,2,5,14,42,131,365,610,256,1,0,1,1,2,5,14,42,132,417,1094,1597,512,1,0",
+  "name": "Square array read by antidiagonals of number of Catalan paths (nonnegative, starting and ending at 0, step +-1) of 2n steps with all values less than or equal to k.",
+  "comment": [
+   "Number of permutations in S_n avoiding both 132 and 123...k.",
+   "T(n,k) = number of rooted ordered trees on n nodes of depth <= k. Also, T(n,k) = number of {1,-1} sequences of length 2n summing to 0 with all partial sums are >=0 and <= k. Also, T(n,k) = number of closed walks of length 2n on a path of k nodes starting from (and ending at) a node of degree 1. - _Mitch Harris_, Mar 06 2004",
+   "Also T(n,k) = k-th coefficient in expansion of the rational function R(n), where R(1) = 1, R(n+1) = 1/(1-x*R(n)), which means also that lim(n->inf,R(n)) = g.f. of Catalan numbers (A000108) wherever it has real value (see Mansour article). - _Clark Kimberling_ and _Ralf Stephan_, May 26 2004"
+  ],
+  "link": [
+   "Alois P. Heinz, <a href=\"/A080934/b080934.txt\">Antidiagonals n = 0..140, flattened</a>",
+   "Kassie Archer, Ethan Borsh, Jensen Bridges, Christina Graves, and Millie Jeske, <a href=\"https://arxiv.org/abs/2408.15000\">Pattern-restricted cyclic permutations with a pattern-restricted cycle form</a>, arXiv:2408.15000 [math.CO], 2024. See also <a href=\"https://doi.org/10.54550/ECA2025V5S1R3\">Enum. Comb. Appl.</a> 5(1) (2025) Art. S2R3. See p. 7.",
+   "Nicolaas Govert de Bruijn, Donald E. Knuth, and Stephen O. Rice, <a href=\"https://alexandria.tue.nl/repository/freearticles/597601.pdf\">The Average Height of Planted Plane Trees</a>, Graph Theory Comput. (1972) 15-22."
+  ],
+  "formula": [
+   "T(n, k) = Sum_{0<i<n} T(i, k)*T(n-i, k-1) with T(0, k) = 1 and T(n, 0) = 0^n. For 1<=k<=n T(n, k) = A080935(n, k) = T(n, k-1)+A080936(n, k); for k>=n T(n, k) = A000108(n).",
+   "T(n, k) = 2^(2n+1)/(k+2) * Sum_{i=1..k+1} (sin(Pi*i/(k+2))*cos(Pi*i/(k+2))^n)^2 for n>=1. - _Herbert Kociemba_, Apr 28 2004",
+   "G.f. of n-th row: B(n)/B(n+1) where B(j)=[(1+sqrt(1-4x))/2]^j-[(1-sqrt(1-4x))/2]^j."
+  ],
+  "example": [
+   "T(3,2) = 4 since the paths of length 2*3 (7 points) with all values less than or equal to 2 can take the routes 0101010, 0101210, 0121010 or 0121210, but not 0123210.",
+   "From _Peter Luschny_, Aug 27 2014: (Start)",
+   "Trees with n nodes and height <= h:"
+  ],
+  "maple": [
+   "# As a triangular array:",
+   "b:= proc(x, y, k) option remember; `if`(y>min(k, x) or y<0, 0,",
+   "      `if`(x=0, 1, b(x-1, y-1, k)+ b(x-1, y+1, k)))"
+  ],
+  "mathematica": [
+   "A[n_, k_] := A[n, k] = Which[n == 1, 1, k == 1, 0, True, Sum[A[n-j, k]*A[j, k-1], {j, 1, n-1}]]; Table[A[k-n+1, n], {k, 1, 13}, {n, k, 1, -1}] // Flatten (* _Jean-François Alcover_, Feb 19 2015, after _Peter Luschny_ *)"
+  ],
+  "program": [
+   "(PARI)",
+   "A(N, K) = {",
+   "  my(m = matrix(N, K, n, k, n==1));"
+  ],
+  "xref": [
+   "Cf. A000108, A079214, A080935, A080936. Rows include A000012, A057427, A040000 (offset), columns include (essentially) A000007, A000012, A011782, A001519, A007051, A080937, A024175, A080938, A033191, A211216. Main diagonal is A000108.",
+   "Cf. A094718 (involutions). Cf. also A259475."
+  ],
+  "keyword": "nonn,tabl",
+  "offset": "0,13",
+  "author": "_Henry Bottomley_, Feb 25 2003",
+  "references": 12,
+  "revision": 132,
+  "time": "2026-07-30T20:08:35-04:00",
+  "created": "2003-05-16T03:00:00-04:00"
+ },
+ {
+  "number": 24175,
+  "data": "1,1,2,5,14,42,132,428,1416,4744,16016,54320,184736,629280,2145600,7319744,24979584,85262464,291057920,993641216,3392317952,11581727232,39541748736,135002491904,460924372992,1573688313856,5372896120832,18344191078400,62630938517504,213835304804352,730079207964672",
+  "name": "Expansion of g.f. (1 - 5*x + 6*x^2 - x^3)/((1 - 2*x)*(1 - 4*x + 2*x^2)).",
+  "comment": [
+   "Number of (s(0), s(1), ..., s(2*n)) such that 0 < s(i) < 8 and |s(i) - s(i-1)| = 1 for i = 1, 2, ..., 2*n, s(0) = 1, s(2*n) = 1. - _Herbert Kociemba_, Jun 11 2004",
+   "Counts all paths of length (2*n), n >= 0, starting and ending at the initial node on the path graph P_7, see the Maple program. - _Johannes W. Meijer_, May 29 2010"
+  ],
+  "link": [
+   "Vincenzo Librandi, <a href=\"/A024175/b024175.txt\">Table of n, a(n) for n = 0..1000</a>",
+   "Jean Luc Baril, Rigoberto Flórez, and José L. Ramirez, <a href=\"http://jl.baril.u-bourgogne.fr/narayana.pdf\">Generalized Narayana arrays, restricted Dyck paths, and related bijections</a>, Univ. Bourgogne (France, 2025). See p. 27.",
+   "Giulio Cerbai, Anders Claesson, and Luca Ferrari, <a href=\"https://arxiv.org/abs/1907.08142\">Stack sorting with restricted stacks</a>, arXiv:1907.08142 [cs.DS], 2019."
+  ],
+  "formula": [
+   "From _Herbert Kociemba_, Jun 11 2004: (Start)",
+   "a(n) = (1/4)*Sum_{r=1..7} sin(r*Pi/8)^2*(2*cos(r*Pi/8))^(2n), n >= 1.",
+   "a(n) = 6*a(n-1) - 10*a(n-2) + 4*a(n-3), n >= 4. (End)"
+  ],
+  "example": [
+   "G.f. = 1 + x + 2*x^2 + 5*x^3 + 14*x^4 + 42*x^5 + 132*x^6 + 428*x^7 + ..."
+  ],
+  "maple": [
+   "with(GraphTheory): G:=PathGraph(7): A:= AdjacencyMatrix(G): nmax:=26; n2:=2*nmax: for n from 0 to n2 do B(n):=A^n; a(n):=B(n)[1,1]; od: seq(a(2*n),n=0..nmax); # _Johannes W. Meijer_, May 29 2010"
+  ],
+  "mathematica": [
+   "CoefficientList[Series[(1-5*x+6*x^2-x^3)/((1-2*x)*(1-4*x+2*x^2)),{x,0,30}],x] (* _Vincenzo Librandi_, May 10 2012 *)",
+   "LinearRecurrence[{6,-10,4}, {1,1,2,5}, 41] (* _G. C. Greubel_, Feb 02 2026 *)"
+  ],
+  "program": [
+   "(PARI) {a(n) = local(A); A = 1; for( i=1, 6, A = 1 / (1 - x*A)); polcoeff( A + x * O(x^n), n)} /* _Michael Somos_, May 12 2012 */",
+   "(Magma)",
+   "I:=[1,1,2,5]; [n le 4 select I[n] else 6*Self(n-1) -10*Self(n-2) +4*Self(n-3): n in [1..40]]; // _G. C. Greubel_, Feb 02 2026"
+  ],
+  "xref": [
+   "Cf. A000129, A002203, A006012, A007070, A030436, A056236, A094803, A211216."
+  ],
+  "keyword": "nonn,easy",
+  "offset": "0,3",
+  "author": "_N. J. A. Sloane_",
+  "references": 10,
+  "revision": 124,
+  "time": "2026-02-26T12:25:55-05:00",
+  "created": "1998-06-14T03:00:00-04:00"
+ },
+ {
+  "number": 33191,
+  "data": "1,1,2,5,14,42,132,429,1430,4861,16778,58598,206516,732825,2613834,9358677,33602822,120902914,435668420,1571649221,5674201118,20497829133,74079051906,267803779710,968355724724,3502058316337,12666676646162,45818284122149",
+  "name": "Binomial transform of [ 1, 0, 1, 1, 3, 6, 15, 36, 91, 231, 595, ... ], which is essentially binomial(Fibonacci(k) + 1, 2).",
+  "comment": [
+   "Number of (s(0), s(1), ..., s(2n)) such that 0 < s(i) < 10 and |s(i) - s(i-1)| = 1 for i = 1,2,...,2n, s(0) = 1, s(2n) = 1. - _Herbert Kociemba_, Jun 14 2004",
+   "The sequence 1,2,5,14,... has g.f. 1/(1-2x-x^2/(1-2x-x^2/(1-2x-x^2/(1-2x)))) = (1-6x+10x^2-4x^3)/(1-8x+21x^2-20x^3+5x^4), and is the second binomial transform A001519 aerated. - _Paul Barry_, Dec 17 2009",
+   "Counts all paths of length (2*n), n>=0, starting and ending at the initial node on the path graph P_9, see the Maple program. - _Johannes W. Meijer_, May 29 2010"
+  ],
+  "link": [
+   "Michael De Vlieger, <a href=\"/A033191/b033191.txt\">Table of n, a(n) for n = 0..1793</a>",
+   "Paul Drube, <a href=\"https://arxiv.org/abs/2206.01194\">Raised k-Dyck paths</a>, arXiv:2206.01194 [math.CO], 2022. See Appendix pp. 14-15.",
+   "Sergey Kitaev, Jeffrey Remmel and Mark Tiefenbruck, <a href=\"https://arxiv.org/abs/1201.6243\">Marked mesh patterns in 132-avoiding permutations I</a>, arXiv:1201.6243v1 [math.CO], 2012 (Corollary 3, case k=8, pages 10-11). [_Bruno Berselli_, May 12 2012]"
+  ],
+  "formula": [
+   "G.f.: (1-7x+15x^2-10x^3+x^4)/(1-8x+21x^2-20x^3+5x^4). - _Ralf Stephan_, May 13 2003",
+   "From _Herbert Kociemba_, Jun 14 2004: (Start)",
+   "a(n) = (1/5)*Sum_{r=1..9} sin(r*Pi/10)^2*(2*cos(r*Pi/10))^(2n), n >= 1;"
+  ],
+  "example": [
+   "1 + x + 2*x^2 + 5*x^3 + 14*x^4 + 42*x^5 + 132*x^6 + 429*x^7 + 1430*x^8 + ..."
+  ],
+  "maple": [
+   "with(GraphTheory): G:=PathGraph(9): A:= AdjacencyMatrix(G): nmax:=24; n2:=nmax*2: for n from 0 to n2 do B(n):=A^n; a(n):=B(n)[1,1]; od: seq(a(2*n),n=0..nmax); # _Johannes W. Meijer_, May 29 2010"
+  ],
+  "mathematica": [
+   "CoefficientList[Series[(1-7x+15x^2-10x^3+x^4)/(1-8x+21x^2-20x^3+5x^4), {x,0,30}],x] (* _Harvey P. Dale_, Apr 26 2011 *)",
+   "(* Alternative: *)",
+   "Join[{1},LinearRecurrence[{8,-21,20,-5},{1,2,5,14}, 30]]  (* _Harvey P. Dale_, Apr 26 2011 *)"
+  ],
+  "program": [
+   "(PARI) {a(n) = local(A); A = 1; for( i=1, 8, A = 1 / (1 - x*A)); polcoeff( A + x * O(x^n), n)} /* _Michael Somos_, May 12 2012 */"
+  ],
+  "xref": [
+   "Cf. A033192.",
+   "Cf. A081567, A147748 and A178381.",
+   "Cf. A211216."
+  ],
+  "keyword": "nonn,easy",
+  "offset": "0,3",
+  "author": "Simon P. Norton",
+  "references": 9,
+  "revision": 53,
+  "time": "2026-06-30T19:56:59-04:00",
+  "created": "1999-12-11T03:00:00-05:00"
+ }
+]

@@ -13,7 +13,7 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
 - Project plan (phases, tasks, acceptance criteria): [PLAN.md](PLAN.md)
 - PARI → ER2 function names: [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTIONS.md)
 - Technical design and open decisions (D1–D10): [ARCHITECTURE.md](ARCHITECTURE.md) — **read before implementing**.
-- Status: 0.4.1, M1–M4 done (M3 was the MVP). Next: M5 in [PLAN.md](PLAN.md).
+- Status: 0.4.2, M1–M4 done (M3 was the MVP), plus `er2.oeis`. Next: M5 in [PLAN.md](PLAN.md).
 
 ## Guiding principle
 
@@ -47,7 +47,8 @@ In practice:
 
 - Python 3.14 (proposed minimum: 3.12). Package manager: `uv`.
 - Virtual env: `.venv/` managed by `uv sync`. Dependencies in `pyproject.toml`.
-- **Minimal dependencies**: runtime = `sympy` + `cypari2`; dev = `pytest` + `ruff`. Do not add a dependency unless a task truly needs it (e.g. `ipykernel` as the optional extra `er2[jupyter]` only when the kernel is implemented).
+- **Minimal dependencies**: runtime = `sympy` + `cypari2`; dev = `pytest` + `ruff`. Do not add a dependency unless a task truly needs it (e.g. `ipykernel` as the optional extra `er2[jupyter]`, `oeis-tools` as `er2[oeis]`).
+- **OEIS tests never use the network**: they read `tests/oeis/data/` (recorded responses). `ER2_NETWORK_TESTS=1 uv run pytest tests/oeis` also runs the live test.
 - Quarto 1.9 is installed on this machine (`quarto render`), used for the Quarto tests.
 - **PARI comes from cypari2** (its wheel bundles libpari 2.17.2). Do not depend on a system PARI/GP install or the `gp` binary — not for the code, not for tests. To check an expected value:
   `uv run python -c "import cypari2; print(cypari2.Pari().eulerphi(123456))"`

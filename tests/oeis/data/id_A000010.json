@@ -1,0 +1,58 @@
+[
+ {
+  "number": 10,
+  "id": "M0299 N0111",
+  "data": "1,1,2,2,4,2,6,4,6,4,10,4,12,6,8,8,16,6,18,8,12,10,22,8,20,12,18,12,28,8,30,16,20,16,24,12,36,18,24,16,40,12,42,20,24,22,46,16,42,20,32,24,52,18,40,24,36,28,58,16,60,30,36,32,48,20,66,32,44",
+  "name": "Euler totient function phi(n): count numbers <= n and prime to n.",
+  "comment": [
+   "Number of elements in a reduced residue system modulo n.",
+   "Degree of the n-th cyclotomic polynomial (cf. A013595). - _Benoit Cloitre_, Oct 12 2002",
+   "Number of distinct generators of a cyclic group of order n. Number of primitive n-th roots of unity. (A primitive n-th root x is such that x^k is not equal to 1 for k = 1, 2, ..., n - 1, but x^n = 1.) - _Lekraj Beedassy_, Mar 31 2005"
+  ],
+  "reference": [
+   "M. Abramowitz and I. A. Stegun, eds., Handbook of Mathematical Functions, National Bureau of Standards Applied Math. Series 55, 1964 (and various reprintings), p. 840.",
+   "T. M. Apostol, Introduction to Analytic Number Theory, Springer-Verlag, 1976, page 24.",
+   "M. Baake and U. Grimm, Aperiodic Order Vol. 1: A Mathematical Invitation, Encyclopedia of Mathematics and its Applications 149, Cambridge University Press, 2013: see Tables 3.1 and 3.2."
+  ],
+  "link": [
+   "Daniel Forgues, <a href=\"/A000010/b000010.txt\">Table of n, phi(n) for n = 1..100000</a> (first 10000 terms from N. J. A. Sloane)",
+   "Milton Abramowitz and Irene A. Stegun, eds., <a href=\"https://www.convertit.com/Go/ConvertIt/Reference/AMS55.ASP\">Handbook of Mathematical Functions</a>, National Bureau of Standards Applied Math. Series 55, Tenth Printing, 1972.",
+   "Dario A. Alpern, <a href=\"https://www.alpertron.com.ar/ECM.HTM\">Factorization using the Elliptic Curve Method (along with sigma_0, sigma_1 and phi functions)</a>."
+  ],
+  "formula": [
+   "phi(n) = n*Product_{distinct primes p dividing n} (1 - 1/p).",
+   "Sum_{d divides n} phi(d) = n.",
+   "phi(n) = Sum_{d divides n} mu(d)*n/d, i.e., the Moebius transform of the natural numbers; mu() = Moebius function A008683()."
+  ],
+  "example": [
+   "G.f. = x + x^2 + 2*x^3 + 2*x^4 + 4*x^5 + 2*x^6 + 6*x^7 + 4*x^8 + 6*x^9 + 4*x^10 + ...",
+   "a(8) = 4 with {1, 3, 5, 7} units modulo 8. a(10) = 4 with {1, 3, 7, 9} units modulo 10. - _Michael Somos_, Aug 27 2013",
+   "From _Eduard I. Vatutin_, Nov 01 2020: (Start)"
+  ],
+  "maple": [
+   "with(numtheory): A000010 := phi; [ seq(phi(n), n=1..100) ];",
+   "# Alternative:",
+   "with(numtheory): phi := proc(n) local i,t1,t2; t1 := ifactors(n)[2]; t2 := n*mul((1-1/t1[i][1]),i=1..nops(t1)); end;"
+  ],
+  "mathematica": [
+   "Array[EulerPhi, 70]"
+  ],
+  "program": [
+   "(Axiom) [eulerPhi(n) for n in 1..100]",
+   "(Magma) [ EulerPhi(n) : n in [1..100] ]; // Sergei Haller (sergei(AT)sergei-haller.de), Dec 21 2006",
+   "(PARI) {a(n) = if( n==0, 0, eulerphi(n))}; /* _Michael Somos_, Feb 05 2011 */"
+  ],
+  "xref": [
+   "Cf. A002088 (partial sums), A008683, A003434 (steps to reach 1), A007755, A049108, A002202 (values), A011755 (Sum k*phi(k)).",
+   "Cf. also A005277 (nontotient numbers). For inverse see A002181, A006511, A058277.",
+   "Jordan function J_k(n) is a generalization - see A059379 and A059380 (triangle of values of J_k(n)), this sequence (J_1), A007434 (J_2), A059376 (J_3), A059377 (J_4), A059378 (J_5)."
+  ],
+  "keyword": "easy,core,nonn,mult,nice,hear",
+  "offset": "1,3",
+  "author": "_N. J. A. Sloane_",
+  "references": 4453,
+  "revision": 641,
+  "time": "2026-08-03T10:58:05-04:00",
+  "created": "1991-04-30T03:00:00-04:00"
+ }
+]

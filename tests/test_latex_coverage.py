@@ -34,7 +34,7 @@ TYPE_SAMPLES = {
 }
 
 # Prelude values that are not mathematical objects.
-NOT_MATHEMATICAL = {"pari"}
+NOT_MATHEMATICAL = {"pari", "oeis"}
 
 n = Integer
 

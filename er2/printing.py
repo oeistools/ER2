@@ -140,14 +140,28 @@ def _latex(obj, options):
     ER2 types implement SymPy's printer protocol (a ``_latex(printer)``
     method), so their LaTeX is also correct inside SymPy containers.
     """
-    if callable(getattr(obj, "_latex", None)) or _is_sympy(obj):
+    if _is_sympy(obj):
         return _lazy.sympy().latex(obj, **options)
+    if callable(getattr(obj, "_latex", None)):
+        # ER2 types: ER2's printer for their parts, SymPy only if a part
+        # is a SymPy object (their LaTeX must not load SymPy by itself).
+        return obj._latex(_PartPrinter(options))
     rich = getattr(obj, "_repr_latex_", None)
     if callable(rich):
         body = rich()
         if isinstance(body, str):
             return _strip_math(body)
     return r"\texttt{%s}" % _escape(repr(obj))
+
+
+class _PartPrinter:
+    """The printer ER2 types get in ``_latex(printer)``: ``latex`` again."""
+
+    def __init__(self, options):
+        self.options = options
+
+    def _print(self, obj):
+        return _latex(obj, self.options)
 
 
 def _is_sympy(obj):

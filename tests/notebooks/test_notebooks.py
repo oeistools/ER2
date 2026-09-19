@@ -248,8 +248,11 @@ def test_quarto_renders_math(jupyter_path, tmp_path, fmt):
     else:
         assert (tmp_path / "m2.pdf").stat().st_size > 0
         tex = (tmp_path / "m2.tex").read_text()
-        assert r"\[\left(x + 1\right)^{2}\]" in tex
-        assert r"Inline: \(\frac{7}{3}\)" in tex
+        # Pandoc versions differ: \[...\] or $$...$$, \(...\) or $...$.
+        display = r"\left(x + 1\right)^{2}"
+        assert rf"\[{display}\]" in tex or f"$${display}$$" in tex
+        inline = r"\frac{7}{3}"
+        assert rf"Inline: \({inline}\)" in tex or f"Inline: ${inline}$" in tex
 
 
 EXAMPLES = Path(__file__).resolve().parent.parent.parent / "examples"

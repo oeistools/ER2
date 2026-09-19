@@ -283,6 +283,22 @@ Known limitations, carried forward:
 Still open: the M0 check that CI is green. `gh` is not logged in on this machine, so look at the
 Actions tab after the next push.
 
+## 0.4.2 — OEIS (brought forward from M6)
+
+**Status: ✅ done (2026-09-19).** Decisions taken with the user: reuse
+[oeis-tools](https://github.com/oeistools/oeis-tools) through the optional extra `er2[oeis]`, and
+put `oeis` in the prelude.
+
+- `oeis.sequence`, `search`, `identify` (by terms or by a function), `check` against the b-file,
+  and `write_bfile` (ARCHITECTURE §10).
+- **Tests.** 11 offline tests on recorded OEIS responses, and one live test
+  (`ER2_NETWORK_TESTS=1`), which passes against oeis.org.
+- **ER2 types format their own LaTeX** (`Mod`, `Qfb`, `Factorization`, `OEISSequence`), without
+  SymPy's printer, so their LaTeX does not load SymPy.
+- **Needs an oeis-tools release:** `OEISSequence.bibtex()` uses `Sequence.get_bibtex`, which is on
+  oeis-tools' `main` but not in the 0.2.0 release on PyPI. Until a newer release exists it raises a
+  clear error.
+
 ## M5 — 0.5: Algebra
 
 Matrices, finite fields, resultants, Gröbner bases and algebraic numbers. Choose the backend per
@@ -290,8 +306,8 @@ feature: PARI for number fields and finite fields, SymPy for Gröbner bases.
 
 ## M6 — 0.6: Series
 
-Power series, generating functions, Dirichlet series and Euler products. The OEIS module
-(`er2.oeis`) starts here, reusing the author's previous OEIS work.
+Power series, generating functions, Dirichlet series and Euler products. (The OEIS module came
+early, in 0.4.2.)
 
 ## M7 — 1.0: Stable language
 

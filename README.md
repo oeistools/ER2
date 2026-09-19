@@ -1,7 +1,7 @@
 # ER2 — Mathematical Python
 
 [![CI](https://github.com/oeistools/ER2/actions/workflows/ci.yml/badge.svg)](https://github.com/oeistools/ER2/actions/workflows/ci.yml)
-[![Status: early development](https://img.shields.io/badge/status-0.4.1%20early%20development-orange)](PLAN.md)
+[![Status: early development](https://img.shields.io/badge/status-0.4.2%20early%20development-orange)](PLAN.md)
 [![Python 3.12 | 3.13 | 3.14](https://img.shields.io/badge/python-3.12%20%7C%203.13%20%7C%203.14-blue?logo=python&logoColor=white)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Code style: PEP 8](https://img.shields.io/badge/code%20style-PEP%208-blue)](https://peps.python.org/pep-0008/)
@@ -25,6 +25,9 @@ It is named after the Hungarian mathematician **Paul Erdős**. In Spanish, "Erd�
 > - **The CAS on SymPy:** `expand`, `factor`, `diff`, `integrate`, `limit`, `solve`, `series`, and more.
 > - **Number theory on PARI:** `factor` of integers, `isprime`, `phi`, `sigma`, `Mod`, and so on, plus
 >   every other PARI function as `pari.<name>`.
+> - **The OEIS:** `oeis.sequence("A000045")[100]`, `oeis.identify([1, 2, 5, 14, 42])`,
+>   `oeis.check(phi, "A000010")`, built on [oeis-tools](https://github.com/oeistools/oeis-tools)
+>   (`pip install 'er2[oeis]'`).
 > - **PARI and SymPy together:** polynomials, series, matrices, `Mod(x, x^2 + 1)` and `Qfb` pass
 >   between them, and PARI's sums and integrals take Python functions
 >   (`pari.sum(lambda n: 1/n^2, 1, 10)`). Benchmarks are in [docs/BENCHMARKS.md](docs/BENCHMARKS.md).
@@ -121,8 +124,8 @@ ER2 does not introduce a new interpreter. It has three parts:
 | 0.6 | Series: power, Dirichlet, Euler products |
 | 1.0 | Stable language: specification, installable package |
 
-Later: OEIS integration (`oeis.search`, `oeis.identify`). Deeper CPython integration comes only
-after the syntax is stable.
+OEIS integration (`oeis.sequence`, `search`, `identify`, `check`) arrived early, in 0.4.2. Deeper
+CPython integration comes only after the syntax is stable.
 
 ## Development
 
@@ -152,8 +155,8 @@ make render                     # render examples/demo.qmd
 `make install-global` puts `er2` in `~/.local/bin`. It is an editable install, so it follows
 changes to the code, and it registers the ER2 kernel for your user.
 
-We keep dependencies deliberately minimal: `sympy` and `cypari2` at runtime, plus `ipykernel` as
-the optional `er2[jupyter]` extra. Development uses `pytest` and `ruff`. The code follows
+We keep dependencies deliberately minimal: `sympy` and `cypari2` at runtime, plus `ipykernel` and `oeis-tools` as
+the optional `er2[jupyter]` and `er2[oeis]` extras. Development uses `pytest` and `ruff`. The code follows
 [PEP 8](https://peps.python.org/pep-0008/), enforced with `uv run ruff format` and `uv run ruff check`.
 
 ## Documentation

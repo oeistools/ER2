@@ -11,7 +11,7 @@ them only if the program uses them (``er2._lazy``).
 
 import types
 
-from er2 import _lazy, dispatch, preparser
+from er2 import _lazy, dispatch, oeis, preparser
 from er2.backends.pari_backend import pari
 from er2.printing import latex, show
 from er2.runtime.factorization import Factorization
@@ -85,6 +85,7 @@ def namespace(code=None):
         "Factorization": Factorization,
         "Qfb": Qfb,
         "pari": pari,
+        "oeis": oeis,
         "symbols": symbols,
         "latex": latex,
         "show": show,

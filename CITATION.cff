@@ -12,7 +12,7 @@ abstract: >-
   the mathematician Paul Erdős.
 authors:
   - alias: eph
-version: 0.4.1
+version: 0.4.2
 repository-code: "https://github.com/oeistools/ER2"
 url: "https://github.com/oeistools/ER2"
 license: MIT

@@ -85,6 +85,33 @@ print(cancel((x^2 - 1) / (x - 1)))
 print(collect(x*y + x - 3 + 2*x^2 - x^2*y, x))
 ```
 
+## The OEIS
+
+`oeis` looks up, searches and checks against the
+[On-Line Encyclopedia of Integer Sequences](https://oeis.org)
+(needs `pip install 'er2[oeis]'` and a network connection):
+
+```{python}
+fib = oeis.sequence("A000045")
+print(fib.id, fib.offset, fib[10], fib[100])
+fib
+```
+
+Which sequences start like this?
+
+```{python}
+for s in oeis.identify([1, 2, 5, 14, 42], limit=3):
+    print(s)
+print(oeis.identify(sigma, 20, limit=1)[0].id)
+```
+
+Check your own function against the OEIS b-file:
+
+```{python}
+print(oeis.check(phi, "A000010"))
+print(oeis.check(lambda n: phi(n) + (n == 12), "A000010"))
+```
+
 ## Inline math
 
 The integral of $f$ from 0 to 1 is `{python} latex(integrate(f, (x, 0, 1)))`,

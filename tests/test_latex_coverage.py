@@ -19,6 +19,7 @@ from er2.printing import latex
 from er2.runtime.factorization import Factorization
 from er2.runtime.modular import Mod
 from er2.runtime.numbers import Integer, Rational
+from er2.runtime.qfb import Qfb
 
 x, y = sympy.symbols("x y")
 f = x**2 + 2 * x + 1
@@ -29,6 +30,7 @@ TYPE_SAMPLES = {
     Rational: Rational(1, 3),
     Mod: Mod(3, 7),
     Factorization: Factorization([(2, 3), (3, 2)]),
+    Qfb: Qfb(1, 1, 6),
 }
 
 # Prelude values that are not mathematical objects.

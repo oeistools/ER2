@@ -81,3 +81,45 @@ def test_sympy_and_pari_interop():
     assert Rational(1, 3) * x == x / 3
     pari = cypari2.Pari()
     assert pari.eulerphi(Integer(123456789)) == 82260072
+
+
+def test_literals_are_created_once():
+    """The preparser's literal helper caches immutable Integers (M4)."""
+    from er2 import prelude, preparser
+
+    literal = prelude.namespace()[preparser.INTEGER]
+    five = literal(5)
+    assert type(five) is Integer and five == 5
+    assert literal(5) is five
+    assert type(literal(10**30)) is Integer
+
+
+def test_operators_return_integer():
+    a, b = Integer(7), Integer(3)
+    for result in (
+        a + b,
+        a - b,
+        a * b,
+        a // b,
+        a % b,
+        -a,
+        +a,
+        abs(-a),
+        ~a,
+        a & b,
+        a | b,
+        a ^ b,
+        a << b,
+        a >> b,
+        3 + a,
+        3 - a,
+        3 * a,
+        3 // a,
+        3 % a,
+        3 & a,
+        3 | a,
+        3 ^ a,
+    ):
+        assert type(result) is Integer
+    assert a + 0.5 == 7.5 and type(a + 0.5) is float
+    assert (a + True) == 8 and type(a + True) is Integer

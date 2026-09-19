@@ -39,8 +39,8 @@ def test_to_pari():
     assert to_pari(sympy.Rational(1, 3)) == PARI("1/3")
     assert to_pari(sympy.Integer(5)).type() == "t_INT"
     assert to_pari((1, 2)).type() == "t_VEC"
-    with pytest.raises(TypeError, match="cannot convert Symbol"):
-        to_pari(x)
+    with pytest.raises(TypeError, match="not a polynomial"):
+        to_pari(sympy.sin(x))
 
 
 def test_from_pari():
@@ -54,9 +54,11 @@ def test_from_pari():
 
 
 def test_unsupported_pari_types_raise():
-    with pytest.raises(TypeError, match="t_QFB.*pari.raw"):
-        pari.qfbprimeform(-23, 2)
-    assert isinstance(pari.raw.qfbprimeform(-23, 2), cypari2.gen.Gen)
+    with pytest.raises(TypeError, match="t_FFELT.*pari.raw"):
+        pari.ffgen(9)
+    assert isinstance(pari.raw.ffgen(9), cypari2.gen.Gen)
+    with pytest.raises(TypeError, match="t_PADIC"):
+        from_pari(PARI("1 + O(3^5)"))
 
 
 def test_reals_keep_pari_precision():

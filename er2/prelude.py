@@ -12,7 +12,8 @@ from er2.backends.pari_backend import pari
 from er2.printing import latex, show
 from er2.runtime.factorization import Factorization
 from er2.runtime.modular import Mod
-from er2.runtime.numbers import Integer, Rational
+from er2.runtime.numbers import Integer, Rational, literal
+from er2.runtime.qfb import Qfb
 
 # Public functions (CAS and number theory); they choose their backend in
 # ``er2.dispatch``.
@@ -46,12 +47,13 @@ def symbols(names):
 def namespace():
     """Return a fresh dict with the ER2 prelude."""
     ns = {
-        preparser.INTEGER: Integer,
+        preparser.INTEGER: literal,
         preparser.SYMBOLS: symbols,
         "Integer": Integer,
         "Rational": Rational,
         "Mod": Mod,
         "Factorization": Factorization,
+        "Qfb": Qfb,
         "pari": pari,
         "symbols": symbols,
         "latex": latex,

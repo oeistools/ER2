@@ -1,7 +1,7 @@
 # ER2 — Architecture
 
 > Technical design document. Source of the idea: [draft/ER2_idea_summary.md](draft/ER2_idea_summary.md).
-> Status: **0.3, MVP done** (M1–M3). See [PLAN.md](PLAN.md).
+> Status: **0.4** (M1–M4 done; M3 was the MVP). See [PLAN.md](PLAN.md).
 
 ## 1. What ER2 is
 
@@ -152,6 +152,12 @@ Transformations (0.1):
 The helpers use reserved dunder names (`__er2_int__`, `__er2_sym__`), so user code such as
 `from sympy import *` can never shadow them. `er2 --show-python` shows them as they are.
 
+Integer literals inside `case` patterns stay as they are (fixed in M4). A literal pattern
+compares with `==`, so it needs no `Integer`, and `case __er2_int__(0):` would be a class
+pattern. The preparser applies the `^` and `sym` edits first, parses the result with `ast` to
+find the pattern spans, and then wraps every other literal. Guards (`case n if n > 2`) are
+ordinary expressions and are wrapped.
+
 Requirements (all implemented in M1 and covered by `tests/preparser/`):
 - Built on the `tokenize` module; never touch the contents of strings or comments. In f-strings
   (Python ≥ 3.12), only the expressions inside `{…}` are code, and the literal text is untouched.
@@ -199,12 +205,22 @@ lossless conversion to/from `cypari2.gen` and to/from `int`.
 Public functions are generic and choose a backend by type:
 
 ```text
-factor(n: integer)         → PARI  factor / factorint
-factor(p: polynomial/Expr) → SymPy factor
-isprime(n)                 → PARI  isprime (proof) / ispseudoprime (option)
+factor(n: integer or rational)          → PARI  factor → Factorization
+factor(p: univariate polynomial over Q) → PARI  factor → SymPy expression (M4)
+factor(p: any other Expr, or options)   → SymPy factor
+gcd(a, b), lcm(a, b)                    → SymPy for expressions, PARI for numbers
+isprime(n)                              → PARI  isprime (proof)
 ```
 
-- The dispatch table lives in a single place, not scattered across functions.
+- The dispatch table lives in a single place, not scattered across functions. Each entry is a
+  list of `(predicate, implementation)` pairs; a predicate sees the positional and keyword
+  arguments.
+- **Automatic backend choice (M4).** A univariate polynomial with rational coefficients and no
+  options goes to PARI. That is 1.2–14× faster from degree 9 upward (docs/BENCHMARKS.md), and
+  about 0.1 ms slower at degree 2 because of the conversion. The result is rebuilt in SymPy's
+  own form (SymPy's `_keep_coeff`), so it is the same expression `sympy.factor` returns; a test
+  checks this, and it was also compared on 248 random polynomials. Multivariate polynomials,
+  irrational coefficients and options (`extension=`, `modulus=`, …) stay with SymPy.
 - All type conversion happens at the backend boundary (`to_pari`, `from_pari`,
   `to_sympy`, `from_sympy`). Users never see a bare `cypari2.gen` or SymPy object unless
   they ask for one.
@@ -303,19 +319,45 @@ show(*objs)
   - **Precision.** cypari2 lowers PARI's real precision to 15 digits, like a Python `float`.
     ER2 uses GP's default of 38 digits (`pari.set_precision(digits)`). cypari2 methods don't read
     that default, so ER2 passes it to the 183 methods that take `precision`.
-  - **Conversions.** `to_pari` accepts ER2, Python and SymPy numbers, `Mod`, and lists.
-    `from_pari` gives ER2 numbers (`t_INT`, `t_FRAC`), `Mod` (`t_INTMOD`), SymPy `Float` with
-    PARI's exact value (`t_REAL`), SymPy expressions (`t_COMPLEX`, `t_POL`, `t_RFRAC`), lists
-    (vectors), and SymPy matrices (`t_MAT`). Other types (`t_POLMOD`, `t_SER`, `t_QFB`, …)
-    raise `TypeError` until M4; `pari.raw` is the cypari2 instance, for users who explicitly
-    want raw PARI objects.
+  - **Conversions (both directions since M4).**
+
+    | ER2 / SymPy | PARI |
+    |---|---|
+    | `Integer`, `Rational` | `t_INT`, `t_FRAC` |
+    | SymPy `Float` (exact value and precision) | `t_REAL` |
+    | complex numbers | `t_COMPLEX` |
+    | polynomials, rational functions | `t_POL`, `t_RFRAC` |
+    | series `p + O(x^n)` around 0 | `t_SER` |
+    | `Mod(3, 7)`, `Mod(x, x^2 + 1)` | `t_INTMOD`, `t_POLMOD` |
+    | `Qfb(a, b, c)` | `t_QFB` |
+    | lists; SymPy `Matrix` | `t_VEC`/`t_COL`; `t_MAT` |
+    | `oo`, `-oo` | `t_INFINITY` |
+
+    Inexact SymPy numbers (`pi`, `sqrt(2)`) become reals at PARI's precision, as in GP. The
+    remaining PARI types (`t_PADIC`, `t_FFELT`, …) raise `TypeError`; `pari.raw` is the cypari2
+    instance, for users who explicitly want raw PARI objects.
+  - **Variables.** A SymPy symbol becomes GP's variable of the same name (`'x`). GP reserves the
+    names of its functions and constants (`sigma`, `I`, `Pi`; the PARI table lists them all), so
+    those names get a new variable from `varhigher`, created once. The conversion never triggers
+    a PARI error and never keeps a PARI object between calls. Inside a Python callback, a PARI
+    error aborts the outer PARI call, and a kept object outlives PARI's temporary stack
+    (cypari2: "cannot detach a Gen which is still referenced").
+  - **Functions that take GP expressions** (`er2/backends/pari_closures.py`, the 26 `wrapper`
+    rows) take Python callables: `pari.sum(lambda n: 1/n^2, 1, 10)`. Each one is a fixed GP
+    lambda (`(f, a, b, prec) -> localbitprec(prec); sum(n = a, b, f(n))`). GP only parses these
+    constant texts, and user values travel as arguments. cypari2 turns the Python function into
+    a GP closure of the same arity, and an adapter converts its arguments to ER2 and its result
+    back to PARI. Exceptions in the callable propagate unchanged, and nesting works.
+  - **PARI-native types.** `Mod` with a polynomial modulus and `Qfb` do their arithmetic in PARI.
+    The runtime imports the PARI backend lazily for that, because the backend imports the
+    runtime types.
   - **Predicates.** `isprime`, `ispseudoprime`, `issquare` and `issquarefree` return a Python
     `bool`. `ispower` and `isprimepower` return the exponent, as in PARI (0 when false).
 - Neither backend imports the other. Only `dispatch` knows about both.
 
 ## 4. Repository layout
 
-The layout below is the target. The files marked ✅ exist (M1–M3).
+The layout below is the target. The files marked ✅ exist (M1–M4).
 
 ```text
 er2/
@@ -328,10 +370,11 @@ er2/
   printing.py          # ✅
   importer.py          # ✅ .er2 path hook
   kernel.py            # ✅ er2 Jupyter kernel + `er2 kernel install` (also preparses user_expressions)
-  runtime/             # types: Integer ✅, Rational ✅, Mod ✅, Factorization ✅, …
+  runtime/             # types: Integer ✅, Rational ✅, Mod ✅, Factorization ✅, Qfb ✅, …
   backends/
     sympy_backend.py   # ✅
     pari_backend.py    # ✅
+    pari_closures.py   # ✅ PARI functions that take Python callables
 tests/
   preparser/           # .er2 → expected .py pairs
   compat/              # Python compatibility contract (§1.1)
@@ -347,6 +390,8 @@ examples/
 er2/data/pari_functions.csv   # PARI → ER2 name table (§3.5)
 tools/sync_pari_functions.py  # regenerates the table and docs/PARI_FUNCTIONS.md
 docs/PARI_FUNCTIONS.md        # generated reference
+benchmarks/run.py             # ✅ ER2 vs cypari2, SymPy and Python (M4)
+docs/BENCHMARKS.md            # ✅ generated by benchmarks/run.py --write
 draft/                 # idea documents (not code)
 pyproject.toml
 ```
@@ -418,8 +463,18 @@ Each must be resolved (and recorded here) before or during 0.1.
   | loop cost vs `int` (pure-Python prototype) | ×8.9 | ×36 | ×4 |
 
   A is the only candidate that meets the whole §1.1 contract. Its overhead comes from the
-  pure-Python operator wrappers, and a C/Cython implementation can reduce it later (M4). Large-number
+  pure-Python operator wrappers, and a C/Cython implementation can reduce it later. Large-number
   work is not affected, because it runs inside PARI.
+
+  **M4 (2026-09-19): pure-Python optimization, measured.** The operators now call the `int` slot
+  and wrap the result directly, with no generic `normalize`. Literals are created once, in a
+  cache: `__er2_int__` is the `__getitem__` of a dict of `Integer`s. `a + b` went from 390 to
+  about 280 ns, against 34 ns for `int`. A tight numeric loop is about ×13 slower than plain
+  `int` (it was ×19). Method dispatch plus constructing the subclass (about 230 ns) is the floor
+  for any pure-Python `int` subclass, so a compiled `Integer` (Cython or C) is the next step if
+  that matters. It would need a compiled build and platform wheels, and it stays deferred
+  (user decision, 2026-09-19). Loops over `range(n)` use plain `int`s, and heavy arithmetic runs
+  in PARI. Current numbers are in docs/BENCHMARKS.md.
 - **D7 — Expensive factorizations. ✅ Resolved (2026-09-19): full factorization, Ctrl-C and
   `limit=`.** `factor(n)` always factors completely. Ctrl-C interrupts it; this was checked, and
   cypari2 stops within about a second and raises `KeyboardInterrupt`. `factor(n, limit=B)` gives a partial

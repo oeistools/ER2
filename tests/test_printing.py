@@ -7,7 +7,9 @@ import sympy
 
 from er2 import printing
 from er2.printing import Tex, latex
+from er2.runtime.modular import Mod
 from er2.runtime.numbers import Integer, Rational
+from er2.runtime.qfb import Qfb
 
 x, y = sympy.symbols("x y")
 
@@ -39,6 +41,8 @@ def installed():
             sympy.Poly(x**2 + 3 * x * y**2, x),
             "Poly(x^2 + 3*y^2*x, x, domain='ZZ[y]')",
         ),
+        (Mod(x**3, x**2 + 1), "Mod(-x, x^2 + 1)"),
+        (Qfb(1, 1, 6), "Qfb(1, 1, 6)"),
     ],
 )
 def test_er2_notation(installed, expr, text):
@@ -77,6 +81,10 @@ def test_plain_import_does_not_change_sympy():
             r"\left[\begin{matrix}1 & x\end{matrix}\right]",
         ),
         (sympy.Eq(x, 1), "x = 1"),
+        # PARI types (M4).
+        (Qfb(1, 1, 6), r"\left(1, 1, 6\right)"),
+        (Mod(x, x**2 + 1), r"x \pmod{x^{2} + 1}"),
+        (Mod(3, 7), r"3 \pmod{7}"),
         # Symbolic types (M2).
         (x * y, "x y"),
         ((x**2 - 1) / (x + 1), r"\frac{x^{2} - 1}{x + 1}"),

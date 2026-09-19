@@ -116,6 +116,20 @@ def test_er2_kernel_errors_show_the_er2_source(jupyter_path):
     traceback = "".join(error.traceback)
     assert "line 2" in traceback
     assert "__er2_int__" not in traceback
+    # ER2's own frames are hidden, as in the CLI (M4).
+    assert "numbers.py" not in traceback
+
+
+@pytest.mark.parametrize("kernel", ["er2", "python3"])
+def test_tracebacks_end_at_the_user_line(jupyter_path, kernel):
+    setup = ["%load_ext er2"] if kernel == "python3" else []
+    cells = run_notebook(
+        kernel, [*setup, "Mod(2, 4)^-1", "[1, 2][5]"], allow_errors=True
+    )
+    mod_error, index_error = (c.outputs[0] for c in cells[-2:])
+    assert mod_error.evalue == "2 is not invertible modulo 4"
+    assert "modular.py" not in "".join(mod_error.traceback)
+    assert index_error.ename == "IndexError"
 
 
 @pytest.mark.parametrize("kernel", ["er2", "python3"])

@@ -25,6 +25,21 @@ I = "__er2_int__"  # noqa: E741 - short alias keeps the expected code readable
             f"n = {I}(0x1F) + {I}(0b101) + {I}(0o7) + {I}(1_000)\n",
         ),
         ("r = 1.5 + 1e3 + 2j\n", "r = 1.5 + 1e3 + 2j\n"),
+        # Literal patterns compare with ==, so they stay plain; guards and
+        # bodies are ordinary code.
+        (
+            "match v:\n    case 0 | -1 | [2, *_]: pass\n",
+            "match v:\n    case 0 | -1 | [2, *_]: pass\n",
+        ),
+        (
+            "match v:\n    case P(x=1) if n > 2: y = 3^2\n",
+            f"match v:\n    case P(x=1) if n > {I}(2): y = {I}(3)**{I}(2)\n",
+        ),
+        (
+            'match v:\n    case {"é": 1}: pass\n',
+            'match v:\n    case {"é": 1}: pass\n',
+        ),
+        ("case = 5\n", f"case = {I}(5)\n"),
         # sym statements.
         ("sym x\n", 'x, = __er2_sym__("x")\n'),
         ("sym x, y\n", 'x, y = __er2_sym__("x, y")\n'),

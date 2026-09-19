@@ -29,7 +29,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M1 (0.1)  | Preparser, number types, CLI, Jupyter, Quarto | ✅ done     |
 | M2 (0.2)  | CAS on SymPy                                  | ✅ done     |
 | M3 (0.3)  | Number theory on PARI →**MVP**         | ✅ done     |
-| M4 (0.4)  | Backend selection, PARI types, benchmarks     | not started |
+| M4 (0.4)  | Backend selection, PARI types, benchmarks     | ✅ done     |
 | M5 (0.5)  | Algebra                                       | not started |
 | M6 (0.6)  | Series                                        | not started |
 | M7 (1.0)  | Stable language and release                   | not started |
@@ -207,14 +207,59 @@ Jupyter (both routes) and Quarto. Values are checked against cypari2:
 
 ## M4 — 0.4: Backend selection, PARI types, benchmarks
 
-- Automatic backend selection beyond `factor`, for example integer polynomials going to PARI when
-  that is faster.
-- PARI types exposed with ER2 semantics: `Pol` (including SymPy → PARI), `Ser`, `Qfb`, `POLMOD`,
-  and vectors and matrices. (`Mod` came in M3.)
-- The 30 `wrapper` functions that take GP closures (`sum`, `intnum`, `prodeuler`, `direuler`, …),
-  accepting Python callables.
-- Benchmarks comparing ER2, raw cypari2 and SymPy, with the ER2 overhead reported.
-- Performance of `Integer` literals in numeric loops (D2 risk).
+**Tasks:**
+
+1. Automatic backend selection beyond `factor` of integers: univariate polynomials over Q go to
+   PARI when that is faster.
+2. PARI types exposed with ER2 semantics: `Pol` (including SymPy → PARI), `Ser`, `Qfb`, `POLMOD`,
+   and vectors and matrices. (`Mod` came in M3.)
+3. The `wrapper` functions that take GP closures (`sum`, `intnum`, `prodeuler`, `direuler`, …),
+   accepting Python callables.
+4. Benchmarks comparing ER2, raw cypari2 and SymPy, with the ER2 overhead reported.
+5. Performance of `Integer` literals in numeric loops (D2 risk).
+6. Notebook tracebacks (carried from M1).
+
+Decisions taken with the user (2026-09-19): PARI types map to native ER2/SymPy objects, not a
+generic wrapper; `Integer` stays pure Python for now; every univariate polynomial over Q is
+factored by PARI.
+
+**Status: ✅ done (2026-09-19).** There are 309 tests.
+
+Done:
+- **`factor` backend choice.** A univariate polynomial over Q with no options goes to PARI and
+  comes back in SymPy's exact form. It gives the same expression as `sympy.factor` (checked on
+  248 random polynomials) and is ×1.2–14 faster from degree 9 upward.
+- **PARI ↔ SymPy conversions** in both directions: polynomials, rational functions, series
+  (`t_SER` ↔ `p + O(x^n)`), exact reals (SymPy `Float` with its precision), complex numbers,
+  matrices, `oo`. GP-reserved names such as `sigma` get their own PARI variable.
+- **PARI types.** `Mod` takes polynomial moduli (`Mod(x, x^2 + 1)`, PARI's `t_POLMOD`), and there
+  is a new `Qfb(a, b, c)` with composition, powers and `reduce()`, both computed by PARI.
+- **26 functions take Python callables** (`er2/backends/pari_closures.py`), from `pari.sum`
+  through `pari.forqfvec`. The other 4 former `wrapper` rows became `python`: `O` (use SymPy's
+  `O` or `series()`), `Str`, `eval`, `intfuncinit`.
+- **Benchmarks.** `benchmarks/run.py` writes [docs/BENCHMARKS.md](docs/BENCHMARKS.md), and a test
+  runs it with `--quick`. ER2 adds about 2 µs per call over raw cypari2, and it is 16–50× faster
+  than SymPy on number theory once SymPy's result cache is taken out of the comparison.
+- **`Integer`.** The specialized operators and the literal cache make it 1.4–1.6× faster. A
+  tight loop is about ×13 slower than `int` (it was ×19); the rest is the pure-Python floor
+  (D6, ARCHITECTURE §6).
+- **Notebook tracebacks** end at the user's line: ER2's internal frames are hidden, as in the CLI.
+  The column-highlighting issue from M1 does not show up: current IPython highlights no columns,
+  even for plain Python cells.
+
+Found and fixed:
+- **`match`/`case`.** The preparser wrapped the literals of `case` patterns, turning `case 0:`
+  into a class pattern that never matched a plain `int`. Pattern literals are now left alone.
+- **PARI objects kept between calls.** A PARI object created inside a callback lives on PARI's
+  temporary stack, so no PARI object is cached between calls any more (variables, GP lambdas).
+- **Quarto and the `.venv`.** Quarto started from an editor may only see the `.venv` kernels, so
+  the ER2 kernel can also be installed there: `er2 kernel install --sys-prefix`.
+
+Known limitations, carried forward:
+- `t_PADIC`, `t_FFELT` and the structures of number fields and elliptic curves have no ER2 type
+  yet (M5).
+- `f"{2^3=}"` still echoes the preparsed text; the `5r` raw-literal suffix is not implemented.
+- Automatic backend choice covers `factor` only; polynomial `gcd` and resultants could follow.
 
 ## M5 — 0.5: Algebra
 

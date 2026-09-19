@@ -136,6 +136,28 @@ def load_ipython_extension(shell):
     if _restore_prelude not in shell.events.callbacks["pre_run_cell"]:
         shell.events.register("pre_run_cell", _restore_prelude)
     _show_er2_source_in_tracebacks(shell)
+    shell.set_custom_exc((Exception,), _hide_internal_frames)
+
+
+def _hide_internal_frames(shell, etype, value, tb, tb_offset=None):
+    """Show a notebook traceback without ER2's innermost frames.
+
+    As in the CLI, frames of the ER2 runtime at the end of the traceback
+    (such as ``Integer.__truediv__`` raising ``ZeroDivisionError``) are
+    implementation details: the error belongs to the user's line.
+    """
+    frames = []
+    current = tb
+    while current is not None:
+        frames.append(current)
+        current = current.tb_next
+    while len(frames) > 1 and _is_internal(
+        frames[-1].tb_frame.f_code.co_filename
+    ):
+        frames.pop()
+    if frames:
+        frames[-1].tb_next = None
+    shell.showtraceback((etype, value, tb), tb_offset=tb_offset)
 
 
 def unload_ipython_extension(shell):
@@ -145,6 +167,7 @@ def unload_ipython_extension(shell):
     if _restore_prelude in shell.events.callbacks["pre_run_cell"]:
         shell.events.unregister("pre_run_cell", _restore_prelude)
     shell.compile.__dict__.pop("cache", None)
+    shell.set_custom_exc((), None)
     printing.uninstall()
 
 

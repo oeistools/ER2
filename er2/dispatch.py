@@ -18,26 +18,40 @@ from er2.backends import pari_backend, sympy_backend
 __all__ = ["FUNCTIONS", "TABLE", "implementation"]
 
 
-def symbolic(args):
+def symbolic(args, kwargs):
     """Whether an argument is a symbolic (non-numeric) SymPy object."""
     return any(
         isinstance(arg, sympy.Basic) and not arg.is_Number for arg in args
     )
 
 
-def number(args):
+def number(args, kwargs):
     """Whether the first argument is an exact number."""
     return bool(args) and isinstance(args[0], (int, Fraction, sympy.Rational))
 
 
-def anything(args):
+def anything(args, kwargs):
     """Accept any arguments."""
     return True
+
+
+def rational_univariate(args, kwargs):
+    """Whether ``args`` is one univariate polynomial over Q, no options.
+
+    PARI factors these 14-125x faster than SymPy (docs/BENCHMARKS.md);
+    options such as ``extension=`` or ``modulus=`` stay with SymPy.
+    """
+    return (
+        len(args) == 1
+        and not kwargs
+        and pari_backend.is_rational_univariate(args[0])
+    )
 
 
 TABLE = {
     "expand": [(anything, sympy_backend.expand)],
     "factor": [
+        (rational_univariate, pari_backend.factor_polynomial),
         (symbolic, sympy_backend.factor),
         (number, pari_backend.factor),
     ],
@@ -61,17 +75,18 @@ for _name in ("gcd", "lcm"):
     TABLE[_name].insert(0, (symbolic, getattr(sympy_backend, _name)))
 
 
-def implementation(name, args):
-    """Return the implementation of ``name`` for the arguments ``args``."""
+def implementation(name, args, kwargs=None):
+    """Return the implementation of ``name`` for these arguments."""
+    kwargs = kwargs or {}
     for accepts, function in TABLE[name]:
-        if accepts(args):
+        if accepts(args, kwargs):
             return function
     kind = type(args[0]).__name__ if args else "no"
     raise TypeError(f"{name}() does not support {kind} arguments")
 
 
 def _call(name, *args, **kwargs):
-    return implementation(name, args)(*args, **kwargs)
+    return implementation(name, args, kwargs)(*args, **kwargs)
 
 
 def expand(expr, *args, **kwargs):

@@ -64,8 +64,14 @@ def preparse(source, filename="<er2>"):
         raise error(message, (filename, lineno, offset + 1, None)) from None
     edits = []
     _power_and_xor(tokens, edits, lines, filename)
-    _integer_literals(tokens, edits)
     _sym_statements(tokens, edits, filename)
+    # Integer literals are wrapped in a second pass over valid Python, so
+    # that the literals of ``case`` patterns can be found and left alone.
+    python = _apply(lines, edits)
+    lines = python.splitlines(keepends=True)
+    tokens = list(tokenize.generate_tokens(io.StringIO(python).readline))
+    edits = []
+    _integer_literals(tokens, edits, _pattern_spans(python))
     return _apply(lines, edits)
 
 
@@ -107,10 +113,47 @@ def _warn_if_bitwise(lines, lineno, filename):
         )
 
 
-def _integer_literals(tokens, edits):
-    """Record the edits that wrap integer literals in ``__er2_int__``."""
+def _pattern_spans(python):
+    """Return the ``(start, end)`` spans of ``case`` patterns in ``python``.
+
+    A literal pattern (``case 0:``) is compared with ``==``, so it needs no
+    ``Integer``, and a call there would be read as a class pattern.  Spans
+    are ``(line, column)`` pairs with character columns, like tokens.
+    Returns nothing when ``python`` does not parse; compiling it will
+    report the error.
+    """
+    try:
+        tree = ast.parse(python)
+    except SyntaxError:
+        return []
+    lines = python.splitlines()
+    spans = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.match_case):
+            pattern = node.pattern
+            start = _char_position(lines, pattern.lineno, pattern.col_offset)
+            end = _char_position(
+                lines, pattern.end_lineno, pattern.end_col_offset
+            )
+            spans.append((start, end))
+    return spans
+
+
+def _char_position(lines, lineno, byte_offset):
+    """Convert an ``ast`` UTF-8 byte offset to a character column."""
+    line = lines[lineno - 1].encode("utf-8")
+    return lineno, len(line[:byte_offset].decode("utf-8"))
+
+
+def _integer_literals(tokens, edits, skip=()):
+    """Record the edits that wrap integer literals in ``__er2_int__``.
+
+    Literals inside the ``skip`` spans (``case`` patterns) are left alone.
+    """
     for tok in tokens:
         if tok.type != tokenize.NUMBER:
+            continue
+        if any(start <= tok.start and tok.end <= end for start, end in skip):
             continue
         try:
             value = ast.literal_eval(tok.string)

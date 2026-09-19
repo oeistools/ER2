@@ -1,7 +1,7 @@
 # ER2 — Mathematical Python
 
 [![CI](https://github.com/oeistools/ER2/actions/workflows/ci.yml/badge.svg)](https://github.com/oeistools/ER2/actions/workflows/ci.yml)
-[![Status: early development](https://img.shields.io/badge/status-0.3%20MVP-orange)](PLAN.md)
+[![Status: early development](https://img.shields.io/badge/status-0.4%20early%20development-orange)](PLAN.md)
 [![Python 3.12 | 3.13 | 3.14](https://img.shields.io/badge/python-3.12%20%7C%203.13%20%7C%203.14-blue?logo=python&logoColor=white)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Code style: PEP 8](https://img.shields.io/badge/code%20style-PEP%208-blue)](https://peps.python.org/pep-0008/)
@@ -18,13 +18,16 @@ computational number theory powered by [PARI/GP](https://pari.math.u-bordeaux.fr
 It is named after the Hungarian mathematician **Paul Erdős**. In Spanish, "Erdős" sounds like
 "ER-dos", which is where *ER2* comes from.
 
-> **Status: MVP (0.3, milestones M1–M3 done).** The program below runs in the `er2` command,
+> **Status: 0.4 (milestones M1–M4 done; M3 was the MVP).** The program below runs in the `er2` command,
 > in Jupyter and in Quarto. Working now:
 > - **The language:** `^`, `^^`, exact integers and rationals, `sym`, `_x`, `latex()`/`show()`,
 >   and `.er2` imports.
 > - **The CAS on SymPy:** `expand`, `factor`, `diff`, `integrate`, `limit`, `solve`, `series`, and more.
 > - **Number theory on PARI:** `factor` of integers, `isprime`, `phi`, `sigma`, `Mod`, and so on, plus
 >   every other PARI function as `pari.<name>`.
+> - **PARI and SymPy together:** polynomials, series, matrices, `Mod(x, x^2 + 1)` and `Qfb` pass
+>   between them, and PARI's sums and integrals take Python functions
+>   (`pari.sum(lambda n: 1/n^2, 1, 10)`). Benchmarks are in [docs/BENCHMARKS.md](docs/BENCHMARKS.md).
 >
 > For a tour, render [examples/demo.qmd](examples/demo.qmd). See [PLAN.md](PLAN.md) for what comes next.
 
@@ -73,7 +76,7 @@ ER2 is a superset of Python and follows the same model as SageMath:
 
 ER2 runs in notebooks and in Quarto documents:
 
-- **ER2 kernel**: run `er2 kernel install`, then pick "ER2" in Jupyter. In Quarto, set `jupyter: er2` in the front matter.
+- **ER2 kernel**: run `er2 kernel install`, then pick "ER2" in Jupyter. In Quarto, set `jupyter: er2` in the front matter. If Quarto or your editor reports `Jupyter kernel 'er2' not found`, it is only looking inside the project's virtual environment: run `er2 kernel install --sys-prefix` as well.
 - **Any Python kernel**: add `%load_ext er2` in the first cell.
 - **LaTeX everywhere**: expressions render as math. `show(f)` displays one, and
   `` `{python} latex(f)` `` puts inline math in Quarto text.

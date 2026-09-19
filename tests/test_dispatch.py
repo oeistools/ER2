@@ -4,7 +4,7 @@ import pytest
 import sympy
 
 from er2 import dispatch, prelude
-from er2.backends import pari_backend
+from er2.backends import pari_backend, sympy_backend
 from er2.runtime.factorization import Factorization
 from er2.runtime.numbers import Integer, Rational
 
@@ -62,3 +62,33 @@ def test_gcd_and_lcm_of_expressions_use_sympy():
 def test_unsupported_arguments_raise_type_error():
     with pytest.raises(TypeError, match=r"factor\(\) does not support"):
         dispatch.factor("12")
+
+
+def test_univariate_polynomials_over_q_are_factored_by_pari():
+    """Same result as SymPy, computed by PARI (M4)."""
+    y = sympy.Symbol("y")
+    cases = [
+        x**2 - 1,
+        1 - x**2,
+        2 * x**2 - 2,
+        x**2 / 4 - 1,
+        x**6 - 1,
+        7 * x**2 + 14 * x + 7,
+        x**2 + 1,
+        (x - sympy.Rational(1, 2)) ** 3,
+    ]
+    for p in cases:
+        chosen = dispatch.implementation("factor", (p,), {})
+        assert chosen is pari_backend.factor_polynomial
+        assert dispatch.factor(p) == sympy.factor(p)
+    # Multivariate, irrational coefficients, or options: SymPy.
+    for args, kwargs in [
+        ((x**2 - y**2,), {}),
+        ((sympy.sqrt(2) * x**2 - 1,), {}),
+        ((x**2 - 2,), {"extension": sympy.sqrt(2)}),
+    ]:
+        chosen = dispatch.implementation("factor", args, kwargs)
+        assert chosen is sympy_backend.factor
+    assert dispatch.factor(x**2 - 2, extension=sympy.sqrt(2)) == (
+        x - sympy.sqrt(2)
+    ) * (x + sympy.sqrt(2))

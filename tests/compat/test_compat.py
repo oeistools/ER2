@@ -68,6 +68,7 @@ SNIPPETS = {
                     return "other"
 
         print([kind(v) for v in (0, -3, [1, 2, 3], {"k": 9}, "s")])
+        print(kind(int("0")), kind(-int("3")))  # plain ints, not literals
     """,
     "async": """
         import asyncio

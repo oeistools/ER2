@@ -40,6 +40,36 @@ def _exact(op):
     return method
 
 
+# ``Integer`` operators are the hot path of numeric loops (D2 risk, M4):
+# they call the ``int`` slot directly and wrap the result, with no generic
+# ``normalize`` step.
+
+
+def _int_binary(op):
+    """Wrap a binary ``int`` operator so that it returns an ``Integer``."""
+
+    def method(self, other):
+        result = op(self, other)
+        if result is NotImplemented:
+            return result
+        return Integer(result)
+
+    method.__name__ = op.__name__
+    method.__doc__ = f"Return ``{op.__name__}`` as an ``Integer``."
+    return method
+
+
+def _int_unary(op):
+    """Wrap a unary ``int`` operator so that it returns an ``Integer``."""
+
+    def method(self):
+        return Integer(op(self))
+
+    method.__name__ = op.__name__
+    method.__doc__ = f"Return ``{op.__name__}`` as an ``Integer``."
+    return method
+
+
 class Integer(int):
     """Exact integer; ``/`` and negative powers give a ``Rational``."""
 
@@ -79,28 +109,28 @@ class Integer(int):
             return normalize(Fraction(1, int(other) ** -int(self)))
         return normalize(int.__rpow__(self, other))
 
-    __add__ = _exact(int.__add__)
-    __radd__ = _exact(int.__radd__)
-    __sub__ = _exact(int.__sub__)
-    __rsub__ = _exact(int.__rsub__)
-    __mul__ = _exact(int.__mul__)
-    __rmul__ = _exact(int.__rmul__)
-    __floordiv__ = _exact(int.__floordiv__)
-    __rfloordiv__ = _exact(int.__rfloordiv__)
-    __mod__ = _exact(int.__mod__)
-    __rmod__ = _exact(int.__rmod__)
-    __neg__ = _exact(int.__neg__)
-    __pos__ = _exact(int.__pos__)
-    __abs__ = _exact(int.__abs__)
-    __invert__ = _exact(int.__invert__)
-    __and__ = _exact(int.__and__)
-    __rand__ = _exact(int.__rand__)
-    __or__ = _exact(int.__or__)
-    __ror__ = _exact(int.__ror__)
-    __xor__ = _exact(int.__xor__)
-    __rxor__ = _exact(int.__rxor__)
-    __lshift__ = _exact(int.__lshift__)
-    __rshift__ = _exact(int.__rshift__)
+    __add__ = _int_binary(int.__add__)
+    __radd__ = _int_binary(int.__radd__)
+    __sub__ = _int_binary(int.__sub__)
+    __rsub__ = _int_binary(int.__rsub__)
+    __mul__ = _int_binary(int.__mul__)
+    __rmul__ = _int_binary(int.__rmul__)
+    __floordiv__ = _int_binary(int.__floordiv__)
+    __rfloordiv__ = _int_binary(int.__rfloordiv__)
+    __mod__ = _int_binary(int.__mod__)
+    __rmod__ = _int_binary(int.__rmod__)
+    __and__ = _int_binary(int.__and__)
+    __rand__ = _int_binary(int.__rand__)
+    __or__ = _int_binary(int.__or__)
+    __ror__ = _int_binary(int.__ror__)
+    __xor__ = _int_binary(int.__xor__)
+    __rxor__ = _int_binary(int.__rxor__)
+    __lshift__ = _int_binary(int.__lshift__)
+    __rshift__ = _int_binary(int.__rshift__)
+    __neg__ = _int_unary(int.__neg__)
+    __pos__ = _int_unary(int.__pos__)
+    __abs__ = _int_unary(int.__abs__)
+    __invert__ = _int_unary(int.__invert__)
 
     def __divmod__(self, other):
         """Return ``(self // other, self % other)`` as ER2 numbers."""
@@ -141,3 +171,22 @@ class Rational(Fraction):
     __neg__ = _exact(Fraction.__neg__)
     __pos__ = _exact(Fraction.__pos__)
     __abs__ = _exact(Fraction.__abs__)
+
+
+class _LiteralCache(dict):
+    """Integer literals, created once: ``cache[5]`` is ``Integer(5)``.
+
+    The preparser wraps every integer literal in a call, which runs on
+    every evaluation.  ``Integer`` is immutable, so a literal can be shared,
+    and a dict lookup costs half of creating a new ``Integer``.
+    """
+
+    __slots__ = ()
+
+    def __missing__(self, value):
+        """Create and remember the ``Integer`` for a new literal."""
+        integer = self[value] = Integer(value)
+        return integer
+
+
+literal = _LiteralCache().__getitem__

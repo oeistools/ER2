@@ -1,5 +1,5 @@
 ---
-title: "ER2 demo: what works today (M1–M3)"
+title: "ER2 demo: what works today (M1–M4)"
 format:
   html:
     code-tools: true
@@ -145,6 +145,44 @@ and out:
 print(pari.zeta(2))
 print(pari.polcyclo(12))
 print(len(dir(pari)), "PARI functions")
+```
+
+PARI and SymPy objects convert both ways, so PARI functions accept
+polynomials, series and matrices:
+
+```{python}
+print(pari.polresultant(x^2 + 1, x^3 - 2))
+print(pari.polgalois(x^3 - 2))
+print(factor(x^60 - 1))    # univariate over Q: computed by PARI
+```
+
+## More PARI types
+
+Residues modulo a polynomial, as in PARI:
+
+```{python}
+i = Mod(x, x^2 + 1)
+print(i^2, i^-1, (1 + i)^4)
+```
+
+Binary quadratic forms, composed by PARI:
+
+```{python}
+q = Qfb(2, 1, 3)
+print(q.discriminant(), q^3, pari.qfbclassno(-23))
+q * q
+```
+
+## Sums, integrals and Euler products
+
+PARI functions that take an expression in GP take a Python function in ER2:
+
+```{python}
+print(pari.sum(lambda n: 1/n^2, 1, 10))          # exact
+print(pari.sumpos(lambda n: 1/n^2, 1))           # zeta(2), 38 digits
+print(pari.intnum(lambda t: t^2, 0, 1))
+print(pari.prodeuler(lambda p: 1/(1 - 1/p^2), 2, 10^5))
+print(pari.direuler(lambda p, t: 1/(1 - t)^2, 2, 12))   # d(n)
 ```
 
 The exponents p ≤ 127 for which 2^p − 1 is a Mersenne prime:

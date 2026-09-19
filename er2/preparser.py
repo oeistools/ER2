@@ -71,11 +71,11 @@ def preparse(source, filename="<er2>"):
     # Integer literals are wrapped in a second pass over valid Python, so
     # that the literals of ``case`` patterns can be found and left alone.
     python = _apply(lines, edits)
-    raw = {_shifted(position, edits) for position in raw}
+    raw = _shifted(raw, edits)
     lines = python.splitlines(keepends=True)
     tokens = list(tokenize.generate_tokens(io.StringIO(python).readline))
     edits = []
-    _integer_literals(tokens, edits, _pattern_spans(python), raw)
+    _integer_literals(tokens, edits, _pattern_spans(python, tokens), raw)
     return _apply(lines, edits)
 
 
@@ -93,28 +93,31 @@ def _raw_literals(tokens, edits):
             and suffix.type == tokenize.NAME
             and suffix.string == "r"
             and suffix.start == number.end
-            and isinstance(_literal_value(number.string), int)
+            and _is_integer(number.string)
         ):
             edits.append((suffix.start, suffix.end, ""))
             raw.add(number.start)
     return raw
 
 
-def _literal_value(text):
+def _is_integer(text):
+    """Whether the NUMBER token ``text`` is an integer literal."""
     try:
-        return ast.literal_eval(text)
-    except (ValueError, SyntaxError):
-        return None
+        int(text, 0)
+    except ValueError:
+        return False
+    return True
 
 
-def _shifted(position, edits):
-    """Return where ``position`` moves once the single-line ``edits`` apply."""
-    row, col = position
-    shift = 0
-    for (erow, scol), (_, ecol), text in edits:
-        if erow == row and ecol <= col:
-            shift += len(text) - (ecol - scol)
-    return row, col + shift
+def _shifted(positions, edits):
+    """Return where ``positions`` move once the single-line ``edits`` apply."""
+    shifts = {}  # row -> [(end column, change in length)]
+    for (row, scol), (_, ecol), text in edits:
+        shifts.setdefault(row, []).append((ecol, len(text) - (ecol - scol)))
+    return {
+        (row, col + sum(d for ecol, d in shifts.get(row, ()) if ecol <= col))
+        for row, col in positions
+    }
 
 
 def _debug_fstrings(tokens, edits, lines):
@@ -219,15 +222,18 @@ def _warn_if_bitwise(lines, lineno, filename):
         )
 
 
-def _pattern_spans(python):
+def _pattern_spans(python, tokens):
     """Return the ``(start, end)`` spans of ``case`` patterns in ``python``.
 
     A literal pattern (``case 0:``) is compared with ``==``, so it needs no
     ``Integer``, and a call there would be read as a class pattern.  Spans
     are ``(line, column)`` pairs with character columns, like tokens.
     Returns nothing when ``python`` does not parse; compiling it will
-    report the error.
+    report the error.  ``python`` is parsed only if its ``tokens`` have a
+    ``case``.
     """
+    if not any(t.type == tokenize.NAME and t.string == "case" for t in tokens):
+        return []
     try:
         tree = ast.parse(python)
     except SyntaxError:
@@ -262,11 +268,7 @@ def _integer_literals(tokens, edits, skip=(), raw=()):
             continue
         if any(start <= tok.start and tok.end <= end for start, end in skip):
             continue
-        try:
-            value = ast.literal_eval(tok.string)
-        except (ValueError, SyntaxError):
-            continue
-        if isinstance(value, int):
+        if _is_integer(tok.string):
             edits.append((tok.start, tok.end, f"{INTEGER}({tok.string})"))
 
 

@@ -142,11 +142,7 @@ def test_write_bfile(offline, tmp_path):
 def test_details_and_bibtex_come_from_oeis_tools(offline):
     s = oeis.sequence("A000045")
     assert s.details.name == s.name
-    if hasattr(s.details, "get_bibtex"):
-        assert s.bibtex().startswith("@misc{A000045,")
-    else:  # oeis-tools 0.2.0 (PyPI) predates get_bibtex
-        with pytest.raises(NotImplementedError, match="newer oeis-tools"):
-            s.bibtex()
+    assert s.bibtex().startswith("@misc{A000045,")
 
 
 def test_errors(offline):

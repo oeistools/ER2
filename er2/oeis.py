@@ -112,13 +112,7 @@ class OEISSequence:
 
     def bibtex(self):
         """Return a BibTeX entry citing this sequence (from oeis-tools)."""
-        details = self.details
-        if not hasattr(details, "get_bibtex"):
-            raise NotImplementedError(
-                "BibTeX needs a newer oeis-tools (after 0.2.0): "
-                "pip install -U oeis-tools"
-            )
-        return details.get_bibtex()
+        return self.details.get_bibtex()
 
     def __getitem__(self, n):
         """Return ``a(n)``, with the OEIS offset (``seq[seq.offset]`` first).

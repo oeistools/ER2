@@ -391,7 +391,7 @@ dev = [
 requires-dist = [
     { name = "cypari2", specifier = ">=2.2" },
     { name = "ipykernel", marker = "extra == 'jupyter'", specifier = ">=6.29" },
-    { name = "oeis-tools", marker = "extra == 'oeis'", specifier = ">=0.2" },
+    { name = "oeis-tools", marker = "extra == 'oeis'", specifier = ">=0.2.1" },
     { name = "sympy", specifier = ">=1.14" },
 ]
 provides-extras = ["jupyter", "oeis"]
@@ -400,7 +400,7 @@ provides-extras = ["jupyter", "oeis"]
 dev = [
     { name = "ipykernel", specifier = ">=6.29" },
     { name = "nbclient", specifier = ">=0.10" },
-    { name = "oeis-tools", specifier = ">=0.2" },
+    { name = "oeis-tools", specifier = ">=0.2.1" },
     { name = "pytest", specifier = ">=8" },
     { name = "pyyaml", specifier = ">=6" },
     { name = "ruff", specifier = ">=0.6" },
@@ -630,14 +630,14 @@ wheels = [
 
 [[package]]
 name = "oeis-tools"
-version = "0.2.0"
+version = "0.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/68/9e/98c4197c90f426b8601c96f5b6ca6023cba2a630455719a30afb4fc4d05c/oeis_tools-0.2.0.tar.gz", hash = "sha256:b44758bd4f3e2f478aa4e9e283b20f2e454377a33ee97ea07b579072ad18f001", size = 20073, upload-time = "2026-04-18T10:51:54.719Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/87/61/80eea9d2eb06e6f51e423076f4d333f810755db7af94ba6db5546cebd2e4/oeis_tools-0.2.1.tar.gz", hash = "sha256:6bf1a7b630428ffd0e4b12c513c2d18e975bb9bf224918f2381f397bcaf8bc28", size = 23639, upload-time = "2026-09-19T19:26:14.553Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a2/92/18852a79e1d1590b5f90c1b45c89ebdb37f0142618c6e892b51247f718b4/oeis_tools-0.2.0-py3-none-any.whl", hash = "sha256:d97528605ab4605d05e8383bcb2bb62ae913ae6d8fee382259b83e4d82dde881", size = 15411, upload-time = "2026-04-18T10:51:53.031Z" },
+    { url = "https://files.pythonhosted.org/packages/db/4d/0fda4bd7e7afe39f60462e2fa0f78d9d452afd1fb4d86a3d35b35a7205c8/oeis_tools-0.2.1-py3-none-any.whl", hash = "sha256:f4d41eb1dc8453c659fbed7f111e9cf90d904ed00c32559fa3a98f2a9619aee0", size = 17618, upload-time = "2026-09-19T19:26:13.334Z" },
 ]
 
 [[package]]

@@ -295,9 +295,8 @@ put `oeis` in the prelude.
   (`ER2_NETWORK_TESTS=1`), which passes against oeis.org.
 - **ER2 types format their own LaTeX** (`Mod`, `Qfb`, `Factorization`, `OEISSequence`), without
   SymPy's printer, so their LaTeX does not load SymPy.
-- **Needs an oeis-tools release:** `OEISSequence.bibtex()` uses `Sequence.get_bibtex`, which is on
-  oeis-tools' `main` but not in the 0.2.0 release on PyPI. Until a newer release exists it raises a
-  clear error.
+- **Requires oeis-tools ≥ 0.2.1**, the first release with `Sequence.get_bibtex`, which
+  `OEISSequence.bibtex()` uses.
 
 ## M5 — 0.5: Algebra
 

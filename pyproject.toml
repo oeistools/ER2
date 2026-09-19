@@ -15,7 +15,7 @@ dependencies = [
 # ER2 Jupyter kernel and %load_ext er2 (ARCHITECTURE.md §1.2).
 jupyter = ["ipykernel>=6.29"]
 # er2.oeis: OEIS lookup, search, checks and b-files (ARCHITECTURE.md §10).
-oeis = ["oeis-tools>=0.2"]
+oeis = ["oeis-tools>=0.2.1"]
 
 [project.scripts]
 er2 = "er2.__main__:main"
@@ -34,7 +34,7 @@ dev = [
     # Quarto's Jupyter bridge runs on this Python and imports yaml.
     "pyyaml>=6",
     # er2.oeis tests (they use recorded OEIS responses, not the network).
-    "oeis-tools>=0.2",
+    "oeis-tools>=0.2.1",
 ]
 
 [build-system]

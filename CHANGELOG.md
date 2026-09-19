@@ -27,6 +27,9 @@ What is stable already, and what is not:
 ## [Unreleased]
 
 ### Added
+- Linear algebra (M5): `Matrix` in the prelude, and `det`, `inverse`, `rank`, `kernel`,
+  `charpoly`, `minpoly`, `echelon_form`, `hermite_form`, `smith_form` and `solve(A, b)`. Matrices
+  over Q are computed by PARI and the others by SymPy, with the same results.
 - `jordan_totient(n, k)`: Jordan's totient J_k (GP: `sumdiv(n, d, d^k*moebius(n/d))`).
 - `radical(n)`: the product of the distinct primes of `n` (GP: `factorback(factorint(n)[, 1])`).
 - Example gallery: `examples/hello.er2`, `examples/syntax.er2` and `examples/factorization.er2`,

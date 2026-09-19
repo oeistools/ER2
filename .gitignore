@@ -63,3 +63,6 @@ examples/*.html
 examples/*_files/
 *.quarto_ipynb
 .quarto/
+
+# Private drafts and notes (kept locally, never committed)
+draft/

@@ -1,0 +1,11 @@
+# Algebra (M5).  Values checked against cypari2's PARI.
+
+# Linear algebra: matrices over Q go to PARI, symbolic ones to SymPy.
+A = Matrix([[2, 4, 4], [-6, 6, 12], [10, -4, -16]])
+print(det(A), rank(A), charpoly(A))
+print(A^-1 == inverse(A), solve(A, Matrix([1, 2, 3])))
+print(smith_form(A), hermite_form(A))
+C = Matrix([[1, 2, 3], [2, 4, 6], [1, 1, 1]])
+print(rank(C), kernel(C)[0].T, echelon_form(C))
+sym a
+print(det(Matrix([[a, 1], [1, a]])), minpoly(sqrt(2) + 1))

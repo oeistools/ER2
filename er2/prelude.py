@@ -36,6 +36,7 @@ SYMPY_NAMES = (
     "cos",
     "tan",
     "Eq",
+    "Matrix",
 )
 
 # Predefined symbols (D3): ``_x`` is the symbol ``x``, and so on.

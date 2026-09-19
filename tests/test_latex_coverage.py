@@ -38,6 +38,15 @@ NOT_MATHEMATICAL = {"pari", "oeis"}
 
 n = Integer
 
+
+def _m(ns):
+    return ns["Matrix"]([[2, 1], [1, 3]])
+
+
+def _c(ns):
+    return ns["Matrix"]([[1, 2], [2, 4]])
+
+
 # A call of every public function in the prelude, with its golden LaTeX.
 FUNCTION_SAMPLES = {
     "expand": (lambda ns: ns["expand"]((x + 1) ** 2), "x^{2} + 2 x + 1"),
@@ -64,6 +73,33 @@ FUNCTION_SAMPLES = {
     "series": (
         lambda ns: ns["series"](ns["sin"](x), x, 0, 4),
         r"x - \frac{x^{3}}{6} + O\left(x^{4}\right)",
+    ),
+    # Linear algebra (M5): M = [2, 1; 1, 3] (regular), C = [1, 2; 2, 4].
+    "charpoly": (lambda ns: ns["charpoly"](_m(ns)), "x^{2} - 5 x + 5"),
+    "det": (lambda ns: ns["det"](_m(ns)), "5"),
+    "echelon_form": (
+        lambda ns: ns["echelon_form"](_c(ns)),
+        r"\left[\begin{matrix}1 & 2\\0 & 0\end{matrix}\right]",
+    ),
+    "hermite_form": (
+        lambda ns: ns["hermite_form"](_m(ns)),
+        r"\left[\begin{matrix}5 & 2\\0 & 1\end{matrix}\right]",
+    ),
+    "inverse": (
+        lambda ns: ns["inverse"](_m(ns)),
+        r"\left[\begin{matrix}\frac{3}{5} & - \frac{1}{5}\\"
+        r"- \frac{1}{5} & \frac{2}{5}\end{matrix}\right]",
+    ),
+    "kernel": (
+        lambda ns: ns["kernel"](_c(ns)),
+        r"\left[ \left[\begin{matrix}1\\- \frac{1}{2}\end{matrix}\right]"
+        r"\right]",
+    ),
+    "minpoly": (lambda ns: ns["minpoly"](_m(ns)), "x^{2} - 5 x + 5"),
+    "rank": (lambda ns: ns["rank"](_c(ns)), "1"),
+    "smith_form": (
+        lambda ns: ns["smith_form"](_m(ns)),
+        r"\left[\begin{matrix}1 & 0\\0 & 5\end{matrix}\right]",
     ),
     # Number theory (PARI); values checked against cypari2.
     "bigomega": (lambda ns: ns["bigomega"](n(360)), "6"),

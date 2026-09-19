@@ -30,7 +30,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M2 (0.2)  | CAS on SymPy                                  | ✅ done     |
 | M3 (0.3)  | Number theory on PARI →**MVP**         | ✅ done     |
 | M4 (0.4)  | Backend selection, PARI types, benchmarks     | ✅ done     |
-| M5 (0.5)  | Algebra                                       | planned (D12–D15 resolved) |
+| M5 (0.5)  | Algebra                                       | in progress (task 2 done) |
 | M6 (0.6)  | Series                                        | not started |
 | M7 (1.0)  | Stable language and release                   | not started |
 | — (2.0)  | Deep CPython integration                      | long term   |
@@ -41,7 +41,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 
 **Done:**
 
-- [X] Idea draft translated to English: [draft/ER2_idea_summary.md](draft/ER2_idea_summary.md)
+- [X] Idea draft translated to English (`draft/ER2_idea_summary.md`, kept locally, not in the repository)
 - [X] ARCHITECTURE.md, CLAUDE.md, README.md, MIT LICENSE, .gitignore, CITATION.cff
 - [X] Local git repository
 - [X] `uv` environment: sympy, cypari2 (bundled PARI 2.17.2), pytest, ruff
@@ -316,9 +316,12 @@ handle `t_FFELT`, and it turns `nf`/`bnf` structures into plain lists.
    and **D15** (scope of 0.5), ARCHITECTURE §6. Done 2026-09-19: SymPy `Matrix` with PARI
    dispatch; `GF(q)` with generator `a` and `ffinit`; a `NumberField` class with a cached `bnf`;
    all of M5 in 0.5, with number fields allowed to slip to 0.5.1.
-2. **Linear algebra.** `det`, `inverse`, `rank`, `kernel` (null space), `charpoly`, `minpoly`,
+2. ✅ **Linear algebra.** `det`, `inverse`, `rank`, `kernel` (null space), `charpoly`, `minpoly`,
    `echelon_form`, `hermite_form`, `smith_form`, `solve` for linear systems. Matrices with integer
    or rational entries go to PARI; symbolic entries go to SymPy. Both give the same results.
+   Done 2026-09-19 (ARCHITECTURE §3.4): `Matrix` is in the prelude; 87 tests, including PARI
+   against SymPy on 40 random matrices and the normal forms against SymPy's on 40 more.
+   `minpoly` also takes algebraic numbers (SymPy) and polynomial `Mod`s (PARI).
 3. **Finite fields.** `GF(p)` and `GF(p^k)` (D13): elements with `+ - * / ^`, `==`,
    `order`, `minpoly`, `charpoly`, `trace`, `norm`, `sqrt`, `log`, and a primitive element.
    Computed by PARI (`t_FFELT`); `from_pari` returns the ER2 element type. `Mod` stays the type of

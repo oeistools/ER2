@@ -27,16 +27,25 @@ from er2.runtime.qfb import Qfb
 __all__ = [
     "PARI",
     "PRELUDE",
+    "charpoly",
     "dedekind_psi",
+    "det",
     "factor",
     "factor_polynomial",
     "from_pari",
+    "hermite_form",
+    "inverse",
     "is_rational_univariate",
     "jordan_totient",
+    "kernel",
+    "minpoly",
     "pari",
     "radical",
+    "rank",
     "set_precision",
     "set_stack",
+    "smith_form",
+    "solve_linear",
     "to_pari",
     "variable",
 ]
@@ -440,6 +449,85 @@ def radical(n):
     """
     n = _positive_integer(n, "radical")
     return from_pari(PARI.factorback(PARI.factor(n)[0]))
+
+
+# Linear algebra over Q (M5, D12).  Matrices are SymPy matrices with
+# rational entries; ``dispatch`` sends the others to SymPy.  Errors are
+# SymPy's own exceptions, so both backends fail in the same way.
+
+
+def det(matrix):
+    """Return the determinant of a square rational matrix."""
+    return from_pari(PARI.matdet(to_pari(matrix)))
+
+
+def inverse(matrix):
+    """Return the inverse of a square rational matrix."""
+    from sympy.matrices.exceptions import NonInvertibleMatrixError
+
+    try:
+        return from_pari(to_pari(matrix) ** -1)
+    except cypari2.PariError:
+        raise NonInvertibleMatrixError(
+            "Matrix det == 0; not invertible."
+        ) from None
+
+
+def rank(matrix):
+    """Return the rank of a rational matrix."""
+    return Integer(PARI.matrank(to_pari(matrix)))
+
+
+def kernel(matrix):
+    """Return a basis of ``{v : matrix * v = 0}`` as column matrices."""
+    basis = from_pari(PARI.matker(to_pari(matrix)))
+    return [basis[:, j] for j in range(basis.cols)]
+
+
+def charpoly(matrix, var):
+    """Return the characteristic polynomial ``det(var*I - matrix)``."""
+    return from_pari(PARI.charpoly(to_pari(matrix), variable(var.name)))
+
+
+def minpoly(obj, var):
+    """Return the minimal polynomial of a rational matrix or a ``Mod``."""
+    return from_pari(PARI.minpoly(to_pari(obj), variable(var.name)))
+
+
+def solve_linear(matrix, rhs):
+    """Return the solution ``v`` of ``matrix * v = rhs`` (square, regular)."""
+    from sympy.matrices.exceptions import NonInvertibleMatrixError
+
+    try:
+        return from_pari(PARI.matsolve(to_pari(matrix), to_pari(rhs)))
+    except cypari2.PariError:
+        raise NonInvertibleMatrixError(
+            "Matrix det == 0; not invertible."
+        ) from None
+
+
+def hermite_form(matrix):
+    """Return the Hermite normal form of an integer matrix.
+
+    PARI's ``mathnf``: upper triangular, and its columns are a basis of
+    the lattice spanned by the columns of ``matrix`` (SymPy's
+    ``hermite_normal_form`` gives the same matrix).
+    """
+    return from_pari(PARI.mathnf(to_pari(matrix)))
+
+
+def smith_form(matrix):
+    """Return the Smith normal form of an integer matrix.
+
+    A diagonal matrix of the same shape, with ``d_1 | d_2 | ...`` on the
+    diagonal, as SymPy's ``smith_normal_form``.  PARI's ``matsnf`` gives
+    the elementary divisors in the opposite order.
+    """
+    divisors = [from_pari(d) for d in PARI.matsnf(to_pari(matrix))][::-1]
+    result = sympy.zeros(matrix.rows, matrix.cols)
+    for i in range(min(matrix.rows, matrix.cols)):
+        result[i, i] = divisors[i]
+    return result
 
 
 # Prelude predicates that return a Python bool.  ``ispower`` and

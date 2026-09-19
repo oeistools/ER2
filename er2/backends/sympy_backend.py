@@ -14,19 +14,27 @@ from er2.runtime.numbers import Integer, Rational
 
 __all__ = [
     "cancel",
+    "charpoly",
     "collect",
+    "det",
     "diff",
+    "echelon_form",
     "expand",
     "factor",
     "factorial",
     "from_sympy",
     "gcd",
     "integrate",
+    "inverse",
+    "kernel",
     "lcm",
     "limit",
+    "minimal_polynomial",
+    "rank",
     "series",
     "simplify",
     "solve",
+    "solve_linear",
     "to_sympy",
 ]
 
@@ -88,3 +96,44 @@ series = _boundary(sympy.series)
 gcd = _boundary(sympy.gcd)
 lcm = _boundary(sympy.lcm)
 factorial = _boundary(sympy.factorial)
+minimal_polynomial = _boundary(sympy.minimal_polynomial)
+
+
+# Linear algebra (M5, D12): SymPy's matrix methods, for the matrices that
+# ``dispatch`` does not send to PARI (symbolic or floating-point entries).
+
+
+@_boundary
+def det(matrix):
+    """Return the determinant of a square matrix."""
+    return matrix.det()
+
+
+def inverse(matrix):
+    """Return the inverse of a square matrix."""
+    return matrix.inv()
+
+
+def rank(matrix):
+    """Return the rank of a matrix."""
+    return Integer(matrix.rank())
+
+
+def kernel(matrix):
+    """Return a basis of ``{v : matrix * v = 0}`` as column matrices."""
+    return matrix.nullspace()
+
+
+def charpoly(matrix, var):
+    """Return the characteristic polynomial ``det(var*I - matrix)``."""
+    return matrix.charpoly(var).as_expr()
+
+
+def echelon_form(matrix):
+    """Return the reduced row echelon form of a matrix."""
+    return matrix.rref()[0]
+
+
+def solve_linear(matrix, rhs):
+    """Return the solution ``v`` of ``matrix * v = rhs``."""
+    return matrix.solve(rhs)

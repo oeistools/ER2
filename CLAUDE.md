@@ -9,7 +9,7 @@ exact arithmetic by default, and number theory via PARI/GP.
 
 The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős" sounds like "ER-dos", i.e. *ER2*.
 
-- Original idea: [draft/ER2_idea_summary.md](draft/ER2_idea_summary.md)
+- Original idea: [draft/ER2_idea_summary.md](draft/ER2_idea_summary.md) (local only: `draft/` is gitignored)
 - Project plan (phases, tasks, acceptance criteria): [PLAN.md](PLAN.md)
 - PARI → ER2 function names: [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTIONS.md)
 - Technical design and open decisions (D1–D10): [ARCHITECTURE.md](ARCHITECTURE.md) — **read before implementing**.

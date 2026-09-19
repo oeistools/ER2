@@ -99,8 +99,7 @@ test suite.
 | **Follow the project** | [PLAN.md](PLAN.md) (milestones and acceptance criteria), [CHANGELOG.md](CHANGELOG.md) (releases and versioning policy), [docs/BENCHMARKS.md](docs/BENCHMARKS.md) |
 | **Contribute** | [CONTRIBUTING.md](CONTRIBUTING.md): setup, tests, rules for each part of the code, good first contributions |
 
-The original idea is in [draft/ER2_idea_summary.md](draft/ER2_idea_summary.md), and the rules for
-AI-assisted development are in [CLAUDE.md](CLAUDE.md).
+The rules for AI-assisted development are in [CLAUDE.md](CLAUDE.md).
 
 ## Python compatibility
 

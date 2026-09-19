@@ -14,6 +14,7 @@ from fractions import Fraction
 
 from er2 import _lazy
 from er2.backends import pari_backend
+from er2.runtime.modular import Mod
 
 __all__ = ["FUNCTIONS", "TABLE", "implementation"]
 
@@ -67,6 +68,59 @@ def rational_univariate(args, kwargs):
     )
 
 
+def _matrix_of(args, entry_test=None):
+    """Whether ``args[0]`` is a SymPy matrix whose entries pass the test."""
+    if not args or not _lazy.sympy_loaded():
+        return False
+    matrix = args[0]
+    if not isinstance(matrix, sys.modules["sympy"].MatrixBase):
+        return False
+    return entry_test is None or all(entry_test(e) for e in matrix)
+
+
+def matrix(args, kwargs):
+    """Whether the first argument is a matrix."""
+    return _matrix_of(args)
+
+
+def rational_matrix(args, kwargs):
+    """Whether the first argument is a matrix over Q (PARI's domain)."""
+    return _matrix_of(args, lambda e: e.is_Rational)
+
+
+def square_rational_matrix(args, kwargs):
+    """Whether the first argument is a square matrix over Q."""
+    return rational_matrix(args, kwargs) and args[0].is_square
+
+
+def integer_matrix(args, kwargs):
+    """Whether the first argument is a matrix over Z."""
+    return _matrix_of(args, lambda e: e.is_Integer)
+
+
+def linear_system(args, kwargs):
+    """Whether ``args`` is ``(A, b)``, two matrices: ``solve(A, b)``.
+
+    ``b`` must be a ``Matrix``: with a list, ``solve`` keeps SymPy's
+    meaning (``solve([x + y - 1, x - y], [x, y])``).
+    """
+    return len(args) == 2 and not kwargs and _matrix_of(args[1:])
+
+
+def rational_linear_system(args, kwargs):
+    """Whether ``args`` is a square regular-sized linear system over Q."""
+    return (
+        linear_system(args, kwargs)
+        and square_rational_matrix(args, kwargs)
+        and _matrix_of(args[1:], lambda e: e.is_Rational)
+    )
+
+
+def polynomial_mod(args, kwargs):
+    """Whether the first argument is a ``Mod`` with a polynomial modulus."""
+    return bool(args) and isinstance(args[0], Mod) and args[0].is_polynomial
+
+
 sympy_backend = _SympyBackend  # TABLE entries: sympy_backend("factor")
 
 TABLE = {
@@ -82,7 +136,11 @@ TABLE = {
     "diff": [(anything, sympy_backend("diff"))],
     "integrate": [(anything, sympy_backend("integrate"))],
     "limit": [(anything, sympy_backend("limit"))],
-    "solve": [(anything, sympy_backend("solve"))],
+    "solve": [
+        (rational_linear_system, pari_backend.solve_linear),
+        (linear_system, sympy_backend("solve_linear")),
+        (anything, sympy_backend("solve")),
+    ],
     "series": [(anything, sympy_backend("series"))],
     # Exact: PARI's ``n!`` for integers, SymPy for symbols (``factorial``
     # in PARI returns a real number).
@@ -93,6 +151,35 @@ TABLE = {
     "dedekind_psi": [(anything, pari_backend.dedekind_psi)],
     "jordan_totient": [(anything, pari_backend.jordan_totient)],
     "radical": [(anything, pari_backend.radical)],
+    # Linear algebra (M5, D12): PARI over Q, SymPy for other entries.
+    "det": [
+        (square_rational_matrix, pari_backend.det),
+        (matrix, sympy_backend("det")),
+    ],
+    "inverse": [
+        (square_rational_matrix, pari_backend.inverse),
+        (matrix, sympy_backend("inverse")),
+    ],
+    "rank": [
+        (rational_matrix, pari_backend.rank),
+        (matrix, sympy_backend("rank")),
+    ],
+    "kernel": [
+        (rational_matrix, pari_backend.kernel),
+        (matrix, sympy_backend("kernel")),
+    ],
+    "charpoly": [
+        (square_rational_matrix, pari_backend.charpoly),
+        (matrix, sympy_backend("charpoly")),
+    ],
+    "minpoly": [
+        (square_rational_matrix, pari_backend.minpoly),
+        (polynomial_mod, pari_backend.minpoly),
+        (anything, sympy_backend("minimal_polynomial")),
+    ],
+    "echelon_form": [(matrix, sympy_backend("echelon_form"))],
+    "hermite_form": [(integer_matrix, pari_backend.hermite_form)],
+    "smith_form": [(integer_matrix, pari_backend.smith_form)],
 }
 # The other PARI prelude functions; gcd and lcm of expressions use SymPy.
 for _name, _function in pari_backend.PRELUDE.items():
@@ -164,7 +251,11 @@ def limit(expr, var, point, dir="+"):  # noqa: A002 (SymPy's name)
 
 
 def solve(expr, *symbols, **kwargs):
-    """Solve ``expr = 0`` (or an ``Eq``, or a list of them)."""
+    """Solve ``expr = 0`` (or an ``Eq``, or a list of them).
+
+    ``solve(A, b)`` with two matrices solves the linear system
+    ``A * v = b`` and returns ``v``.
+    """
     return _call("solve", expr, *symbols, **kwargs)
 
 
@@ -208,6 +299,91 @@ def radical(n):
     return _call("radical", n)
 
 
+def det(matrix):
+    """Return the determinant of a square matrix.
+
+    Rational matrices use PARI; symbolic ones use SymPy.
+    """
+    return _call("det", matrix)
+
+
+def inverse(matrix):
+    """Return the inverse of a square matrix.
+
+    Raises ``NonInvertibleMatrixError`` (a ``ValueError``) if it is
+    singular.
+    """
+    return _call("inverse", matrix)
+
+
+def rank(matrix):
+    """Return the rank of a matrix."""
+    return _call("rank", matrix)
+
+
+def kernel(matrix):
+    """Return a basis of the right kernel ``{v : matrix * v = 0}``.
+
+    The basis vectors are column matrices, in reduced echelon form (as
+    Sage's echelonized basis): the same basis whichever backend computes
+    it.  An invertible matrix has the empty list as its kernel basis.
+    """
+    vectors = _call("kernel", matrix)
+    if not vectors:
+        return []
+    sympy = _lazy.sympy()
+    echelon = sympy.Matrix.hstack(*vectors).T.rref()[0]
+    return [echelon[i, :].T for i in range(len(vectors))]
+
+
+def charpoly(matrix, x=None):
+    """Return the characteristic polynomial ``det(x*I - matrix)`` in ``x``.
+
+    ``x`` is the symbol ``x`` unless given.
+    """
+    return _call("charpoly", matrix, _variable(x))
+
+
+def minpoly(obj, x=None):
+    """Return the minimal polynomial of ``obj`` in ``x``.
+
+    ``obj`` is a square matrix over Q, an algebraic number such as
+    ``sqrt(2) + 1``, or a ``Mod`` with a polynomial modulus.  ``x`` is
+    the symbol ``x`` unless given.
+    """
+    if matrix((obj,), {}) and not square_rational_matrix((obj,), {}):
+        raise TypeError("minpoly() needs a square matrix over Q")
+    return _call("minpoly", obj, _variable(x))
+
+
+def echelon_form(matrix):
+    """Return the reduced row echelon form of a matrix."""
+    return _call("echelon_form", matrix)
+
+
+def hermite_form(matrix):
+    """Return the Hermite normal form of an integer matrix (PARI ``mathnf``).
+
+    It is upper triangular, and its columns are a basis of the lattice
+    spanned by the columns of ``matrix``.
+    """
+    return _call("hermite_form", matrix)
+
+
+def smith_form(matrix):
+    """Return the Smith normal form of an integer matrix.
+
+    A diagonal matrix of the same shape with ``d_1 | d_2 | ...`` on the
+    diagonal (PARI ``matsnf``).
+    """
+    return _call("smith_form", matrix)
+
+
+def _variable(x):
+    """Return ``x``, or the symbol ``x`` when it is ``None``."""
+    return _lazy.sympy().Symbol("x") if x is None else x
+
+
 def _public(name):
     """Return the dispatching public function for a PARI prelude row."""
     source = pari_backend.PRELUDE[name]
@@ -237,6 +413,15 @@ FUNCTIONS = {
         dedekind_psi,
         jordan_totient,
         radical,
+        det,
+        inverse,
+        rank,
+        kernel,
+        charpoly,
+        minpoly,
+        echelon_form,
+        hermite_form,
+        smith_form,
     )
 }
 for _name in TABLE:

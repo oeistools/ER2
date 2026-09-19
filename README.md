@@ -101,6 +101,24 @@ test suite.
 
 The rules for AI-assisted development are in [CLAUDE.md](CLAUDE.md).
 
+## Algebra (in progress, 0.5)
+
+```python
+sym x
+
+det(Matrix([[2, 1], [1, 3]]))        # 5, computed by PARI
+kernel(Matrix([[1, 2], [2, 4]]))     # [Matrix([[1], [-1/2]])]
+smith_form(Matrix([[2, 4], [6, 8]])) # Matrix([[2, 0], [0, 4]]), as SymPy's
+
+factor(x^8 - x, modulus=2)           # x*(x + 1)*(x^3 + x + 1)*(x^3 + x^2 + 1)
+isirreducible(x^2 + x + 1, modulus=2)   # True
+
+a = GF(9).gen()                      # the finite field with 9 elements
+a^4, a.order(), minpoly(a)           # 2, 8, x^2 + x + 2
+```
+
+Resultants, Gröbner bases and number fields come next; see [PLAN.md](PLAN.md).
+
 ## Python compatibility
 
 ER2 is a superset of Python and follows the same model as SageMath:
@@ -157,8 +175,10 @@ ER2 does not introduce a new interpreter. It has three parts:
 
 ## Status and roadmap
 
-**Version 0.4.2, early development.** Milestones M1–M4 are done (M3 was the MVP), and M5 is
-planned. [CHANGELOG.md](CHANGELOG.md) says what is stable and what is still experimental.
+**Version 0.4.2, early development.** Milestones M1–M4 are done (M3 was the MVP). M5 is under
+way: matrices (`det`, `kernel`, `smith_form`, …), finite fields (`GF(9)`) and factorization over
+`F_p` already work, from the main branch. [CHANGELOG.md](CHANGELOG.md) says what is stable, what
+is still experimental, and what has changed since 0.4.2.
 
 | Version | Focus | Status |
 |---------|-------|--------|
@@ -166,7 +186,7 @@ planned. [CHANGELOG.md](CHANGELOG.md) says what is stable and what is still expe
 | 0.2 | CAS on SymPy: `expand`, `factor`, `simplify`, `diff`, `integrate`, `limit`, `solve`, `series` | ✅ |
 | 0.3 | Number theory on PARI: primality, factorization, `phi`, `sigma`, `mu`, … (the MVP) | ✅ |
 | 0.4 | Automatic backend selection, PARI types (`Mod`, `Qfb`, series), benchmarks, the OEIS | ✅ |
-| 0.5 | Algebra: matrices, finite fields, resultants, Gröbner bases, number fields | planned |
+| 0.5 | Algebra: matrices, finite fields, resultants, Gröbner bases, number fields | in progress |
 | 0.6 | Series: power, Dirichlet, Euler products | |
 | 1.0 | Stable language: specification, PyPI package, documentation site | |
 

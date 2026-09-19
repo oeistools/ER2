@@ -26,6 +26,7 @@ __all__ = [
     "gcd",
     "integrate",
     "inverse",
+    "isirreducible",
     "kernel",
     "lcm",
     "limit",
@@ -137,3 +138,10 @@ def echelon_form(matrix):
 def solve_linear(matrix, rhs):
     """Return the solution ``v`` of ``matrix * v = rhs``."""
     return matrix.solve(rhs)
+
+
+def isirreducible(expr, modulus=None, **options):
+    """Whether a polynomial is irreducible (SymPy's ``Poly``)."""
+    if modulus is not None:
+        options["modulus"] = modulus
+    return bool(sympy.Poly(expr, **options).is_irreducible)

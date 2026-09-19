@@ -10,6 +10,7 @@ import sympy
 from er2.backends import pari_backend
 from er2.backends.pari_backend import PARI, from_pari, pari, to_pari
 from er2.runtime.factorization import Factorization
+from er2.runtime.finite_field import FiniteFieldElement
 from er2.runtime.modular import Mod
 from er2.runtime.numbers import Integer, Rational
 
@@ -54,11 +55,16 @@ def test_from_pari():
 
 
 def test_unsupported_pari_types_raise():
-    with pytest.raises(TypeError, match="t_FFELT.*pari.raw"):
-        pari.ffgen(9)
-    assert isinstance(pari.raw.ffgen(9), cypari2.gen.Gen)
-    with pytest.raises(TypeError, match="t_PADIC"):
+    with pytest.raises(TypeError, match="t_PADIC.*pari.raw"):
         from_pari(PARI("1 + O(3^5)"))
+    assert isinstance(pari.raw.ffgen(9), cypari2.gen.Gen)
+
+
+def test_finite_field_elements_come_back_as_er2_elements():
+    """``t_FFELT`` became an ER2 type in M5 (D13)."""
+    generator = pari.ffgen(9)
+    assert type(generator) is FiniteFieldElement
+    assert generator.parent.order == 9
 
 
 def test_reals_keep_pari_precision():

@@ -2,7 +2,8 @@
 
 > Technical design document. The original idea is summarized in §1; the draft it came from is kept
 > locally (`draft/`, ignored by Git).
-> Status: **0.4** (M1–M4 done; M3 was the MVP). See [PLAN.md](PLAN.md).
+> Status: **0.4.2** released (M1–M4 done; M3 was the MVP). **M5 (0.5, algebra) is in progress**:
+> linear algebra, finite fields and polynomials over `F_p` are done. See [PLAN.md](PLAN.md).
 
 ## 1. What ER2 is
 
@@ -198,7 +199,8 @@ All of them share `er2.preparser` and `er2.prelude`; none of them contains its o
 Since M2 the prelude also holds the CAS functions from `er2.dispatch` (`expand`, `factor`,
 `simplify`, `collect`, `cancel`, `diff`, `integrate`, `limit`, `solve`, `series`). It also holds
 a small set of SymPy names, exposed unchanged: `pi, E, I, oo, sqrt, exp, log, sin, cos, tan, Eq`,
-and `Matrix` (M5, D12).
+and `Matrix` (M5, D12).  `GF` (M5, D13) creates finite fields; like the other ER2 types it needs
+no SymPy, which is only loaded by `FiniteField.modulus()`.
 Like every prelude name, they are defaults: an assignment or an import (`from math import *`)
 shadows them, as in Python.
 
@@ -240,6 +242,8 @@ det, inverse, rank, kernel, charpoly,
   minpoly, solve(A, b) of a matrix over Q → PARI  (matdet, M^-1, matrank, matker, …)
 the same, other entries (symbols, floats) → SymPy matrix methods
 hermite_form, smith_form (matrix over Z) → PARI  mathnf, matsnf
+factor(f, modulus=p), gcd(f, g, modulus=p) → PARI  factormod, gcd over F_p
+isirreducible(f), isirreducible(f, modulus=p) → PARI  polisirreducible
 echelon_form(M)                         → SymPy rref
 minpoly(algebraic number)               → SymPy minimal_polynomial
 ```
@@ -253,6 +257,15 @@ minpoly(algebraic number)               → SymPy minimal_polynomial
   own form (SymPy's `_keep_coeff`), so it is the same expression `sympy.factor` returns; a test
   checks this, and it was also compared on 248 random polynomials. Multivariate polynomials,
   irrational coefficients and options (`extension=`, `modulus=`, …) stay with SymPy.
+- **Polynomials over F_p (M5).** `factor(f, modulus=p)` and `gcd(f, g, modulus=p)` go to PARI for
+  univariate polynomials over Z with prime `p` (×40 faster than SymPy at degree 49), and the
+  result is rebuilt in SymPy's exact form: the integer content in front (not reduced modulo `p`,
+  as SymPy leaves it), then monic factors with coefficients in `(-p/2, p/2]`. Checked against
+  `sympy.factor(f, modulus=p)` on 400 random polynomials. `domain=GF(p)` is the same as
+  `modulus=p`. Polynomials over `GF(p^k)` with `k > 1` would need coefficients that are field
+  elements, which no ER2 type provides yet: `factor(f, domain=GF(9))` raises
+  `NotImplementedError` and points to `pari.raw.factormod`. `isirreducible` follows PARI in
+  answering False for a constant, where SymPy answers True.
 - **Linear algebra (M5, D12).** Matrices are SymPy's `Matrix`. A matrix whose entries are all
   rational goes to PARI (square matrices only for `det`, `inverse`, `charpoly`, `minpoly` and
   `solve`); every other matrix goes to SymPy, which also raises the errors for non-square
@@ -379,7 +392,7 @@ show(*objs)
     | `oo`, `-oo` | `t_INFINITY` |
 
     Inexact SymPy numbers (`pi`, `sqrt(2)`) become reals at PARI's precision, as in GP. The
-    remaining PARI types (`t_PADIC`, `t_FFELT`, …) raise `TypeError`; `pari.raw` is the cypari2
+    remaining PARI types (`t_PADIC`, `t_CLOSURE`, …) raise `TypeError`; `pari.raw` is the cypari2
     instance, for users who explicitly want raw PARI objects.
   - **Variables.** A SymPy symbol becomes GP's variable of the same name (`'x`). GP reserves the
     names of its functions and constants (`sigma`, `I`, `Pi`; the PARI table lists them all), so
@@ -415,7 +428,8 @@ er2/
   printing.py          # ✅
   importer.py          # ✅ .er2 path hook
   kernel.py            # ✅ er2 Jupyter kernel + `er2 kernel install` (also preparses user_expressions)
-  runtime/             # types: Integer ✅, Rational ✅, Mod ✅, Factorization ✅, Qfb ✅, …
+  runtime/             # types: Integer ✅, Rational ✅, Mod ✅, Factorization ✅, Qfb ✅,
+                       #        FiniteField and FiniteFieldElement ✅ (M5), …
   backends/
     sympy_backend.py   # ✅
     pari_backend.py    # ✅
@@ -551,7 +565,14 @@ The following decisions were taken for M5 (PLAN.md) with the user on 2026-09-19.
   cost: building a `Matrix` loads SymPy, even for integer-only linear algebra. Rejected: an ER2
   `Matrix` class backed by PARI's `t_MAT`, which would be a second matrix type users must convert
   between.
-- **D13 — Finite-field syntax. ✅ Resolved (2026-09-19): `GF(q)`, generator `a`, `ffinit`.** Sage model: `F = GF(9)` or `GF(3, 2)`, with
+- **D13 — Finite-field syntax. ✅ Resolved (2026-09-19): `GF(q)`, generator `a`, `ffinit`.**
+  Implemented in `er2/runtime/finite_field.py`.  An element stores its coefficients over `F_p`,
+  not a PARI object, so no PARI object outlives the call that made it (the M4 stack rule); every
+  operation rebuilds the generator, which costs a few microseconds.  `F.primitive_element()` is
+  the first primitive element in the order of `F.elements()`, because PARI's `ffprimroot` is
+  random.  `trace`, `norm`, `minpoly` and `charpoly` lift PARI's `Mod(·, p)` coefficients to
+  integers in `[0, p)`.  `F(3) == 3` is true, as in PARI and SageMath (unlike `Mod`, where D5's
+  `Mod(3, 7) != 3`).  Sage model: `F = GF(9)` or `GF(3, 2)`, with
   `F.gen()` (printed `a`) and `F(5)`; elements are an ER2 `FiniteFieldElement` backed by PARI's
   `t_FFELT` that prints as a polynomial in the generator (`a^2 + 1`). `GF(p)` is a field of
   degree 1 whose elements interoperate with `Mod(n, p)`. The generator is named `a` by default

@@ -20,26 +20,41 @@ import cypari2
 
 from er2 import _lazy
 from er2.runtime.factorization import Factorization
+from er2.runtime.finite_field import FiniteField, FiniteFieldElement
 from er2.runtime.modular import Mod
 from er2.runtime.numbers import Integer, Rational
 from er2.runtime.qfb import Qfb
 
 __all__ = [
     "PARI",
+    "PariError",
     "PRELUDE",
     "charpoly",
     "dedekind_psi",
     "det",
     "factor",
     "factor_polynomial",
+    "factor_polynomial_mod",
+    "ff_charpoly",
+    "ff_coefficients",
+    "ff_element",
+    "ff_lift",
+    "ff_minpoly",
+    "ff_modulus",
+    "ff_polynomial",
     "from_pari",
+    "gcd_mod",
     "hermite_form",
+    "isirreducible",
     "inverse",
+    "is_modular_polynomial",
+    "is_prime_number",
     "is_rational_univariate",
     "jordan_totient",
     "kernel",
     "minpoly",
     "pari",
+    "prime_power",
     "radical",
     "rank",
     "set_precision",
@@ -67,6 +82,7 @@ class _SympyOnDemand:
 sympy = _SympyOnDemand()
 
 PARI = cypari2.Pari()
+PariError = cypari2.PariError
 
 # PARI's default maximum stack is only ~8 MB.  The maximum is reserved
 # address space; the stack grows into it only when a computation needs it.
@@ -116,6 +132,8 @@ def to_pari(obj):
         if obj.is_polynomial:
             return PARI.Mod(to_pari(obj.lift()), to_pari(obj.modulus))
         return PARI.Mod(int(obj.lift()), int(obj.modulus))
+    if isinstance(obj, FiniteFieldElement):
+        return ff_element(obj)
     if isinstance(obj, Qfb):
         return PARI.Qfb(int(obj.a), int(obj.b), int(obj.c))
     if isinstance(obj, float):
@@ -143,6 +161,9 @@ def to_pari(obj):
 _GP_REAL = PARI("(q, bits) -> localbitprec(bits); q * 1.")
 _GP_SERIES = PARI("(p, v, n) -> p + O(v^n)")
 _GP_FACTORIAL = PARI("(n) -> n!")
+# Members of a ``t_FFELT``: cypari2 has no attribute access for them.
+_GP_FF_COEFFICIENTS = PARI("(x) -> Vecrev(x.pol)")
+_GP_FF_FIELD = PARI("(x) -> [x.p, Vecrev(lift(x.mod)), variable(x.mod)]")
 _GP_INFINITY = {1: PARI("+oo"), -1: PARI("-oo")}
 _IDENTIFIER = re.compile(r"[A-Za-z][A-Za-z0-9_]*")
 # Names created with ``varhigher`` because GP reserves them.
@@ -274,7 +295,7 @@ def _sympify(value):
     """Return ``value`` as a SymPy object, for use as a coefficient."""
     try:
         return sympy.sympify(value, strict=True)
-    except sympy.SympifyError:
+    except (sympy.SympifyError, TypeError):
         raise TypeError(
             f"ER2 cannot use {value!r} as a coefficient of a polynomial"
         ) from None
@@ -322,6 +343,9 @@ _FROM_PARI = {
     ),
     "t_SER": _series,
     "t_QFB": lambda obj: Qfb(int(obj[0]), int(obj[1]), int(obj[2])),
+    "t_FFELT": lambda obj: FiniteFieldElement(
+        _finite_field(obj), ff_coefficients(obj)
+    ),
     "t_INFINITY": lambda obj: sympy.oo if obj > 0 else -sympy.oo,
     "t_VEC": lambda obj: [from_pari(item) for item in obj],
     "t_COL": lambda obj: [from_pari(item) for item in obj],
@@ -449,6 +473,188 @@ def radical(n):
     """
     n = _positive_integer(n, "radical")
     return from_pari(PARI.factorback(PARI.factor(n)[0]))
+
+
+# Polynomials over a prime field F_p (M5).  PARI's ``factormod`` is much
+# faster than SymPy (×40 at degree 49), and the result is rebuilt in
+# SymPy's form: monic factors with coefficients in ``(-p/2, p/2]`` and the
+# leading coefficient in front, exactly what ``factor(f, modulus=p)``
+# gives in SymPy.  Polynomials over GF(p^k) need a polynomial type of
+# their own (not in 0.5); ``pari.factormod`` factors them.
+
+
+def _symmetric(value, p):
+    """Return the representative of ``value`` mod ``p`` nearest to 0."""
+    value = int(value) % p
+    return value - p if 2 * value > p else value
+
+
+def _mod_polynomial(obj, p, var):
+    """Return a PARI polynomial over F_p as a SymPy expression."""
+    coefficients = [_symmetric(c, p) for c in PARI.Vecrev(PARI.lift(obj))] or [
+        0
+    ]
+    return sympy.Add(
+        *(c * var**i for i, c in enumerate(coefficients)), evaluate=True
+    )
+
+
+def _polynomial_variable(expr):
+    """Return the single symbol of a univariate polynomial expression."""
+    (var,) = sympy.sympify(expr).free_symbols
+    return var
+
+
+def is_prime_number(n):
+    """Whether ``n`` is a prime number (PARI ``isprime``, a proof)."""
+    return bool(PARI.isprime(int(n)))
+
+
+def is_modular_polynomial(expr, modulus):
+    """Whether ``expr`` is a univariate polynomial over Z, nonzero mod p.
+
+    A polynomial that vanishes modulo ``p`` stays with SymPy, which leaves
+    it as it is (``factor(5*x^2, modulus=5)`` is ``5*x^2``).
+    """
+    if not is_rational_univariate(expr):
+        return False
+    poly = sympy.Poly(expr, _polynomial_variable(expr))
+    if poly.domain != sympy.ZZ:
+        return False
+    return any(int(c) % int(modulus) for c in poly.all_coeffs())
+
+
+def factor_polynomial_mod(expr, modulus):
+    """Factor a univariate polynomial over ``F_p`` (PARI ``factormod``)."""
+    from sympy.core.mul import _keep_coeff
+
+    p = int(modulus)
+    var = _polynomial_variable(expr)
+    # SymPy takes the integer content out first and does not reduce it
+    # modulo p: ``factor(9*x - 9, modulus=5)`` is ``9*(x - 1)``.
+    content, primitive = sympy.Poly(expr, var).primitive()
+    poly = to_pari(primitive.as_expr())
+    unit = content * _symmetric(
+        PARI.lift(PARI.pollead(poly * PARI.Mod(1, p))), p
+    )
+    factors = [
+        (_mod_polynomial(f, p, var), e)
+        for f, e in _factor_rows(PARI.factormod(poly, p))
+    ]
+    product = sympy.Mul(*(f**e for f, e in factors))
+    return _keep_coeff(sympy.Integer(unit), product)
+
+
+def gcd_mod(a, b, modulus):
+    """Return the monic gcd of two polynomials over ``F_p``."""
+    p = int(modulus)
+    var = _polynomial_variable(a if a != 0 else b)
+    one = PARI.Mod(1, p)
+    result = PARI.gcd(to_pari(a) * one, to_pari(b) * one)
+    if result == 0:
+        return sympy.S.Zero
+    return _mod_polynomial(result / PARI.pollead(result), p, var)
+
+
+def isirreducible(expr, modulus=None):
+    """Whether a polynomial is irreducible over Q, or over ``F_p``.
+
+    As in PARI, a constant is not irreducible; SymPy says it is.
+    """
+    poly = to_pari(expr)
+    if modulus is not None:
+        poly = poly * PARI.Mod(1, int(modulus))
+    return bool(PARI.polisirreducible(poly))
+
+
+# Finite fields (M5, D13).  An ER2 element carries its coefficients, so
+# every operation rebuilds the PARI generator: no PARI object outlives the
+# call that made it (M4).
+
+
+def prime_power(q):
+    """Return ``(p, k)`` with ``q = p^k``, or raise ``ValueError``."""
+    if isinstance(q, bool) or not isinstance(q, int) or q < 2:
+        raise ValueError(f"{q} is not a prime power")
+    k = int(PARI.isprimepower(q))
+    if k == 0:
+        raise ValueError(f"{q} is not a prime power")
+    return Integer(PARI.sqrtnint(q, k)), Integer(k)
+
+
+def ff_modulus(p, k, name):
+    """Return the coefficients of PARI's ``ffinit(p, k)``, constant first.
+
+    The defining polynomial is PARI's choice (D13): ER2 needs no table of
+    Conway polynomials, so field elements may print differently from
+    SageMath's.
+    """
+    modulus = PARI.lift(PARI.ffinit(int(p), int(k), variable(name)))
+    return [Integer(c) for c in PARI.Vecrev(modulus)]
+
+
+def _ff_generator(field):
+    """Return the PARI generator (``t_FFELT``) of an ER2 finite field."""
+    coefficients = [int(c) for c in field.modulus_coefficients()]
+    variables = variable(field.name)
+    modulus = PARI.Polrev(coefficients, variables) * PARI.Mod(
+        1, int(field.characteristic)
+    )
+    return PARI.ffgen(modulus)
+
+
+def ff_element(element):
+    """Return an ER2 finite field element as a PARI ``t_FFELT``."""
+    generator = _ff_generator(element.parent)
+    result = generator * 0
+    for coefficient in reversed(element.coefficients()):
+        result = result * generator + int(coefficient)
+    return result
+
+
+def ff_coefficients(obj):
+    """Return the coefficients of a PARI ``t_FFELT``, constant first."""
+    return [Integer(c) for c in _GP_FF_COEFFICIENTS(obj)]
+
+
+def _finite_field(obj):
+    """Return the ER2 field of a PARI ``t_FFELT``."""
+    p, modulus, name = _GP_FF_FIELD(obj)
+    coefficients = [Integer(c) for c in modulus]
+    return FiniteField(
+        Integer(p), len(coefficients) - 1, str(name), coefficients
+    )
+
+
+def ff_polynomial(name, element, var):
+    """Return ``minpoly`` or ``charpoly`` of a field element over ``F_p``.
+
+    The coefficients are lifted to integers in ``[0, p)``, so the result
+    is an ordinary SymPy polynomial.
+    """
+    from er2 import _lazy
+
+    var = _lazy.sympy().Symbol("x") if var is None else var
+    function = getattr(PARI, name)
+    return from_pari(
+        PARI.lift(function(ff_element(element), variable(var.name)))
+    )
+
+
+def ff_minpoly(element, var):
+    """Return the minimal polynomial of a finite field element."""
+    return ff_polynomial("minpoly", element, var)
+
+
+def ff_charpoly(element, var):
+    """Return the characteristic polynomial of a finite field element."""
+    return ff_polynomial("charpoly", element, var)
+
+
+def ff_lift(name, element):
+    """Return ``trace`` or ``norm`` of a field element, as an integer."""
+    function = getattr(PARI, name)
+    return Integer(PARI.lift(function(ff_element(element))))
 
 
 # Linear algebra over Q (M5, D12).  Matrices are SymPy matrices with

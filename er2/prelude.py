@@ -15,6 +15,7 @@ from er2 import _lazy, dispatch, oeis, preparser
 from er2.backends.pari_backend import pari
 from er2.printing import latex, show
 from er2.runtime.factorization import Factorization
+from er2.runtime.finite_field import GF
 from er2.runtime.modular import Mod
 from er2.runtime.numbers import Integer, Rational, literal
 from er2.runtime.qfb import Qfb
@@ -82,6 +83,7 @@ def namespace(code=None):
         preparser.SYMBOLS: symbols,
         "Integer": Integer,
         "Rational": Rational,
+        "GF": GF,
         "Mod": Mod,
         "Factorization": Factorization,
         "Qfb": Qfb,

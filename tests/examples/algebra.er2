@@ -7,5 +7,18 @@ print(A^-1 == inverse(A), solve(A, Matrix([1, 2, 3])))
 print(smith_form(A), hermite_form(A))
 C = Matrix([[1, 2, 3], [2, 4, 6], [1, 1, 1]])
 print(rank(C), kernel(C)[0].T, echelon_form(C))
-sym a
-print(det(Matrix([[a, 1], [1, a]])), minpoly(sqrt(2) + 1))
+sym c, x
+print(det(Matrix([[c, 1], [1, c]])), minpoly(sqrt(2) + 1))
+
+# Finite fields: GF(9) = F_3[a] / (a^2 + a + 2), PARI's ffinit.
+F = GF(9)
+a = F.gen()
+print(F, F.order, F.modulus(), a^4, a^2 + 2*a + 1)
+print(a.order(), a.trace(), a.norm(), minpoly(a), (a^3).log())
+print([str(e) for e in F], a + Mod(2, 3), F(1/2))
+print(GF(7).gen(), GF(7)(3) == 3, 1/GF(7)(3), GF(2, 127).gen().order() == 2^127 - 1)
+
+# Polynomials over F_p: PARI's factormod, in SymPy's form.
+print(factor(x^8 - x, modulus=2))
+print(factor(x^4 + 1, modulus=5), factor(x^4 + 1, domain=GF(5)))
+print(isirreducible(x^2 + x + 1, modulus=2), isirreducible(x^4 + 1), gcd(x^2 - 1, x^2 + x, modulus=3))

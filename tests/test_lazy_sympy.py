@@ -34,6 +34,8 @@ def test_number_theory_programs_never_load_sympy(tmp_path):
         print(phi(10^6), factor(360), 1/3, isprime(2^127 - 1))
         print(Mod(3, 7)^-1, factorial(20), divisors(12), latex(1/3))
         print(pari.sum(lambda n: 1/n^2, 1, 4), f"{2^3=}", 7r)
+        a = GF(9).gen()
+        print(a^4, a.order(), a.trace(), latex(a^2 + 1))
         print("sympy" in sys.modules)
         """,
     )

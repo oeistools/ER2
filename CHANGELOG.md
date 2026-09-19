@@ -27,6 +27,13 @@ What is stable already, and what is not:
 ## [Unreleased]
 
 ### Added
+- Polynomials over a prime field (M5): `factor(f, modulus=p)` and `gcd(f, g, modulus=p)` are
+  computed by PARI, ×40 faster than SymPy at degree 49 and with the same result, and
+  `isirreducible(f)` is new (over Q or with `modulus=p`). `domain=GF(p)` works too; over `GF(p^k)`
+  ER2 has no polynomials yet and says so.
+- Finite fields (M5): `GF(9)`, `GF(3, 2)` and `GF(9, "t")`, with arithmetic, `order`, `trace`,
+  `norm`, `minpoly`, `charpoly`, `sqrt`, `log`, `primitive_element()` and `elements()`. Computed
+  by PARI; `pari.<name>` results of type `t_FFELT` now come back as ER2 elements.
 - Linear algebra (M5): `Matrix` in the prelude, and `det`, `inverse`, `rank`, `kernel`,
   `charpoly`, `minpoly`, `echelon_form`, `hermite_form`, `smith_form` and `solve(A, b)`. Matrices
   over Q are computed by PARI and the others by SymPy, with the same results.

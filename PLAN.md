@@ -30,7 +30,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M2 (0.2)  | CAS on SymPy                                  | ✅ done     |
 | M3 (0.3)  | Number theory on PARI →**MVP**         | ✅ done     |
 | M4 (0.4)  | Backend selection, PARI types, benchmarks     | ✅ done     |
-| M5 (0.5)  | Algebra                                       | in progress (task 2 done) |
+| M5 (0.5)  | Algebra                                       | in progress (tasks 2–4 done) |
 | M6 (0.6)  | Series                                        | not started |
 | M7 (1.0)  | Stable language and release                   | not started |
 | — (2.0)  | Deep CPython integration                      | long term   |
@@ -322,12 +322,20 @@ handle `t_FFELT`, and it turns `nf`/`bnf` structures into plain lists.
    Done 2026-09-19 (ARCHITECTURE §3.4): `Matrix` is in the prelude; 87 tests, including PARI
    against SymPy on 40 random matrices and the normal forms against SymPy's on 40 more.
    `minpoly` also takes algebraic numbers (SymPy) and polynomial `Mod`s (PARI).
-3. **Finite fields.** `GF(p)` and `GF(p^k)` (D13): elements with `+ - * / ^`, `==`,
+3. ✅ **Finite fields.** `GF(p)` and `GF(p^k)` (D13): elements with `+ - * / ^`, `==`,
    `order`, `minpoly`, `charpoly`, `trace`, `norm`, `sqrt`, `log`, and a primitive element.
    Computed by PARI (`t_FFELT`); `from_pari` returns the ER2 element type. `Mod` stays the type of
    `Z/nZ` residues; `GF(p)(a)` and `Mod(a, p)` interoperate.
-4. **Polynomials over finite fields.** `factor(f, modulus=p)` and `factor(f, domain=GF(q))` (PARI
+   Done 2026-09-19: `GF` is in the prelude, with `FiniteField` (order, characteristic, degree,
+   `modulus()`, `gen()`, `primitive_element()`, `elements()`) and `FiniteFieldElement`. 15 tests,
+   including all of the arithmetic against PARI on every element of GF(7), GF(9) and GF(2^5).
+4. ✅ **Polynomials over finite fields.** `factor(f, modulus=p)` and `factor(f, domain=GF(q))` (PARI
    `factormod`), `isirreducible`, `gcd`, and `ffinit` as a way to build extensions.
+   Done 2026-09-19: `factor` and `gcd` with `modulus=p` go to PARI and give what SymPy gives
+   (checked on 400 random polynomials); `isirreducible` is new, over Q and over `F_p`; `GF(p, k)`
+   already builds extensions with `ffinit`. **Not done:** polynomials over `GF(p^k)`, `k > 1`,
+   which need a polynomial type whose coefficients are field elements. `factor(f, domain=GF(9))`
+   raises `NotImplementedError` and points to `pari.raw.factormod`. Proposed for 0.5.1 (D15).
 5. **Resultants and discriminants.** `resultant(f, g, x)`, `discriminant(f, x)`: PARI for
    polynomials over Q, SymPy for symbolic coefficients.
 6. **Gröbner bases.** `groebner(F, *gens, order="lex")` through SymPy, returning SymPy's

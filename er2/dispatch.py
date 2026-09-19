@@ -14,6 +14,7 @@ from fractions import Fraction
 
 from er2 import _lazy
 from er2.backends import pari_backend
+from er2.runtime.finite_field import FiniteField, FiniteFieldElement
 from er2.runtime.modular import Mod
 
 __all__ = ["FUNCTIONS", "TABLE", "implementation"]
@@ -116,6 +117,29 @@ def rational_linear_system(args, kwargs):
     )
 
 
+def modular_polynomials(args, kwargs):
+    """Whether ``args`` are polynomials over Z and ``kwargs`` is ``modulus=p``.
+
+    That is the case PARI's ``factormod`` handles, ×40 faster than SymPy
+    at degree 49.
+    """
+    modulus = kwargs.get("modulus")
+    if list(kwargs) != ["modulus"] or not args:
+        return False
+    if isinstance(modulus, bool) or not isinstance(modulus, int):
+        return False
+    if modulus < 2 or not _lazy.sympy_loaded():
+        return False
+    return pari_backend.is_prime_number(modulus) and all(
+        pari_backend.is_modular_polynomial(arg, modulus) for arg in args
+    )
+
+
+def finite_field_element(args, kwargs):
+    """Whether the first argument is an element of a finite field."""
+    return bool(args) and isinstance(args[0], FiniteFieldElement)
+
+
 def polynomial_mod(args, kwargs):
     """Whether the first argument is a ``Mod`` with a polynomial modulus."""
     return bool(args) and isinstance(args[0], Mod) and args[0].is_polynomial
@@ -126,6 +150,7 @@ sympy_backend = _SympyBackend  # TABLE entries: sympy_backend("factor")
 TABLE = {
     "expand": [(anything, sympy_backend("expand"))],
     "factor": [
+        (modular_polynomials, pari_backend.factor_polynomial_mod),
         (rational_univariate, pari_backend.factor_polynomial),
         (symbolic, sympy_backend("factor")),
         (number, pari_backend.factor),
@@ -169,13 +194,20 @@ TABLE = {
         (matrix, sympy_backend("kernel")),
     ],
     "charpoly": [
+        (finite_field_element, pari_backend.ff_charpoly),
         (square_rational_matrix, pari_backend.charpoly),
         (matrix, sympy_backend("charpoly")),
     ],
     "minpoly": [
+        (finite_field_element, pari_backend.ff_minpoly),
         (square_rational_matrix, pari_backend.minpoly),
         (polynomial_mod, pari_backend.minpoly),
         (anything, sympy_backend("minimal_polynomial")),
+    ],
+    "isirreducible": [
+        (modular_polynomials, pari_backend.isirreducible),
+        (rational_univariate, pari_backend.isirreducible),
+        (anything, sympy_backend("isirreducible")),
     ],
     "echelon_form": [(matrix, sympy_backend("echelon_form"))],
     "hermite_form": [(integer_matrix, pari_backend.hermite_form)],
@@ -187,6 +219,7 @@ for _name, _function in pari_backend.PRELUDE.items():
         TABLE[_name] = [(anything, _function)]
 for _name in ("gcd", "lcm"):
     TABLE[_name].insert(0, (symbolic, sympy_backend(_name)))
+TABLE["gcd"].insert(0, (modular_polynomials, pari_backend.gcd_mod))
 
 
 def implementation(name, args, kwargs=None):
@@ -216,8 +249,40 @@ def factor(obj, *args, **kwargs):
     ``factor(12)`` gives ``2^2 * 3`` (PARI); ``factor(x^2 - 1)`` gives
     ``(x - 1)*(x + 1)`` (SymPy).  For numbers, ``limit=B`` gives a
     partial factorization by trial division up to ``B`` (D7).
+    ``modulus=p`` (or ``domain=GF(p)``) factors over the field ``F_p``.
     """
-    return _call("factor", obj, *args, **kwargs)
+    return _call("factor", obj, *args, **_modulus(kwargs))
+
+
+def isirreducible(obj, **options):
+    """Whether a polynomial is irreducible.
+
+    Over Q by default; ``modulus=p`` (or ``domain=GF(p)``) asks over the
+    field ``F_p``: ``isirreducible(x^2 + x + 1, modulus=2)`` is true.
+    A constant polynomial is not irreducible (PARI's convention).
+    """
+    return _call("isirreducible", obj, **_modulus(options))
+
+
+def _modulus(options):
+    """Turn ``domain=GF(p)`` into ``modulus=p``, PARI's own option.
+
+    Polynomials over ``GF(p^k)`` with ``k > 1`` need coefficients that are
+    field elements, which no ER2 polynomial type has yet; PARI's
+    ``pari.factormod`` factors them.
+    """
+    domain = options.get("domain")
+    if not isinstance(domain, FiniteField):
+        return options
+    if domain.degree > 1:
+        raise NotImplementedError(
+            f"ER2 has no polynomials over {domain!r} yet; "
+            "pari.raw.factormod gives PARI's own factorization"
+        )
+    options = dict(options)
+    del options["domain"]
+    options["modulus"] = int(domain.characteristic)
+    return options
 
 
 def simplify(expr, *args, **kwargs):
@@ -422,6 +487,7 @@ FUNCTIONS = {
         echelon_form,
         hermite_form,
         smith_form,
+        isirreducible,
     )
 }
 for _name in TABLE:

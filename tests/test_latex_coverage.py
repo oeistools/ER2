@@ -17,6 +17,7 @@ import er2.runtime
 from er2 import prelude
 from er2.printing import latex
 from er2.runtime.factorization import Factorization
+from er2.runtime.finite_field import GF, FiniteField, FiniteFieldElement
 from er2.runtime.modular import Mod
 from er2.runtime.numbers import Integer, Rational
 from er2.runtime.qfb import Qfb
@@ -31,6 +32,9 @@ TYPE_SAMPLES = {
     Mod: Mod(3, 7),
     Factorization: Factorization([(2, 3), (3, 2)]),
     Qfb: Qfb(1, 1, 6),
+    FiniteField: GF(9),
+    # a^2 + 1 in GF(9) = a^2 + a + 2: prints reduced, as 2*a + 2.
+    FiniteFieldElement: GF(9).gen() ** 2 + 1,
 }
 
 # Prelude values that are not mathematical objects.
@@ -121,6 +125,10 @@ FUNCTION_SAMPLES = {
     "fibonacci": (lambda ns: ns["fibonacci"](n(50)), "12586269025"),
     "gcd": (lambda ns: ns["gcd"](n(12), n(18)), "6"),
     "ispower": (lambda ns: ns["ispower"](n(8)), "3"),
+    "isirreducible": (
+        lambda ns: ns["isirreducible"](x**2 + x + 1, modulus=n(2)),
+        r"\text{True}",
+    ),
     "isprime": (
         lambda ns: ns["isprime"](n(2) ** 127 - 1),
         r"\text{True}",

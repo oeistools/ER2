@@ -1,7 +1,7 @@
 # ER2 — Mathematical Python
 
 [![CI](https://github.com/oeistools/ER2/actions/workflows/ci.yml/badge.svg)](https://github.com/oeistools/ER2/actions/workflows/ci.yml)
-[![Status: early development](https://img.shields.io/badge/status-0.4%20early%20development-orange)](PLAN.md)
+[![Status: early development](https://img.shields.io/badge/status-0.4.1%20early%20development-orange)](PLAN.md)
 [![Python 3.12 | 3.13 | 3.14](https://img.shields.io/badge/python-3.12%20%7C%203.13%20%7C%203.14-blue?logo=python&logoColor=white)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Code style: PEP 8](https://img.shields.io/badge/code%20style-PEP%208-blue)](https://peps.python.org/pep-0008/)
@@ -76,7 +76,7 @@ ER2 is a superset of Python and follows the same model as SageMath:
 
 ER2 runs in notebooks and in Quarto documents:
 
-- **ER2 kernel**: run `er2 kernel install`, then pick "ER2" in Jupyter. In Quarto, set `jupyter: er2` in the front matter. If Quarto or your editor reports `Jupyter kernel 'er2' not found`, it is only looking inside the project's virtual environment: run `er2 kernel install --sys-prefix` as well.
+- **ER2 kernel**: run `er2 kernel install`, then pick "ER2" in Jupyter. In Quarto, set `jupyter: er2` in the front matter. If Quarto or your editor reports `Jupyter kernel 'er2' not found`, it is only looking inside the project's virtual environment: run `er2 kernel install --sys-prefix` as well. In VS Code, the Quarto **Preview** button uses the system Python unless `QUARTO_PYTHON` is set. Add `"terminal.integrated.env.linux": {"QUARTO_PYTHON": "${workspaceFolder}/.venv/bin/python"}` to `.vscode/settings.json`.
 - **Any Python kernel**: add `%load_ext er2` in the first cell.
 - **LaTeX everywhere**: expressions render as math. `show(f)` displays one, and
   `` `{python} latex(f)` `` puts inline math in Quarto text.
@@ -138,6 +138,19 @@ uv run er2 program.er2          # run a program
 uv run er2 --show-python program.er2   # show the Python that ER2 generates
 uv run er2 kernel install       # add the "ER2" kernel to Jupyter and Quarto
 ```
+
+The [Makefile](Makefile) wraps the common tasks (`make` lists them):
+
+```bash
+make install                    # uv sync + the ER2 kernel inside .venv
+make install-global             # the `er2` command for your user, editable (uv tool)
+make check                      # ruff + all tests, as in CI
+make preview FILE=my_doc.qmd    # live Quarto preview with the ER2 kernel
+make render                     # render examples/demo.qmd
+```
+
+`make install-global` puts `er2` in `~/.local/bin`. It is an editable install, so it follows
+changes to the code, and it registers the ER2 kernel for your user.
 
 We keep dependencies deliberately minimal: `sympy` and `cypari2` at runtime, plus `ipykernel` as
 the optional `er2[jupyter]` extra. Development uses `pytest` and `ruff`. The code follows

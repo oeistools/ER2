@@ -13,7 +13,9 @@ import importlib.metadata
 import itertools
 import platform
 import statistics
+import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -182,6 +184,40 @@ def polynomial_rows(quick):
     return rows
 
 
+def startup_rows(quick):
+    """Rows for the time to run a tiny program, against plain Python.
+
+    SymPy is imported only by programs that use it (``er2._lazy``).
+    """
+    runs = 1 if quick else 7
+    programs = {
+        "number theory only": "print(phi(10^6), factor(360))\n",
+        "with symbols (loads SymPy)": "sym x\nprint(factor(x^2 - 1))\n",
+    }
+    python = _process_time([sys.executable, "-c", "print(1)"], runs)
+    rows = []
+    with tempfile.TemporaryDirectory() as tmp:
+        for label, source in programs.items():
+            path = Path(tmp) / "program.er2"
+            path.write_text(source, encoding="utf-8")
+            command = [sys.executable, "-m", "er2", str(path)]
+            er2_time = _process_time(command, runs)
+            rows.append(
+                (f"`er2` startup, {label}", er2_time, "Python", python)
+            )
+    return rows
+
+
+def _process_time(command, runs):
+    """Return the median wall time of running ``command``."""
+    times = []
+    for _ in range(runs):
+        start = time.perf_counter()
+        subprocess.run(command, check=True, capture_output=True)
+        times.append(time.perf_counter() - start)
+    return statistics.median(times)
+
+
 def format_time(seconds):
     """Return ``seconds`` with a readable unit."""
     for unit, scale in (("s", 1), ("ms", 1e-3), ("µs", 1e-6)):
@@ -210,6 +246,7 @@ def table(title, rows):
 def report(quick=False):
     """Run every benchmark and return the Markdown report."""
     sections = [
+        table("Startup", startup_rows(quick)),
         table("Integer arithmetic (D2)", integer_rows(quick)),
         table("Number theory", number_theory_rows(quick)),
         table("Polynomial factorization", polynomial_rows(quick)),

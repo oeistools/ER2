@@ -24,8 +24,9 @@ class ER2Loader(machinery.SourceFileLoader):
 
     def exec_module(self, module):
         """Execute the module with the ER2 prelude in its namespace."""
-        prelude.inject(module.__dict__)
-        super().exec_module(module)
+        code = self.get_code(module.__name__)
+        prelude.inject(module.__dict__, code)
+        exec(code, module.__dict__)
 
     def get_code(self, fullname):
         """Return the code object compiled from the preparsed source."""

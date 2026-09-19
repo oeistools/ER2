@@ -16,6 +16,7 @@ ER2            Python
 ``a ^^= b``    ``a ^= b``
 ``5``          ``__er2_int__(5)``
 ``sym x, y``   ``x, y = __er2_sym__("x, y")``
+``5r``         ``5`` (a plain ``int``)
 =============  =====================================
 """
 
@@ -65,14 +66,119 @@ def preparse(source, filename="<er2>"):
     edits = []
     _power_and_xor(tokens, edits, lines, filename)
     _sym_statements(tokens, edits, filename)
+    _debug_fstrings(tokens, edits, lines)
+    raw = _raw_literals(tokens, edits)
     # Integer literals are wrapped in a second pass over valid Python, so
     # that the literals of ``case`` patterns can be found and left alone.
     python = _apply(lines, edits)
+    raw = {_shifted(position, edits) for position in raw}
     lines = python.splitlines(keepends=True)
     tokens = list(tokenize.generate_tokens(io.StringIO(python).readline))
     edits = []
-    _integer_literals(tokens, edits, _pattern_spans(python))
+    _integer_literals(tokens, edits, _pattern_spans(python), raw)
     return _apply(lines, edits)
+
+
+def _raw_literals(tokens, edits):
+    """Record the edits for raw literals (``5r``); return their positions.
+
+    ``5r`` is a plain Python ``int`` (Sage's convention, §1.1): the ``r``
+    is removed and the literal is not wrapped.  ``5r`` is a syntax error
+    in Python, so this cannot change the meaning of Python code.
+    """
+    raw = set()
+    for number, suffix in zip(tokens, tokens[1:]):
+        if (
+            number.type == tokenize.NUMBER
+            and suffix.type == tokenize.NAME
+            and suffix.string == "r"
+            and suffix.start == number.end
+            and isinstance(_literal_value(number.string), int)
+        ):
+            edits.append((suffix.start, suffix.end, ""))
+            raw.add(number.start)
+    return raw
+
+
+def _literal_value(text):
+    try:
+        return ast.literal_eval(text)
+    except (ValueError, SyntaxError):
+        return None
+
+
+def _shifted(position, edits):
+    """Return where ``position`` moves once the single-line ``edits`` apply."""
+    row, col = position
+    shift = 0
+    for (erow, scol), (_, ecol), text in edits:
+        if erow == row and ecol <= col:
+            shift += len(text) - (ecol - scol)
+    return row, col + shift
+
+
+def _debug_fstrings(tokens, edits, lines):
+    """Record the edits that keep ER2 text in ``f"{expr=}"``.
+
+    Python echoes the source text of a self-documenting expression, which
+    would be the preparsed text (``2**__er2_int__(3)=``).  The field
+    ``{expr=}`` becomes ``expr={expr!r}``, with the ER2 text as a literal:
+    the same output Python gives, with ``!r`` only when there is neither a
+    conversion nor a format spec.
+    """
+    stack = []  # "fstring", or a field: [open_token, depth, state]
+    quotes = []
+    for i, tok in enumerate(tokens):
+        top = stack[-1] if stack else None
+        if tok.type == tokenize.FSTRING_START:
+            stack.append("fstring")
+            quotes.append(tok.string.lstrip("fFrRbBtT"))
+            continue
+        if tok.type == tokenize.FSTRING_END and top == "fstring":
+            stack.pop()
+            quotes.pop()
+            continue
+        if tok.type != tokenize.OP:
+            continue
+        in_text = top == "fstring" or (
+            isinstance(top, list) and top[2] == "spec"
+        )
+        if tok.string == "{" and in_text:
+            stack.append([tok, 0, "expr"])
+            continue
+        if not isinstance(top, list):
+            continue
+        field = top
+        if field[2] == "spec":
+            if tok.string == "}":
+                stack.pop()
+            continue
+        if tok.string in "([{":
+            field[1] += 1
+        elif tok.string in ")]}" and field[1] > 0:
+            field[1] -= 1
+        elif tok.string == "}":
+            stack.pop()
+        elif tok.string == ":" and field[1] == 0:
+            field[2] = "spec"
+        elif tok.string == "=" and field[1] == 0 and i + 1 < len(tokens):
+            _debug_field(
+                field[0], tok, tokens[i + 1], quotes[-1], lines, edits
+            )
+
+
+def _debug_field(open_brace, equals, after, quote, lines, edits):
+    """Rewrite one ``{expr=...}`` field (see ``_debug_fstrings``)."""
+    row = open_brace.start[0]
+    if equals.start[0] != row or after.start[0] != row:
+        return  # ER2 edits never span lines
+    text = lines[row - 1][open_brace.end[1] : after.start[1]]
+    if "\\" in text or quote in text:
+        return  # cannot be written in the string's literal part
+    literal = text.replace("{", "{{").replace("}", "}}")
+    edits.append((open_brace.start, open_brace.end, literal + "{"))
+    conversion = "!r" if after.string == "}" else ""
+    edits.append((equals.start, after.start, conversion))
 
 
 def _power_and_xor(tokens, edits, lines, filename):
@@ -145,13 +251,14 @@ def _char_position(lines, lineno, byte_offset):
     return lineno, len(line[:byte_offset].decode("utf-8"))
 
 
-def _integer_literals(tokens, edits, skip=()):
+def _integer_literals(tokens, edits, skip=(), raw=()):
     """Record the edits that wrap integer literals in ``__er2_int__``.
 
-    Literals inside the ``skip`` spans (``case`` patterns) are left alone.
+    Literals inside the ``skip`` spans (``case`` patterns) and at the
+    ``raw`` positions (``5r``) are left alone.
     """
     for tok in tokens:
-        if tok.type != tokenize.NUMBER:
+        if tok.type != tokenize.NUMBER or tok.start in raw:
             continue
         if any(start <= tok.start and tok.end <= end for start, end in skip):
             continue

@@ -40,6 +40,14 @@ I = "__er2_int__"  # noqa: E741 - short alias keeps the expected code readable
             'match v:\n    case {"é": 1}: pass\n',
         ),
         ("case = 5\n", f"case = {I}(5)\n"),
+        # Raw literals (Sage's ``5r``) are plain Python ints.
+        ("n = 5r\n", "n = 5\n"),
+        ("n = 0x1Fr + 1_000r\n", "n = 0x1F + 1_000\n"),
+        ("x = y^2; n = 5r + 2\n", f"x = y**{I}(2); n = 5 + {I}(2)\n"),
+        ("sym t; k = 7r\n", 't, = __er2_sym__("t"); k = 7\n'),
+        # Self-documenting f-strings echo the ER2 text, not the Python.
+        ('f"{2^3=}"\n', f'f"2^3={{{I}(2)**{I}(3)!r}}"\n'),
+        ('f"{n=:>4}"\n', 'f"n={n:>4}"\n'),
         # sym statements.
         ("sym x\n", 'x, = __er2_sym__("x")\n'),
         ("sym x, y\n", 'x, y = __er2_sym__("x, y")\n'),

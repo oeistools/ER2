@@ -47,6 +47,7 @@ Python ecosystem through ordinary `import`. Chosen model: **the SageMath model**
    | `a ^^= b`   | syntax error           | XOR-assign                           |
    | int literal | `int`                  | ER2 `Integer` (exact), so `1/3` is the rational 1/3 |
    | `sym x, y`  | syntax error           | symbol declaration                   |
+   | `5r`        | syntax error           | raw literal: the plain Python `int` 5 (added 2026-09-19) |
 
    Anything not in this table behaves exactly as in Python. Adding a row requires updating this
    contract.
@@ -54,8 +55,10 @@ Python ecosystem through ordinary `import`. Chosen model: **the SageMath model**
    `__int__`, `__float__`, `__complex__`, `__hash__` (equal to the corresponding `int` hash) and
    compare equal to Python numbers, so `range(n)`, `lst[n]`, `np.zeros(n)`, `math.sqrt(n)`,
    dict keys and `json` keep working. See D6 for `isinstance(n, int)`.
-6. **Escape hatches**: `int(...)`/`float(...)` for explicit conversion; a raw-literal suffix such as
-   `5r` (Sage's convention) for a plain Python `int`, if needed (to be decided when implementing).
+6. **Escape hatches**: `int(...)`/`float(...)` for explicit conversion, and the raw-literal suffix
+   `5r` (Sage's convention) for a plain Python `int` (implemented 2026-09-19, user decision), for
+   example in hot numeric loops (D2). It works for every integer literal (`0x1Fr`, `1_000r`); there
+   must be no space before the `r`.
 7. **Known caveat**: Python code pasted into a `.er2` file that relies on `^` being XOR, or on
    `int / int` returning `float`, changes meaning. Mitigations: the preparser warns on `^` between
    obvious bitmask operands (hex/binary literals, `&`, `|`, `<<` in the same expression); keep such
@@ -147,6 +150,8 @@ Transformations (0.1):
 | `x^2`              | `x**2`                                            | see D1 |
 | `a ^^ b`           | `a ^ b`                                           | explicit XOR (Sage convention) |
 | `5`                | `__er2_int__(5)`                                  | so `1/3` is `Rational(1, 3)`; see D2 and D6 |
+| `5r`               | `5`                                               | a plain `int`, not wrapped (§1.1 point 6) |
+| `f"{2^3=}"`        | `f"2^3={2**__er2_int__(3)!r}"`                    | self-documenting f-strings echo the ER2 text |
 | `_x`               | unchanged; `_x` lives in the prelude              | see D3 |
 
 The helpers use reserved dunder names (`__er2_int__`, `__er2_sym__`), so user code such as
@@ -177,6 +182,8 @@ Requirements (all implemented in M1 and covered by `tests/preparser/`):
   - restore the prelude before every cell, because Quarto runs `%reset`, which would otherwise
     delete `__er2_int__` (found in M1);
   - make IPython tracebacks show the ER2 cell rather than the preparsed one.
+- **`er2 file.er2` puts the file's directory first on `sys.path`**, as `python file.py` does, so
+  modules next to the program can be imported (fixed in 0.4.1).
 - **Tracebacks in the CLI** hide the runner frames and the ER2 runtime frames. They drop the
   column markers for `.er2` frames, because those columns refer to the preparsed line.
 
@@ -191,6 +198,20 @@ Since M2 the prelude also holds the CAS functions from `er2.dispatch` (`expand`,
 a small set of SymPy names, exposed unchanged: `pi, E, I, oo, sqrt, exp, log, sin, cos, tan, Eq`.
 Like every prelude name, they are defaults: an assignment or an import (`from math import *`)
 shadows them, as in Python.
+
+**Lazy SymPy (0.4.1).** Importing SymPy takes about 0.3 s, which was most of a program's
+startup. ER2 modules never import SymPy at module level; they go through `er2._lazy`:
+- `sympy()` imports it on demand.
+- `sympy_loaded()` short-circuits type checks, because no SymPy object can exist before SymPy is
+  loaded.
+- `when_sympy_loaded(hook)` installs ER2's printer (D11) the moment SymPy is imported, even by
+  user code (`import sympy`).
+- For a file or an `.er2` module, the prelude includes its SymPy values (`pi`, `sin`, `_x`, …)
+  only if the compiled code names one of them, or uses `eval`, `exec`, `globals`, `vars`,
+  `locals` or `__import__`, which can reach names that are not written in the code.
+- The REPL and notebooks get the full prelude.
+
+A number theory program now starts in about 0.16 s instead of 0.4 s (docs/BENCHMARKS.md).
 
 Since M3 the prelude holds the curated PARI functions (the `prelude` rows of §3.5, D10),
 `factorial` (exact, from SymPy), `dedekind_psi` (D5), the types `Mod` and `Factorization`, and the

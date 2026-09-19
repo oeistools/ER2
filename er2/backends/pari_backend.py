@@ -17,8 +17,8 @@ from fractions import Fraction
 from pathlib import Path
 
 import cypari2
-import sympy
 
+from er2 import _lazy
 from er2.runtime.factorization import Factorization
 from er2.runtime.modular import Mod
 from er2.runtime.numbers import Integer, Rational
@@ -40,6 +40,20 @@ __all__ = [
 ]
 
 TABLE_PATH = Path(__file__).resolve().parent.parent / "data/pari_functions.csv"
+
+
+class _SympyOnDemand:
+    """``sympy.X`` imports SymPy on first use (``er2._lazy``).
+
+    Number theory never needs SymPy; only conversions of SymPy objects and
+    of PARI polynomials, series and reals do.
+    """
+
+    def __getattr__(self, name):
+        return getattr(_lazy.sympy(), name)
+
+
+sympy = _SympyOnDemand()
 
 PARI = cypari2.Pari()
 
@@ -99,6 +113,8 @@ def to_pari(obj):
         return PARI([to_pari(item) for item in obj])
     if isinstance(obj, str):
         return obj
+    if not _lazy.sympy_loaded():
+        raise TypeError(f"cannot convert {type(obj).__name__} to PARI")
     if isinstance(obj, sympy.MatrixBase):
         entries = [
             to_pari(obj[i, j])
@@ -367,6 +383,13 @@ def factor_polynomial(expr):
     unit = from_pari(poly / PARI.factorback(matrix))
     product = sympy.Mul(*(f**e for f, e in factors))
     return _keep_coeff(sympy.sympify(unit), product)
+
+
+def factorial(n):
+    """Return ``n!`` exactly (GP's ``n!``; PARI's ``factorial`` is real)."""
+    if isinstance(n, bool) or int(n) != n or n < 0:
+        raise ValueError("factorial() needs a nonnegative integer")
+    return from_pari(PARI("(n) -> n!")(int(n)))
 
 
 def dedekind_psi(n):

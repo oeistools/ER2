@@ -162,3 +162,18 @@ def test_python_module_wins_over_er2(er2_imports):
     import shadow
 
     assert shadow.origin == "py"
+
+
+def test_version_is_the_same_everywhere():
+    """pyproject.toml is the single source; CITATION.cff must match."""
+    import tomllib
+    from pathlib import Path
+
+    import er2 as package
+
+    root = Path(__file__).resolve().parent.parent
+    project = tomllib.loads((root / "pyproject.toml").read_text())
+    version = project["project"]["version"]
+    assert package.__version__ == version
+    assert f"version: {version}\n" in (root / "CITATION.cff").read_text()
+    assert er2("--version").stdout == f"er2 {version}\n"

@@ -18,6 +18,14 @@ from nbclient import NotebookClient
 
 from er2.kernel import install_kernel
 
+# CI's Quarto job sets ER2_REQUIRE_QUARTO, so these tests fail instead of
+# being skipped if Quarto is missing there.
+needs_quarto = pytest.mark.skipif(
+    shutil.which("quarto") is None
+    and not os.environ.get("ER2_REQUIRE_QUARTO"),
+    reason="needs Quarto",
+)
+
 
 @pytest.fixture(scope="module")
 def jupyter_path(tmp_path_factory):
@@ -158,7 +166,7 @@ def test_er2_kernel_preparses_inline_expressions(jupyter_path):
         manager.shutdown_kernel(now=True)
 
 
-@pytest.mark.skipif(shutil.which("quarto") is None, reason="needs Quarto")
+@needs_quarto
 def test_quarto_render(jupyter_path, tmp_path):
     doc = tmp_path / "m1.qmd"
     doc.write_text(
@@ -214,7 +222,7 @@ Inline: `{python} latex(integrate(f, (x, 0, 1)))`.
 """
 
 
-@pytest.mark.skipif(shutil.which("quarto") is None, reason="needs Quarto")
+@needs_quarto
 @pytest.mark.parametrize("fmt", ["html", "pdf"])
 def test_quarto_renders_math(jupyter_path, tmp_path, fmt):
     """Symbolic results render as math in Quarto HTML and PDF (M2)."""
@@ -227,7 +235,8 @@ def test_quarto_renders_math(jupyter_path, tmp_path, fmt):
     result = subprocess.run(
         command, capture_output=True, text=True, env=env, timeout=600
     )
-    if fmt == "pdf" and "No TeX installation" in result.stderr:
+    no_tex = "No TeX installation" in result.stderr
+    if fmt == "pdf" and no_tex and not os.environ.get("ER2_REQUIRE_QUARTO"):
         pytest.skip("needs a TeX installation")
     assert result.returncode == 0, result.stderr
     if fmt == "html":
@@ -273,7 +282,7 @@ def test_mvp_notebook(jupyter_path, kernel):
     assert shown == [r"$$\left(x + 1\right)^{2}$$"]
 
 
-@pytest.mark.skipif(shutil.which("quarto") is None, reason="needs Quarto")
+@needs_quarto
 def test_mvp_quarto(jupyter_path, tmp_path):
     """The MVP (M3 acceptance) rendered by Quarto with the er2 kernel."""
     doc = tmp_path / "mvp.qmd"

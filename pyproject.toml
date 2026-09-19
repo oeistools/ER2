@@ -1,6 +1,6 @@
 [project]
 name = "er2"
-version = "0.0.1"
+version = "0.4.1"
 description = "ER2 — mathematical Python: symbolic syntax, exact arithmetic and PARI/GP number theory on top of Python."
 readme = "README.md"
 license = "MIT"

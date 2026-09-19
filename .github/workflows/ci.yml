@@ -31,6 +31,21 @@ jobs:
       - run: uv sync --locked
       - run: uv run pytest
 
+  quarto:
+    name: Jupyter and Quarto (HTML and PDF)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          tinytex: true
+      - run: uv sync --locked
+      # Without Quarto the other jobs skip these tests; here they must run.
+      - run: uv run pytest tests/notebooks tests/examples -rs
+        env:
+          ER2_REQUIRE_QUARTO: "1"
+
   pari-table:
     name: PARI function table in sync
     runs-on: ubuntu-latest

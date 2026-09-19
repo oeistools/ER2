@@ -13,52 +13,76 @@ import functools
 import sys
 from fractions import Fraction
 
-import sympy
-import sympy.printing.str as sympy_str
-from sympy.printing.precedence import precedence
+from er2 import _lazy
 
-__all__ = ["ER2StrPrinter", "Tex", "install", "latex", "show", "uninstall"]
+__all__ = ["Tex", "install", "latex", "show", "uninstall"]
 
 
-class ER2StrPrinter(sympy_str.StrPrinter):
-    """SymPy's ``StrPrinter`` with ``^`` for powers."""
+@functools.cache
+def _printer_class():
+    """Return ``ER2StrPrinter``, built when SymPy is first needed."""
+    sympy = _lazy.sympy()
+    from sympy.printing.precedence import precedence
+    from sympy.printing.str import StrPrinter
 
-    def _print_Pow(self, expr, rational=False):  # noqa: N802 (SymPy API)
-        """Print a power as ``base^exp`` (SymPy prints ``base**exp``)."""
-        prec = precedence(expr)
-        if expr.exp is sympy.S.Half and not rational:
-            return f"sqrt({self._print(expr.base)})"
-        if expr.is_commutative:
-            if -expr.exp is sympy.S.Half and not rational:
-                return f"1/sqrt({self._print(expr.base)})"
-            if expr.exp is -sympy.S.One:
-                base = self.parenthesize(expr.base, prec, strict=False)
-                return f"1/{base}"
-        base = self.parenthesize(expr.base, prec, strict=False)
-        exp = self.parenthesize(expr.exp, prec, strict=False)
-        return f"{base}^{exp}"
+    class ER2StrPrinter(StrPrinter):
+        """SymPy's ``StrPrinter`` with ``^`` for powers."""
 
-    def _print_Poly(self, expr):  # noqa: N802 (SymPy API)
-        """Print a polynomial with ``^`` for the powers of its generators.
+        def _print_Pow(self, expr, rational=False):  # noqa: N802 (SymPy API)
+            """Print a power as ``base^exp`` (SymPy prints ``base**exp``)."""
+            prec = precedence(expr)
+            if expr.exp is sympy.S.Half and not rational:
+                return f"sqrt({self._print(expr.base)})"
+            if expr.is_commutative:
+                if -expr.exp is sympy.S.Half and not rational:
+                    return f"1/sqrt({self._print(expr.base)})"
+                if expr.exp is -sympy.S.One:
+                    base = self.parenthesize(expr.base, prec, strict=False)
+                    return f"1/{base}"
+            base = self.parenthesize(expr.base, prec, strict=False)
+            exp = self.parenthesize(expr.exp, prec, strict=False)
+            return f"{base}^{exp}"
 
-        SymPy's method prints coefficients and generators through
-        ``self._print`` and writes ``**`` only between a generator and its
-        exponent, so replacing ``**`` changes exactly those.
-        """
-        return super()._print_Poly(expr).replace("**", "^")
+        def _print_Poly(self, expr):  # noqa: N802 (SymPy API)
+            """Print a polynomial with ``^`` for its generators' powers.
+
+            SymPy's method prints coefficients and generators through
+            ``self._print`` and writes ``**`` only between a generator and
+            its exponent, so replacing ``**`` changes exactly those.
+            """
+            return super()._print_Poly(expr).replace("**", "^")
+
+    return ER2StrPrinter
+
+
+def __getattr__(name):
+    """Build ``ER2StrPrinter`` on first access (it needs SymPy)."""
+    if name == "ER2StrPrinter":
+        return _printer_class()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def er2_str(expr, **settings):
     """Return ``expr`` as a string in ER2 notation."""
-    return ER2StrPrinter(settings).doprint(expr)
+    return _printer_class()(settings).doprint(expr)
 
 
 _original_sstr = None
 
 
 def install():
-    """Make ER2 notation SymPy's default ``str``/``repr`` in this process."""
+    """Make ER2 notation SymPy's default ``str``/``repr`` in this process.
+
+    If SymPy is not imported yet, this happens as soon as it is (D11): a
+    program that never uses SymPy never loads it.
+    """
+    _lazy.when_sympy_loaded(_install_now)
+
+
+def _install_now():
     global _original_sstr
+    import sympy.printing.str as sympy_str
+
     if _original_sstr is None:
         _original_sstr = sympy_str.sstr
         sympy_str.sstr = er2_str
@@ -67,7 +91,10 @@ def install():
 def uninstall():
     """Restore SymPy's own printer (undo ``install``)."""
     global _original_sstr
+    _lazy.cancel(_install_now)
     if _original_sstr is not None:
+        import sympy.printing.str as sympy_str
+
         sympy_str.sstr = _original_sstr
         _original_sstr = None
 
@@ -113,8 +140,8 @@ def _latex(obj, options):
     ER2 types implement SymPy's printer protocol (a ``_latex(printer)``
     method), so their LaTeX is also correct inside SymPy containers.
     """
-    if callable(getattr(obj, "_latex", None)):
-        return sympy.latex(obj, **options)
+    if callable(getattr(obj, "_latex", None)) or _is_sympy(obj):
+        return _lazy.sympy().latex(obj, **options)
     rich = getattr(obj, "_repr_latex_", None)
     if callable(rich):
         body = rich()
@@ -123,9 +150,10 @@ def _latex(obj, options):
     return r"\texttt{%s}" % _escape(repr(obj))
 
 
-@_latex.register
-def _(obj: sympy.Basic, options):
-    return sympy.latex(obj, **options)
+def _is_sympy(obj):
+    if not _lazy.sympy_loaded():
+        return False
+    return isinstance(obj, sys.modules["sympy"].Basic)
 
 
 @_latex.register
@@ -140,16 +168,22 @@ def _(obj: int, options):
 
 @_latex.register
 def _(obj: Fraction, options):
-    return sympy.latex(sympy.Rational(obj.numerator, obj.denominator))
+    # SymPy's form, without loading SymPy: \frac{1}{3}, - \frac{2}{5}.
+    if obj.denominator == 1:
+        return str(obj.numerator)
+    sign = "- " if obj < 0 else ""
+    return r"%s\frac{%d}{%d}" % (sign, abs(obj.numerator), obj.denominator)
 
 
 @_latex.register
 def _(obj: float, options):
+    sympy = _lazy.sympy()
     return sympy.latex(sympy.Float(obj))
 
 
 @_latex.register
 def _(obj: complex, options):
+    sympy = _lazy.sympy()
     return sympy.latex(sympy.sympify(obj))
 
 

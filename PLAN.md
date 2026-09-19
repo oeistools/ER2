@@ -258,8 +258,30 @@ Found and fixed:
 Known limitations, carried forward:
 - `t_PADIC`, `t_FFELT` and the structures of number fields and elliptic curves have no ER2 type
   yet (M5).
-- `f"{2^3=}"` still echoes the preparsed text; the `5r` raw-literal suffix is not implemented.
+- `f"{2^3=}"` and the `5r` suffix: fixed in 0.4.1.
 - Automatic backend choice covers `factor` only; polynomial `gcd` and resultants could follow.
+
+## 0.4.1 — Quick wins
+
+**Status: ✅ done (2026-09-19).** There are 325 tests.
+
+- **Version.** 0.4.1, with `pyproject.toml` as the only source: `er2.__version__` and
+  `er2 --version` read the package metadata, and a test checks that CITATION.cff matches.
+- **Lazy SymPy** (user decision): a number theory program starts in 0.16 s instead of 0.40 s
+  (ARCHITECTURE §3.3).
+- **`5r` raw literals** (user decision; a new row in the §1.1 table): `5r` is a plain Python `int`.
+- **`f"{2^3=}"`** now prints `2^3=8`; before, it echoed the preparsed Python text. Checked against
+  Python's own output on 13 cases.
+- **`factorial(n)`** of an integer uses PARI's exact `n!`, so it no longer loads SymPy.
+- **CI** has a Quarto job, with Quarto and TinyTeX, that runs the notebook, HTML and PDF tests.
+  `ER2_REQUIRE_QUARTO` makes them fail there instead of being skipped.
+- **Found and fixed:** `er2 file.er2` did not put the file's directory on `sys.path`, as
+  `python file.py` does, so a program could not import an `.er2` module next to it unless it was
+  run from that directory.
+- **A `Makefile`** for the common tasks, and VS Code notes for Quarto previews.
+
+Still open: the M0 check that CI is green. `gh` is not logged in on this machine, so look at the
+Actions tab after the next push.
 
 ## M5 — 0.5: Algebra
 

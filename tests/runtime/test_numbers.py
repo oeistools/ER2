@@ -123,3 +123,15 @@ def test_operators_return_integer():
         assert type(result) is Integer
     assert a + 0.5 == 7.5 and type(a + 0.5) is float
     assert (a + True) == 8 and type(a + True) is Integer
+
+
+def test_raw_literals_are_plain_ints():
+    """``5r`` gives a Python ``int`` (§1.1); ``5`` gives an ``Integer``."""
+    from er2 import prelude
+    from er2.preparser import preparse
+
+    ns = prelude.namespace()
+    exec(preparse("a = 5r\nb = 5\nc = 5r / 2\nd = f'{2^3=}'\n"), ns)
+    assert type(ns["a"]) is int and type(ns["b"]) is Integer
+    assert ns["c"] == 2.5  # Python's true division
+    assert ns["d"] == "2^3=8"

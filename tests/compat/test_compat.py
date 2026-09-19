@@ -53,6 +53,11 @@ SNIPPETS = {
         print({k: v for k, v in zip("abc", range(3))})
         print({i % 3 for i in range(9)})
     """,
+    "self-documenting f-strings": """
+        x, d, w = 3.5, {"k": "v"}, 7
+        print(f"{x=} { x = } {x=!s} {x=!r:>8} {x=:>6} {x=:{w}}")
+        print(f"{(1, 2)=} {d['k']=} {x+1=} { {1: 2}=} {'a'=}")
+    """,
     "match statement": """
         def kind(v):
             match v:

@@ -30,16 +30,18 @@ def run_file(path, argv=()):
     start()
     with open(path, encoding="utf-8") as fh:
         source = fh.read()
-    namespace = prelude.inject(
-        {
-            "__name__": "__main__",
-            "__file__": str(path),
-            "__builtins__": __builtins__,
-        }
-    )
+    namespace = {
+        "__name__": "__main__",
+        "__file__": str(path),
+        "__builtins__": __builtins__,
+    }
     sys.argv = [str(path), *argv]
+    # Like ``python script.py``: the script's directory comes first on
+    # sys.path, so modules next to it can be imported.
+    sys.path[0:1] = [str(Path(path).resolve().parent)]
     try:
         compiled = compile(preparse(source, str(path)), str(path), "exec")
+        prelude.inject(namespace, compiled)
         exec(compiled, namespace)
     except SystemExit:
         raise

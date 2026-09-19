@@ -6,11 +6,16 @@ command, the ER2 kernel, ``%load_ext er2``) or explicitly with
 ``er2.session.start()``.
 """
 
+from importlib.metadata import PackageNotFoundError, version
+
 from er2.preparser import preparse
 from er2.printing import latex, show
 from er2.runtime.numbers import Integer, Rational
 
-__version__ = "0.0.1"
+try:
+    __version__ = version("er2")  # single source: pyproject.toml
+except PackageNotFoundError:  # running from a source tree, not installed
+    __version__ = "0+unknown"
 __all__ = ["Integer", "Rational", "latex", "preparse", "show"]
 
 

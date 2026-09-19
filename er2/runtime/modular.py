@@ -14,10 +14,10 @@ It prints as ``Mod(3, 7)`` and its LaTeX is ``3 \pmod{7}``.
 
 import math
 import operator
+import sys
 from fractions import Fraction
 
-import sympy
-
+from er2 import _lazy
 from er2.printing import latex
 from er2.runtime.numbers import Integer
 
@@ -30,11 +30,16 @@ def _backend():
 
 
 def _is_symbolic(obj):
-    return isinstance(obj, sympy.Basic) and not obj.is_Number
+    if not _lazy.sympy_loaded():
+        return False  # no SymPy object can exist yet
+    return isinstance(obj, sys.modules["sympy"].Basic) and not obj.is_Number
 
 
 def _from_sympy_number(obj):
     """Turn a SymPy integer or rational into a Python one."""
+    if not _lazy.sympy_loaded():
+        return obj
+    sympy = sys.modules["sympy"]
     if isinstance(obj, sympy.Integer):
         return int(obj)
     if isinstance(obj, sympy.Rational):

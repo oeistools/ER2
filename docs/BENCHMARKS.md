@@ -6,32 +6,39 @@ Python 3.14.6, SymPy 1.14.0, cypari2 2.2.4, x86_64.  Times are medians per call;
 
 Notes: `isprime` proves primality (PARI's APRCL); `sympy.isprime` and `ispseudoprime` run the BPSW probable-prime test, so they are compared with each other.  Number theory calls get a different argument each time, because SymPy caches results.
 
+## Startup
+
+| Benchmark | ER2 | Reference | Reference time | ER2 / reference |
+|---|---|---|---|---|
+| `er2` startup, number theory only | 162 ms | Python | 23.4 ms | ×6.92 |
+| `er2` startup, with symbols (loads SymPy) | 556 ms | Python | 23.4 ms | ×23.80 |
+
 ## Integer arithmetic (D2)
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| numeric loop, 20000 iterations (ER2 literals) | 20.6 ms | Python `int` | 1.46 ms | ×14.08 |
-| `a + b` | 286 ns | `int` `a + b` | 32.9 ns | ×8.68 |
+| numeric loop, 20000 iterations (ER2 literals) | 24.7 ms | Python `int` | 1.67 ms | ×14.77 |
+| `a + b` | 317 ns | `int` `a + b` | 47.5 ns | ×6.68 |
 
 ## Number theory
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| phi(n), n ≈ 1.2e8 | 5.11 µs | cypari2 | 2.87 µs | ×1.78 |
-| phi(n), n ≈ 1.2e8 | 5.11 µs | SymPy | 87.4 µs | ×0.06 |
-| sigma(n), n ≈ 1.2e8 | 5.23 µs | cypari2 | 2.95 µs | ×1.77 |
-| sigma(n), n ≈ 1.2e8 | 5.23 µs | SymPy | 89.6 µs | ×0.06 |
-| isprime(2^127 - 1), proven | 367 µs | cypari2 | 363 µs | ×1.01 |
-| ispseudoprime (BPSW), Mersenne primes | 19.5 µs | cypari2 | 16.7 µs | ×1.16 |
-| ispseudoprime (BPSW), Mersenne primes | 19.5 µs | SymPy | 64.1 µs | ×0.30 |
-| factor(n), n ≈ 1e18 semiprime | 208 µs | cypari2 | 196 µs | ×1.06 |
-| factor(n), n ≈ 1e18 semiprime | 208 µs | SymPy | 11.9 ms | ×0.02 |
+| phi(n), n ≈ 1.2e8 | 6.07 µs | cypari2 | 3.43 µs | ×1.77 |
+| phi(n), n ≈ 1.2e8 | 6.07 µs | SymPy | 105 µs | ×0.06 |
+| sigma(n), n ≈ 1.2e8 | 6.36 µs | cypari2 | 3.38 µs | ×1.88 |
+| sigma(n), n ≈ 1.2e8 | 6.36 µs | SymPy | 108 µs | ×0.06 |
+| isprime(2^127 - 1), proven | 420 µs | cypari2 | 428 µs | ×0.98 |
+| ispseudoprime (BPSW), Mersenne primes | 23.8 µs | cypari2 | 19.8 µs | ×1.20 |
+| ispseudoprime (BPSW), Mersenne primes | 23.8 µs | SymPy | 71.5 µs | ×0.33 |
+| factor(n), n ≈ 1e18 semiprime | 240 µs | cypari2 | 226 µs | ×1.06 |
+| factor(n), n ≈ 1e18 semiprime | 240 µs | SymPy | 13.7 ms | ×0.02 |
 
 ## Polynomial factorization
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| factor, degree 4 | 820 µs | SymPy `factor` | 697 µs | ×1.18 |
-| factor, degree 9 | 1.58 ms | SymPy `factor` | 2.07 ms | ×0.76 |
-| factor, degree 22 | 3.96 ms | SymPy `factor` | 9.39 ms | ×0.42 |
-| factor, degree 60 | 17.5 ms | SymPy `factor` | 248 ms | ×0.07 |
+| factor, degree 4 | 1.01 ms | SymPy `factor` | 867 µs | ×1.16 |
+| factor, degree 9 | 2.02 ms | SymPy `factor` | 2.68 ms | ×0.75 |
+| factor, degree 22 | 4.64 ms | SymPy `factor` | 13.5 ms | ×0.34 |
+| factor, degree 60 | 24.2 ms | SymPy `factor` | 345 ms | ×0.07 |

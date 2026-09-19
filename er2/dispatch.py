@@ -9,25 +9,46 @@ its positional arguments.
 exposes them all.
 """
 
+import sys
 from fractions import Fraction
 
-import sympy
-
-from er2.backends import pari_backend, sympy_backend
+from er2 import _lazy
+from er2.backends import pari_backend
 
 __all__ = ["FUNCTIONS", "TABLE", "implementation"]
 
 
+class _SympyBackend:
+    """A SymPy backend function, imported on first use (``er2._lazy``)."""
+
+    __slots__ = ("name",)
+
+    def __init__(self, name):
+        self.name = name
+
+    def resolve(self):
+        from er2.backends import sympy_backend
+
+        return getattr(sympy_backend, self.name)
+
+
 def symbolic(args, kwargs):
     """Whether an argument is a symbolic (non-numeric) SymPy object."""
-    return any(
-        isinstance(arg, sympy.Basic) and not arg.is_Number for arg in args
-    )
+    if not _lazy.sympy_loaded():
+        return False  # no SymPy object can exist yet
+    basic = sys.modules["sympy"].Basic
+    return any(isinstance(arg, basic) and not arg.is_Number for arg in args)
 
 
 def number(args, kwargs):
     """Whether the first argument is an exact number."""
-    return bool(args) and isinstance(args[0], (int, Fraction, sympy.Rational))
+    if not args:
+        return False
+    if isinstance(args[0], (int, Fraction)):
+        return True
+    return _lazy.sympy_loaded() and isinstance(
+        args[0], sys.modules["sympy"].Rational
+    )
 
 
 def anything(args, kwargs):
@@ -44,27 +65,34 @@ def rational_univariate(args, kwargs):
     return (
         len(args) == 1
         and not kwargs
+        and _lazy.sympy_loaded()
         and pari_backend.is_rational_univariate(args[0])
     )
 
 
+sympy_backend = _SympyBackend  # TABLE entries: sympy_backend("factor")
+
 TABLE = {
-    "expand": [(anything, sympy_backend.expand)],
+    "expand": [(anything, sympy_backend("expand"))],
     "factor": [
         (rational_univariate, pari_backend.factor_polynomial),
-        (symbolic, sympy_backend.factor),
+        (symbolic, sympy_backend("factor")),
         (number, pari_backend.factor),
     ],
-    "simplify": [(anything, sympy_backend.simplify)],
-    "collect": [(anything, sympy_backend.collect)],
-    "cancel": [(anything, sympy_backend.cancel)],
-    "diff": [(anything, sympy_backend.diff)],
-    "integrate": [(anything, sympy_backend.integrate)],
-    "limit": [(anything, sympy_backend.limit)],
-    "solve": [(anything, sympy_backend.solve)],
-    "series": [(anything, sympy_backend.series)],
-    # PARI's factorial returns a real number; SymPy's is exact.
-    "factorial": [(anything, sympy_backend.factorial)],
+    "simplify": [(anything, sympy_backend("simplify"))],
+    "collect": [(anything, sympy_backend("collect"))],
+    "cancel": [(anything, sympy_backend("cancel"))],
+    "diff": [(anything, sympy_backend("diff"))],
+    "integrate": [(anything, sympy_backend("integrate"))],
+    "limit": [(anything, sympy_backend("limit"))],
+    "solve": [(anything, sympy_backend("solve"))],
+    "series": [(anything, sympy_backend("series"))],
+    # Exact: PARI's ``n!`` for integers, SymPy for symbols (``factorial``
+    # in PARI returns a real number).
+    "factorial": [
+        (number, pari_backend.factorial),
+        (anything, sympy_backend("factorial")),
+    ],
     "dedekind_psi": [(anything, pari_backend.dedekind_psi)],
 }
 # The other PARI prelude functions; gcd and lcm of expressions use SymPy.
@@ -72,7 +100,7 @@ for _name, _function in pari_backend.PRELUDE.items():
     if _name not in TABLE:
         TABLE[_name] = [(anything, _function)]
 for _name in ("gcd", "lcm"):
-    TABLE[_name].insert(0, (symbolic, getattr(sympy_backend, _name)))
+    TABLE[_name].insert(0, (symbolic, sympy_backend(_name)))
 
 
 def implementation(name, args, kwargs=None):
@@ -80,6 +108,8 @@ def implementation(name, args, kwargs=None):
     kwargs = kwargs or {}
     for accepts, function in TABLE[name]:
         if accepts(args, kwargs):
+            if isinstance(function, _SympyBackend):
+                return function.resolve()
             return function
     kind = type(args[0]).__name__ if args else "no"
     raise TypeError(f"{name}() does not support {kind} arguments")

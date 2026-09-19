@@ -125,6 +125,41 @@ def test_dedekind_psi():
             pari_backend.dedekind_psi(bad)
 
 
+def test_jordan_totient():
+    # sumdiv(n, d, d^k * moebius(n/d)) in GP, for n = 1..12
+    j2 = [1, 3, 8, 12, 24, 24, 48, 48, 72, 72, 120, 96]
+    j3 = [1, 7, 26, 56, 124, 182, 342, 448, 702, 868, 1330, 1456]
+    assert [pari_backend.jordan_totient(n, 2) for n in range(1, 13)] == j2
+    assert [pari_backend.jordan_totient(n, 3) for n in range(1, 13)] == j3
+    assert pari_backend.jordan_totient(360, 2) == 82944
+    assert pari_backend.jordan_totient(10**12 + 39, 4) == (
+        1000000000156000000009126000000237276000002313440
+    )
+    assert [pari_backend.jordan_totient(n, 0) for n in (1, 12)] == [1, 0]
+    for n in range(1, 50):
+        phi = int(pari_backend.PARI.eulerphi(n))
+        assert pari_backend.jordan_totient(n, 1) == phi
+        assert pari_backend.jordan_totient(n, 2) == (
+            pari_backend.dedekind_psi(n) * phi
+        )
+    for n, k in ((0, 2), (-4, 2), (Rational(1, 2), 2), (12, -1), (12, x)):
+        with pytest.raises(ValueError):
+            pari_backend.jordan_totient(n, k)
+
+
+def test_radical():
+    # factorback(factorint(n)[, 1]) in GP, for n = 1..20 (OEIS A007947)
+    values = [1, 2, 3, 2, 5, 6, 7, 2, 3, 10, 11, 6, 13, 14, 15, 2, 17, 6, 19]
+    values.append(10)
+    assert [pari_backend.radical(n) for n in range(1, 21)] == values
+    assert pari_backend.radical(360) == 30
+    assert pari_backend.radical(2**100 * 3**50 * 7) == 42
+    assert isinstance(pari_backend.radical(12), Integer)
+    for bad in (0, -12, Rational(1, 2), x):
+        with pytest.raises(ValueError):
+            pari_backend.radical(bad)
+
+
 def test_predicates_return_bool_or_exponent():
     prelude = pari_backend.PRELUDE
     assert prelude["isprime"](Integer(2) ** 521 - 1) is True

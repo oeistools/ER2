@@ -293,6 +293,8 @@ Main mappings where the names differ:
 | `valuation`    | `valuation`       | |
 | `znorder`, `znprimroot`, `nextprime`, `divisors`, `gcd`, `lcm` | same | |
 | `dedekind_psi(n)` | —              | Dedekind ψ, computed from PARI's `factor`; there is no bare `psi` (D5) |
+| `radical(n)`  | —                 | product of the distinct primes of `n`; GP: `factorback(factorint(n)[, 1])` |
+| `jordan_totient(n, k)` | —         | Jordan's totient J_k, from PARI's `factor`; GP: `sumdiv(n, d, d^k*moebius(n/d))`. `J_2(n)/phi(n)` = `dedekind_psi(n)` |
 | `pari.digamma(x)` | `psi(x)`       | PARI's `psi` is the digamma function (D5) |
 
 ### 3.6 Printing and LaTeX (`er2/printing.py`)
@@ -519,6 +521,32 @@ Each must be resolved (and recorded here) before or during 0.1.
   Only the curated `prelude` rows (31) are top-level names. Every `prelude` and `namespace` row
   (977) is reachable as `pari.<er2_name>`, with ER2 conversions applied. Exposing ~1,000
   top-level names would shadow user variables and library imports, which conflicts with §1.1.
+
+The following decisions are open, for M5 (PLAN.md). Each has a proposal; none is taken yet.
+
+- **D12 — Matrix type. Open.** Proposal: `Matrix` is SymPy's `Matrix` (no ER2 class), like SymPy
+  expressions today. `det`, `rank`, `kernel`, `hermite_form`, `smith_form`, … are `dispatch`
+  functions: integer or rational entries go to PARI and come back as SymPy matrices; symbolic
+  entries stay in SymPy. Pro: one type, works with every SymPy function and library. Con: building
+  a `Matrix` loads SymPy, even for integer-only linear algebra. Alternative: an ER2 `Matrix`
+  class backed by PARI's `t_MAT` that converts to SymPy on demand (faster, no SymPy for integer
+  work, but a second matrix type users must convert between).
+- **D13 — Finite-field syntax. Open.** Proposal (Sage model): `F = GF(9)` or `GF(3, 2)`, with
+  `F.gen()` (printed `a`) and `F(5)`; elements are an ER2 `FiniteFieldElement` backed by PARI's
+  `t_FFELT` that prints as a polynomial in the generator (`a^2 + 1`). `GF(p)` is a field of
+  degree 1 whose elements interoperate with `Mod(n, p)`. Open points: the generator name
+  (`a`, or `GF(9, "t")`), and whether `GF(q)` builds its defining polynomial with `ffinit`
+  (PARI's choice) or a Conway polynomial (Sage's default, needs a table).
+- **D14 — Number-field API. Open.** Proposal: a `NumberField(x^2 + 5)` class that runs `nfinit`
+  at once and `bnfinit` lazily on the first class-group or unit query, then caches it. Methods:
+  `degree`, `discriminant`, `integral_basis`, `class_number`, `class_group`, `units`,
+  `factor(p)` (prime ideals). Elements are `Mod(poly, modulus)` (`t_POLMOD`). `bnfinit` can take
+  minutes, so it follows D7 (Ctrl-C). Its results depend on GRH unless certified with
+  `bnfcertify`, which is a `certify=True` option. Alternative: plain functions
+  (`class_number(x^2 + 5)`), simpler but recomputing `bnfinit` on every call.
+- **D15 — Scope of 0.5. Open.** Proposal: all of M5 in 0.5. If number fields (D14) take longer,
+  release linear algebra, finite fields, resultants and Gröbner bases as 0.5, and number fields
+  as 0.5.1.
 
 ## 6.1 Code style: PEP 8
 

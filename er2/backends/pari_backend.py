@@ -32,7 +32,9 @@ __all__ = [
     "factor_polynomial",
     "from_pari",
     "is_rational_univariate",
+    "jordan_totient",
     "pari",
+    "radical",
     "set_precision",
     "set_stack",
     "to_pari",
@@ -405,6 +407,36 @@ def dedekind_psi(n):
     for p in PARI.factor(n)[0]:
         result = result / p * (p + 1)
     return from_pari(result)
+
+
+def jordan_totient(n, k):
+    """Jordan's totient ``J_k(n) = n^k * prod(1 - 1/p^k)`` over ``p | n``.
+
+    ``J_k(n)`` counts the ``k``-tuples in ``[1, n]`` whose gcd with ``n``
+    is 1.  ``J_1`` is ``phi``, and ``J_2(n) / phi(n)`` is
+    ``dedekind_psi(n)``.
+    """
+    n, k = to_pari(n), to_pari(k)
+    if n.type() != "t_INT" or n <= 0:
+        raise ValueError("jordan_totient() needs a positive integer n")
+    if k.type() != "t_INT" or k < 0:
+        raise ValueError("jordan_totient() needs a nonnegative integer k")
+    result = n**k
+    for p in PARI.factor(n)[0]:
+        power = p**k
+        result = result / power * (power - 1)
+    return from_pari(result)
+
+
+def radical(n):
+    """Return ``rad(n)``, the product of the distinct primes of ``n``.
+
+    GP: ``factorback(factorint(n)[, 1])``.
+    """
+    n = to_pari(n)
+    if n.type() != "t_INT" or n <= 0:
+        raise ValueError("radical() needs a positive integer")
+    return from_pari(PARI.factorback(PARI.factor(n)[0]))
 
 
 # Prelude predicates that return a Python bool.  ``ispower`` and

@@ -2,7 +2,7 @@
 
 This plan orders the work into milestones. Each milestone has concrete tasks and acceptance
 criteria. The design lives in [ARCHITECTURE.md](ARCHITECTURE.md); the decisions it references
-(D1–D10) are in ARCHITECTURE.md §6.
+(D1–D15) are in ARCHITECTURE.md §6.
 
 There are no calendar dates. A milestone is done when its acceptance criteria pass, and not
 before.
@@ -30,7 +30,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M2 (0.2)  | CAS on SymPy                                  | ✅ done     |
 | M3 (0.3)  | Number theory on PARI →**MVP**         | ✅ done     |
 | M4 (0.4)  | Backend selection, PARI types, benchmarks     | ✅ done     |
-| M5 (0.5)  | Algebra                                       | not started |
+| M5 (0.5)  | Algebra                                       | planned (D12–D15 open) |
 | M6 (0.6)  | Series                                        | not started |
 | M7 (1.0)  | Stable language and release                   | not started |
 | — (2.0)  | Deep CPython integration                      | long term   |
@@ -300,8 +300,61 @@ put `oeis` in the prelude.
 
 ## M5 — 0.5: Algebra
 
-Matrices, finite fields, resultants, Gröbner bases and algebraic numbers. Choose the backend per
-feature: PARI for number fields and finite fields, SymPy for Gröbner bases.
+Matrices, finite fields, polynomials over them, resultants, Gröbner bases and algebraic numbers.
+The backend is chosen per feature in `er2/dispatch.py`: PARI for exact linear algebra over Z and
+Q, finite fields and number fields; SymPy for symbolic entries and Gröbner bases (PARI has none).
+
+Starting point: every PARI function M5 needs (`matdet`, `matker`, `mathnf`, `matsnf`, `charpoly`,
+`ffgen`, `ffinit`, `fforder`, `factormod`, `polresultant`, `poldisc`, `nfinit`, `bnfinit`,
+`idealfactor`, …) is already reachable as `pari.<name>`, and `to_pari`/`from_pari` convert
+matrices. What is missing is ER2 types, backend choice, and conversions: `from_pari` does not
+handle `t_FFELT`, and it turns `nf`/`bnf` structures into plain lists.
+
+**Tasks:**
+
+1. Settle **D12** (matrix type), **D13** (finite-field syntax), **D14** (number-field API) and
+   **D15** (scope of 0.5), ARCHITECTURE §6. Tasks 2–7 depend on them.
+2. **Linear algebra.** `det`, `inverse`, `rank`, `kernel` (null space), `charpoly`, `minpoly`,
+   `echelon_form`, `hermite_form`, `smith_form`, `solve` for linear systems. Matrices with integer
+   or rational entries go to PARI; symbolic entries go to SymPy. Both give the same results.
+3. **Finite fields.** `GF(p)` and `GF(p^k)` (syntax per D13): elements with `+ - * / ^`, `==`,
+   `order`, `minpoly`, `charpoly`, `trace`, `norm`, `sqrt`, `log`, and a primitive element.
+   Computed by PARI (`t_FFELT`); `from_pari` returns the ER2 element type. `Mod` stays the type of
+   `Z/nZ` residues; `GF(p)(a)` and `Mod(a, p)` interoperate.
+4. **Polynomials over finite fields.** `factor(f, modulus=p)` and `factor(f, domain=GF(q))` (PARI
+   `factormod`), `isirreducible`, `gcd`, and `ffinit` as a way to build extensions.
+5. **Resultants and discriminants.** `resultant(f, g, x)`, `discriminant(f, x)`: PARI for
+   polynomials over Q, SymPy for symbolic coefficients.
+6. **Gröbner bases.** `groebner(F, *gens, order="lex")` through SymPy, returning SymPy's
+   `GroebnerBasis` printed with ER2's printer; `reduce` of a polynomial modulo a basis.
+7. **Number fields** (API per D14). Build from an irreducible polynomial over Q: degree,
+   discriminant, integral basis, class number and class group, fundamental units, ideal
+   factorization of a rational prime, elements as `Mod(poly, x^2 + 5)` (`t_POLMOD`, from M4).
+   `bnfinit` is computed once per field and cached; heavy calls follow the D7 policy (Ctrl-C).
+8. **Printing and LaTeX** (hard requirement, ARCHITECTURE §3.6): every new type has `latex()`,
+   `_repr_latex_` and a golden LaTeX test, with no SymPy import for PARI-only types.
+9. **Tables and docs.** Update `er2/data/pari_functions.csv` for the rows that gain an ER2 name
+   (`matdet` → `det`, `polresultant` → `resultant`, …) and regenerate `docs/PARI_FUNCTIONS.md`.
+   Add an algebra section to the README and `examples/demo.qmd`.
+10. **Benchmarks.** Add determinant, kernel, HNF/SNF and `factor` over GF(p) to
+    `benchmarks/run.py` (ER2 vs raw cypari2 vs SymPy) and regenerate `docs/BENCHMARKS.md`.
+
+**Tests.** Expected values from cypari2 and SymPy, hard-coded. The PARI and SymPy routes of task 2
+agree on random integer matrices (like the 248-polynomial check for `factor` in M4). Finite-field
+arithmetic is checked against PARI on all elements of small fields (GF(7), GF(9), GF(2^5)). No
+class-group computation above degree 4 or discriminant 10^6 in the suite (D7).
+
+**Acceptance.** A new golden program `tests/examples/algebra.er2`, and `examples/algebra.qmd`, run
+in the CLI, Jupyter (both routes) and Quarto, and show:
+
+- `det`, `kernel` and `smith_form` of an integer matrix, and `det` of a symbolic matrix;
+- arithmetic in GF(9) and `factor(x^8 - x, modulus=2)`;
+- `resultant(x^2 + 1, x^3 - 2, x) = 5` and the discriminant of `x^3 + x + 1` (= -31);
+- a Gröbner basis of `[x^2 + y^2 - 1, x - y]` in lex order;
+- the class number of Q(√-5) (= 2) and the factorization of 2 and 3 in it.
+
+`tests/compat/` stays green, and `import er2` still does not load SymPy for number-only programs
+(`tests/test_lazy_sympy.py`).
 
 ## M6 — 0.6: Series
 
@@ -338,6 +391,10 @@ Revisit this only if the preparser shows real limits.
 | D7  | expensive factorizations               | M3        | ✅ resolved: full + Ctrl-C + `limit=`              |
 | D8  | `Omega` → `bigomega`              | M3        | ✅ resolved: `bigomega`                            |
 | D10 | exposure of PARI functions             | M3        | ✅ resolved: curated prelude plus `pari.`          |
+| D12 | matrix type                            | M5        | open (proposal: SymPy `Matrix`, backend in `dispatch`) |
+| D13 | finite-field syntax                    | M5        | open (proposal: `GF(9)`, generator name `a`)       |
+| D14 | number-field API                       | M5        | open (proposal: `NumberField` class, cached `bnf`) |
+| D15 | scope of 0.5                           | M5        | open (proposal: all of M5; number fields may slip to 0.5.1) |
 
 ## Risks
 

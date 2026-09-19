@@ -94,6 +94,8 @@ TABLE = {
         (anything, sympy_backend("factorial")),
     ],
     "dedekind_psi": [(anything, pari_backend.dedekind_psi)],
+    "jordan_totient": [(anything, pari_backend.jordan_totient)],
+    "radical": [(anything, pari_backend.radical)],
 }
 # The other PARI prelude functions; gcd and lcm of expressions use SymPy.
 for _name, _function in pari_backend.PRELUDE.items():
@@ -191,6 +193,23 @@ def dedekind_psi(n):
     return _call("dedekind_psi", n)
 
 
+def jordan_totient(n, k):
+    """Jordan's totient ``J_k(n)``: ``n^k * prod(1 - 1/p^k)`` over ``p | n``.
+
+    ``jordan_totient(n, 1)`` is ``phi(n)``.  GP has no built-in; this is
+    ``sumdiv(n, d, d^k * moebius(n/d))``.
+    """
+    return _call("jordan_totient", n, k)
+
+
+def radical(n):
+    """Return ``rad(n)``, the product of the distinct primes of ``n``.
+
+    GP has no built-in; this is ``factorback(factorint(n)[, 1])``.
+    """
+    return _call("radical", n)
+
+
 def _public(name):
     """Return the dispatching public function for a PARI prelude row."""
     source = pari_backend.PRELUDE[name]
@@ -218,6 +237,8 @@ FUNCTIONS = {
         series,
         factorial,
         dedekind_psi,
+        jordan_totient,
+        radical,
     )
 }
 for _name in TABLE:

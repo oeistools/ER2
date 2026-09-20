@@ -83,6 +83,24 @@ FUNCTION_SAMPLES = {
         lambda ns: ns["series"](ns["sin"](x), x, 0, 4),
         r"x - \frac{x^{3}}{6} + O\left(x^{4}\right)",
     ),
+    # Power series operations PARI has and SymPy does not (M6).
+    "series_reverse": (
+        lambda ns: ns["series_reverse"](
+            ns["series"](ns["exp"](x) - 1, x, 0, 4)
+        ),
+        r"x - \frac{x^{2}}{2} + \frac{x^{3}}{3} + O\left(x^{4}\right)",
+    ),
+    "series_laplace": (
+        lambda ns: ns["series_laplace"](ns["series"](ns["exp"](x), x, 0, 4)),
+        r"1 + x + x^{2} + x^{3} + O\left(x^{4}\right)",
+    ),
+    "hadamard_product": (
+        lambda ns: ns["hadamard_product"](
+            ns["series"](1 / (1 - x), x, 0, 4),
+            ns["series"](1 / (1 - x), x, 0, 4),
+        ),
+        r"1 + x + x^{2} + x^{3} + O\left(x^{4}\right)",
+    ),
     # Linear algebra (M5): M = [2, 1; 1, 3] (regular), C = [1, 2; 2, 4].
     "charpoly": (lambda ns: ns["charpoly"](_m(ns)), "x^{2} - 5 x + 5"),
     "det": (lambda ns: ns["det"](_m(ns)), "5"),

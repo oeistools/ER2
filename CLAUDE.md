@@ -60,7 +60,9 @@ In practice:
 - **Same answer from both backends**: when PARI and SymPy can both do a job, the PARI route must
   return what SymPy returns (M4 `factor`, M5 linear algebra and `factor(f, modulus=p)`), and a
   test compares them on random input. Where a convention had to be chosen, ARCHITECTURE §3.4
-  records it.
+  records it. **One deliberate exception, D21**: `expand` of a *quotient* of power series, where
+  SymPy's `expand` does not answer at all and PARI's result matches `sympy.series` instead. An
+  exception needs the user's decision and a test pinning the premise, never a silent divergence.
 - **No PARI object outlives the call that made it** (M4): ER2 types store plain Python data, as
   `FiniteFieldElement` does with its coefficients.
 - **LaTeX is a hard requirement** (ARCHITECTURE §3.6): every new mathematical type must support `latex()` and define `_repr_latex_` by calling it, and must have a golden LaTeX test. Never use PARI's `Strtex`.

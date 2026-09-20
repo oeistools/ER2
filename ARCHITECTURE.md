@@ -468,6 +468,8 @@ the same, symbolic coefficients         → SymPy resultant, discriminant
 groebner(F, *gens), reduce(f, G)        → SymPy groebner, reduced (PARI has none)
 NumberField(f): nf, bnf, ideals        → PARI  nfinit, bnfinit, idealprimedec
 echelon_form(M)                         → SymPy rref
+expand(s * t), s, t truncated series    → PARI  t_SER arithmetic (M6)
+expand(anything else)                   → SymPy expand
 minpoly(algebraic number)               → SymPy minimal_polynomial
 ```
 
@@ -529,6 +531,18 @@ minpoly(algebraic number)               → SymPy minimal_polynomial
   basis, so `reduce(f, G) == 0` is membership of the ideal. **`f in G` is not**: SymPy's
   `GroebnerBasis` defines `__iter__` and no `__contains__`, so Python's `in` asks whether `f` is
   one of the basis polynomials. `G.contains(f)` is SymPy's own ideal test.
+- **Power series (M6, D18, D21).** A power series is a SymPy expression with an `O()` term, not
+  an ER2 type. SymPy leaves `s * t` *unevaluated*, so the operation a user actually reaches for
+  is `expand(s * t)` — and `sympy.expand` on series is very slow: 11 ms for two six-term series
+  and 612 ms at eighty terms, against 3.4 ms and 46 ms through PARI, whose `t_SER` arithmetic is
+  eager and truncates exactly as SymPy does, mixed precisions included. Only `Mul` and `Pow` are
+  intercepted; SymPy evaluates `Add` eagerly, so `s + t` is already a series. The series must be
+  univariate and around 0, which is what `t_SER` can represent. `expand_series` walks the
+  expression tree rather than converting in one call, because `to_pari` cannot convert an
+  unevaluated `Mul`, and falls back to SymPy if any leaf will not convert — the answer must never
+  depend on which backend ran. **D21 is the one exception to that rule**: on a quotient, SymPy's
+  `expand` gives nested fractions rather than a series, and ER2 returns the series.
+
 - **Number fields (M5, D14).** `NumberField(x^2 + 5)` is PARI throughout. Its elements are
   `Mod` objects with a polynomial modulus (`t_POLMOD`, from M4), so arithmetic already works and
   no element type was needed. The defining polynomial must be **monic over Z**: PARI silently
@@ -880,6 +894,46 @@ The following decisions were taken for M5 (PLAN.md) with the user on 2026-09-19.
   `import` of that shadows the prelude as usual). SymPy's `G.reduce(f)` still gives the quotients
   alongside the remainder. Rejected: SymPy's `([quotients], remainder)` shape, which makes the
   common case `reduce(f, G)[1]`, and `normal_form`, which departs from the plan's name.
+
+- **D18 — How a power series is represented. ✅ Resolved (2026-09-20): a SymPy expression with
+  an `O()` term. No new type.** `series(exp(x), x, 0, 5)` already returns
+  `1 + x + x^2/2 + x^3/6 + x^4/24 + O(x^5)`, which prints in ER2 notation, satisfies §3.6 through
+  SymPy's own LaTeX, and converts to PARI's `t_SER` and back (`_series_to_pari`, `_series`). A
+  `PowerSeries` class would add a type to §1.4's budget and buy nothing that is missing. What is
+  missing is a few functions — `coefficient`, `series_reverse`, `hadamard`, `laplace` — and those
+  are names, not a type. Dispatch may still route the *arithmetic* to PARI (M6 task 2); that is
+  invisible to the user, which is the point. Rejected: a `PowerSeries` type, and a Laurent or
+  p-adic series type, which nothing in M6 needs.
+- **D19 — How a Dirichlet series is represented. ✅ Resolved (2026-09-20): a `DirichletSeries`
+  type.** The opposite answer to D18, for a reason worth stating. PARI passes a Dirichlet series
+  as a bare vector of coefficients, and a Python list cannot carry a `latex()` method, which
+  §3.6 makes a hard requirement for every mathematical type. It also cannot tell a reader what
+  it is: `[1, 1, 1, 1]` is a list, `sum n^-s` is a Dirichlet series. And its indexing is wrong —
+  `a[5]` would be a_6, where the mathematics indexes from 1. A type fixes all three, and gives
+  `*` and `/` (PARI's `dirmul`, `dirdiv`) their meaning. It stores plain Python coefficients, so
+  no PARI object outlives the call (M4), as `FiniteFieldElement` and `NumberField` do.
+  **D18 and D19 differ because the question is not "type or no type" but "does a type carry
+  something the existing object cannot".** A SymPy series already carries everything; a list
+  carries nothing.
+- **D20 — Scope of M6. ✅ Resolved (2026-09-20): power series, generating functions, Dirichlet
+  series and Euler products; no L-functions.** PARI's `lfun` family (L-functions of Dirichlet
+  characters, elliptic curves and number fields) is a milestone's worth of API on its own, and
+  nothing else in M6 depends on it. Modular forms and p-adic series are out for the same reason.
+  Generating functions are in, and are the task that joins `er2.oeis` (0.4.2) to the series
+  machinery, which is what makes M6 worth a user's attention.
+
+- **D21 — `expand` on a quotient of power series. ✅ Resolved (2026-09-20): PARI divides, and
+  ER2's `expand` is therefore stronger than SymPy's.** The single deliberate exception to "the
+  PARI route must return what SymPy returns". The rule exists so that the backend choice is
+  invisible to the user; here SymPy is not offering a competing answer but declining to answer.
+  `sympy.expand(s/t)` leaves a sum of nested fractions
+  (`1/(1 + x + x^2 + …) + x/(1 + x + …) + …`), which is not a series and is of no use. PARI gives
+  `1 - x^2/2 - x^3/3 - x^4/8 + O(x^5)`, which is exactly
+  `sympy.series(exp(x)*(1 - x), x, 0, 5)` — so ER2 agrees with SymPy's *own* `series`, just not
+  with its `expand`. Multiplication, powers and mixed precisions agree with `sympy.expand`
+  exactly, and are tested on random input. `tests/test_series.py` pins the premise: if a future
+  SymPy learns to expand such a quotient, the test fails and this decision is revisited rather
+  than silently kept.
 
 ## 6.1 Code style: PEP 8
 

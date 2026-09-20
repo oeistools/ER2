@@ -33,7 +33,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M5 (0.5)  | Algebra                                       | ✅ done     |
 | 0.5.1     | Scientific articles (§1.3)                     | ✅ done     |
 | 0.5.2     | Learnability and speed (§1.4, §1.5)            | ✅ done     |
-| M6 (0.6)  | Series                                        | not started |
+| M6 (0.6)  | Series                                        | in progress |
 | M7 (0.7)  | Language specification                        | not started |
 | M8 (1.0)  | Stable language and release                   | not started |
 | — (2.0)  | Deep CPython integration                      | long term   |
@@ -504,6 +504,54 @@ boundary dispatch exists to keep, so it needs a design decision rather than a pa
 Power series, generating functions, Dirichlet series and Euler products. (The OEIS module came
 early, in 0.4.2.)
 
+**What is already there, and what this milestone is therefore about.** Every PARI capability M6
+needs already works through `pari.<name>` — checked on 2026-09-20: `Ser`, `serreverse`,
+`serconvol`, `serlaplace`, `dirmul`, `dirdiv`, `direuler`, `prodeuler`, `prodeulerrat`, `sumalt`,
+and `t_SER` converts in both directions. `series(exp(x), x, 0, 5)` has worked since M2.
+So M6 adds almost no capability. It is an **API design milestone**: turning a PARI namespace a
+user must already know PARI to navigate into a curated one they do not (§1.4). Where that
+distinction is not worth a name, M6 should add nothing and say so.
+
+**Decisions taken before starting (user, 2026-09-20):** D18, D19, D20 below.
+
+**Tasks:**
+
+1. **Power series stay SymPy expressions (D18).** No new type: `series()` already returns
+   `1 + x + x^2/2 + O(x^3)`, which prints in ER2 notation, has `latex()` and converts to PARI's
+   `t_SER` and back. Add only what is missing as plain functions, each of which must earn its
+   name: `coefficient(s, n)`, `series_reverse(s)` (PARI `serreverse`), `series_compose`,
+   `hadamard(s, t)` (PARI `serconvol`), `laplace(s)`.
+2. **Send series arithmetic to PARI where it pays.** Measure first (§2.1): SymPy's `O()`
+   arithmetic against PARI's `t_SER` at several precisions, and add a dispatch entry only if the
+   crossover is real, with the size threshold the measurement gives. If PARI does not win after
+   conversion, record that and add nothing — an unused fast path is worse than none.
+3. **A `DirichletSeries` type (D19).** PARI passes these as a bare vector of coefficients, which
+   cannot satisfy the `latex()` hard requirement (§3.6) and tells a reader nothing. The type
+   carries `a_1 … a_n`, supports `*` and `/` (PARI `dirmul`, `dirdiv`), `[n]` indexed from 1 as
+   the mathematics is, `latex()`, and `_repr_latex_`. No PARI object outlives the call (M4).
+4. **Euler products.** Formal: `DirichletSeries.euler(f, n)` over PARI's `direuler`, whose
+   callback takes `(p, X)` — the prime and the local variable — which is worth documenting
+   because it is the one place PARI's calling convention shows through. Numeric:
+   `euler_product(f, a, b)` over `prodeuler`, and `prodeulerrat` for a rational function to
+   infinity.
+5. **Generating functions, tied to `er2.oeis` (0.4.2).** `generating_function(seq, n)` for an
+   `OEISSequence` or a plain list, returning the truncated power series; the ordinary and the
+   exponential kind. This is the task that makes M6 worth doing for a user: it joins the
+   sequence database to the series machinery.
+6. **Dirichlet series a user actually wants by name.** `zeta_series(n)`, `moebius_series(n)`,
+   and whatever else falls out of task 3 for free. Keep this list short on purpose.
+7. **Golden LaTeX samples** for `DirichletSeries` in `TYPE_SAMPLES` and for every new public
+   function in `tests/test_latex_coverage.py` — both tests fail otherwise.
+
+**Acceptance:** a Quarto document, `examples/series.qmd`, run by the `er2` kernel, that derives
+the Fibonacci generating function from `oeis.sequence("A000045")`, verifies
+`zeta(s) * (1/zeta(s)) = 1` as Dirichlet series, builds the Euler product for `1/zeta` from
+`1 - p^-s`, and shows a numeric Euler product converging. Plus golden tests
+(`tests/examples/series.er2`) and the LaTeX samples.
+
+**Deliberately out of scope (D20):** L-functions (PARI's `lfun` family), modular forms, and
+p-adic series. `lfun` is large enough to deserve its own milestone, and nothing in M6 needs it.
+
 ## M7 — 0.7: Language specification
 
 The point of this milestone is the transition from *inventing* syntax to *specifying* it.
@@ -566,6 +614,10 @@ Revisit this only if the preparser shows real limits.
 | D15 | scope of 0.5                           | M5        | ✅ resolved: all of M5; number fields may slip to 0.5.1 |
 | D16 | sign of `resultant`                  | M5        | ✅ resolved: the standard definition (PARI), not SymPy's |
 | D17 | reduction modulo a basis             | M5        | ✅ resolved: `reduce(f, G)` returns the remainder |
+| D18 | representation of a power series     | M6        | ✅ resolved: a SymPy expression with `O()`, no new type |
+| D19 | representation of a Dirichlet series | M6        | ✅ resolved: a `DirichletSeries` type, not a bare list |
+| D20 | scope of M6                          | M6        | ✅ resolved: series, generating functions, Dirichlet and Euler; no L-functions |
+| D21 | `expand` of a quotient of series     | M6        | ✅ resolved: PARI divides; ER2's `expand` beats SymPy's here |
 
 ## Risks
 

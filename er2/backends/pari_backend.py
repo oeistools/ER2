@@ -33,6 +33,7 @@ __all__ = [
     "dedekind_psi",
     "det",
     "discriminant",
+    "expand_series",
     "factor",
     "factor_polynomial",
     "factor_polynomial_mod",
@@ -45,6 +46,7 @@ __all__ = [
     "ff_polynomial",
     "from_pari",
     "gcd_mod",
+    "hadamard_product",
     "hermite_form",
     "isirreducible",
     "inverse",
@@ -64,6 +66,8 @@ __all__ = [
     "rank",
     "resultant",
     "set_precision",
+    "series_laplace",
+    "series_reverse",
     "set_stack",
     "smith_form",
     "solve_linear",
@@ -371,10 +375,23 @@ def _polynomial(obj):
 
 
 def _series(obj):
-    """Convert a ``t_SER`` to a SymPy series ``p + O(x^n)``."""
+    """Convert a ``t_SER`` to a SymPy series ``p + O(x^n)``.
+
+    ``expand`` only when there is something to expand.  ``_polynomial``
+    already returns an expanded ``Add`` when the coefficients are
+    numbers, and ``expand`` on an expanded expression still costs about
+    250 us — two thirds of this conversion (ARCHITECTURE §2.1).  Two
+    cases do need it, and both are checked rather than assumed:
+    coefficients that are polynomials in another variable, where PARI
+    writes ``(y + 1)*x^2``; and a negative valuation, where ``truncate``
+    gives a rational function, so ``1/x + 1`` arrives as ``(x + 1)/x``.
+    """
     var = PARI.variable(obj)
     precision = int(PARI.serprec(obj, var))
-    body = sympy.expand(_sympify(from_pari(PARI.truncate(obj))))
+    truncated = PARI.truncate(obj)
+    body = _sympify(from_pari(truncated))
+    if truncated.type() != "t_POL" or len(body.free_symbols) != 1:
+        body = sympy.expand(body)
     return body + sympy.O(sympy.Symbol(str(var)) ** precision)
 
 
@@ -508,6 +525,47 @@ def is_rational_univariate(expr):
     except sympy.PolynomialError:
         return False
     return poly.gens == (var,) and poly.domain in (sympy.ZZ, sympy.QQ)
+
+
+def expand_series(expr):
+    """Expand arithmetic on truncated power series with PARI.
+
+    SymPy leaves ``s * t`` unevaluated, so a user writes ``expand(s * t)``
+    — and SymPy's ``expand`` on series is very slow: 11 ms for two
+    six-term series, 612 ms at eighty terms, against 3.9 ms and 51 ms
+    here (ARCHITECTURE §2.1).  PARI's ``t_SER`` arithmetic is eager and
+    truncates the way SymPy does, including when the two operands have
+    different precisions.
+
+    The tree is walked rather than converted in one call because
+    ``to_pari`` cannot convert an unevaluated ``Mul``.
+    """
+    try:
+        return from_pari(_series_tree(expr))
+    except (TypeError, PariError):
+        # The predicate cannot prove that every leaf converts, so this
+        # is a safety net rather than a path: the answer a user gets
+        # must never depend on which backend ran (CLAUDE.md).
+        from er2.backends import sympy_backend
+
+        return sympy_backend.expand(expr)
+
+
+def _series_tree(node):
+    """Evaluate a SymPy ``Add``/``Mul``/``Pow`` tree with PARI operands."""
+    if node.is_Add:
+        total = PARI(0)
+        for term in node.args:
+            total = total + _series_tree(term)
+        return total
+    if node.is_Mul:
+        product = PARI(1)
+        for factor in node.args:
+            product = product * _series_tree(factor)
+        return product
+    if node.is_Pow and node.args[1].is_Integer:
+        return _series_tree(node.args[0]) ** int(node.args[1])
+    return to_pari(node)
 
 
 def factor_polynomial(expr):
@@ -1034,3 +1092,24 @@ class PariNamespace:
 
 
 pari = PariNamespace(_ALL_ROWS)
+
+
+# Power series operations SymPy does not have (M6 task 1).  Each is here
+# because SymPy offers no equivalent, not merely a slower one: §1.4 rules
+# out a second way to write what Python can already write, which is why
+# there is no ``coefficient`` — ``s.coeff(x, n)`` is SymPy's and works.
+
+
+def series_reverse(s):
+    """Return the compositional inverse of a power series."""
+    return from_pari(PARI.serreverse(to_pari(s)))
+
+
+def hadamard_product(s, t):
+    """Return the coefficientwise product of two power series."""
+    return from_pari(PARI.serconvol(to_pari(s), to_pari(t)))
+
+
+def series_laplace(s):
+    """Turn an exponential generating function into an ordinary one."""
+    return from_pari(PARI.serlaplace(to_pari(s)))

@@ -59,6 +59,32 @@ def test_series_with_negative_valuation():
     assert from_pari(PARI("1/x + 1 + O(x^2)")) == 1 / x + 1 + sympy.O(x**2)
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        "1 + x + x^2 + O(x^3)",  # the ordinary case: no expand needed
+        "1/x + 1 + O(x^2)",  # negative valuation: truncate gives a t_RFRAC
+        "1/x^3 + O(x)",
+        "(y + 1)*x^2 + y*x + 1 + O(x^3)",  # coefficients in another variable
+        "O(x^4)",  # no terms at all
+        "1 + O(x^2)",  # truncate gives a t_INT, not a t_POL
+        "1/2 + x/3 + O(x^2)",
+    ],
+)
+def test_a_series_comes_back_expanded(text):
+    """``_series`` skips ``expand`` when it would do nothing (§2.1).
+
+    Skipping it in a case that needed it is invisible in the value but
+    wrong in the form, so every shape that reaches ``truncate`` is
+    checked against expanding unconditionally, which is what it did
+    before.
+    """
+    result = from_pari(PARI(text))
+    body, order = result.removeO(), result.getO()
+    assert body == sympy.expand(body)
+    assert from_pari(PARI(text)) == sympy.expand(body) + (order or 0)
+
+
 def test_series_away_from_zero_is_not_converted():
     s = sympy.series(sympy.exp(x), x, 1, 3)
     with pytest.raises(TypeError, match="around 0"):

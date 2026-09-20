@@ -88,6 +88,51 @@ def matrix_domain(matrix, names):
     return domain is not None and any(getattr(domain, n) for n in names)
 
 
+def series_product(args, kwargs):
+    """Whether ``expand`` was given arithmetic on truncated series.
+
+    Only ``Mul`` and ``Pow`` are worth intercepting: SymPy evaluates
+    ``Add`` eagerly, so ``s + t`` is already a series by the time it
+    arrives, while ``s * t`` is still an unevaluated product (M6, §2.1).
+    The series must be univariate and around 0, which is what PARI's
+    ``t_SER`` can represent.
+    """
+    if len(args) != 1 or kwargs or not _lazy.sympy_loaded():
+        return False
+    sympy = sys.modules["sympy"]
+    expr = args[0]
+    if not isinstance(expr, sympy.Expr) or not (expr.is_Mul or expr.is_Pow):
+        return False
+    orders = expr.atoms(sympy.Order)
+    if not orders or len(expr.free_symbols) != 1:
+        return False
+    variables = {v for order in orders for v in order.variables}
+    points = {p for order in orders for p in order.point}
+    return len(variables) == 1 and points == {sympy.S.Zero}
+
+
+def truncated_series(args, kwargs):
+    """Whether every argument is a univariate series around 0.
+
+    These operations exist only in PARI (M6 task 1), so the predicate
+    guards the conversion rather than choosing between backends.
+    """
+    if not args or kwargs or not _lazy.sympy_loaded():
+        return False
+    sympy = sys.modules["sympy"]
+    for expr in args:
+        if not isinstance(expr, sympy.Expr):
+            return False
+        order = expr.getO()
+        if order is None or len(order.variables) != 1:
+            return False
+        if any(point != 0 for point in order.point):
+            return False
+        if len(expr.free_symbols) != 1:
+            return False
+    return True
+
+
 def _matrix_of(args, entry_test=None, domains=()):
     """Whether ``args[0]`` is a SymPy matrix whose entries pass the test.
 
@@ -195,7 +240,10 @@ def polynomial_mod(args, kwargs):
 sympy_backend = _SympyBackend  # TABLE entries: sympy_backend("factor")
 
 TABLE = {
-    "expand": [(anything, sympy_backend("expand"))],
+    "expand": [
+        (series_product, pari_backend.expand_series),
+        (anything, sympy_backend("expand")),
+    ],
     "factor": [
         (modular_polynomials, pari_backend.factor_polynomial_mod),
         (rational_univariate, pari_backend.factor_polynomial),
@@ -270,6 +318,15 @@ TABLE = {
     "groebner": [(anything, sympy_backend("groebner"))],
     "reduce": [(anything, sympy_backend("reduce_polynomial"))],
     "echelon_form": [(matrix, sympy_backend("echelon_form"))],
+    "hadamard_product": [
+        (truncated_series, pari_backend.hadamard_product),
+    ],
+    "series_reverse": [
+        (truncated_series, pari_backend.series_reverse),
+    ],
+    "series_laplace": [
+        (truncated_series, pari_backend.series_laplace),
+    ],
     "hermite_form": [(integer_matrix, pari_backend.hermite_form)],
     "smith_form": [(integer_matrix, pari_backend.smith_form)],
 }
@@ -553,6 +610,34 @@ def echelon_form(matrix):
     return _call("echelon_form", matrix)
 
 
+def series_reverse(s):
+    """Return the compositional inverse of the power series ``s``.
+
+    The series ``t`` with ``s(t(x)) = x``.  ``s`` must have no constant
+    term and a non-zero linear one.  SymPy has no equivalent, so this
+    is PARI's ``serreverse`` (M6).
+    """
+    return _call("series_reverse", s)
+
+
+def hadamard_product(s, t):
+    """Return the coefficientwise product of two power series.
+
+    The series whose ``x^n`` coefficient is the product of those of
+    ``s`` and ``t`` (PARI's ``serconvol``).
+    """
+    return _call("hadamard_product", s, t)
+
+
+def series_laplace(s):
+    """Turn an exponential generating function into an ordinary one.
+
+    ``sum a_n x^n / n!`` becomes ``sum a_n x^n`` (PARI's ``serlaplace``),
+    which is how an EGF is read as an OGF.
+    """
+    return _call("series_laplace", s)
+
+
 def hermite_form(matrix):
     """Return the Hermite normal form of an integer matrix (PARI ``mathnf``).
 
@@ -601,6 +686,8 @@ FUNCTIONS = {
         limit,
         solve,
         series,
+        series_laplace,
+        series_reverse,
         factorial,
         dedekind_psi,
         jordan_totient,
@@ -616,6 +703,7 @@ FUNCTIONS = {
         groebner,
         reduce,
         echelon_form,
+        hadamard_product,
         hermite_form,
         smith_form,
         isirreducible,

@@ -22,3 +22,22 @@ print(GF(7).gen(), GF(7)(3) == 3, 1/GF(7)(3), GF(2, 127).gen().order() == 2^127 
 print(factor(x^8 - x, modulus=2))
 print(factor(x^4 + 1, modulus=5), factor(x^4 + 1, domain=GF(5)))
 print(isirreducible(x^2 + x + 1, modulus=2), isirreducible(x^4 + 1), gcd(x^2 - 1, x^2 + x, modulus=3))
+
+# Resultants and discriminants: the standard sign, PARI's (D16).
+sym y
+print(resultant(x^2 + 1, x^3 - 2, x), discriminant(x^3 + x + 1))
+print(resultant(x - 1, x^3 - 8, x), resultant(x^3 - 8, x - 1, x))
+print(resultant(x^2 + y, x - y, x), discriminant(x^2 + y*x + 1, x))
+
+# Groebner bases: SymPy, printed with ER2's printer (D17).
+G = groebner([x^2 + y^2 - 1, x - y], x, y)
+print(list(G), G.order)
+print(reduce(x^2 + y^2, G), reduce(x^2 + y^2 - 1, G))
+print(list(groebner([x^2 + y^2 - 1, x - y], x, y, order="grevlex")))
+
+# Number fields: Q(sqrt(-5)), where unique factorization fails (D14).
+K = NumberField(x^2 + 5)
+print(K, K.degree, K.discriminant, K.class_number(), K.class_group())
+print(K.integral_basis(), K.gen()^2, K.units(), K.roots_of_unity())
+print(K.factor(2), K.factor(3))
+print(NumberField(x^2 - 2).class_number(), NumberField(x^2 + 3).discriminant)

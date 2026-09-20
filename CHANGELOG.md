@@ -27,6 +27,8 @@ What is stable already, and what is not:
 ## [Unreleased]
 
 ### Added
+- The M5 acceptance: `examples/algebra.qmd` and the extended golden program
+  `tests/examples/algebra.er2`, run in the CLI, in Quarto and through both Jupyter routes.
 - `tests/compat/test_scientific.py`: the README's promise that ER2 numbers pass into NumPy is now
   tested, in CI too. It records that `Integer` gets a real NumPy dtype while `Rational` lands in
   an object array, which keeps `1/3` exact instead of silently rounding it.

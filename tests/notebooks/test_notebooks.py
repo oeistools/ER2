@@ -307,3 +307,62 @@ def test_mvp_quarto(jupyter_path, tmp_path):
     assert r"$$\left(x + 1\right)^{2}$$" in rendered
     assert r"$\varphi(123456789) =$ $82260072$" in rendered
     assert r"$\text{True}$." in rendered
+
+
+ALGEBRA_SOURCE = Path(__file__).resolve().parent.parent / "examples"
+ALGEBRA_GOLDEN = ALGEBRA_SOURCE / "algebra.out"
+
+
+@pytest.mark.parametrize("kernel", ["er2", "python3"])
+def test_algebra_notebook(jupyter_path, kernel):
+    """The M5 acceptance in Jupyter, through both routes (§1.2)."""
+    source = (ALGEBRA_SOURCE / "algebra.er2").read_text()
+    cells = [source] if kernel == "er2" else ["%load_ext er2", source]
+    executed = run_notebook(kernel, cells)
+    assert text(executed[-1]) == ALGEBRA_GOLDEN.read_text()
+
+
+# The M5 acceptance list (PLAN.md): every item has to show up rendered.
+ALGEBRA_LINES = [
+    "-144 3",  # det and rank of a matrix over Z
+    "x^3 + 8*x^2 - 84*x + 144",  # charpoly
+    "Matrix([[2, 0, 0], [0, 6, 0], [0, 0, 12]])",  # smith_form
+    "2 Matrix([[1, -2, 1]])",  # rank and kernel
+    "GF(9) 9 a^2 + a + 2",  # arithmetic in GF(9)
+    "2 8 2 2",  # a^4, order, trace, norm
+    # Quarto indents an output block by four spaces in gfm.
+    "\n    5\n",  # resultant(x^2+1, x^3-2, x)
+    "\n    -31\n",  # discriminant(x^3+x+1)
+    "-7 7",  # the sign convention, D16
+    "[x - y, 2*y^2 - 1]",  # a lex Groebner basis
+    "True False",  # reduce(f, G) == 0, but `f in G` is not that
+    "2 -20 2 [2]",  # Q(sqrt(-5)): h = 2
+    "[((2, x + 1), 2)]",  # 2 ramifies
+    "[((3, x - 1), 1), ((3, x + 1), 1)]",  # 3 splits
+]
+
+
+@needs_quarto
+def test_algebra_quarto(jupyter_path, tmp_path):
+    """The M5 acceptance rendered by Quarto with the er2 kernel."""
+    doc = tmp_path / "algebra.qmd"
+    shutil.copy(EXAMPLES / "algebra.qmd", doc)
+    env = {**os.environ, "QUARTO_PYTHON": sys.executable}
+    result = subprocess.run(
+        ["quarto", "render", str(doc), "--to", "gfm"]
+        + ["-M", "execute.daemon:false"],
+        capture_output=True,
+        text=True,
+        env=env,
+        timeout=300,
+    )
+    assert result.returncode == 0, result.stderr
+    rendered = (tmp_path / "algebra.md").read_text()
+    for line in ALGEBRA_LINES:
+        assert line in rendered, line
+    # A cell ending in an expression renders as math, not as text.
+    assert "x^{2} + x + 2" in rendered  # minpoly(a) in GF(9)
+    assert "c^{2} - 1" in rendered  # det of a symbolic matrix
+    assert r"\mathbb{Q}[x]/\left(x^{2} + 5\right)" in rendered
+    # factor(x^8 - x, modulus=2), as math
+    assert r"x \left(x + 1\right)" in rendered

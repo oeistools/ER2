@@ -30,7 +30,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M2 (0.2)  | CAS on SymPy                                  | ✅ done     |
 | M3 (0.3)  | Number theory on PARI →**MVP**         | ✅ done     |
 | M4 (0.4)  | Backend selection, PARI types, benchmarks     | ✅ done     |
-| M5 (0.5)  | Algebra                                       | in progress (tasks 2–10 done; acceptance left) |
+| M5 (0.5)  | Algebra                                       | ✅ done     |
 | M6 (0.6)  | Series                                        | not started |
 | M7 (0.7)  | Language specification                        | not started |
 | M8 (1.0)  | Stable language and release                   | not started |
@@ -389,8 +389,11 @@ agree on random integer matrices (like the 248-polynomial check for `factor` in 
 arithmetic is checked against PARI on all elements of small fields (GF(7), GF(9), GF(2^5)). No
 class-group computation above degree 4 or discriminant 10^6 in the suite (D7).
 
-**Acceptance.** A new golden program `tests/examples/algebra.er2`, and `examples/algebra.qmd`, run
-in the CLI, Jupyter (both routes) and Quarto, and show:
+**Acceptance: ✅ met (2026-09-20).** `tests/examples/algebra.er2` (golden output checked in the
+CLI), `examples/algebra.qmd` (rendered by Quarto), and the same program through both Jupyter
+routes — `test_algebra_notebook` and `test_algebra_quarto` in `tests/notebooks/`. The golden
+output was checked to be reproducible across runs, which matters because `bnfinit` is randomised;
+nothing in it depends on a fundamental unit's representative. It shows:
 
 - `det`, `kernel` and `smith_form` of an integer matrix, and `det` of a symbolic matrix;
 - arithmetic in GF(9) and `factor(x^8 - x, modulus=2)`;

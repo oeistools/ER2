@@ -2,9 +2,8 @@
 
 > Technical design document. The original idea is summarized in §1; the draft it came from is kept
 > locally (`draft/`, ignored by Git).
-> Status: **0.4.2** released (M1–M4 done; M3 was the MVP). **M5 (0.5, algebra) is in progress**:
-> linear algebra, finite fields, polynomials over `F_p`, resultants, Gröbner bases and number
-> fields are done (tasks 2–7). See [PLAN.md](PLAN.md).
+> Status: **0.4.2** released (M1–M4 done; M3 was the MVP).
+> **M5 (0.5, algebra) is complete**, acceptance included. See [PLAN.md](PLAN.md).
 
 ## 1. What ER2 is
 

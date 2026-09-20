@@ -17,6 +17,7 @@ from er2.printing import latex, show
 from er2.runtime.factorization import Factorization
 from er2.runtime.finite_field import GF
 from er2.runtime.modular import Mod
+from er2.runtime.number_field import NumberField
 from er2.runtime.numbers import Integer, Rational, literal
 from er2.runtime.qfb import Qfb
 
@@ -84,6 +85,7 @@ def namespace(code=None):
         "Integer": Integer,
         "Rational": Rational,
         "GF": GF,
+        "NumberField": NumberField,
         "Mod": Mod,
         "Factorization": Factorization,
         "Qfb": Qfb,

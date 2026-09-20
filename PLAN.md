@@ -30,7 +30,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M2 (0.2)  | CAS on SymPy                                  | ✅ done     |
 | M3 (0.3)  | Number theory on PARI →**MVP**         | ✅ done     |
 | M4 (0.4)  | Backend selection, PARI types, benchmarks     | ✅ done     |
-| M5 (0.5)  | Algebra                                       | in progress (tasks 2–6 done) |
+| M5 (0.5)  | Algebra                                       | in progress (tasks 2–7 done) |
 | M6 (0.6)  | Series                                        | not started |
 | M7 (1.0)  | Stable language and release                   | not started |
 | — (2.0)  | Deep CPython integration                      | long term   |
@@ -350,10 +350,17 @@ handle `t_FFELT`, and it turns `nf`/`bnf` structures into plain lists.
    remainder (the normal form), not SymPy's `([quotients], remainder)`. Found while testing:
    `f in G` is Python's list membership, not membership of the ideal — SymPy's `GroebnerBasis`
    has `__iter__` and no `__contains__` — so the docstrings point at `reduce(f, G) == 0`.
-7. **Number fields** (D14; may slip to 0.5.1 per D15). Build from an irreducible polynomial over Q: degree,
+7. ✅ **Number fields** (D14). Build from an irreducible polynomial over Q: degree,
    discriminant, integral basis, class number and class group, fundamental units, ideal
    factorization of a rational prime, elements as `Mod(poly, x^2 + 5)` (`t_POLMOD`, from M4).
    `bnfinit` is computed once per field and cached; heavy calls follow the D7 policy (Ctrl-C).
+   Done 2026-09-20: `NumberField` and `PrimeIdeal`, 18 tests. D14 and the M4 rule "no PARI object
+   outlives the call that made it" collided over the cached `bnf`; resolved by extracting
+   everything to plain Python data in the one `bnfinit` call, which a test enforces by clearing
+   PARI's stack and checking the field still works (ARCHITECTURE §3.4). Found while testing:
+   `bnfinit` is randomised, so a fundamental unit comes back as one of several equivalent
+   representatives. Non-monic polynomials are rejected: PARI would silently present the field by
+   a different polynomial.
 8. **Printing and LaTeX** (hard requirement, ARCHITECTURE §3.6): every new type has `latex()`,
    `_repr_latex_` and a golden LaTeX test, with no SymPy import for PARI-only types.
 9. **Tables and docs.** Update `er2/data/pari_functions.csv` for the rows that gain an ER2 name

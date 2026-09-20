@@ -55,7 +55,10 @@ __all__ = [
     "jordan_totient",
     "kernel",
     "minpoly",
+    "number_field",
+    "number_field_class_group",
     "pari",
+    "prime_ideals",
     "prime_power",
     "radical",
     "rank",
@@ -768,6 +771,67 @@ def smith_form(matrix):
     for i in range(min(matrix.rows, matrix.cols)):
         result[i, i] = divisors[i]
     return result
+
+
+# Number fields (M5, D14).  Every PARI structure is read out inside the
+# call that built it and returned as plain Python data, so no ``nf`` or
+# ``bnf`` outlives it (M4) and ``pari.set_stack`` can never invalidate a
+# cached field.  ``nfinit`` is cheap; ``bnfinit`` is the expensive one and
+# the caller caches what it returns.
+
+_GP_NF = PARI("(n) -> [poldegree(n.pol), n.disc]")
+_GP_NF_ZK = PARI("(n) -> n.zk")
+_GP_BNF = PARI("(b) -> [b.no, b.cyc, b.fu, b.tu[1]]")
+_GP_PRID = PARI("(P) -> [P.p, P.e, P.f, P.gen[2]]")
+
+
+def number_field(polynomial):
+    """Return ``(degree, discriminant, integral_basis)`` of ``Q[x]/(f)``.
+
+    The basis elements come back as ``Mod`` objects (``t_POLMOD``).
+    ``polynomial`` must be monic over Z: PARI silently presents a
+    non-monic one by a different polynomial, which would no longer match
+    the field's own elements.
+    """
+    nf = PARI.nfinit(to_pari(polynomial))
+    degree, discriminant = _GP_NF(nf)
+    modulus = to_pari(polynomial)
+    basis = [from_pari(PARI.Mod(b, modulus)) for b in _GP_NF_ZK(nf)]
+    return from_pari(degree), from_pari(discriminant), basis
+
+
+def number_field_class_group(polynomial, certify=False):
+    """Return ``(class_number, invariants, units, torsion_order)``.
+
+    ``bnfinit`` can take minutes on a large field; Ctrl-C interrupts it
+    (D7).  Its results assume the GRH unless ``certify`` is true, which
+    runs ``bnfcertify`` on the same structure.
+    """
+    bnf = PARI.bnfinit(to_pari(polynomial), 1)
+    if certify and not PARI.bnfcertify(bnf):
+        raise ValueError("bnfcertify() could not certify this field")
+    number, invariants, units, torsion = _GP_BNF(bnf)
+    return (
+        from_pari(number),
+        [from_pari(c) for c in invariants],
+        [from_pari(u) for u in units],
+        from_pari(torsion),
+    )
+
+
+def prime_ideals(polynomial, p):
+    """Return ``(p, e, f, alpha)`` for each prime ideal above ``p``.
+
+    ``alpha`` is the second generator of PARI's two-element form, as a
+    ``Mod``: the ideal is ``(p, alpha)``.
+    """
+    nf = PARI.nfinit(to_pari(polynomial))
+    out = []
+    for prime in PARI.idealprimedec(nf, int(p)):
+        rational, e, f, generator = _GP_PRID(prime)
+        alpha = from_pari(PARI.nfbasistoalg(nf, generator))
+        out.append((from_pari(rational), from_pari(e), from_pari(f), alpha))
+    return out
 
 
 # Prelude predicates that return a Python bool.  ``ispower`` and

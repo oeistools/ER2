@@ -15,8 +15,10 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
 - Technical design and decisions (D1–D15): [ARCHITECTURE.md](ARCHITECTURE.md) — **read before implementing**.
 - Releases and versioning policy: [CHANGELOG.md](CHANGELOG.md). Contributor rules: [CONTRIBUTING.md](CONTRIBUTING.md).
 - Status: 0.4.2 released; M1–M4 done (M3 was the MVP), plus `er2.oeis`. **M5 (0.5, algebra) is in
-  progress**: tasks 2–4 done (linear algebra with `Matrix`, finite fields with `GF`, polynomials
-  over `F_p`). Next: task 5 (resultants) in [PLAN.md](PLAN.md); D12–D15 are already resolved.
+  progress**: tasks 2–7 done (linear algebra with `Matrix`, finite fields with `GF`, polynomials
+  over `F_p`, `resultant`/`discriminant`, `groebner`/`reduce`, `NumberField`). Next: tasks 8–10
+  in [PLAN.md](PLAN.md) — printing/LaTeX sweep, the PARI table and docs, and benchmarks — then the
+  M5 acceptance programs. D12–D17 are already resolved.
 
 ## Guiding principle
 

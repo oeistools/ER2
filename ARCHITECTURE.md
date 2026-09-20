@@ -3,7 +3,8 @@
 > Technical design document. The original idea is summarized in §1; the draft it came from is kept
 > locally (`draft/`, ignored by Git).
 > Status: **0.4.2** released (M1–M4 done; M3 was the MVP). **M5 (0.5, algebra) is in progress**:
-> linear algebra, finite fields and polynomials over `F_p` are done. See [PLAN.md](PLAN.md).
+> linear algebra, finite fields, polynomials over `F_p`, resultants, Gröbner bases and number
+> fields are done (tasks 2–7). See [PLAN.md](PLAN.md).
 
 ## 1. What ER2 is
 
@@ -248,6 +249,7 @@ resultant(f, g, x), discriminant(f, x)
   with f, g polynomials over Q in x     → PARI  polresultant, poldisc
 the same, symbolic coefficients         → SymPy resultant, discriminant
 groebner(F, *gens), reduce(f, G)        → SymPy groebner, reduced (PARI has none)
+NumberField(f): nf, bnf, ideals        → PARI  nfinit, bnfinit, idealprimedec
 echelon_form(M)                         → SymPy rref
 minpoly(algebraic number)               → SymPy minimal_polynomial
 ```
@@ -295,6 +297,25 @@ minpoly(algebraic number)               → SymPy minimal_polynomial
   basis, so `reduce(f, G) == 0` is membership of the ideal. **`f in G` is not**: SymPy's
   `GroebnerBasis` defines `__iter__` and no `__contains__`, so Python's `in` asks whether `f` is
   one of the basis polynomials. `G.contains(f)` is SymPy's own ideal test.
+- **Number fields (M5, D14).** `NumberField(x^2 + 5)` is PARI throughout. Its elements are
+  `Mod` objects with a polynomial modulus (`t_POLMOD`, from M4), so arithmetic already works and
+  no element type was needed. The defining polynomial must be **monic over Z**: PARI silently
+  presents a non-monic one by a *different* polynomial, whose elements would no longer match the
+  field's, so ER2 rejects it instead. `discriminant` is the field's, not the polynomial's
+  (`x^2 + 3` gives -3, not -12). `factor(p)` returns `(PrimeIdeal, e)` pairs, and `PrimeIdeal`
+  carries `p`, `e`, `f` and the second generator of PARI's two-element form.
+- **No PARI structure survives a call, even for a cached field (D14 vs M4).** D14 asks for
+  `bnfinit` to be computed once and cached, and CLAUDE.md forbids keeping a PARI object alive.
+  Both hold: `bnfinit` runs once per field, everything D14 exposes is read out of it in that same
+  call, and only plain Python data is cached — so `pari.set_stack`, which clears PARI's stack,
+  can never invalidate a field. A test checks that no slot of a `NumberField` holds a
+  `cypari2.gen`. The cost is that `certify=True` after an uncertified query recomputes, since the
+  proof needs the structure that was discarded.
+- **`bnfinit` is randomised.** A fundamental unit is defined only up to sign and inversion, and
+  PARI returns different equivalent representatives on different calls — three calls in one
+  process gave `sqrt(2)+1`, `sqrt(2)-1` and `-sqrt(2)-1`. `units()` therefore promises a system
+  of fundamental units, not canonical ones, and the tests assert the mathematics rather than a
+  representative. Class groups and units also assume the GRH unless `certify=True`.
 - All type conversion happens at the backend boundary (`to_pari`, `from_pari`,
   `to_sympy`, `from_sympy`). Users never see a bare `cypari2.gen` or SymPy object unless
   they ask for one.

@@ -19,6 +19,7 @@ from er2.printing import latex
 from er2.runtime.factorization import Factorization
 from er2.runtime.finite_field import GF, FiniteField, FiniteFieldElement
 from er2.runtime.modular import Mod
+from er2.runtime.number_field import NumberField, PrimeIdeal
 from er2.runtime.numbers import Integer, Rational
 from er2.runtime.qfb import Qfb
 
@@ -35,6 +36,10 @@ TYPE_SAMPLES = {
     FiniteField: GF(9),
     # a^2 + 1 in GF(9) = a^2 + a + 2: prints reduced, as 2*a + 2.
     FiniteFieldElement: GF(9).gen() ** 2 + 1,
+    # Q(sqrt(-5)), the standard example of a field where unique
+    # factorization fails: 2 ramifies, so (2) = (2, x + 1)^2.
+    NumberField: NumberField(x**2 + 5),
+    PrimeIdeal: NumberField(x**2 + 5).factor(2)[0][0],
 }
 
 # Prelude values that are not mathematical objects.

@@ -27,6 +27,12 @@ What is stable already, and what is not:
 ## [Unreleased]
 
 ### Added
+- Number fields (M5, D14): `NumberField(x^2 + 5)` in the prelude, with `degree`, `discriminant`
+  (the field's, not the polynomial's), `integral_basis()`, `class_number()`, `class_group()`,
+  `units()`, `roots_of_unity()` and `factor(p)` into `PrimeIdeal`s. Elements are `Mod` objects
+  with a polynomial modulus, so arithmetic already works. `bnfinit` runs once per field and only
+  its results are cached, never a PARI structure, so `pari.set_stack()` cannot invalidate a
+  field. Class groups and units assume the GRH unless `certify=True`.
 - A logo and an icon in [assets/](assets/), with the brand notes in `assets/README.md`: the
   wordmark is `ER` beside a tile reading `^2`, the line you would actually type in an `.er2`
   source. The tile is the icon, so the icon is the second half of the name. The letterforms are

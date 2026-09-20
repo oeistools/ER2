@@ -5,6 +5,11 @@ on:
     branches: [main]
   pull_request:
 
+# Read-only is all CI needs; the token is here so that the GitHub API
+# calls Quarto makes are authenticated rather than rate-limited.
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: PEP 8 (ruff)
@@ -40,6 +45,11 @@ jobs:
       - uses: quarto-dev/quarto-actions/setup@v2
         with:
           tinytex: true
+        env:
+          # Quarto asks the GitHub API which TinyTeX release is current.
+          # Unauthenticated, that call shares the runner's rate limit and
+          # comes back 403, which fails the job.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: uv sync --locked
       # Without Quarto the other jobs skip these tests; here they must run.
       - run: uv run pytest tests/notebooks tests/examples -rs

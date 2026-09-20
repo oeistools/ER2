@@ -32,6 +32,7 @@ __all__ = [
     "charpoly",
     "dedekind_psi",
     "det",
+    "discriminant",
     "factor",
     "factor_polynomial",
     "factor_polynomial_mod",
@@ -49,6 +50,7 @@ __all__ = [
     "inverse",
     "is_modular_polynomial",
     "is_prime_number",
+    "is_rational_polynomial",
     "is_rational_univariate",
     "jordan_totient",
     "kernel",
@@ -57,6 +59,7 @@ __all__ = [
     "prime_power",
     "radical",
     "rank",
+    "resultant",
     "set_precision",
     "set_stack",
     "smith_form",
@@ -503,6 +506,37 @@ def _polynomial_variable(expr):
     """Return the single symbol of a univariate polynomial expression."""
     (var,) = sympy.sympify(expr).free_symbols
     return var
+
+
+def is_rational_polynomial(expr, var):
+    """Whether ``expr`` is a polynomial in ``var`` over Q, in ``var`` alone.
+
+    Unlike ``is_rational_univariate``, a constant passes: the resultant
+    of a polynomial and a number is defined.
+    """
+    if isinstance(expr, (int, Fraction)):
+        return True
+    if not isinstance(expr, sympy.Expr) or not expr.free_symbols <= {var}:
+        return False
+    if not expr.is_polynomial(var):
+        return False
+    return sympy.Poly(expr, var).domain in (sympy.ZZ, sympy.QQ)
+
+
+def resultant(f, g, var):
+    """Return the resultant of ``f`` and ``g`` in ``var`` (PARI).
+
+    PARI's ``polresultant`` follows the standard definition, which is
+    the one ER2 uses (ARCHITECTURE §3.4).
+    """
+    return from_pari(
+        PARI.polresultant(to_pari(f), to_pari(g), variable(var.name))
+    )
+
+
+def discriminant(f, var):
+    """Return the discriminant of ``f`` in ``var`` (PARI ``poldisc``)."""
+    return from_pari(PARI.poldisc(to_pari(f), variable(var.name)))
 
 
 def is_prime_number(n):

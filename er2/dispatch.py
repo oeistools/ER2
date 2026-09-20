@@ -135,6 +135,21 @@ def modular_polynomials(args, kwargs):
     )
 
 
+def rational_polynomials(args, kwargs):
+    """Whether every argument but the last is a polynomial over Q.
+
+    ``resultant`` and ``discriminant`` pass ``(f, g, x)`` and ``(f, x)``,
+    with the variable resolved; PARI takes the polynomials in ``x``
+    alone, and symbolic coefficients stay with SymPy.
+    """
+    if not _lazy.sympy_loaded():
+        return False
+    *polynomials, var = args
+    return all(
+        pari_backend.is_rational_polynomial(p, var) for p in polynomials
+    )
+
+
 def finite_field_element(args, kwargs):
     """Whether the first argument is an element of a finite field."""
     return bool(args) and isinstance(args[0], FiniteFieldElement)
@@ -208,6 +223,16 @@ TABLE = {
         (modular_polynomials, pari_backend.isirreducible),
         (rational_univariate, pari_backend.isirreducible),
         (anything, sympy_backend("isirreducible")),
+    ],
+    # Resultants (M5, task 5): PARI over Q, SymPy for symbolic
+    # coefficients.  Both follow the standard sign (ARCHITECTURE §3.4).
+    "resultant": [
+        (rational_polynomials, pari_backend.resultant),
+        (anything, sympy_backend("resultant")),
+    ],
+    "discriminant": [
+        (rational_polynomials, pari_backend.discriminant),
+        (anything, sympy_backend("discriminant")),
     ],
     "echelon_form": [(matrix, sympy_backend("echelon_form"))],
     "hermite_form": [(integer_matrix, pari_backend.hermite_form)],
@@ -421,6 +446,44 @@ def minpoly(obj, x=None):
     return _call("minpoly", obj, _variable(x))
 
 
+def resultant(f, g, x=None):
+    """Return the resultant of ``f`` and ``g`` with respect to ``x``.
+
+    It is zero exactly when ``f`` and ``g`` have a common root:
+    ``resultant(x^2 + 1, x^3 - 2, x)`` is ``5``.  ``x`` may be left out
+    when ``f`` and ``g`` have a single variable between them.
+
+    ER2 follows the standard definition, ``Res(f, g) = lc(f)^deg(g) *
+    prod g(a)`` over the roots ``a`` of ``f``, which is PARI's.  It is
+    not symmetric: ``resultant(f, g) = (-1)^(deg f * deg g) *
+    resultant(g, f)``, and it differs in sign from ``sympy.resultant``
+    when ``deg f < deg g`` and both degrees are odd (ARCHITECTURE §3.4).
+    """
+    return _call("resultant", f, g, _polynomial_variable((f, g), x))
+
+
+def discriminant(f, x=None):
+    """Return the discriminant of ``f`` with respect to ``x``.
+
+    ``discriminant(x^3 + x + 1)`` is ``-31``.  It is zero exactly when
+    ``f`` has a repeated root.  ``x`` may be left out when ``f`` has a
+    single variable.
+    """
+    return _call("discriminant", f, _polynomial_variable((f,), x))
+
+
+def _polynomial_variable(polynomials, x):
+    """Return ``x``, or the single variable of ``polynomials``."""
+    if x is not None:
+        return x
+    symbols = set()
+    for polynomial in polynomials:
+        symbols |= getattr(polynomial, "free_symbols", set())
+    if len(symbols) != 1:
+        raise TypeError("the variable is needed: resultant(f, g, x)")
+    return symbols.pop()
+
+
 def echelon_form(matrix):
     """Return the reduced row echelon form of a matrix."""
     return _call("echelon_form", matrix)
@@ -484,6 +547,8 @@ FUNCTIONS = {
         kernel,
         charpoly,
         minpoly,
+        resultant,
+        discriminant,
         echelon_form,
         hermite_form,
         smith_form,

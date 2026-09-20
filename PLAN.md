@@ -30,7 +30,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M2 (0.2)  | CAS on SymPy                                  | ✅ done     |
 | M3 (0.3)  | Number theory on PARI →**MVP**         | ✅ done     |
 | M4 (0.4)  | Backend selection, PARI types, benchmarks     | ✅ done     |
-| M5 (0.5)  | Algebra                                       | in progress (tasks 2–4 done) |
+| M5 (0.5)  | Algebra                                       | in progress (tasks 2–5 done) |
 | M6 (0.6)  | Series                                        | not started |
 | M7 (1.0)  | Stable language and release                   | not started |
 | — (2.0)  | Deep CPython integration                      | long term   |
@@ -336,8 +336,14 @@ handle `t_FFELT`, and it turns `nf`/`bnf` structures into plain lists.
    already builds extensions with `ffinit`. **Not done:** polynomials over `GF(p^k)`, `k > 1`,
    which need a polynomial type whose coefficients are field elements. `factor(f, domain=GF(9))`
    raises `NotImplementedError` and points to `pari.raw.factormod`. Proposed for 0.5.1 (D15).
-5. **Resultants and discriminants.** `resultant(f, g, x)`, `discriminant(f, x)`: PARI for
+5. ✅ **Resultants and discriminants.** `resultant(f, g, x)`, `discriminant(f, x)`: PARI for
    polynomials over Q, SymPy for symbolic coefficients.
+   Done 2026-09-20: both are in the prelude, the variable may be left out when the arguments
+   have a single variable between them, and 20 tests compare the two backends on 200 random
+   polynomials over Q and 40 with symbolic coefficients. **D16** was needed: `sympy.resultant`
+   drops the sign of reordering its arguments, so ER2 follows the standard definition (PARI's)
+   and corrects the SymPy route — the first place where "the PARI route returns what SymPy
+   returns" could not be kept as written (ARCHITECTURE §3.4, §6).
 6. **Gröbner bases.** `groebner(F, *gens, order="lex")` through SymPy, returning SymPy's
    `GroebnerBasis` printed with ER2's printer; `reduce` of a polynomial modulo a basis.
 7. **Number fields** (D14; may slip to 0.5.1 per D15). Build from an irreducible polynomial over Q: degree,
@@ -408,6 +414,7 @@ Revisit this only if the preparser shows real limits.
 | D13 | finite-field syntax                    | M5        | ✅ resolved: `GF(9)`, generator `a`, `ffinit`       |
 | D14 | number-field API                       | M5        | ✅ resolved: `NumberField` class, cached `bnf`     |
 | D15 | scope of 0.5                           | M5        | ✅ resolved: all of M5; number fields may slip to 0.5.1 |
+| D16 | sign of `resultant`                  | M5        | ✅ resolved: the standard definition (PARI), not SymPy's |
 
 ## Risks
 

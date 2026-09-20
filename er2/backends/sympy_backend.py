@@ -18,6 +18,7 @@ __all__ = [
     "collect",
     "det",
     "diff",
+    "discriminant",
     "echelon_form",
     "expand",
     "factor",
@@ -32,6 +33,7 @@ __all__ = [
     "limit",
     "minimal_polynomial",
     "rank",
+    "resultant",
     "series",
     "simplify",
     "solve",
@@ -138,6 +140,33 @@ def echelon_form(matrix):
 def solve_linear(matrix, rhs):
     """Return the solution ``v`` of ``matrix * v = rhs``."""
     return matrix.solve(rhs)
+
+
+def resultant(f, g, var):
+    """Return the resultant of ``f`` and ``g`` in ``var``.
+
+    ``sympy.resultant`` puts the polynomial of higher degree first
+    without the sign that swapping the arguments costs, so it answers
+    ``Res(g, f)`` when ``deg f < deg g``.  ER2 follows the standard
+    definition, PARI's (ARCHITECTURE §3.4), so the sign is put back:
+    ``Res(f, g) = (-1)^(deg f * deg g) * Res(g, f)``.
+    """
+    f, g = sympy.Poly(f, var), sympy.Poly(g, var)
+    degrees = f.degree() * g.degree()
+    result = f.resultant(g)
+    if f.degree() < g.degree() and degrees % 2:
+        result = -result
+    return from_sympy(result)
+
+
+def discriminant(f, var):
+    """Return the discriminant of ``f`` in ``var``.
+
+    SymPy's own sign convention here is PARI's: the discriminant is
+    ``Res(f, f')`` with ``deg f' = deg f - 1``, so one of the two
+    degrees is even and swapping the arguments costs no sign.
+    """
+    return from_sympy(sympy.discriminant(to_sympy(f), var))
 
 
 def isirreducible(expr, modulus=None, **options):

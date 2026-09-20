@@ -2,7 +2,7 @@
 
 All notable changes to ER2 are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). [PLAN.md](PLAN.md) has the full detail of
-each milestone, and [ARCHITECTURE.md](ARCHITECTURE.md) §6 has the design decisions (D1–D15).
+each milestone, and [ARCHITECTURE.md](ARCHITECTURE.md) §6 has the design decisions (D1–D16).
 
 ## Versioning policy
 
@@ -27,6 +27,11 @@ What is stable already, and what is not:
 ## [Unreleased]
 
 ### Added
+- Resultants and discriminants (M5): `resultant(f, g, x)` and `discriminant(f, x)`, computed by
+  PARI for polynomials over Q and by SymPy for symbolic coefficients. The variable may be left
+  out when the arguments have a single variable between them. ER2 uses the standard sign
+  convention, PARI's (D16): `resultant(x - 1, x^3 - 8, x)` is `-7`, where `sympy.resultant`
+  answers `7`.
 - Polynomials over a prime field (M5): `factor(f, modulus=p)` and `gcd(f, g, modulus=p)` are
   computed by PARI, ×40 faster than SymPy at degree 49 and with the same result, and
   `isirreducible(f)` is new (over Q or with `modulus=p`). `domain=GF(p)` works too; over `GF(p^k)`
@@ -42,7 +47,7 @@ What is stable already, and what is not:
 - Example gallery: `examples/hello.er2`, `examples/syntax.er2` and `examples/factorization.er2`,
   checked by the golden tests.
 - `CONTRIBUTING.md`, this changelog, and GitHub issue templates.
-- The M5 (0.5, Algebra) plan, with decisions D12–D15.
+- The M5 (0.5, Algebra) plan, with decisions D12–D16.
 
 ### Changed
 - The preparser is much faster on large files (a 16,000-line file: 22.6 s → 1.1 s).

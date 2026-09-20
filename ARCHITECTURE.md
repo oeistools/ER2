@@ -244,6 +244,9 @@ the same, other entries (symbols, floats) → SymPy matrix methods
 hermite_form, smith_form (matrix over Z) → PARI  mathnf, matsnf
 factor(f, modulus=p), gcd(f, g, modulus=p) → PARI  factormod, gcd over F_p
 isirreducible(f), isirreducible(f, modulus=p) → PARI  polisirreducible
+resultant(f, g, x), discriminant(f, x)
+  with f, g polynomials over Q in x     → PARI  polresultant, poldisc
+the same, symbolic coefficients         → SymPy resultant, discriminant
 echelon_form(M)                         → SymPy rref
 minpoly(algebraic number)               → SymPy minimal_polynomial
 ```
@@ -277,6 +280,13 @@ minpoly(algebraic number)               → SymPy minimal_polynomial
   matrix of the input's shape with `d_1 | d_2 | …`, as SymPy's `smith_normal_form` (PARI's
   `matsnf` lists them the other way round). `solve(A, b)` is a linear system only when `b` is a
   `Matrix`; with lists, `solve` keeps SymPy's meaning (`solve([x + y - 1, x - y], [x, y])`).
+- **Resultants (M5, D16).** `resultant(f, g, x)` and `discriminant(f, x)` go to PARI when `f` and
+  `g` are polynomials over Q in `x` alone (a constant counts); anything else, symbolic
+  coefficients included, goes to SymPy. The variable may be left out when the arguments have a
+  single variable between them. ER2 follows the standard sign convention, PARI's, so
+  `resultant(x - 1, x^3 - 8, x)` is `-7` where `sympy.resultant` answers `7`; the SymPy route
+  puts back the `(-1)^(deg f · deg g)` that SymPy drops when it reorders the arguments. The two
+  routes were compared on 200 random polynomials over Q and 40 with symbolic coefficients.
 - All type conversion happens at the backend boundary (`to_pari`, `from_pari`,
   `to_sympy`, `from_sympy`). Users never see a bare `cypari2.gen` or SymPy object unless
   they ask for one.
@@ -589,6 +599,19 @@ The following decisions were taken for M5 (PLAN.md) with the user on 2026-09-19.
 - **D15 — Scope of 0.5. ✅ Resolved (2026-09-19): all of M5, number fields may slip.** All of M5 in 0.5. If number fields (D14) take longer,
   release linear algebra, finite fields, resultants and Gröbner bases as 0.5, and number fields
   as 0.5.1.
+- **D16 — Sign of `resultant`. ✅ Resolved (2026-09-20): the standard definition, PARI's.**
+  `resultant(f, g, x)` is `lc(f)^deg(g) * prod g(a)` over the roots `a` of `f`, so it is not
+  symmetric: `Res(f, g) = (-1)^(deg f · deg g) · Res(g, f)`. This is the only place so far where
+  the "same answer from both backends" rule could not be kept as written: `sympy.resultant` puts
+  the polynomial of higher degree first without paying the sign of the swap, so it answers
+  `Res(g, f)` when `deg f < deg g`, and returns the same value for `resultant(f, g)` and
+  `resultant(g, f)` even when the definition says they differ (69 of 300 random pairs;
+  `sympy.resultant(x - 1, x^3 - 8, x)` is `7`, and `-7` is correct). ER2 therefore corrects the
+  SymPy route rather than PARI, and matches PARI, Sage, Maple and Magma. Precedent: `isirreducible`
+  already follows PARI against SymPy for constants (§3.4). Rejected: following SymPy, which would
+  ship a self-inconsistent `resultant`. `discriminant` is unaffected — it is `Res(f, f')` with
+  `deg f' = deg f - 1`, so one degree is always even and the swap costs no sign; PARI and SymPy
+  agreed on 400 random polynomials.
 
 ## 6.1 Code style: PEP 8
 

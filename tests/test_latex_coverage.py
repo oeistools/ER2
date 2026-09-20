@@ -100,6 +100,15 @@ FUNCTION_SAMPLES = {
         r"\right]",
     ),
     "minpoly": (lambda ns: ns["minpoly"](_m(ns)), "x^{2} - 5 x + 5"),
+    # Resultants (M5); values checked against cypari2.
+    "resultant": (
+        lambda ns: ns["resultant"](x**2 + 1, x**3 - 2, x),
+        "5",
+    ),
+    "discriminant": (
+        lambda ns: ns["discriminant"](x**3 + x + 1, x),
+        "-31",
+    ),
     "rank": (lambda ns: ns["rank"](_c(ns)), "1"),
     "smith_form": (
         lambda ns: ns["smith_form"](_m(ns)),

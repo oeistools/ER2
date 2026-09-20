@@ -32,7 +32,8 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M4 (0.4)  | Backend selection, PARI types, benchmarks     | ✅ done     |
 | M5 (0.5)  | Algebra                                       | in progress (tasks 2–10 done; acceptance left) |
 | M6 (0.6)  | Series                                        | not started |
-| M7 (1.0)  | Stable language and release                   | not started |
+| M7 (0.7)  | Language specification                        | not started |
+| M8 (1.0)  | Stable language and release                   | not started |
 | — (2.0)  | Deep CPython integration                      | long term   |
 
 ---
@@ -405,12 +406,38 @@ in the CLI, Jupyter (both routes) and Quarto, and show:
 Power series, generating functions, Dirichlet series and Euler products. (The OEIS module came
 early, in 0.4.2.)
 
-## M7 — 1.0: Stable language
+## M7 — 0.7: Language specification
 
-- A formal specification of the preparser (the §1.1 table becomes normative).
+The point of this milestone is the transition from *inventing* syntax to *specifying* it.
+Everything ER2 does is currently described across `ARCHITECTURE.md`, the README and the tests;
+`docs/LANGUAGE.md` turns that into one normative document, so that 1.0 has something to freeze.
+
+**Tasks:**
+
+1. `docs/LANGUAGE.md`, covering at least:
+   ER2 syntax; the exact differences from Python; operator precedence and associativity; exact
+   literals; `sym`; the `Integer`/`Rational` model; Python ↔ ER2 conversion; SymPy ↔ ER2;
+   PARI ↔ ER2; the dispatch rules; representation and LaTeX; Jupyter and Quarto; compatibility
+   with Python code; and what counts as stable syntax before 1.0.
+2. The §1.1 table of `ARCHITECTURE.md` becomes **normative**: `docs/LANGUAGE.md` owns it, and
+   §1.1 links to it rather than restating it.
+3. ✅ **Scientific interoperability, tested.** The README promises that ER2 numbers pass into
+   NumPy, SciPy, pandas and Matplotlib, and nothing in `tests/` imported any of them.
+   Done 2026-09-20 for NumPy: `tests/compat/test_scientific.py`, skipped without NumPy and run by
+   its own CI job. Writing it turned up an undocumented asymmetry — `Integer` gets a real dtype,
+   `Rational` falls back to an object array — which ARCHITECTURE §1.1 point 5 now states.
+   SciPy, pandas and Matplotlib are still uncovered.
+4. Every difference in the specification has a test that would fail if it changed.
+
+**Acceptance:** a reader can implement a compatible preparser from `docs/LANGUAGE.md` alone,
+and every statement in it is backed by a test.
+
+## M8 — 1.0: Stable language and release
+
 - A documentation site. Quarto is a natural choice, since ER2 already runs in it.
 - PyPI release: `pip install er2` and `pip install er2[jupyter]`.
 - A stability policy for the public API and deprecations.
+- The syntax and the public API are frozen: after 1.0 they change only through that policy.
 
 ## 2.0 — Deep CPython integration (long term)
 

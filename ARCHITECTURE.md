@@ -58,6 +58,12 @@ Python ecosystem through ordinary `import`. Chosen model: **the SageMath model**
    `__int__`, `__float__`, `__complex__`, `__hash__` (equal to the corresponding `int` hash) and
    compare equal to Python numbers, so `range(n)`, `lst[n]`, `np.zeros(n)`, `math.sqrt(n)`,
    dict keys and `json` keep working. See D6 for `isinstance(n, int)`.
+   This holds fully for `Integer`, which subclasses `int`, so NumPy gives it a real dtype
+   (`np.array([2^3, 3^2]).dtype` is `int64`). `Rational` has no NumPy dtype and lands in an
+   **object array** instead. That is the right answer rather than a gap: a `float64` array would
+   silently drop the exactness ER2 exists to keep, so `1/3` stays `1/3` and the user asks for
+   `float(...)` when they want speed. `tests/compat/test_scientific.py` pins both behaviours, and
+   is skipped unless NumPy is installed (CI installs it).
 6. **Escape hatches**: `int(...)`/`float(...)` for explicit conversion, and the raw-literal suffix
    `5r` (Sage's convention) for a plain Python `int` (implemented 2026-09-19, user decision), for
    example in hot numeric loops (D2). It works for every integer literal (`0x1Fr`, `1_000r`); there

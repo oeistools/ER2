@@ -31,6 +31,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M3 (0.3)  | Number theory on PARI →**MVP**         | ✅ done     |
 | M4 (0.4)  | Backend selection, PARI types, benchmarks     | ✅ done     |
 | M5 (0.5)  | Algebra                                       | ✅ done     |
+| 0.5.1     | Scientific articles (§1.3)                     | ✅ done     |
 | M6 (0.6)  | Series                                        | not started |
 | M7 (0.7)  | Language specification                        | not started |
 | M8 (1.0)  | Stable language and release                   | not started |
@@ -403,6 +404,40 @@ nothing in it depends on a fundamental unit's representative. It shows:
 
 `tests/compat/` stays green, and `import er2` still does not load SymPy for number-only programs
 (`tests/test_lazy_sympy.py`).
+
+## 0.5.1 — Scientific articles
+
+Goal stated by the user on 2026-09-20 and recorded as ARCHITECTURE §1.3: **a paper should be
+writable in ER2**, with its numbers, formulas and figures produced by the document that states
+them. Nothing here is a new subsystem — Quarto, `latex()`, exact arithmetic and the OEIS BibTeX
+already exist — but only a whole article exercises them together, and nothing does that today.
+
+**Tasks:**
+
+1. ✅ **Figures.** `tests/compat/test_scientific.py` now covers Matplotlib: ER2 `Integer` and
+   `Rational` as coordinates, a `Tex` string as a label, and saving a figure. Matplotlib joined
+   the `dev` group (user decision, 2026-09-20): the *kernel's* interpreter needs it, so
+   `uv run --with matplotlib quarto render` does not help. It brings NumPy with it, so the
+   scientific tests now run in the ordinary test job and the separate CI job was removed.
+2. ✅ **`examples/article.qmd`**: *Mertens' third theorem, computed* — abstract, a numbered and
+   cross-referenced equation, a computed table, a figure, citations and a bibliography
+   (`examples/article.bib`). Six numbers in the prose come from the computation, including the
+   exact rational product for `x = 50`. Renders to HTML and to PDF.
+3. ✅ **A test that renders it**: `test_article_renders`, parametrised over HTML and PDF, in the
+   Quarto CI job. It asserts the six computed values, exactly one figure image of real size, the
+   cross-references and the bibliography — not merely that the render exited 0.
+4. ✅ **Citing the tools.** The article cites ER2, PARI/GP, SymPy and Mertens' 1874 paper.
+
+**Acceptance: ✅ met (2026-09-20).** Found while building it, and now guarded: writing the exact
+rational product past `x = 10^4` is quadratic in the digits (3500 digits at `10^4`, and the render
+hung at `10^6`), so the article keeps the exact value for the small case and accumulates in
+floating point for the table — and says why. And `matplotlib.use("Agg")` in a Quarto cell makes
+`plt.show()` draw **nothing** while the render still succeeds, which is why the test asserts the
+image exists rather than trusting the exit code.
+
+**Deliberately out of scope:** a journal template, `.docx` or `.tex` export, and any wrapper
+around Matplotlib. Quarto already does templates and export, and a plotting API is a different
+project.
 
 ## M6 — 0.6: Series
 

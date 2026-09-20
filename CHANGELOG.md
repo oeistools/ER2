@@ -27,6 +27,10 @@ What is stable already, and what is not:
 ## [Unreleased]
 
 ### Added
+- **Writing scientific articles in ER2** is now a stated goal (ARCHITECTURE §1.3):
+  `examples/article.qmd` is a small real paper whose numbers, table and figure are computed by the
+  document that states them, rendered to HTML and PDF and checked in CI. Matplotlib joined the
+  dev dependencies for the figure.
 - The M5 acceptance: `examples/algebra.qmd` and the extended golden program
   `tests/examples/algebra.er2`, run in the CLI, in Quarto and through both Jupyter routes.
 - `tests/compat/test_scientific.py`: the README's promise that ER2 numbers pass into NumPy is now

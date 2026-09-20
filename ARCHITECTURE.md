@@ -12,6 +12,9 @@ The name honors the Hungarian mathematician **Paul Erdős** — in Spanish, "Erd
 ER2 is **mathematical Python**: a superset of Python that adds symbolic syntax
 (`sym x`, `x^2`, `_x`), exact arithmetic by default, and transparent access to PARI/GP.
 
+**A goal of ER2 is writing scientific articles in it** (§1.3): a paper whose results are computed
+by the document that states them.
+
 It is neither a new language nor a new interpreter. In the 0.x releases, ER2 is:
 
 1. a **source-to-source preparser** (`.er2` → valid Python),
@@ -114,6 +117,36 @@ Details:
   dependency. Quarto is an external tool and is not a Python dependency.
 - **Tests.** Execute `examples/mvp.ipynb` through both routes (`nbclient`). Render
   `examples/mvp.qmd` with Quarto when it is installed; otherwise skip that test.
+
+## 1.3 Scientific articles
+
+**Goal (stated 2026-09-20):** a mathematician should be able to write a paper in ER2, where the
+numbers, the formulas and the figures in the text are produced by the text itself. A result and
+its proof-of-computation stop drifting apart, because there is only one document.
+
+This is not a new subsystem; it is what the existing hard requirements are for, seen from the
+author's side:
+
+| What an article needs | What ER2 already has |
+|---|---|
+| Executable prose | Quarto with the `er2` kernel (§1.2), HTML and PDF, both tested |
+| Formulas in the running text | `` `{python} latex(f)` `` renders as inline math (§1.2) |
+| Every result as mathematics, not as `repr` | `latex()` on every type, a hard requirement (§3.6) |
+| Exact numbers in the text | Exact arithmetic by default (§1.1) |
+| Citing a sequence | `OEISSequence.bibtex()` (§10) |
+| Citing ER2 itself | `CITATION.cff` |
+| Figures | Matplotlib, through ordinary `import` (§1.1 point 5) |
+
+What the goal adds is an obligation: **every one of those has to keep working together**, which
+only a whole article exercises. The measure is `examples/article.qmd` — a small but real paper,
+rendered to PDF in CI — not a list of features.
+
+Two consequences for design decisions:
+
+- A result's LaTeX is part of the public API, not a debugging convenience. Changing how a type
+  renders changes published papers.
+- Figures mean ER2 values must reach Matplotlib, which is why `tests/compat/test_scientific.py`
+  guards the number contract against NumPy and Matplotlib rather than trusting it.
 
 ## 2. Overview
 

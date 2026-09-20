@@ -63,19 +63,6 @@ jobs:
         env:
           ER2_REQUIRE_QUARTO: "1"
 
-  science:
-    name: Scientific interoperability (NumPy)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: astral-sh/setup-uv@v7
-        with:
-          # One cache per job: otherwise they race to save the same key.
-          cache-suffix: ${{ github.job }}
-      # NumPy is not a dependency of ER2 or of its tests; these run only
-      # here, and skip everywhere else.
-      - run: uv run --with numpy pytest tests/compat/test_scientific.py -rs
-
   pari-table:
     name: PARI function table in sync
     runs-on: ubuntu-latest

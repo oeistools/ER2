@@ -1,0 +1,158 @@
+---
+title: "Mertens' third theorem, computed"
+subtitle: "A worked example of writing a paper in ER2"
+author: "The ER2 authors"
+date: last-modified
+abstract: |
+  Mertens' third theorem states that the product of $1 - 1/p$ over the
+  primes below $x$ decays like $e^{-\gamma}/\log x$. We compute both sides
+  for $x$ up to $10^{6}$ and report the ratio. Every number, formula and
+  figure below is produced by the document that states it: there is no step
+  between the computation and the text.
+bibliography: article.bib
+format:
+  html:
+    toc: true
+    code-fold: true
+  pdf:
+    keep-tex: false
+jupyter: er2
+execute:
+  daemon: false
+---
+
+## Why this document is also a program
+
+This paper is written in ER2 [@er2], a superset of Python in which `^` is a
+power, integer division is exact, and the number theory is done by PARI/GP
+[@pari] while the symbolic work is done by SymPy [@sympy]. Every figure in
+the prose below is the value the code computed when the document was
+rendered, so the paper cannot disagree with its own computation.
+
+## The statement
+
+Mertens proved in 1874 [@mertens] that
+
+$$
+\prod_{p \le x} \left(1 - \frac{1}{p}\right) \sim \frac{e^{-\gamma}}{\log x},
+$$ {#eq-mertens}
+
+where $\gamma$ is the Euler–Mascheroni constant and $p$ runs over primes.
+The constant on the right is what makes the theorem delicate: the naive guess
+$1/\log x$ is wrong by the factor $e^{-\gamma}$.
+
+```{python}
+#| echo: false
+from sympy import EulerGamma
+
+# GP's constants (Euler, Pi) are not in the `pari` namespace, which holds
+# functions only; SymPy names them, and PARI does the primes below.
+constant = exp(-EulerGamma).evalf(20)
+```
+
+To 20 digits, $e^{-\gamma} =$ `{python} latex(constant)`.
+
+## Computing both sides
+
+The left-hand side of @eq-mertens is an exact rational number, and ER2 keeps
+it exact, because `1/p` is a rational and not a float.
+
+```{python}
+def mertens_exact(limit):
+    """The exact product of (1 - 1/p) over the primes p <= limit."""
+    result = 1
+    p = 2
+    while p <= limit:
+        result = result * (1 - 1/p)
+        p = nextprime(p + 1)
+    return result
+
+print(mertens_exact(50))
+```
+
+For $x = 50$ that is `{python} latex(mertens_exact(50))`, or
+`{python} latex(round(float(mertens_exact(50)), 6))` as a decimal.
+
+Exactness is not free, and this is a good place to say so. The numerator of
+the exact product grows by roughly the number of digits of each new prime, so
+by $x = 10^{4}$ it already has about 3500 digits and each further
+multiplication has to reduce a fraction that large. Past $x = 10^{4}$ the
+exact product costs more than the theorem it illustrates, so the table below
+accumulates in floating point and keeps the exact value for the small case
+where it is the point.
+
+```{python}
+def mertens_float(primes_below):
+    """Accumulate the same product in floating point."""
+    running, value = {}, 1.0
+    for p in primes_below:
+        value = value * (1 - 1.0/int(p))
+        running[int(p)] = value
+    return running
+
+ps = primes(primepi(10^6))
+running = mertens_float(ps)
+```
+
+## The ratio, over six orders of magnitude
+
+@tbl-ratio compares the two sides of @eq-mertens. The ratio tends to 1, which
+is what the theorem asserts.
+
+```{python}
+#| label: tbl-ratio
+#| tbl-cap: "Both sides of Mertens' third theorem, and their ratio."
+#| echo: false
+from IPython.display import Markdown
+
+rows = []
+for e in [1, 2, 3, 4, 5, 6]:
+    x = 10^e
+    count = primepi(x)
+    product = running[int(max(q for q in running if q <= x))]
+    predicted = float(constant) / float(pari.log(x))
+    rows.append((e, count, product, predicted, product / predicted))
+
+header = "| $x$ | $\\pi(x)$ | product | $e^{-\\gamma}/\\log x$ | ratio |"
+divider = "|---|---|---|---|---|"
+body = [
+    f"| $10^{{{e}}}$ | {count} | {p:.6f} | {q:.6f} | {r:.4f} |"
+    for e, count, p, q, r in rows
+]
+Markdown("\n".join([header, divider, *body]))
+```
+
+At $x = 10^{6}$ there are `{python} latex(primepi(10^6))` primes, and the
+ratio is `{python} latex(round(rows[-1][4], 4))`.
+
+## The figure
+
+```{python}
+#| label: fig-ratio
+#| fig-cap: "The ratio of the two sides of @eq-mertens against $\\log_{10} x$."
+#| echo: false
+import matplotlib.pyplot as plt
+
+# No matplotlib.use("Agg") here: the kernel's inline backend is what
+# puts the image in the document, and Agg would silently render nothing.
+figure, ax = plt.subplots(figsize=(5.2, 3.0))
+ax.plot([r[0] for r in rows], [r[4] for r in rows], "o-")
+ax.axhline(1.0, linestyle="--", linewidth=0.8, color="grey")
+ax.set_xlabel(r"$\log_{10} x$")
+ax.set_ylabel("product / prediction")
+ax.set_ylim(0.9, 1.15)
+figure.tight_layout()
+plt.show()
+```
+
+## What this demonstrates
+
+The document computed an exact rational, a 20-digit real, a table and a
+figure, and put four of those numbers into its own sentences. Nothing was
+copied by hand, so re-rendering after a change to the code changes the prose
+with it.
+
+## References
+
+::: {#refs}
+:::

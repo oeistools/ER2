@@ -101,3 +101,45 @@ def test_a_whole_er2_program_can_use_numpy(tmp_path):
     # The last line is an object array, so its elements print with
     # ER2's own repr: "1.0", not NumPy's "1.".
     assert result.stdout == "(8,)\nint64\n2\n[0.5 1.0]\n"
+
+
+# Figures (ARCHITECTURE §1.3): a paper needs plots, and the numbers that
+# go into them are ER2 numbers.
+mpl = pytest.importorskip("matplotlib", reason="Matplotlib is optional")
+mpl.use("Agg")
+plt = pytest.importorskip("matplotlib.pyplot")
+
+
+@pytest.fixture
+def axes():
+    figure, ax = plt.subplots()
+    yield ax
+    plt.close(figure)
+
+
+def test_er2_numbers_plot(axes):
+    """``Integer`` and ``Rational`` work as coordinates."""
+    xs = [Integer(k) for k in range(1, 8)]
+    ys = [Integer(k) ** 2 for k in range(1, 8)]
+    (line,) = axes.plot(xs, ys)
+    assert list(line.get_ydata()) == [1, 4, 9, 16, 25, 36, 49]
+    (exact,) = axes.plot([Rational(1, 2), Rational(3, 2)], [Rational(1, 4), 2])
+    assert list(exact.get_xdata()) == [0.5, 1.5]
+
+
+def test_a_tex_string_is_a_usable_label(axes):
+    """``latex()`` returns a ``str``, so Matplotlib renders it as math."""
+    from er2.printing import latex
+
+    body = latex(Rational(7, 3))
+    assert isinstance(body, str)
+    axes.set_xlabel(f"${body}$")
+    assert axes.get_xlabel() == r"$\frac{7}{3}$"
+
+
+def test_a_figure_with_er2_values_saves(tmp_path, axes):
+    """The whole path a figure in an article takes."""
+    axes.plot([Integer(1), Integer(2)], [Rational(1, 2), Rational(3, 2)])
+    target = tmp_path / "figure.png"
+    axes.figure.savefig(target, dpi=50)
+    assert target.stat().st_size > 0

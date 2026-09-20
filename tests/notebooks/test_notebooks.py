@@ -366,3 +366,53 @@ def test_algebra_quarto(jupyter_path, tmp_path):
     assert r"\mathbb{Q}[x]/\left(x^{2} + 5\right)" in rendered
     # factor(x^8 - x, modulus=2), as math
     assert r"x \left(x + 1\right)" in rendered
+
+
+# A scientific article (ARCHITECTURE §1.3): numbers the document computed
+# and then put into its own prose.  A render that "succeeds" is not enough
+# — the figure silently rendered as nothing once, under Agg.
+ARTICLE_VALUES = [
+    "0.56145948356688516982",  # exp(-EulerGamma) to 20 digits
+    "1605264998400",  # the exact product for x = 50, a rational
+    "11573306655157",
+    "0.138704",  # the same as a decimal
+    "78498",  # primepi(10^6), in the prose and the table
+    "0.040638",  # the product at 10^6
+]
+
+
+@needs_quarto
+@pytest.mark.parametrize("fmt", ["html", "pdf"])
+def test_article_renders(jupyter_path, tmp_path, fmt):
+    """`examples/article.qmd` renders, with its computed values and figure."""
+    for name in ("article.qmd", "article.bib"):
+        shutil.copy(EXAMPLES / name, tmp_path / name)
+    env = {**os.environ, "QUARTO_PYTHON": sys.executable}
+    result = subprocess.run(
+        ["quarto", "render", str(tmp_path / "article.qmd"), "--to", fmt]
+        + ["-M", "execute.daemon:false"],
+        capture_output=True,
+        text=True,
+        env=env,
+        timeout=900,
+    )
+    no_tex = "No TeX installation" in result.stderr
+    if fmt == "pdf" and no_tex and not os.environ.get("ER2_REQUIRE_QUARTO"):
+        pytest.skip("needs a TeX installation")
+    assert result.returncode == 0, result.stderr
+    if fmt == "pdf":
+        assert (tmp_path / "article.pdf").stat().st_size > 10_000
+        return
+    page = (tmp_path / "article.html").read_text()
+    for value in ARTICLE_VALUES:
+        assert value in page, value
+    # The figure is a real image, exactly one of them, and Matplotlib did
+    # not fall back to a backend that draws nothing.
+    figures = sorted((tmp_path / "article_files" / "figure-html").iterdir())
+    assert len(figures) == 1 and figures[0].stat().st_size > 1000
+    assert page.count("<img") == 1
+    assert "non-interactive" not in page
+    # Cross-references and the bibliography.
+    assert 'id="eq-mertens"' in page or "eq-mertens" in page
+    assert 'id="tbl-ratio"' in page
+    assert 'id="refs"' in page

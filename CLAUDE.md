@@ -17,6 +17,7 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
 - Status: 0.4.2 released; M1–M4 done (M3 was the MVP), plus `er2.oeis`. **M5 (0.5, algebra) is
   complete**, acceptance included: linear algebra with `Matrix`, finite fields with `GF`,
   polynomials over `F_p`, `resultant`/`discriminant`, `groebner`/`reduce` and `NumberField`.
+  **0.5.1 (scientific articles, ARCHITECTURE §1.3) is done** too: `examples/article.qmd`.
   Next: M6 (0.6, series) in [PLAN.md](PLAN.md). D1–D17 are all resolved; 0.5 is unreleased, so
   the changes are under **Unreleased** in [CHANGELOG.md](CHANGELOG.md).
 

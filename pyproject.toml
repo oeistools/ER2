@@ -37,6 +37,11 @@ dev = [
     "pyyaml>=6",
     # er2.oeis tests (they use recorded OEIS responses, not the network).
     "oeis-tools>=0.2.1",
+    # The figure in examples/article.qmd, and the Matplotlib half of
+    # tests/compat/test_scientific.py: a scientific article needs plots
+    # (ARCHITECTURE.md §1.3).  ER2 wraps nothing here; this is the kernel's
+    # interpreter needing the library the document imports.
+    "matplotlib>=3.9",
 ]
 
 [build-system]

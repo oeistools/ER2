@@ -61,6 +61,7 @@ gp_history
 # Quarto output
 examples/*.html
 examples/*_files/
+examples/*.pdf
 *.quarto_ipynb
 .quarto/
 

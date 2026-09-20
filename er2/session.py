@@ -8,6 +8,8 @@ on a plain ``import er2``.
 import code
 import fractions
 import linecache
+import os
+import signal
 import sys
 import traceback
 from pathlib import Path
@@ -45,10 +47,30 @@ def run_file(path, argv=()):
         exec(compiled, namespace)
     except SystemExit:
         raise
+    except KeyboardInterrupt as exc:
+        # Ctrl-C interrupts a long computation (D7); without this branch
+        # it would look like any other error, exit code 1.
+        _print_user_traceback(exc)
+        return _die_from_sigint()
     except BaseException as exc:  # noqa: BLE001 - report like Python does
         _print_user_traceback(exc)
         return 1
     return 0
+
+
+def _die_from_sigint():
+    """End the process as CPython does after an uncaught Ctrl-C.
+
+    CPython restores the default SIGINT handler and re-sends the signal,
+    so the process is *killed by* SIGINT instead of exiting normally: a
+    shell reports 130, and a parent sees ``WIFSIGNALED``, which is how
+    it tells "the user interrupted this" from "the program failed".
+    Windows cannot signal itself this way; there the code is returned.
+    """
+    if sys.platform != "win32":
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        os.kill(os.getpid(), signal.SIGINT)
+    return 128 + signal.SIGINT
 
 
 def _print_user_traceback(exc):

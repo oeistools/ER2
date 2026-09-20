@@ -18,8 +18,14 @@ x = sympy.Symbol("x")
 EPS = sympy.Float("1e-30")
 
 
-def close(value, expected):
-    return abs(value - expected) < EPS
+def assert_close(value, expected):
+    """Assert that two numbers agree to ``EPS``.
+
+    The comparison is what belongs inside the ``assert``; the PARI call
+    that produces ``value`` is evaluated by the caller, so it still runs
+    under ``python -O``, which strips ``assert`` statements.
+    """
+    assert abs(value - expected) < EPS
 
 
 def test_every_wrapper_row_has_a_signature():
@@ -50,17 +56,17 @@ def test_callables_receive_er2_values():
 
 def test_numerical_functions_use_er2_precision():
     zeta2 = (sympy.pi**2 / 6).evalf(40)
-    assert close(pari.sumpos(lambda n: Rational(1, n**2), 1), zeta2)
-    assert close(pari.sumnum(lambda n: 1 / n**2, 1), zeta2)
-    assert close(pari.intnum(lambda t: t**2, 0, 1), sympy.Rational(1, 3))
-    assert close(pari.intnum(lambda t: pari.exp(-t), 0, [sympy.oo, 1]), 1)
-    assert close(pari.solve(lambda t: t**2 - 2, 1, 2), sympy.sqrt(2).evalf(40))
-    assert close(pari.derivnum(lambda t: t**3, 2), 12)
-    assert close(
+    assert_close(pari.sumpos(lambda n: Rational(1, n**2), 1), zeta2)
+    assert_close(pari.sumnum(lambda n: 1 / n**2, 1), zeta2)
+    assert_close(pari.intnum(lambda t: t**2, 0, 1), sympy.Rational(1, 3))
+    assert_close(pari.intnum(lambda t: pari.exp(-t), 0, [sympy.oo, 1]), 1)
+    assert_close(pari.solve(lambda t: t**2 - 2, 1, 2), sympy.sqrt(2).evalf(40))
+    assert_close(pari.derivnum(lambda t: t**3, 2), 12)
+    assert_close(
         pari.sumalt(lambda n: (-1) ** n / n, 1), -sympy.log(2).evalf(40)
     )
-    assert close(pari.intcirc(lambda z: 1 / z, 0, 1), 1)
-    assert close(
+    assert_close(pari.intcirc(lambda z: 1 / z, 0, 1), 1)
+    assert_close(
         pari.intnumosc(lambda t: pari.sin(t) / t, 0, sympy.pi),
         (sympy.pi / 2).evalf(40),
     )
@@ -78,10 +84,13 @@ def test_euler_products_and_dirichlet_series():
 def test_loops_and_nesting():
     seen = []
     q = sympy.Matrix([[2, 1], [1, 2]])
-    assert pari.forqfvec(lambda v: seen.append(v), q, 4) is None
+    # The call fills ``seen``, so it must not sit inside an ``assert``:
+    # ``python -O`` drops those statements.
+    result = pari.forqfvec(lambda v: seen.append(v), q, 4)
+    assert result is None
     assert seen == [[0, 1], [1, -1], [1, 0]]
     inner = pari.sum(lambda k: pari.intnum(lambda t: t**k, 0, 1), 1, 3)
-    assert close(inner, sympy.Rational(13, 12))
+    assert_close(inner, sympy.Rational(13, 12))
     assert pari.sum(lambda n: pari.sum(lambda m: m * n, 1, n), 1, 4) == 65
 
 

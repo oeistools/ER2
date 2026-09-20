@@ -1,5 +1,6 @@
 """The ``er2`` command, the REPL and ``.er2`` imports (§3.2)."""
 
+import signal
 import subprocess
 import sys
 import textwrap
@@ -105,6 +106,31 @@ def test_errors_report_the_er2_line(tmp_path):
     )
     assert "numbers.py" not in result.stderr
     assert "session.py" not in result.stderr
+
+
+def test_exit_codes_match_python(tmp_path):
+    """``er2 f.er2`` exits as ``python f.py`` does (D7: Ctrl-C).
+
+    An interrupted program must be distinguishable from a failed one:
+    shells read 128 + SIGINT as "interrupted".
+    """
+    sources = {
+        "interrupted": "raise KeyboardInterrupt\n",
+        "failed": "raise ValueError('boom')\n",
+        "exited": "import sys\nsys.exit(3)\n",
+    }
+    expected = {}
+    for name, source in sources.items():
+        script = write(tmp_path / f"{name}.py", source)
+        expected[name] = subprocess.run(
+            [sys.executable, str(script)], capture_output=True, timeout=120
+        ).returncode
+    # Python is *killed by* SIGINT rather than exiting: ``subprocess``
+    # reports that as a negative code, and a shell shows it as 130.
+    assert expected["interrupted"] == -signal.SIGINT
+    for name, source in sources.items():
+        program = write(tmp_path / f"{name}.er2", source)
+        assert er2(program).returncode == expected[name], name
 
 
 def test_show_python(tmp_path):

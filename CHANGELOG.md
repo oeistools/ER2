@@ -54,6 +54,9 @@ What is stable already, and what is not:
 - Requires `oeis-tools` ≥ 0.2.1, so `OEISSequence.bibtex()` works.
 
 ### Fixed
+- Ctrl-C during an ER2 program (D7) made `er2 file.er2` exit with code 1, like any other error.
+  It now ends the way `python file.py` does — killed by SIGINT, which a shell reports as 130 — so
+  an interrupted run can be told apart from a failed one.
 - `divmod(7, 1/3)` and `divmod(2, 7.5)` raised `TypeError`.
 - `math.floor`, `math.ceil`, `math.trunc`, `round`, `divmod` of a `Rational` and reflected shifts
   (`3r << n`) returned plain `int`/`Fraction` instead of `Integer`/`Rational`.

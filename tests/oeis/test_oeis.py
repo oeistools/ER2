@@ -90,7 +90,7 @@ def test_terms_use_the_offset_and_the_bfile(offline):
     assert type(s[100]) is Integer
     assert len(s.bfile()) == 120
     with pytest.raises(IndexError, match="no known term a\\(5000\\)"):
-        s[5000]
+        _ = s[5000]
 
 
 def test_printing(offline):

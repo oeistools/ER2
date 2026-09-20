@@ -117,20 +117,35 @@ Details:
   reimplementation of Quarto's Jupyter engine, pinned to an API at version 0.1.0, installed per
   project, and it would lose exactly the editor tooling D9 chose `python` for.
 
-  **What was tested instead (2026-09-20), and works.** The same dev note describes the
-  `firstClass` mechanism, `` ```{python .marimo} ``. Applied here, `` ```{python .er2} ``
-  **executes correctly** — the block stays Python for engine selection, so the ER2 kernel runs
-  it. The class is consumed by Quarto and does not reach the output, so it is a marker in the
-  *source* only. For a marker that survives into HTML, the cell option `#| classes: er2` puts
-  `class="cell er2"` on the cell div, which CSS can label; the inner `<code>` stays
-  `sourceCode python`. Both are optional cosmetics over the same executing `` ```{python} ``.
+  **What ER2 ships instead (2026-09-20).** Cells stay `` ```{python} ``, and two files beside
+  the examples make a rendered document say ER2:
 
-  | Block | Executes | In the source | In the HTML |
-  |---|---|---|---|
-  | `` ```{python} `` | yes | — | — |
-  | `` ```{er2} `` | **no, silently** | yes | n/a |
-  | `` ```{python .er2} `` | yes | yes | class dropped |
-  | `` ```{python} `` + `#| classes: er2` | yes | yes | `class="cell er2"` |
+  - `examples/er2-cells.lua`, a Lua filter that renames the displayed language of every
+    executable Python block to `er2` and marks the cell div. No per-cell marker is needed,
+    because in a document with `jupyter: er2` every executable Python block **is** ER2.
+  - `examples/er2.xml`, a KDE syntax definition that highlights it. It states only the §1.1
+    table — `sym`, the `5r` raw literals, `^^` — and then `IncludeRules context="##Python"`,
+    so Python's keywords, builtins, strings and f-strings are Pandoc's own and cannot drift.
+    `sym` inside a string or a comment is not highlighted, the rule the preparser also follows.
+
+  Both are switched on for every example by `examples/_quarto.yml`, four lines in one place, so
+  no document's front matter carries them. `tests/notebooks/test_notebooks.py` renders one
+  example to HTML and asserts the language is `er2`, that no block is left `python`, that `sym`
+  is a keyword and that token spans exist at all; removing any of the three pieces fails it.
+
+  **Why not the alternatives.** All measured on Quarto 1.9.38:
+
+  | Approach | Executes | Output says ER2 | Highlighting | Typing |
+  |---|---|---|---|---|
+  | `` ```{python} `` alone | yes | no | Python's | none |
+  | `` ```{er2} ``, `` ```{.er} `` | **no, silently** | — | — | none |
+  | `` ```{python .er2} `` | yes | no — Quarto eats the class | Python's | 6 chars × every cell |
+  | `` ```{python} `` + `#| classes: er2` | yes | via CSS only | Python's | a line × every cell |
+  | **`` ```{python} `` + filter + `er2.xml`** | **yes** | **yes** | **ER2's** | **none** |
+
+  `` ```{python .er2} `` is the `firstClass` mechanism the dev note describes for
+  `` ```{python .marimo} ``. It executes, but the class never reaches pandoc — a logging filter
+  sees `[python, cell-code]` — so it is a comment to a human reader and nothing more.
 
   **A Lua filter cannot make a block execute, only relabel it.** Quarto runs Lua filters in the
   pandoc stage, *after* the kernel has run: a logging filter put its first line 20 log lines
@@ -138,24 +153,9 @@ Details:
   produces a block that is *labelled* Python and has **no output** — the worst outcome, because
   it looks like a cell that legitimately printed nothing. (Two parsing details: `` ```{.er} ``
   reaches the filter as `classes[1] == "er"`, while `` ```{er} `` reaches it as a class named
-  literally `{er}`; and the `.er2` of `` ```{python .er2} `` never arrives at all, because
-  Quarto consumes it as `firstClass` — the filter sees `[python, cell-code]`.)
-
-  Filters are the right tool for *display*, though, and no marker is needed: in a document with
-  `jupyter: er2` every executable Python block **is** ER2, so a filter can relabel all of them.
-  That works (the block renders as ` ```er2 `) at a measured cost: Pandoc has no `er2` lexer, so
-  the HTML loses its `sourceCode` classes and all syntax highlighting.
-
-  | Approach | Executes | Source says ER2 | Output says ER2 | HTML highlighting |
-  |---|---|---|---|---|
-  | `` ```{python} `` | yes | no | no | yes |
-  | `` ```{er2} ``, `` ```{.er} `` | **no, silently** | yes | — | — |
-  | `` ```{python .er2} `` | yes | yes | no | yes |
-  | `` ```{python} `` + Lua relabel | yes | no | yes | **no** |
-  | `` ```{python} `` + `#| classes: er2` | yes | yes | yes | yes |
-
-  The last row is the only one that gives the ER2 label everywhere without losing anything, and
-  it is a cell option plus CSS, not a language change.
+  literally `{er}`.) Relabelling without `er2.xml` was also measured, and loses every
+  `sourceCode` class and token span, because Pandoc has no `er2` lexer — which is why the
+  syntax definition is part of the answer and not a refinement of it.
 
   **There is no alias mechanism**, no config key that makes `` ```{er2} `` *mean*
   `` ```{python .er2} ``. The nearest thing, a project `pre-render` script that rewrites the

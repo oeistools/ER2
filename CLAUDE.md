@@ -21,7 +21,8 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
   **0.5.2 (learnability and speed, §1.4 and §1.5)**: matrix calls are 3–6× faster and §2.1
   records where a call's time actually goes.
   **M6 (0.6, series) is complete**, acceptance included: power series through PARI, the three
-  operations SymPy lacks, `DirichletSeries`, Euler products and `generating_function`.
+  operations SymPy lacks, `DirichletSeries`, Euler products and `generating_function`. **0.6.1**
+  makes Quarto documents show their cells as ER2, with real ER2 highlighting.
   Next: M7 (0.7, the language specification) in [PLAN.md](PLAN.md). D1–D21 are all resolved; 0.5
   is unreleased, so the changes are under **Unreleased** in [CHANGELOG.md](CHANGELOG.md).
 
@@ -32,6 +33,13 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
 **Python compatibility is a hard requirement** (ARCHITECTURE.md §1.1, SageMath model): all Python syntax works in ER2, and any library is usable via normal `import`. Only `.er2` sources are preparsed — `.py` modules and installed libraries are never touched. The only intended differences inside `.er2` files are listed in the §1.1 table (`^` = power, `^^` = XOR, exact integer literals, `sym`, `5r` raw literals); never add another without updating that table and asking the user.
 
 **Notebooks are a hard requirement** (ARCHITECTURE.md §1.2): ER2 code must run in Jupyter and Quarto, through the `er2` kernel and through `%load_ext er2`. Every feature must work in those environments, not only in `er2 file.er2`.
+
+Quarto cells are **`` ```{python} ``, never `` ```{er2} ``** (D9): Quarto decides what to execute
+from the block's language before the kernel is consulted, so an `` ```{er2} `` block is silently
+*not executed* while the render still exits 0. Documents are shown as ER2 by
+`examples/er2-cells.lua` (renames the displayed language) and `examples/er2.xml` (highlights it),
+switched on in `examples/_quarto.yml`. A test fails if any of those stops working. ARCHITECTURE
+§1.2 records the measurements — read it before re-opening this.
 
 **PEP 8 is a hard requirement** (ARCHITECTURE.md §6.1): it applies to the implementation, the public API names, and the ER2 code in examples and docs.
 

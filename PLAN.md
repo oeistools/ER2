@@ -34,6 +34,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | 0.5.1     | Scientific articles (§1.3)                     | ✅ done     |
 | 0.5.2     | Learnability and speed (§1.4, §1.5)            | ✅ done     |
 | M6 (0.6)  | Series                                        | ✅ done     |
+| 0.6.1     | ER2 cells and highlighting in Quarto (D9)     | ✅ done     |
 | M7 (0.7)  | Language specification                        | not started |
 | M8 (1.0)  | Stable language and release                   | not started |
 | — (2.0)  | Deep CPython integration                      | long term   |
@@ -562,6 +563,56 @@ Two things worth keeping:
 
 **Deliberately out of scope (D20):** L-functions (PARI's `lfun` family), modular forms, and
 p-adic series. `lfun` is large enough to deserve its own milestone, and nothing in M6 needs it.
+
+## 0.6.1 — ER2 cells and highlighting in Quarto
+
+The user asked for `` ```{er2} `` blocks instead of `` ```{python} `` (2026-09-20). The premise
+turned out to be false, and chasing it produced something better, so both are recorded here.
+
+**What was found.** `` ```{er2} `` **does not execute** on Quarto 1.9.38, whatever the kernelspec
+declares — the block is copied into the output as literal text and the render still exits 0, so
+the failure is silent. Converting `examples/series.qmd` to it fails outright
+(`NameError: name 'latex' is not defined`), because the inline `{python}` expressions still run
+while the cells never do. Quarto's own developer notes confirm why: a block's language is claimed
+by an **engine**, and there is no language-to-kernelspec mapping. ARCHITECTURE §1.2 has the
+measurements.
+
+**Tasks:**
+
+1. ✅ **Correct the record.** §1.2 claimed Quarto accepted `` ```{er2} `` cells. It does not, on
+   the version the note says was tested. The claim is replaced by the retest, and D9 is
+   reaffirmed with its reason.
+2. ✅ **`examples/er2-cells.lua`** renames the displayed language of every executable Python
+   block to `er2` and marks the cell div. No per-cell marker: in a document with `jupyter: er2`
+   every executable Python block *is* ER2.
+3. ✅ **`examples/er2.xml`**, a KDE syntax definition, so `er2` is really highlighted. It states
+   only the §1.1 table and includes Python's rules with `IncludeRules context="##Python"`, so
+   Python's half is Pandoc's own and cannot drift. Roughly 25 lines.
+4. ✅ **`examples/_quarto.yml`** turns both on for every example in four lines, once, so no
+   document's front matter carries them.
+5. ✅ **A test that fails if any of the three stops working**
+   (`test_cells_are_displayed_as_er2`), checked by mutation: removing the syntax definition, the
+   filter, or `sym` from the keyword list each makes it fail.
+
+**Acceptance: ✅ met (2026-09-20).** All five examples render with every cell shown as `er2`,
+none left as `python`, `sym` highlighted as an ER2 keyword, and their computed output unchanged.
+
+Three things worth keeping:
+
+- **A Lua filter cannot make a block execute**, only relabel it: Quarto runs filters after the
+  kernel, which a logging filter showed by 20 log lines. A filter that relabels an unexecuted
+  block produces the worst outcome — a block that looks like a cell which printed nothing.
+- **The first fix made the source worse.** Putting the machinery in each document's front matter
+  traded five lines per file for a feature that belongs in one place; the user said so, and
+  `_quarto.yml` fixed it. Optimising the output at the author's expense is a bad trade.
+- **`er2.xml` is reusable.** It is the same artefact a VS Code or Kate extension needs, and it
+  belongs beside `docs/LANGUAGE.md` in M7 rather than in `examples/` for ever.
+
+**Deliberately not done:** a Quarto **engine extension**, which is the only way to make
+`` ```{er2} `` execute. `quarto create extension engine` scaffolds one, but since Jupyter must do
+the executing it would be a reimplementation of Quarto's Jupyter engine (the bundled
+`julia-engine` is ~1,300 lines against an API at version 0.1.0), installed per project, and it
+would lose the editor tooling D9 chose `python` for.
 
 ## M7 — 0.7: Language specification
 

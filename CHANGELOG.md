@@ -27,6 +27,13 @@ What is stable already, and what is not:
 ## [Unreleased]
 
 ### Added
+- **Quarto documents show their cells as ER2 (0.6.1)**, with real ER2 syntax highlighting:
+  `examples/er2.xml` is a KDE syntax definition that states the §1.1 table — `sym`, `5r`
+  literals, `^^` — and includes Python's rules, so Python's half stays Pandoc's own.
+  `examples/er2-cells.lua` renames the displayed language, and `examples/_quarto.yml` turns both
+  on for every example in one place. Cells are still written `` ```{python} ``, which is what
+  Quarto executes: an `` ```{er2} `` block is **not executed at all**, silently, whatever the
+  kernelspec says (D9, ARCHITECTURE §1.2).
 - **Series (M6, 0.6)**, with decisions D18–D21:
   - **Power series stay ordinary expressions** with an `O()` term (D18) — no new type to learn.
     What was missing were three operations SymPy does not have at all: `series_reverse` (the

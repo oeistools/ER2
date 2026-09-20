@@ -248,7 +248,7 @@ factorcantor,5,factorcantor,namespace,,"this function is obsolete, use factormod
 factorff,5,factorff,namespace,,"obsolete, use factormod"
 factorial,5,factorial,namespace,PARI returns a real; the exact `factorial` is in the prelude,"factorial of x, the result being given as a real number"
 factorint,5,factorint,namespace,,factor the integer x
-factormod,5,factormod,namespace,,"factors the polynomial f over the finite field defined by the domain D; flag is optional, and can be 0: default or 1: on…"
+factormod,5,factormod,namespace,"ER2: `factor(f, modulus=p)`","factors the polynomial f over the finite field defined by the domain D; flag is optional, and can be 0: default or 1: on…"
 factormodcyclo,5,factormodcyclo,namespace,,factor n-th cyclotomic polynomial mod p
 factormodDDF,5,factormod_ddf,namespace,renamed for PEP 8,distinct-degree factorization of the squarefree polynomial f over the finite field defined by the domain D
 factormodSQF,5,factormod_sqf,namespace,renamed for PEP 8,squarefree factorization of the polynomial f over the finite field defined by the domain D
@@ -256,8 +256,8 @@ ffcompomap,5,ffcompomap,namespace,,"Let k, l, m be three finite fields and f a (
 ffembed,5,ffembed,namespace,,"given two elements a and b in finite fields, return a map embedding the definition field of a to the definition field of…"
 ffextend,5,ffextend,namespace,,"extend the field K of definition of a by a root of the polynomial P, assumed to be irreducible over K"
 fffrobenius,5,fffrobenius,namespace,,return the n-th power of the Frobenius map over the field of definition of m
-ffgen,5,ffgen,namespace,,return a generator of the finite field k (not necessarily a generator of its multiplicative group) as a t_FFELT
-ffinit,5,ffinit,namespace,,monic irreducible polynomial of degree n in F_p[v]
+ffgen,5,ffgen,namespace,ER2: `GF(q).gen()`,return a generator of the finite field k (not necessarily a generator of its multiplicative group) as a t_FFELT
+ffinit,5,ffinit,namespace,"ER2: `GF(p, k)`",monic irreducible polynomial of degree n in F_p[v]
 ffinvmap,5,ffinvmap,namespace,,"given a map m between finite fields, return a partial map that return the pre-images by the map m"
 fflog,5,fflog,namespace,,return the discrete logarithm of the finite field element x in base g
 ffmap,5,ffmap,namespace,,"given a (partial) map m between two finite fields, return the image of x by m"
@@ -362,7 +362,7 @@ polcoeff,6,polcoeff,namespace,,deprecated alias for polcoef
 polcyclo,6,polcyclo,namespace,,n-th cyclotomic polynomial evaluated at a
 polcyclofactors,6,polcyclofactors,namespace,,"returns a vector of polynomials, whose product is the product of distinct cyclotomic polynomials dividing f"
 poldegree,6,poldegree,namespace,,"degree of the polynomial or rational function x with respect to main variable if v is omitted, with respect to v otherwi…"
-poldisc,6,poldisc,namespace,,"discriminant of the polynomial pol, with respect to main variable if v is omitted, with respect to v otherwise"
+poldisc,6,poldisc,namespace,ER2: `discriminant`,"discriminant of the polynomial pol, with respect to main variable if v is omitted, with respect to v otherwise"
 poldiscfactors,6,poldiscfactors,namespace,,"[D, faD], where D = discriminant of the polynomial T, and faD is a cheap partial factorization of D (entries are coprime…"
 poldiscreduced,6,poldiscreduced,namespace,,"vector of elementary divisors of Z[a]/f'(a)Z[a], where a is a root of the polynomial f"
 polfromroots,6,polfromroots,namespace,,returns the monic polynomial in variable v whose roots are the components of the vector a with multiplicities
@@ -373,13 +373,13 @@ polinterpolate,6,polinterpolate,namespace,,"polynomial interpolation at t accord
 polisclass,6,polisclass,namespace,,"P being a monic irreducible polynomial with integer coefficients, return 0 if P is not a class polynomial for the j-inva…"
 poliscyclo,6,poliscyclo,namespace,,"returns 0 if f is not a cyclotomic polynomial, and n > 0 if f = Phi_n, the n-th cyclotomic polynomial"
 poliscycloprod,6,poliscycloprod,namespace,,"returns 1 if f is a product of cyclotomic polynonials, and 0 otherwise"
-polisirreducible,6,polisirreducible,namespace,,"true(1) if pol is an irreducible nonconstant polynomial, false(0) if pol is reducible or constant"
+polisirreducible,6,polisirreducible,namespace,ER2: `isirreducible`,"true(1) if pol is an irreducible nonconstant polynomial, false(0) if pol is reducible or constant"
 pollaguerre,6,pollaguerre,namespace,,Laguerre polynomial of degree n and parameter a evaluated at b
 pollead,6,pollead,namespace,,"leading coefficient of polynomial or series x, or x itself if x is a scalar"
 pollegendre,6,pollegendre,namespace,,legendre polynomial of degree n evaluated at a
 polmodular,6,polmodular,namespace,,return the modular polynomial of level L and invariant inv
 polrecip,6,polrecip,namespace,,reciprocal polynomial of pol
-polresultant,6,polresultant,namespace,,"resultant of the polynomials x and y, with respect to the main variables of x and y if v is omitted, with respect to the…"
+polresultant,6,polresultant,namespace,ER2: `resultant`,"resultant of the polynomials x and y, with respect to the main variables of x and y if v is omitted, with respect to the…"
 polresultantext,6,polresultantext,namespace,,"return [U,V,R] such that R=polresultant(A,B,v) and U*A+V*B = R, where A and B are polynomials"
 polroots,6,polroots,namespace,,"complex roots of the polynomial T using Schonhage's method, as modified by Gourdon"
 polrootsbound,6,polrootsbound,namespace,,return a sharp upper bound for the modulus of the largest complex root of the polynomial T with relative error tau
@@ -418,7 +418,7 @@ lindep,7,lindep,namespace,,integral linear dependencies between components of v
 matadjoint,7,matadjoint,namespace,,adjoint matrix of M using Leverrier-Faddeev's algorithm
 matcompanion,7,matcompanion,namespace,,companion matrix to polynomial x
 matconcat,7,matconcat,namespace,,concatenate the entries of v and return the resulting matrix
-matdet,7,matdet,namespace,,determinant of the matrix x using an appropriate algorithm depending on the coefficients
+matdet,7,matdet,namespace,ER2: `det`,determinant of the matrix x using an appropriate algorithm depending on the coefficients
 matdetint,7,matdetint,namespace,,some multiple of the determinant of the lattice generated by the columns of B (0 if not of maximal rank)
 matdetmod,7,matdetmod,namespace,,determinant of the matrix x modulo d
 matdiagonal,7,matdiagonal,namespace,,creates the diagonal matrix whose diagonal entries are the entries of the vector x
@@ -426,7 +426,7 @@ mateigen,7,mateigen,namespace,,complex eigenvectors of the matrix x given as col
 matfrobenius,7,matfrobenius,namespace,,return the Frobenius form of the square matrix M
 mathess,7,mathess,namespace,,Hessenberg form of x
 mathilbert,7,mathilbert,namespace,,Hilbert matrix of order n
-mathnf,7,mathnf,namespace,,"(upper triangular) Hermite normal form of M, basis for the lattice formed by the columns of M"
+mathnf,7,mathnf,namespace,ER2: `hermite_form`,"(upper triangular) Hermite normal form of M, basis for the lattice formed by the columns of M"
 mathnfmod,7,mathnfmod,namespace,,"(upper triangular) Hermite normal form of x, basis for the lattice formed by the columns of x, where d is a multiple of …"
 mathnfmodid,7,mathnfmodid,namespace,,(upper triangular) Hermite normal form of x concatenated with matdiagonal(d)
 mathouseholder,7,mathouseholder,namespace,,applies a sequence Q of Householder transforms to the vector or matrix v
@@ -439,7 +439,7 @@ matintersect,7,matintersect,namespace,,intersection of the vector spaces whose b
 matinverseimage,7,matinverseimage,namespace,,"an element of the inverse image of the vector y by the matrix x if one exists, the empty vector otherwise"
 matinvmod,7,matinvmod,namespace,,left inverse of the matrix x modulo d
 matisdiagonal,7,matisdiagonal,namespace,,"true(1) if x is a diagonal matrix, false(0) otherwise"
-matker,7,matker,namespace,,basis of the kernel of the matrix x
+matker,7,matker,namespace,ER2: `kernel`,basis of the kernel of the matrix x
 matkerint,7,matkerint,namespace,,"LLL-reduced Z-basis of the kernel of the matrix x with integral entries; flag is deprecated, kept for backward compatibi…"
 matkermod,7,matkermod,namespace,,basis of the kernel of the matrix x modulo d
 matmuldiagonal,7,matmuldiagonal,namespace,,"product of matrix x by diagonal matrix whose diagonal coefficients are those of the vector d, equivalent but faster than…"
@@ -447,13 +447,13 @@ matmultodiagonal,7,matmultodiagonal,namespace,,"product of matrices x and y, kno
 matpascal,7,matpascal,namespace,,Pascal triangle of order n if q is omitted
 matpermanent,7,matpermanent,namespace,,permanent of the matrix x
 matqr,7,matqr,namespace,,"returns [Q,R], the QR-decomposition of the square invertible matrix M"
-matrank,7,matrank,namespace,,rank of the matrix x
+matrank,7,matrank,namespace,ER2: `rank`,rank of the matrix x
 matreduce,7,matreduce,namespace,,reduce the factorization matrix m to canonical form (sorted first row with unique elements) matrix
 matrix,7,matrix,namespace,,"m x n matrix of expression expr, where the row variable X goes from 1 to m and the column variable Y goes from 1 to n"
 matrixqz,7,matrixqz,namespace,,"if p>=0, transforms the rational or integral mxn (m>=n) matrix A into an integral matrix with gcd of maximal determinant…"
 matsize,7,matsize,namespace,,number of rows and columns of the vector/matrix x as a 2-vector
-matsnf,7,matsnf,namespace,,Smith normal form (i.e
-matsolve,7,matsolve,namespace,,"solution of MX=B (M matrix, B column vector or matrix)"
+matsnf,7,matsnf,namespace,ER2: `smith_form`,Smith normal form (i.e
+matsolve,7,matsolve,namespace,"ER2: `solve(A, b)`","solution of MX=B (M matrix, B column vector or matrix)"
 matsolvemod,7,matsolvemod,namespace,,"one solution of system of congruences MX=B mod D (M matrix, B and D column vectors)"
 matsupplement,7,matsupplement,namespace,,supplement the columns of the matrix x to an invertible matrix
 mattranspose,7,mattranspose,namespace,,x~ = transpose of x
@@ -611,9 +611,9 @@ sumnummonieninit,9,sumnummonieninit,namespace,,initialize tables for Monien summ
 sumnumrat,9,sumnumrat,namespace,,"sum from n = a to infinity of F(n), where F is a rational function of degree less than or equal to -2"
 sumnumsidi,9,sumnumsidi,wrapper,GP expression argument; ER2 takes a Python callable,numerical summation of f(n) from n = a to +infinity using Sidi summation; a must be an integer
 sumpos,9,sumpos,wrapper,GP expression argument; ER2 takes a Python callable,"sum of positive (or negative) series expr, the formal variable X starting at a"
-bnfcertify,10,bnfcertify,namespace,,certify the correctness (i.e
+bnfcertify,10,bnfcertify,namespace,ER2: `certify=True`,certify the correctness (i.e
 bnfdecodemodule,10,bnfdecodemodule,namespace,,"given a coded module m as in bnrdisclist, gives the true module"
-bnfinit,10,bnfinit,namespace,,"compute the necessary data for future use in ideal and unit group computations, including fundamental units if they are …"
+bnfinit,10,bnfinit,namespace,ER2: `NumberField` class group and units,"compute the necessary data for future use in ideal and unit group computations, including fundamental units if they are …"
 bnfisintnorm,10,bnfisintnorm,namespace,,"compute a complete system of solutions (modulo units of positive norm) of the absolute norm equation N(a)=x, where a bel…"
 bnfisnorm,10,bnfisnorm,namespace,,tries to tell whether x (in Q) is the norm of some fractional y (in bnf)
 bnfisprincipal,10,bnfisprincipal,namespace,,"bnf being output by bnfinit, gives [e,t], where e is the vector of exponents on the class group generators and t is the …"
@@ -699,7 +699,7 @@ idealmul,10,idealmul,namespace,,product of the two ideals x and y in the number 
 idealnorm,10,idealnorm,namespace,,norm of the ideal x in the number field nf
 idealnumden,10,idealnumden,namespace,,"returns [A,B], where A,B are coprime integer ideals such that x = A/B"
 idealpow,10,idealpow,namespace,,k-th power of the ideal x in HNF in the number field nf
-idealprimedec,10,idealprimedec,namespace,,prime ideal decomposition of the prime number p in the number field nf as a vector of prime ideals
+idealprimedec,10,idealprimedec,namespace,ER2: `NumberField.factor(p)`,prime ideal decomposition of the prime number p in the number field nf as a vector of prime ideals
 idealprincipalunits,10,idealprincipalunits,namespace,,"returns the structure [no, cyc, gen] of the multiplicative group (1 + pr) / (1 + pr^k)"
 idealramgroups,10,idealramgroups,namespace,,"let pr be a prime ideal in prid format, and gal the Galois group of the number field nf, return a vector g such that g[1…"
 idealred,10,idealred,namespace,,"LLL reduction of the ideal I in the number field nf along direction v, in HNF"
@@ -747,7 +747,7 @@ nfgrunwaldwang,10,nfgrunwaldwang,namespace,,a polynomial in the variable v defin
 nfhilbert,10,nfhilbert,namespace,,"if pr is omitted, global Hilbert symbol (a,b) in nf, that is 1 if X^2-aY^2-bZ^2 has a nontrivial solution (X,Y,Z) in nf,…"
 nfhnf,10,nfhnf,namespace,,"if x=[A,I], gives a pseudo-basis [B,J] of the module sum A_jI_j"
 nfhnfmod,10,nfhnfmod,namespace,,"if x=[A,I], and detx is a multiple of the ideal determinant of x, gives a pseudo-basis of the module sum A_jI_j"
-nfinit,10,nfinit,namespace,,"pol being a nonconstant irreducible polynomial in Q[X], returns an nf structure attached to the number field Q[X] / (pol…"
+nfinit,10,nfinit,namespace,ER2: `NumberField`,"pol being a nonconstant irreducible polynomial in Q[X], returns an nf structure attached to the number field Q[X] / (pol…"
 nfisideal,10,nfisideal,namespace,,"true(1) if x is an ideal in the number field nf, false(0) if not"
 nfisincl,10,nfisincl,namespace,,"let f and g define number fields, either irreducible rational polynomials or number fields as output by nfinit; tests wh…"
 nfisisom,10,nfisisom,namespace,,as nfisincl but tests whether f is isomorphic to g

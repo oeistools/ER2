@@ -264,7 +264,7 @@ minpoly(algebraic number)               → SymPy minimal_polynomial
   checks this, and it was also compared on 248 random polynomials. Multivariate polynomials,
   irrational coefficients and options (`extension=`, `modulus=`, …) stay with SymPy.
 - **Polynomials over F_p (M5).** `factor(f, modulus=p)` and `gcd(f, g, modulus=p)` go to PARI for
-  univariate polynomials over Z with prime `p` (×40 faster than SymPy at degree 49), and the
+  univariate polynomials over Z with prime `p`, and the
   result is rebuilt in SymPy's exact form: the integer content in front (not reduced modulo `p`,
   as SymPy leaves it), then monic factors with coefficients in `(-p/2, p/2]`. Checked against
   `sympy.factor(f, modulus=p)` on 400 random polynomials. `domain=GF(p)` is the same as
@@ -272,6 +272,15 @@ minpoly(algebraic number)               → SymPy minimal_polynomial
   elements, which no ER2 type provides yet: `factor(f, domain=GF(9))` raises
   `NotImplementedError` and points to `pari.raw.factormod`. `isirreducible` follows PARI in
   answering False for a constant, where SymPy answers True.
+- **What the M5 backends actually buy (docs/BENCHMARKS.md).** The PARI route wins where the work
+  is big enough to pay for converting a SymPy object to PARI and back, and that crossover is
+  further out than it looks. `det` of a 20×20 integer matrix is ×16 faster than SymPy
+  (2.7 ms against 42.7 ms), but `hermite_form` at 10×10 is ×3.3 *slower* than SymPy's
+  `hermite_normal_form`, and only reaches parity around 20×20 — a size threshold, as `factor`
+  already has for degree, would be the fix, and `hermite_form` has no SymPy route to fall back
+  to yet. `factor(f, modulus=p)` at degree 49 is ×2–10 faster than SymPy end to end, depending on
+  `p`, while the PARI call inside it is ×25–400 faster: the conversion, not the factoring, is
+  most of ER2's time. Quote the end-to-end figures, since they are what a user sees.
 - **Linear algebra (M5, D12).** Matrices are SymPy's `Matrix`. A matrix whose entries are all
   rational goes to PARI (square matrices only for `det`, `inverse`, `charpoly`, `minpoly` and
   `solve`); every other matrix goes to SymPy, which also raises the errors for non-square

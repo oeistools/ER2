@@ -10,35 +10,65 @@ Notes: `isprime` proves primality (PARI's APRCL); `sympy.isprime` and `ispseudop
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| `er2` startup, number theory only | 162 ms | Python | 23.4 ms | ×6.92 |
-| `er2` startup, with symbols (loads SymPy) | 556 ms | Python | 23.4 ms | ×23.80 |
+| `er2` startup, number theory only | 143 ms | Python | 22.1 ms | ×6.45 |
+| `er2` startup, with symbols (loads SymPy) | 506 ms | Python | 22.1 ms | ×22.91 |
 
 ## Integer arithmetic (D2)
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| numeric loop, 20000 iterations (ER2 literals) | 24.7 ms | Python `int` | 1.67 ms | ×14.77 |
-| `a + b` | 317 ns | `int` `a + b` | 47.5 ns | ×6.68 |
+| numeric loop, 20000 iterations (ER2 literals) | 23.1 ms | Python `int` | 1.63 ms | ×14.22 |
+| `a + b` | 289 ns | `int` `a + b` | 35.1 ns | ×8.23 |
 
 ## Number theory
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| phi(n), n ≈ 1.2e8 | 6.07 µs | cypari2 | 3.43 µs | ×1.77 |
-| phi(n), n ≈ 1.2e8 | 6.07 µs | SymPy | 105 µs | ×0.06 |
-| sigma(n), n ≈ 1.2e8 | 6.36 µs | cypari2 | 3.38 µs | ×1.88 |
-| sigma(n), n ≈ 1.2e8 | 6.36 µs | SymPy | 108 µs | ×0.06 |
-| isprime(2^127 - 1), proven | 420 µs | cypari2 | 428 µs | ×0.98 |
-| ispseudoprime (BPSW), Mersenne primes | 23.8 µs | cypari2 | 19.8 µs | ×1.20 |
-| ispseudoprime (BPSW), Mersenne primes | 23.8 µs | SymPy | 71.5 µs | ×0.33 |
-| factor(n), n ≈ 1e18 semiprime | 240 µs | cypari2 | 226 µs | ×1.06 |
-| factor(n), n ≈ 1e18 semiprime | 240 µs | SymPy | 13.7 ms | ×0.02 |
+| phi(n), n ≈ 1.2e8 | 5.62 µs | cypari2 | 3.1 µs | ×1.82 |
+| phi(n), n ≈ 1.2e8 | 5.62 µs | SymPy | 90.5 µs | ×0.06 |
+| sigma(n), n ≈ 1.2e8 | 5.61 µs | cypari2 | 3.19 µs | ×1.76 |
+| sigma(n), n ≈ 1.2e8 | 5.61 µs | SymPy | 93.3 µs | ×0.06 |
+| isprime(2^127 - 1), proven | 390 µs | cypari2 | 381 µs | ×1.02 |
+| ispseudoprime (BPSW), Mersenne primes | 21.5 µs | cypari2 | 19.4 µs | ×1.11 |
+| ispseudoprime (BPSW), Mersenne primes | 21.5 µs | SymPy | 73.7 µs | ×0.29 |
+| factor(n), n ≈ 1e18 semiprime | 241 µs | cypari2 | 217 µs | ×1.11 |
+| factor(n), n ≈ 1e18 semiprime | 241 µs | SymPy | 12.8 ms | ×0.02 |
 
 ## Polynomial factorization
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| factor, degree 4 | 1.01 ms | SymPy `factor` | 867 µs | ×1.16 |
-| factor, degree 9 | 2.02 ms | SymPy `factor` | 2.68 ms | ×0.75 |
-| factor, degree 22 | 4.64 ms | SymPy `factor` | 13.5 ms | ×0.34 |
-| factor, degree 60 | 24.2 ms | SymPy `factor` | 345 ms | ×0.07 |
+| factor, degree 4 | 947 µs | SymPy `factor` | 805 µs | ×1.18 |
+| factor, degree 9 | 1.74 ms | SymPy `factor` | 2.29 ms | ×0.76 |
+| factor, degree 22 | 4.71 ms | SymPy `factor` | 12.1 ms | ×0.39 |
+| factor, degree 60 | 19.5 ms | SymPy `factor` | 301 ms | ×0.07 |
+
+## Polynomials over F_p (M5)
+
+| Benchmark | ER2 | Reference | Reference time | ER2 / reference |
+|---|---|---|---|---|
+| factor mod 7, degree 12 | 2.77 ms | cypari2 | 21.3 µs | ×130.48 |
+| factor mod 7, degree 12 | 2.77 ms | SymPy | 3.42 ms | ×0.81 |
+| factor mod 7, degree 48 | 9.51 ms | cypari2 | 641 µs | ×14.85 |
+| factor mod 7, degree 48 | 9.51 ms | SymPy | 20.1 ms | ×0.47 |
+
+## Linear algebra (M5)
+
+| Benchmark | ER2 | Reference | Reference time | ER2 / reference |
+|---|---|---|---|---|
+| det, 10x10 over Z | 728 µs | cypari2 | 13.6 µs | ×53.71 |
+| det, 10x10 over Z | 728 µs | SymPy | 5.31 ms | ×0.14 |
+| kernel, 10x10 over Z | 1 ms | cypari2 | 22.2 µs | ×45.11 |
+| kernel, 10x10 over Z | 1 ms | SymPy | 1.03 ms | ×0.98 |
+| hermite_form, 10x10 over Z | 1.23 ms | cypari2 | 33.9 µs | ×36.15 |
+| hermite_form, 10x10 over Z | 1.23 ms | SymPy | 371 µs | ×3.30 |
+| smith_form, 10x10 over Z | 865 µs | cypari2 | 57.7 µs | ×14.98 |
+| smith_form, 10x10 over Z | 865 µs | SymPy | 796 µs | ×1.09 |
+| det, 20x20 over Z | 2.7 ms | cypari2 | 157 µs | ×17.22 |
+| det, 20x20 over Z | 2.7 ms | SymPy | 42.7 ms | ×0.06 |
+| kernel, 20x20 over Z | 3.44 ms | cypari2 | 276 µs | ×12.49 |
+| kernel, 20x20 over Z | 3.44 ms | SymPy | 3.71 ms | ×0.93 |
+| hermite_form, 20x20 over Z | 4.74 ms | cypari2 | 260 µs | ×18.24 |
+| hermite_form, 20x20 over Z | 4.74 ms | SymPy | 3.44 ms | ×1.38 |
+| smith_form, 20x20 over Z | 3.71 ms | cypari2 | 520 µs | ×7.13 |
+| smith_form, 20x20 over Z | 3.71 ms | SymPy | 4.26 ms | ×0.87 |

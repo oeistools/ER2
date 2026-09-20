@@ -1,5 +1,5 @@
 ---
-title: "ER2 demo: what works today (M1–M4)"
+title: "ER2 demo: what works today (M1–M5)"
 format:
   html:
     code-tools: true
@@ -198,6 +198,54 @@ Binary quadratic forms, composed by PARI:
 q = Qfb(2, 1, 3)
 print(q.discriminant(), q^3, pari.qfbclassno(-23))
 q * q
+```
+
+## Algebra (0.5)
+
+Matrices are SymPy's. Rational entries go to PARI and symbolic ones to
+SymPy, and both routes give the same answer.
+
+```{python}
+M = Matrix([[2, 1], [1, 3]])
+print(det(M), rank(M), charpoly(M))
+print(smith_form(Matrix([[2, 4], [6, 8]])))
+```
+
+Finite fields, and factoring over one:
+
+```{python}
+a = GF(9).gen()
+print(a^4, a.order(), minpoly(a))
+print(factor(x^8 - x, modulus=2))
+```
+
+Resultants and discriminants. The sign is the standard one, PARI's, so
+`resultant` is not symmetric in its arguments:
+
+```{python}
+print(resultant(x^2 + 1, x^3 - 2, x))
+print(resultant(x - 1, x^3 - 8, x), resultant(x^3 - 8, x - 1, x))
+print(discriminant(x^3 + x + 1))
+```
+
+A Gröbner basis, and the normal form of a polynomial modulo it. Note that
+`reduce(f, G) == 0` is what tests membership of the ideal; `f in G` is
+Python's list membership:
+
+```{python}
+G = groebner([x^2 + y^2 - 1, x - y], x, y)
+print(list(G), reduce(x^2 + y^2, G))
+```
+
+In Q(√-5) unique factorization fails: the class number is 2. The prime 2
+ramifies and 3 splits, which is why 6 has two factorizations.
+
+```{python}
+K = NumberField(x^2 + 5)
+print(K.degree, K.discriminant, K.class_number(), K.class_group())
+print(K.integral_basis())
+print(K.factor(2), K.factor(3))
+K
 ```
 
 ## Sums, integrals and Euler products

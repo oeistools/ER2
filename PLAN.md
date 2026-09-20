@@ -30,7 +30,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M2 (0.2)  | CAS on SymPy                                  | ✅ done     |
 | M3 (0.3)  | Number theory on PARI →**MVP**         | ✅ done     |
 | M4 (0.4)  | Backend selection, PARI types, benchmarks     | ✅ done     |
-| M5 (0.5)  | Algebra                                       | in progress (tasks 2–7 done) |
+| M5 (0.5)  | Algebra                                       | in progress (tasks 2–10 done; acceptance left) |
 | M6 (0.6)  | Series                                        | not started |
 | M7 (1.0)  | Stable language and release                   | not started |
 | — (2.0)  | Deep CPython integration                      | long term   |
@@ -361,13 +361,27 @@ handle `t_FFELT`, and it turns `nf`/`bnf` structures into plain lists.
    `bnfinit` is randomised, so a fundamental unit comes back as one of several equivalent
    representatives. Non-monic polynomials are rejected: PARI would silently present the field by
    a different polynomial.
-8. **Printing and LaTeX** (hard requirement, ARCHITECTURE §3.6): every new type has `latex()`,
+8. ✅ **Printing and LaTeX** (hard requirement, ARCHITECTURE §3.6): every new type has `latex()`,
    `_repr_latex_` and a golden LaTeX test, with no SymPy import for PARI-only types.
-9. **Tables and docs.** Update `er2/data/pari_functions.csv` for the rows that gain an ER2 name
+   Done 2026-09-20: satisfied as each type landed; `tests/test_latex_coverage.py` fails if a
+   runtime class or prelude function is missing a sample, and `tests/test_lazy_sympy.py` proves
+   the PARI-only types (`Mod`, `Qfb`, `Factorization`, `GF`) format LaTeX without SymPy.
+9. ✅ **Tables and docs.** Update `er2/data/pari_functions.csv` for the rows that gain an ER2 name
    (`matdet` → `det`, `polresultant` → `resultant`, …) and regenerate `docs/PARI_FUNCTIONS.md`.
    Add an algebra section to the README and `examples/demo.qmd`.
-10. **Benchmarks.** Add determinant, kernel, HNF/SNF and `factor` over GF(p) to
+   Done 2026-09-20: 16 rows now name their ER2 equivalent. **Deviation:** the equivalent went in
+   the `note` column, not `er2_name`. For a `namespace` row `er2_name` is what `pari.<name>` is
+   called, so renaming would have moved `pari.matdet` to `pari.det` — away from the name a PARI
+   user knows — and this file only renames a namespace row for PEP 8 (`factormodDDF`). The README
+   and `examples/demo.qmd` have algebra sections; the demo was rendered with Quarto and every
+   output checked.
+10. ✅ **Benchmarks.** Add determinant, kernel, HNF/SNF and `factor` over GF(p) to
     `benchmarks/run.py` (ER2 vs raw cypari2 vs SymPy) and regenerate `docs/BENCHMARKS.md`.
+    Done 2026-09-20. The numbers corrected a documented claim: `factor(f, modulus=p)` was said to
+    be ×40 faster than SymPy at degree 49, which is the *raw PARI* ratio; end to end ER2 is
+    ×2–10, because converting to and from SymPy's form costs more than the factoring.
+    `hermite_form` is ×3.3 **slower** than SymPy at 10×10 — a size threshold for its dispatch is
+    open work (ARCHITECTURE §3.4).
 
 **Tests.** Expected values from cypari2 and SymPy, hard-coded. The PARI and SymPy routes of task 2
 agree on random integer matrices (like the 248-polynomial check for `factor` in M4). Finite-field

@@ -50,7 +50,7 @@ What is stable already, and what is not:
   convention, PARI's (D16): `resultant(x - 1, x^3 - 8, x)` is `-7`, where `sympy.resultant`
   answers `7`.
 - Polynomials over a prime field (M5): `factor(f, modulus=p)` and `gcd(f, g, modulus=p)` are
-  computed by PARI, ×40 faster than SymPy at degree 49 and with the same result, and
+  computed by PARI, ×2–10 faster than SymPy at degree 49 depending on `p`, with the same result, and
   `isirreducible(f)` is new (over Q or with `modulus=p`). `domain=GF(p)` works too; over `GF(p^k)`
   ER2 has no polynomials yet and says so.
 - Finite fields (M5): `GF(9)`, `GF(3, 2)` and `GF(9, "t")`, with arithmetic, `order`, `trace`,

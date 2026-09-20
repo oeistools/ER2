@@ -100,16 +100,16 @@ test suite.
 | If you want to… | Read |
 |-----------------|------|
 | **Use ER2** | This README, the [examples](#examples), and [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTIONS.md) (every PARI function and its ER2 name) |
-| **Understand the design** | [ARCHITECTURE.md](ARCHITECTURE.md): the compatibility contract, the components, and the design decisions D1–D15 |
+| **Understand the design** | [ARCHITECTURE.md](ARCHITECTURE.md): the compatibility contract, the components, and the design decisions D1–D17 |
 | **Follow the project** | [PLAN.md](PLAN.md) (milestones and acceptance criteria), [CHANGELOG.md](CHANGELOG.md) (releases and versioning policy), [docs/BENCHMARKS.md](docs/BENCHMARKS.md) |
 | **Contribute** | [CONTRIBUTING.md](CONTRIBUTING.md): setup, tests, rules for each part of the code, good first contributions |
 
 The rules for AI-assisted development are in [CLAUDE.md](CLAUDE.md).
 
-## Algebra (in progress, 0.5)
+## Algebra (0.5)
 
 ```python
-sym x
+sym x, y
 
 det(Matrix([[2, 1], [1, 3]]))        # 5, computed by PARI
 kernel(Matrix([[1, 2], [2, 4]]))     # [Matrix([[1], [-1/2]])]
@@ -120,9 +120,24 @@ isirreducible(x^2 + x + 1, modulus=2)   # True
 
 a = GF(9).gen()                      # the finite field with 9 elements
 a^4, a.order(), minpoly(a)           # 2, 8, x^2 + x + 2
+
+resultant(x^2 + 1, x^3 - 2, x)       # 5
+discriminant(x^3 + x + 1)            # -31
+
+G = groebner([x^2 + y^2 - 1, x - y], x, y)
+list(G)                              # [x - y, 2*y^2 - 1]
+reduce(x^2 + y^2, G)                 # 1, the normal form
+
+K = NumberField(x^2 + 5)             # Q(sqrt(-5))
+K.discriminant, K.class_number()     # -20, 2
+K.factor(2)                          # [((2, x + 1), 2)]: 2 ramifies
+K.factor(3)                          # 3 splits into two primes
 ```
 
-Resultants, Gröbner bases and number fields come next; see [PLAN.md](PLAN.md).
+`resultant` follows the standard sign convention, which is PARI's, so
+`resultant(f, g)` and `resultant(g, f)` differ in sign when both degrees are odd
+(ARCHITECTURE.md §6, D16). A class number is only as good as the GRH unless you ask for
+`certify=True`.
 
 ## Python compatibility
 
@@ -180,9 +195,10 @@ ER2 does not introduce a new interpreter. It has three parts:
 
 ## Status and roadmap
 
-**Version 0.4.2, early development.** Milestones M1–M4 are done (M3 was the MVP). M5 is under
-way: matrices (`det`, `kernel`, `smith_form`, …), finite fields (`GF(9)`) and factorization over
-`F_p` already work, from the main branch. [CHANGELOG.md](CHANGELOG.md) says what is stable, what
+**Version 0.4.2, early development.** Milestones M1–M4 are done (M3 was the MVP). M5 is nearly
+complete on the main branch: matrices (`det`, `kernel`, `smith_form`, …), finite fields
+(`GF(9)`), factorization over `F_p`, `resultant` and `discriminant`, Gröbner bases, and number
+fields (`NumberField`) all work. [CHANGELOG.md](CHANGELOG.md) says what is stable, what
 is still experimental, and what has changed since 0.4.2.
 
 | Version | Focus | Status |

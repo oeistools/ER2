@@ -12,6 +12,7 @@ import argparse
 import importlib.metadata
 import itertools
 import platform
+import random
 import statistics
 import subprocess
 import sys
@@ -184,6 +185,134 @@ def polynomial_rows(quick):
     return rows
 
 
+def linear_algebra_rows(quick):
+    """Rows for M5 linear algebra: ER2 against cypari2 and SymPy.
+
+    The cypari2 reference is handed a PARI matrix, so it measures the
+    backend alone; ER2's time includes converting a SymPy ``Matrix``
+    both ways, which is the price of one language for both engines.
+    """
+    from sympy.matrices.normalforms import (
+        hermite_normal_form,
+        smith_normal_form,
+    )
+
+    pari = cypari2.Pari()
+    ns = prelude.namespace()
+    rng = random.Random(20260920)
+    sizes = (4,) if quick else (10, 20)
+    count = 1 if quick else 3
+    rows = []
+
+    def grid(n, singular):
+        rows_ = [[rng.randint(-9, 9) for _ in range(n)] for _ in range(n)]
+        if singular:  # a random square matrix over Z has no kernel
+            rows_[-1] = [sum(column) for column in zip(*rows_[:-1])]
+        return rows_
+
+    for n in sizes:
+        square = [grid(n, False) for _ in range(count)]
+        flat = [grid(n, True) for _ in range(count)]
+        as_sympy = [sympy.Matrix(g) for g in square]
+        as_pari = [
+            pari.matrix(n, n, [v for row in g for v in row]) for g in square
+        ]
+        singular_sympy = [sympy.Matrix(g) for g in flat]
+        singular_pari = [
+            pari.matrix(n, n, [v for row in g for v in row]) for g in flat
+        ]
+        cases = [
+            (
+                "det",
+                ns["det"],
+                pari.matdet,
+                lambda m: m.det(),
+                as_sympy,
+                as_pari,
+            ),
+            (
+                "kernel",
+                ns["kernel"],
+                pari.matker,
+                lambda m: m.nullspace(),
+                singular_sympy,
+                singular_pari,
+            ),
+            (
+                "hermite_form",
+                ns["hermite_form"],
+                pari.mathnf,
+                hermite_normal_form,
+                as_sympy,
+                as_pari,
+            ),
+            (
+                "smith_form",
+                ns["smith_form"],
+                pari.matsnf,
+                lambda m: smith_normal_form(m, domain=sympy.ZZ),
+                as_sympy,
+                as_pari,
+            ),
+        ]
+        for name, er2_call, pari_call, sympy_call, mine, theirs in cases:
+            label = f"{name}, {n}x{n} over Z"
+            er2_time = measure(_cycling(er2_call, mine), quick)
+            rows.append(
+                (
+                    label,
+                    er2_time,
+                    "cypari2",
+                    measure(_cycling(pari_call, theirs), quick),
+                )
+            )
+            rows.append(
+                (
+                    label,
+                    er2_time,
+                    "SymPy",
+                    measure(_cycling(sympy_call, mine), quick),
+                )
+            )
+    return rows
+
+
+def modular_polynomial_rows(quick):
+    """Rows for ``factor(f, modulus=p)`` over ``F_p`` (M5)."""
+    pari = cypari2.Pari()
+    ns = prelude.namespace()
+    x = sympy.Symbol("x")
+    rng = random.Random(20260920)
+    p = 7
+    degrees = (6,) if quick else (12, 48)
+    rows = []
+    for degree in degrees:
+        coefficients = [rng.randrange(p) for _ in range(degree)] + [1]
+        f = sympy.Add(
+            *(c * x**i for i, c in enumerate(coefficients)), evaluate=True
+        )
+        raw = pari(str(f).replace("**", "^"))
+        label = f"factor mod {p}, degree {degree}"
+        er2_time = measure(lambda f=f: ns["factor"](f, modulus=p), quick)
+        rows.append(
+            (
+                label,
+                er2_time,
+                "cypari2",
+                measure(lambda raw=raw: pari.factormod(raw, p), quick),
+            )
+        )
+        rows.append(
+            (
+                label,
+                er2_time,
+                "SymPy",
+                measure(lambda f=f: sympy.factor(f, modulus=p), quick),
+            )
+        )
+    return rows
+
+
 def startup_rows(quick):
     """Rows for the time to run a tiny program, against plain Python.
 
@@ -250,6 +379,8 @@ def report(quick=False):
         table("Integer arithmetic (D2)", integer_rows(quick)),
         table("Number theory", number_theory_rows(quick)),
         table("Polynomial factorization", polynomial_rows(quick)),
+        table("Polynomials over F_p (M5)", modular_polynomial_rows(quick)),
+        table("Linear algebra (M5)", linear_algebra_rows(quick)),
     ]
     header = [
         "# ER2 benchmarks",

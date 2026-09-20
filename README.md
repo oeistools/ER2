@@ -1,4 +1,9 @@
-# ER2 — Mathematical Python
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/er2-logo-dark.svg">
+    <img alt="ER2 — Mathematical Python" src="assets/er2-logo.svg" width="400">
+  </picture>
+</h1>
 
 [![CI](https://github.com/oeistools/ER2/actions/workflows/ci.yml/badge.svg)](https://github.com/oeistools/ER2/actions/workflows/ci.yml)
 [![Status: early development](https://img.shields.io/badge/status-0.4.2%20early%20development-orange)](PLAN.md)

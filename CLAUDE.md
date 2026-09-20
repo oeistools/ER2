@@ -89,6 +89,7 @@ uv run er2                       # REPL
 uv run er2 kernel install        # register the ER2 Jupyter kernel (--user default, --sys-prefix)
 uv run python benchmarks/run.py --write   # regenerate docs/BENCHMARKS.md
 uv run python tools/sync_pari_functions.py   # regenerate the PARI table docs
+uv run --with fonttools python tools/make_logo.py   # regenerate assets/ (logo, icon)
 ```
 
 Quarto started from an editor may only see the kernels inside `.venv`; `er2 kernel install

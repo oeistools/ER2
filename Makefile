@@ -59,6 +59,9 @@ bench:  ## Run the benchmarks and update docs/BENCHMARKS.md
 sync-pari:  ## Regenerate docs/PARI_FUNCTIONS.md from the PARI table
 	uv run python tools/sync_pari_functions.py
 
+logo:  ## Regenerate the logo and icon in assets/
+	uv run --with fonttools python tools/make_logo.py
+
 clean:  ## Remove caches and Quarto output
 	rm -rf .pytest_cache .ruff_cache .quarto examples/.quarto
 	rm -rf examples/*.html examples/*_files examples/*.quarto_ipynb

@@ -211,3 +211,87 @@ def test_equality_and_repr():
     assert NumberField(QI5) != NumberField(x**2 + 1)
     assert len({NumberField(QI5), NumberField(x**2 + 5)}) == 1
     assert repr(NumberField(QI5)) == "NumberField(x**2 + 5)"
+
+
+def test_prime_ideals_above_a_split_prime_are_distinct():
+    """Only ``alpha`` separates them: ``p``, ``e`` and ``f`` all agree."""
+    field = NumberField(QI5)
+    first, second = (ideal for ideal, _ in field.factor(3))
+
+    def invariants(ideal):
+        return (
+            ideal.p,
+            ideal.ramification_index,
+            ideal.residue_degree,
+            ideal.norm(),
+        )
+
+    assert invariants(first) == invariants(second)
+    assert first.alpha != second.alpha
+    assert first != second
+    assert len({first, second}) == 2
+
+
+def test_prime_ideal_equality_across_fields():
+    field = NumberField(QI5)
+    same = NumberField(x**2 + 5)
+    other = NumberField(x**2 + 1)
+    (here,) = (i for i, _ in field.factor(2))
+    (again,) = (i for i, _ in same.factor(2))
+    (elsewhere,) = (i for i, _ in other.factor(2))
+    assert here == again and hash(here) == hash(again)
+    # Q(i) also has a single ramified prime above 2; a different field
+    # must still make a different ideal.
+    assert elsewhere.p == here.p
+    assert elsewhere.ramification_index == here.ramification_index
+    assert here != elsewhere
+    assert here != (2, here.alpha)
+
+
+@pytest.mark.parametrize("value", [0, 1, 4, -3, -1])
+def test_factor_rejects_values_that_are_not_prime(value):
+    with pytest.raises(ValueError, match="not prime"):
+        NumberField(QI5).factor(value)
+
+
+@pytest.mark.parametrize("value", [True, False, 2.0, sympy.Rational(1, 2)])
+def test_factor_rejects_values_that_are_not_integers(value):
+    """``bool`` is an ``int`` in Python, so it needs its own rejection."""
+    with pytest.raises(TypeError, match="rational prime"):
+        NumberField(QI5).factor(value)
+
+
+def test_a_refused_certification_raises(monkeypatch):
+    """PARI raises rather than returning 0, so this guard needs a stub.
+
+    ``bnfcertify`` either proves the field or errors out; the check is
+    defensive, and this pins what happens if PARI ever answers 0.
+    """
+    from er2.backends import pari_backend
+
+    class RefusesToCertify:
+        """PARI, except that ``bnfcertify`` answers 0.
+
+        ``cypari2.Pari`` is a C extension whose attributes are
+        read-only, so the instance itself cannot be patched.
+        """
+
+        def __init__(self, real):
+            self._real = real
+
+        def __getattr__(self, name):
+            return getattr(self._real, name)
+
+        def __call__(self, *args, **kwargs):
+            # Python looks dunders up on the type, so __getattr__ never
+            # sees them: PARI("'x") has to be forwarded by hand.
+            return self._real(*args, **kwargs)
+
+        def bnfcertify(self, *args, **kwargs):
+            return 0
+
+    monkeypatch.setattr(
+        pari_backend, "PARI", RefusesToCertify(pari_backend.PARI)
+    )
+    with pytest.raises(ValueError, match="could not certify"):
+        NumberField(QI5).class_number(certify=True)

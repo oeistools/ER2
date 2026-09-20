@@ -232,13 +232,19 @@ class PrimeIdeal:
         return self._e > 1
 
     def __eq__(self, other):
-        """Two ideals are equal when their field and invariants are."""
+        """Two ideals are equal when field, p, e, f and alpha all are.
+
+        ``alpha`` is not decoration: the primes above a split prime
+        share ``p``, ``e`` and ``f``, and only their generators tell
+        them apart.  In ``Q(sqrt(-5))`` the two primes above 3 are
+        ``(3, x - 1)`` and ``(3, x + 1)``.
+        """
         if not isinstance(other, PrimeIdeal):
             return NotImplemented
         return self._key() == other._key()
 
     def __hash__(self):
-        """Hash the ideal by its field and invariants."""
+        """Hash the ideal by everything ``__eq__`` compares."""
         return hash((PrimeIdeal, *self._key()))
 
     def _key(self):

@@ -27,6 +27,19 @@ What is stable already, and what is not:
 ## [Unreleased]
 
 ### Added
+- **Two more stated goals** (ARCHITECTURE §1.4 and §1.5), both asked for on 2026-09-20.
+  §1.4, *learnable in an afternoon by a Python programmer*, makes the §1.1 table the whole of
+  what has to be learned and names what that rules out — a second way to write what Python
+  already writes, names that need translating from PARI, a backend the user has to choose.
+  §1.5, *faster than SymPy and close to PARI*, is stated as two separate comparisons because
+  they are two different promises, and §2.1 records which one is met where.
+- **ARCHITECTURE §2 now has a Mermaid diagram** of the components, with the previous ASCII
+  drawing kept below it for readers without Mermaid, and a structural test
+  (`tests/test_architecture_diagram.py`) so a broken diagram fails the suite rather than
+  rendering as an error box on GitHub. Its colours are the logo's.
+- **ARCHITECTURE §2.1, "Where the time goes"**: the three costs of a public call — choosing a
+  backend, converting the arguments, computing — measured separately, because conflating them
+  hides the fact that conversion is roughly 80% of a matrix call and the backend under 15%.
 - **Writing scientific articles in ER2** is now a stated goal (ARCHITECTURE §1.3):
   `examples/article.qmd` is a small real paper whose numbers, table and figure are computed by the
   document that states them, rendered to HTML and PDF and checked in CI. Matplotlib joined the
@@ -59,7 +72,7 @@ What is stable already, and what is not:
   convention, PARI's (D16): `resultant(x - 1, x^3 - 8, x)` is `-7`, where `sympy.resultant`
   answers `7`.
 - Polynomials over a prime field (M5): `factor(f, modulus=p)` and `gcd(f, g, modulus=p)` are
-  computed by PARI, ×2–10 faster than SymPy at degree 49 depending on `p`, with the same result, and
+  computed by PARI, ×3–6 faster than SymPy, with the same result, and
   `isirreducible(f)` is new (over Q or with `modulus=p`). `domain=GF(p)` works too; over `GF(p^k)`
   ER2 has no polynomials yet and says so.
 - Finite fields (M5): `GF(9)`, `GF(3, 2)` and `GF(9, "t")`, with arithmetic, `order`, `trace`,
@@ -76,10 +89,30 @@ What is stable already, and what is not:
 - The M5 (0.5, Algebra) plan, with decisions D12–D17.
 
 ### Changed
+- **ER2 is now faster than SymPy on every benchmark that reaches PARI**, which it was not
+  before: `factor` at degree 4 was ×1.23 *slower*, and `hermite_form` at 10×10 ×3.3 slower.
+  Matrix calls are 3–6× faster and polynomial calls 2–3× faster, with no change to any result.
+  In both cases the cost was the conversion around PARI, not PARI: a `factor` call spent three
+  quarters of its conversion inside `sympy.together`, splitting a polynomial into a numerator
+  and a denominator in order to find that the denominator is 1. A univariate polynomial over Q
+  now goes straight to PARI's `Pol`.
+- **Matrix calls in particular**, with no change to any result. Choosing a backend
+  for a 10×10 matrix cost 135 µs — ten times the PARI call it was deciding about — because the
+  predicate scanned every entry to ask whether they were rational. SymPy already records the
+  answer in the matrix's domain, so the question is now settled in constant time (1.5 µs), and
+  the conversions read entries out of that same representation instead of building a
+  `sympy.Integer` for each one. `det` on a 10×10 went from 728 µs to 112 µs and `smith_form`
+  from 865 µs to 257 µs.
+  `hermite_form` was ×3.3 slower than SymPy's at 10×10 and is now ×1.4 faster, which closes the
+  size threshold that §3.4 had listed as open work.
+  ARCHITECTURE §2.1 has the measurements and the two rules they produced.
 - The preparser is much faster on large files (a 16,000-line file: 22.6 s → 1.1 s).
 - Requires `oeis-tools` ≥ 0.2.1, so `OEISSequence.bibtex()` works.
 
 ### Fixed
+- `hermite_form` of a matrix with no columns returned a 0×0 matrix, losing the row count, where
+  SymPy's `hermite_normal_form` keeps the shape: PARI writes every empty matrix as `[;]`, so the
+  shape cannot survive the round trip and the function now keeps it itself.
 - Ctrl-C during an ER2 program (D7) made `er2 file.er2` exit with code 1, like any other error.
   It now ends the way `python file.py` does — killed by SIGINT, which a shell reports as 130 — so
   an interrupted run can be told apart from a failed one.

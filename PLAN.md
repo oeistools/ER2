@@ -32,6 +32,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M4 (0.4)  | Backend selection, PARI types, benchmarks     | ✅ done     |
 | M5 (0.5)  | Algebra                                       | ✅ done     |
 | 0.5.1     | Scientific articles (§1.3)                     | ✅ done     |
+| 0.5.2     | Learnability and speed (§1.4, §1.5)            | ✅ done     |
 | M6 (0.6)  | Series                                        | not started |
 | M7 (0.7)  | Language specification                        | not started |
 | M8 (1.0)  | Stable language and release                   | not started |
@@ -438,6 +439,65 @@ image exists rather than trusting the exit code.
 **Deliberately out of scope:** a journal template, `.docx` or `.tex` export, and any wrapper
 around Matplotlib. Quarto already does templates and export, and a plotting API is a different
 project.
+
+## 0.5.2 — Learnability and speed
+
+Three things the user asked for on 2026-09-20, all of them about ER2's stated goals rather than
+its feature list: **ER2 must be easy to learn for a Python programmer**, **it must be faster than
+SymPy**, **using PARI through it must cost little beyond a small dispatch charge**, and the
+architecture document should show the components as a diagram.
+
+The first and the last are writing. The middle two turned out not to be, because the
+measurements did not support them.
+
+**Tasks:**
+
+1. ✅ **ARCHITECTURE §1.4, learnable in an afternoon.** The §1.1 table — five differences — plus
+   the function names is the whole of what has to be learned, and the section names the four
+   things that goal rules out. The measure is that the language's reference stays short.
+2. ✅ **ARCHITECTURE §1.5, the speed goal**, stated as two separate comparisons (against SymPy,
+   the user's alternative; against cypari2, the tax ER2 charges) because they are different
+   promises and conflating them is how a misleading number gets published.
+3. ✅ **A Mermaid diagram of the components** in §2, with the ASCII version kept below it and a
+   structural test so it cannot silently break; there is no JavaScript toolchain here to render
+   it, so the test checks what actually breaks: `subgraph`/`end` balance, edges to undeclared
+   nodes, `class` without `classDef`. Each guard was checked against a deliberately broken copy.
+4. ✅ **ARCHITECTURE §2.1, where the time goes.** Choosing a backend, converting, and computing
+   measured apart. For a 10×10 `det`: 1.5 µs, 100 µs, 13 µs.
+5. ✅ **Made the goal true for matrices.** Measuring first showed the promise was not met:
+   choosing a backend for a 10×10 matrix cost 135 µs, ten times the PARI call it was deciding
+   about, because the predicate scanned all n² entries. SymPy already stores the answer in the
+   matrix's domain, so the question is now O(1), and both conversions read that representation
+   directly instead of going through `sympy.Integer`. Matrix calls are 3–6× faster;
+   `docs/BENCHMARKS.md` has a new "Dispatch overhead" section so the claim stays checkable.
+6. ✅ **And for polynomials.** Writing §1.5 caught a claim that was simply false: `factor` at
+   degree 4 was ×1.23 *slower* than SymPy, so "faster than SymPy" did not hold at the low end.
+   The same bug class again — `to_pari` called `sympy.together` to split a rational function
+   into numerator and denominator, which for a polynomial is three quarters of the conversion
+   spent learning that the denominator is 1. A univariate polynomial over Q now goes straight to
+   PARI's `Pol`, one call instead of one per term, and the predicate no longer walks the
+   expression twice.
+
+**Acceptance: ✅ met (2026-09-20).** Every linear algebra operation is now faster than SymPy at
+both sizes measured, which was not true before: `hermite_form` at 10×10 was ×3.3 *slower* and is
+now ×1.4 faster.
+
+Two findings worth keeping:
+
+- **The recorded fix was the wrong fix.** §3.4 proposed a size threshold in dispatch, to stop
+  sending small matrices to PARI. That would have treated a symptom: PARI was never what was
+  slow. Making the conversion cheap removed the need for the threshold entirely. Before adding a
+  rule about *when* to use a backend, check whether the backend is what is slow.
+- **A predicate that scans is a predicate that costs.** Dispatch runs before any work is done, so
+  anything proportional to the data belongs in the backend, not in the choice of backend.
+
+**Found while measuring, and fixed:** `hermite_form` of a matrix with no columns returned a 0×0,
+losing the row count, where SymPy keeps the shape — PARI writes every empty matrix as `[;]`.
+
+**Still open:** `PARI.matrix` is now most of the conversion cost (~80 µs of 100 µs at 10×10) and
+is cypari2's, not ours. And the predicate and the converter each build a `sympy.Poly` of the same
+expression, so that work is done twice; passing the `Poly` from one to the other would cross the
+boundary dispatch exists to keep, so it needs a design decision rather than a patch.
 
 ## M6 — 0.6: Series
 

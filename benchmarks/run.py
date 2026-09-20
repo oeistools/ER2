@@ -313,6 +313,48 @@ def modular_polynomial_rows(quick):
     return rows
 
 
+def dispatch_rows(quick):
+    """Rows for what choosing a backend costs (ARCHITECTURE.md §2.1).
+
+    ER2 promises that reaching PARI costs little beyond PARI itself, so
+    this measures the choice on its own — ``dispatch.implementation``,
+    which runs the predicates but not the backend — against the whole
+    public call.  The ratio is the share of the call spent deciding; it
+    is what the §2.1 budget is written against.
+    """
+    from er2 import dispatch
+
+    ns = prelude.namespace()
+    rng = random.Random(20260920)
+    size = 4 if quick else 10
+    grid = [[rng.randint(-9, 9) for _ in range(size)] for _ in range(size)]
+    symbolic = sympy.Matrix(grid)
+    symbolic[0, 0] = sympy.Symbol("t")
+    x = sympy.Symbol("x")
+    cases = [
+        ("phi(n), an integer", "phi", (10**8 + 7,)),
+        (f"det, {size}x{size} over Z", "det", (sympy.Matrix(grid),)),
+        (f"det, {size}x{size} with a symbol", "det", (symbolic,)),
+        ("factor, a polynomial over Q", "factor", (x**9 - 1,)),
+    ]
+    rows = []
+    for label, name, args in cases:
+        choose = measure(
+            lambda name=name, args=args: dispatch.implementation(
+                name, args, {}
+            ),
+            quick,
+        )
+        whole = measure(
+            lambda name=name, args=args: ns[name](*args),
+            quick,
+        )
+        rows.append(
+            (f"choose a backend: {label}", choose, "the whole call", whole)
+        )
+    return rows
+
+
 def startup_rows(quick):
     """Rows for the time to run a tiny program, against plain Python.
 
@@ -376,6 +418,7 @@ def report(quick=False):
     """Run every benchmark and return the Markdown report."""
     sections = [
         table("Startup", startup_rows(quick)),
+        table("Dispatch overhead (§2.1)", dispatch_rows(quick)),
         table("Integer arithmetic (D2)", integer_rows(quick)),
         table("Number theory", number_theory_rows(quick)),
         table("Polynomial factorization", polynomial_rows(quick)),

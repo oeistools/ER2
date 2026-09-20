@@ -58,7 +58,7 @@ def anything(args, kwargs):
 def rational_univariate(args, kwargs):
     """Whether ``args`` is one univariate polynomial over Q, no options.
 
-    PARI factors these 14-125x faster than SymPy (docs/BENCHMARKS.md);
+    PARI factors these 2-25x faster than SymPy (docs/BENCHMARKS.md);
     options such as ``extension=`` or ``modulus=`` stay with SymPy.
     """
     return (
@@ -69,14 +69,39 @@ def rational_univariate(args, kwargs):
     )
 
 
-def _matrix_of(args, entry_test=None):
-    """Whether ``args[0]`` is a SymPy matrix whose entries pass the test."""
+def matrix_domain(matrix, names):
+    """Whether SymPy already knows the entries lie in one of ``names``.
+
+    A SymPy ``Matrix`` keeps its entries in a ``DomainMatrix`` tagged
+    with a domain, so ``is_ZZ`` or ``is_QQ`` answers "every entry is
+    rational" in constant time instead of scanning n^2 entries — which
+    is most of what dispatch costs on a matrix call (ARCHITECTURE §2.1).
+
+    The converse does not hold: setting an entry of an ``EXRAW`` matrix
+    back to an integer leaves the domain ``EXRAW``.  A domain that is
+    not in ``names`` therefore proves nothing, and the caller scans.
+    That is also why reading the private ``_rep`` is safe here: should
+    SymPy rename it, this returns False and the scan still gives the
+    right answer, only slower.
+    """
+    domain = getattr(getattr(matrix, "_rep", None), "domain", None)
+    return domain is not None and any(getattr(domain, n) for n in names)
+
+
+def _matrix_of(args, entry_test=None, domains=()):
+    """Whether ``args[0]`` is a SymPy matrix whose entries pass the test.
+
+    ``matrix.flat()`` rather than ``for e in matrix``: SymPy's
+    ``__iter__`` costs about twice as much per entry.
+    """
     if not args or not _lazy.sympy_loaded():
         return False
     matrix = args[0]
     if not isinstance(matrix, sys.modules["sympy"].MatrixBase):
         return False
-    return entry_test is None or all(entry_test(e) for e in matrix)
+    if entry_test is None or matrix_domain(matrix, domains):
+        return True
+    return all(map(entry_test, matrix.flat()))
 
 
 def matrix(args, kwargs):
@@ -86,17 +111,24 @@ def matrix(args, kwargs):
 
 def rational_matrix(args, kwargs):
     """Whether the first argument is a matrix over Q (PARI's domain)."""
-    return _matrix_of(args, lambda e: e.is_Rational)
+    return _matrix_of(args, lambda e: e.is_Rational, ("is_ZZ", "is_QQ"))
 
 
 def square_rational_matrix(args, kwargs):
-    """Whether the first argument is a square matrix over Q."""
-    return rational_matrix(args, kwargs) and args[0].is_square
+    """Whether the first argument is a square matrix over Q.
+
+    Shape first: it is O(1), while the entry scan is O(n^2).
+    """
+    if not args or not _lazy.sympy_loaded():
+        return False
+    return getattr(args[0], "is_square", False) and rational_matrix(
+        args, kwargs
+    )
 
 
 def integer_matrix(args, kwargs):
     """Whether the first argument is a matrix over Z."""
-    return _matrix_of(args, lambda e: e.is_Integer)
+    return _matrix_of(args, lambda e: e.is_Integer, ("is_ZZ",))
 
 
 def linear_system(args, kwargs):

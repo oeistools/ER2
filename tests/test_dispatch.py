@@ -92,3 +92,74 @@ def test_univariate_polynomials_over_q_are_factored_by_pari():
     assert dispatch.factor(x**2 - 2, extension=sympy.sqrt(2)) == (
         x - sympy.sqrt(2)
     ) * (x + sympy.sqrt(2))
+
+
+class TestMatrixDomainShortcut:
+    """Dispatch reads SymPy's domain instead of scanning (§2.1).
+
+    The shortcut is sound in one direction only, so these tests pin
+    both: a ``ZZ``/``QQ`` domain proves the entries are rational, and
+    any other domain proves nothing and must fall back to the scan.
+    """
+
+    def test_a_domain_of_z_or_q_is_recognised(self):
+        assert dispatch.matrix_domain(
+            sympy.Matrix([[1, 2], [3, 4]]), ("is_ZZ", "is_QQ")
+        )
+        assert dispatch.matrix_domain(
+            sympy.Matrix([[sympy.Rational(1, 2)]]), ("is_ZZ", "is_QQ")
+        )
+        assert not dispatch.matrix_domain(
+            sympy.Matrix([[sympy.Rational(1, 2)]]), ("is_ZZ",)
+        )
+        assert not dispatch.matrix_domain(
+            sympy.Matrix([[sympy.sqrt(2)]]), ("is_ZZ", "is_QQ")
+        )
+
+    def test_a_rational_matrix_with_a_wider_domain_still_goes_to_pari(self):
+        """The shortcut must not become the only test.
+
+        Writing an integer into a symbolic matrix leaves SymPy's domain
+        at ``EXRAW`` even though every entry is now rational.  Dispatch
+        has to scan such a matrix and still choose PARI, or a matrix
+        would take a different backend depending on how it was built.
+        """
+        matrix = sympy.Matrix([[sympy.sqrt(2), 0], [0, 1]])
+        matrix[0, 0] = 2
+        assert not dispatch.matrix_domain(matrix, ("is_ZZ", "is_QQ"))
+        assert dispatch.rational_matrix((matrix,), {})
+        chosen = dispatch.implementation("det", (matrix,), {})
+        assert chosen is pari_backend.det
+        assert dispatch.det(matrix) == 2
+        assert pari_backend.to_pari(matrix) == pari_backend.to_pari(
+            sympy.Matrix([[2, 0], [0, 1]])
+        )
+
+    @pytest.mark.parametrize("obj", [object(), None, 5, sympy.Symbol("z")])
+    def test_an_object_without_a_domain_answers_no(self, obj):
+        """``_rep`` is private, so the reader must not raise.
+
+        Should SymPy rename it, ``matrix_domain`` answers False and the
+        entry scan takes over: slower, same answer.  (A live SymPy
+        matrix cannot be used to check that, because ``flat()`` reads
+        ``_rep`` too.)
+        """
+        assert not dispatch.matrix_domain(obj, ("is_ZZ", "is_QQ"))
+
+    @pytest.mark.parametrize(
+        "entries",
+        [
+            [[1, 2], [3, 4]],
+            [[sympy.Rational(1, 2), 2], [0, sympy.Rational(-3, 7)]],
+            [[sympy.sqrt(2), 1], [1, 1]],
+        ],
+    )
+    def test_conversion_agrees_with_the_general_route(self, entries):
+        """Every domain route must build the same PARI matrix."""
+        matrix = sympy.Matrix(entries)
+        general = pari_backend.PARI.matrix(
+            matrix.rows,
+            matrix.cols,
+            [pari_backend.to_pari(e) for e in matrix.flat()],
+        )
+        assert pari_backend.to_pari(matrix) == general

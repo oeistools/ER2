@@ -151,15 +151,33 @@ def to_pari(obj):
     if not _lazy.sympy_loaded():
         raise TypeError(f"cannot convert {type(obj).__name__} to PARI")
     if isinstance(obj, sympy.MatrixBase):
-        entries = [
-            to_pari(obj[i, j])
-            for i in range(obj.rows)
-            for j in range(obj.cols)
-        ]
-        return PARI.matrix(obj.rows, obj.cols, entries)
+        return _matrix_to_pari(obj)
     if isinstance(obj, sympy.Basic):
         return _sympy_to_pari(obj)
     raise TypeError(f"cannot convert {type(obj).__name__} to PARI")
+
+
+def _matrix_to_pari(obj):
+    """Convert a SymPy matrix.
+
+    A matrix over Z or Q — the only kind dispatch sends to PARI — is
+    read out of SymPy's ``DomainMatrix`` as plain integers or fractions,
+    which costs about a tenth of what ``flat()`` costs, because it never
+    builds the ``sympy.Integer`` objects in between.  Conversion is most
+    of ER2's time on a matrix call (ARCHITECTURE §2.1), so this is where
+    that time is.  Any other matrix takes the general route.
+    """
+    domain = getattr(getattr(obj, "_rep", None), "domain", None)
+    if domain is not None and domain.is_ZZ:
+        entries = [int(v) for v in obj._rep.to_list_flat()]
+    elif domain is not None and domain.is_QQ:
+        entries = [
+            PARI(int(v.numerator)) / int(v.denominator)
+            for v in obj._rep.to_list_flat()
+        ]
+    else:
+        entries = [to_pari(entry) for entry in obj.flat()]
+    return PARI.matrix(obj.rows, obj.cols, entries)
 
 
 # Fixed GP functions used by the conversions.  Only these constant texts
@@ -227,11 +245,49 @@ def _sympy_to_pari(expr):
         if value.is_number and value != expr:
             return _sympy_to_pari(value)
         raise TypeError(f"cannot convert the number {expr} to PARI")
+    fast = _univariate_to_pari(expr)
+    if fast is not None:
+        return fast
     numerator, denominator = sympy.fraction(sympy.together(expr))
     result = _polynomial_to_pari(numerator)
     if denominator != 1:
         result = result / _polynomial_to_pari(denominator)
     return result
+
+
+def _univariate_to_pari(expr):
+    """Build a ``t_POL`` from a univariate polynomial over Q, or None.
+
+    The general route below calls ``together`` to split a rational
+    function into a numerator and a denominator, and that single call
+    is about three quarters of what converting a degree-4 polynomial
+    costs — for polynomials, to learn that the denominator is 1.  A
+    polynomial over Z or Q instead goes straight to ``Pol``, which is
+    one PARI call rather than one per term (ARCHITECTURE §2.1).
+
+    Returns None for anything this cannot prove it handles — a rational
+    function, several variables, irrational or symbolic coefficients —
+    and that takes the general route unchanged.
+    """
+    symbols = expr.free_symbols
+    if len(symbols) != 1:
+        return None
+    (symbol,) = symbols
+    try:
+        poly = sympy.Poly(expr, symbol)
+    except sympy.PolynomialError:
+        return None
+    # ``Poly(sin(x), x)`` succeeds with ``sin(x)`` as its generator.
+    if poly.gens != (symbol,):
+        return None
+    domain = poly.domain
+    if domain.is_ZZ:
+        coefficients = [int(c) for c in poly.all_coeffs()]
+    elif domain.is_QQ:
+        coefficients = [PARI(int(c.p)) / int(c.q) for c in poly.all_coeffs()]
+    else:
+        return None
+    return PARI.Pol(coefficients, variable(symbol.name))
 
 
 def _polynomial_to_pari(expr):
@@ -323,10 +379,34 @@ def _series(obj):
 
 
 def _matrix(obj):
+    """Convert a ``t_MAT`` to a SymPy matrix.
+
+    The way back from PARI is the same story as ``_matrix_to_pari``
+    (ARCHITECTURE §2.1): building the matrix through SymPy's public
+    constructor sympifies every entry one at a time.  A matrix over Z
+    or Q can instead be handed to SymPy as a ``DomainMatrix``, which is
+    the representation ``Matrix`` keeps internally anyway, and that is
+    about seven times faster.  Anything else takes the general route.
+    """
     rows, cols = map(int, PARI.matsize(obj))
-    return sympy.Matrix(
-        rows, cols, lambda i, j: _sympify(from_pari(obj[i, j]))
-    )
+    entries = [obj[i, j] for i in range(rows) for j in range(cols)]
+    kinds = {entry.type() for entry in entries}
+    if entries and kinds <= {"t_INT"}:
+        domain = sympy.ZZ
+        values = [domain(int(entry)) for entry in entries]
+    elif entries and kinds <= {"t_INT", "t_FRAC"}:
+        domain = sympy.QQ
+        values = [
+            domain(int(PARI.numerator(e)), int(PARI.denominator(e)))
+            for e in entries
+        ]
+    else:
+        flat = [_sympify(from_pari(entry)) for entry in entries]
+        return sympy.Matrix(rows, cols, flat)
+    from sympy.polys.matrices import DomainMatrix
+
+    grid = [values[i * cols : (i + 1) * cols] for i in range(rows)]
+    return DomainMatrix(grid, (rows, cols), domain).to_Matrix()
 
 
 _FROM_PARI = {
@@ -410,13 +490,24 @@ def is_rational_univariate(expr):
     """Whether ``expr`` is a univariate polynomial over Q.
 
     That is the case where PARI factors much faster than SymPy.
+
+    ``Poly`` answers both questions at once, so this does not also call
+    ``is_polynomial``, which walked the expression a second time: a
+    generator other than ``var`` (``Poly(sin(x), x)``) means the same
+    as ``is_polynomial`` returning False.  A dispatch predicate runs
+    before any work is done, so its own cost is pure overhead (§2.1).
     """
-    if not isinstance(expr, sympy.Expr) or len(expr.free_symbols) != 1:
+    if not isinstance(expr, sympy.Expr):
         return False
-    (var,) = expr.free_symbols
-    if not expr.is_polynomial(var):
+    symbols = expr.free_symbols
+    if len(symbols) != 1:
         return False
-    return sympy.Poly(expr, var).domain in (sympy.ZZ, sympy.QQ)
+    (var,) = symbols
+    try:
+        poly = sympy.Poly(expr, var)
+    except sympy.PolynomialError:
+        return False
+    return poly.gens == (var,) and poly.domain in (sympy.ZZ, sympy.QQ)
 
 
 def factor_polynomial(expr):
@@ -756,6 +847,12 @@ def hermite_form(matrix):
     the lattice spanned by the columns of ``matrix`` (SymPy's
     ``hermite_normal_form`` gives the same matrix).
     """
+    if matrix.cols == 0:
+        # PARI has no m x 0 matrix: it writes one as ``[;]``, a 0 x 0,
+        # so the round trip would lose the row count.  SymPy's
+        # ``hermite_normal_form`` keeps the shape and ER2 follows it,
+        # as ``smith_form`` below does by rebuilding the result.
+        return sympy.zeros(matrix.rows, 0)
     return from_pari(PARI.mathnf(to_pari(matrix)))
 
 

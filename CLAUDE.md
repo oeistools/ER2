@@ -17,7 +17,9 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
 - Status: 0.4.2 released; M1–M4 done (M3 was the MVP), plus `er2.oeis`. **M5 (0.5, algebra) is
   complete**, acceptance included: linear algebra with `Matrix`, finite fields with `GF`,
   polynomials over `F_p`, `resultant`/`discriminant`, `groebner`/`reduce` and `NumberField`.
-  **0.5.1 (scientific articles, ARCHITECTURE §1.3) is done** too: `examples/article.qmd`.
+  **0.5.1 (scientific articles, ARCHITECTURE §1.3) is done** too: `examples/article.qmd`, and
+  **0.5.2 (learnability and speed, §1.4 and §1.5)**: matrix calls are 3–6× faster and §2.1
+  records where a call's time actually goes.
   Next: M6 (0.6, series) in [PLAN.md](PLAN.md). D1–D17 are all resolved; 0.5 is unreleased, so
   the changes are under **Unreleased** in [CHANGELOG.md](CHANGELOG.md).
 
@@ -30,6 +32,12 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
 **Notebooks are a hard requirement** (ARCHITECTURE.md §1.2): ER2 code must run in Jupyter and Quarto, through the `er2` kernel and through `%load_ext er2`. Every feature must work in those environments, not only in `er2 file.er2`.
 
 **PEP 8 is a hard requirement** (ARCHITECTURE.md §6.1): it applies to the implementation, the public API names, and the ER2 code in examples and docs.
+
+**Three goals shape design choices** (ARCHITECTURE.md §1.3, §1.4, §1.5): a paper should be
+writable in ER2; a Python programmer should learn ER2 in an afternoon, so the §1.1 table stays
+the whole language; and ER2 should be faster than SymPy while charging little over PARI. On the
+last one, **measure before you explain** — dispatch is cheap and conversion is not (§2.1), and
+the end-to-end figure is the only one to quote, never the backend's.
 
 In practice:
 - ER2 = **source-to-source preparser** + **Python runtime** + **backends** (SymPy, cypari2/PARI). Do not write an interpreter, compiler, or custom grammar.

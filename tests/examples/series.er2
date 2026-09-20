@@ -1,0 +1,47 @@
+# M6 (0.6): power series, generating functions, Dirichlet series
+# and Euler products.
+
+sym x
+
+# A power series is an ordinary SymPy expression with an O() term (D18).
+s = series(exp(x), x, 0, 6)
+print(s)
+
+# SymPy leaves s*t unevaluated, so expand() is what does the work; ER2
+# sends it to PARI, which is several times faster.
+t = series(1/(1 - x), x, 0, 6)
+print(expand(s * t))
+
+# Division too, which SymPy's expand cannot do at all (D21).
+print(expand(s / t))
+
+# Operations PARI has and SymPy does not.
+print(series_reverse(series(exp(x) - 1, x, 0, 6)))
+print(series_laplace(series(exp(x), x, 0, 6)))
+print(hadamard_product(t, t))
+
+# Generating functions: the Fibonacci numbers are x/(1 - x - x^2), so
+# multiplying the series by 1 - x - x^2 leaves x.
+fibonacci_terms = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+f = generating_function(fibonacci_terms, x)
+print(f)
+print(expand(f * (1 - x - x^2)))
+
+# The exponential generating function of 1, 1, 1, ... is exp(x), and
+# series_laplace turns an EGF back into an OGF.
+print(generating_function([1, 1, 1, 1, 1, 1], x, exponential=True))
+
+# Dirichlet series (D19), indexed from 1 as the mathematics is.
+zeta = DirichletSeries.zeta(20)
+mu = DirichletSeries.moebius(20)
+print(zeta)
+print(mu)
+print(zeta * mu)
+print(mu[6], mu[12], mu[10])
+
+# zeta(s)^2 has the number of divisors as its coefficients.
+divisors = zeta * zeta
+print(divisors[12], numdiv(12))
+
+# The same series from its Euler product.
+print(DirichletSeries.euler(lambda p, local: 1/(1 - local)^2, 12))

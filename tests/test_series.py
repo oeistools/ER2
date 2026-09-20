@@ -197,3 +197,62 @@ class TestDivisionIsDeliberatelyStrongerThanSymPy:
             term.is_Mul and any(f.is_Pow and f.args[1] < 0 for f in term.args)
             for term in sympy_answer.removeO().args
         )
+
+
+class TestGeneratingFunctions:
+    """``generating_function`` joins a sequence to a series (M6 task 5)."""
+
+    def test_an_ordinary_generating_function(self):
+        generating_function = prelude.namespace()["generating_function"]
+        got = generating_function([1, 1, 2, 3, 5, 8], x)
+        expected = 1 + x + 2 * x**2 + 3 * x**3 + 5 * x**4 + 8 * x**5
+        assert got.removeO() == sympy.expand(expected)
+        assert got.getO() == sympy.O(x**6)
+
+    def test_an_exponential_generating_function(self):
+        """All-ones EGF is exp(x)."""
+        generating_function = prelude.namespace()["generating_function"]
+        got = generating_function([1] * 6, x, exponential=True)
+        assert got == sympy.series(sympy.exp(x), x, 0, 6)
+
+    def test_laplace_turns_an_egf_into_an_ogf(self):
+        """``series_laplace`` is the bridge between the two kinds."""
+        namespace = prelude.namespace()
+        terms = [1, 1, 2, 6, 24]
+        egf = namespace["generating_function"](terms, x, exponential=True)
+        ogf = namespace["generating_function"](terms, x)
+        assert namespace["series_laplace"](egf) == ogf
+
+    def test_n_truncates_the_sequence(self):
+        generating_function = prelude.namespace()["generating_function"]
+        got = generating_function([1, 1, 2, 3, 5, 8, 13], x, 4)
+        assert got.getO() == sympy.O(x**4)
+        assert got.removeO() == sympy.expand(1 + x + 2 * x**2 + 3 * x**3)
+
+    def test_an_empty_sequence_is_refused(self):
+        generating_function = prelude.namespace()["generating_function"]
+        with pytest.raises(ValueError, match="at least one term"):
+            generating_function([], x)
+
+    def test_the_fibonacci_generating_function_is_x_over_1_minus_x_minus_x2(
+        self,
+    ):
+        """The point of M6 task 5, checked as mathematics.
+
+        The generating function of the Fibonacci numbers is
+        ``x/(1 - x - x^2)``, so multiplying the series by
+        ``1 - x - x^2`` must leave ``x``.
+        """
+        namespace = prelude.namespace()
+        fibonacci = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+        f = namespace["generating_function"](fibonacci, x)
+        product = namespace["expand"](f * (1 - x - x**2))
+        assert product.removeO() == x
+
+    def test_it_accepts_anything_iterable(self):
+        """A list, a tuple or a generator: sequences come in many shapes."""
+        generating_function = prelude.namespace()["generating_function"]
+        expected = generating_function([1, 2, 3], x)
+        assert generating_function((1, 2, 3), x) == expected
+        assert generating_function(iter([1, 2, 3]), x) == expected
+        assert generating_function(range(1, 4), x) == expected

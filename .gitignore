@@ -67,3 +67,5 @@ examples/*.pdf
 
 # Private drafts and notes (kept locally, never committed)
 draft/
+
+/.luarc.json

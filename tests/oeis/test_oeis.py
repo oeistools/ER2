@@ -175,3 +175,25 @@ def test_the_prelude_entry_costs_no_startup_time():
         [sys.executable, "-c", code], capture_output=True, text=True
     )
     assert result.stdout == "False False\n", result.stderr
+
+
+def test_a_sequence_has_a_generating_function(offline):
+    """M6 task 5: the OEIS module joined to the series machinery.
+
+    ``generating_function`` takes anything iterable, and an
+    ``OEISSequence`` iterates over its terms, so no OEIS-specific code
+    is needed on either side.  The Fibonacci generating function is
+    ``x/(1 - x - x^2)``, checked by multiplying it out.
+    """
+    import sympy
+
+    from er2 import prelude
+
+    namespace = prelude.namespace()
+    x = sympy.Symbol("x")
+    s = oeis.sequence("A000045")
+    f = namespace["generating_function"](s, x, 10)
+    assert f.getO() == sympy.O(x**10)
+    assert f.removeO().coeff(x, 7) == 13
+    product = namespace["expand"](f * (1 - x - x**2))
+    assert product.removeO() == x

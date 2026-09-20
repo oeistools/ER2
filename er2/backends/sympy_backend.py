@@ -36,6 +36,7 @@ __all__ = [
     "rank",
     "reduce_polynomial",
     "resultant",
+    "generating_function",
     "series",
     "simplify",
     "solve",
@@ -199,3 +200,21 @@ def isirreducible(expr, modulus=None, **options):
     if modulus is not None:
         options["modulus"] = modulus
     return bool(sympy.Poly(expr, **options).is_irreducible)
+
+
+def generating_function(coefficients, var, exponential=False):
+    """Build the truncated generating function of a sequence.
+
+    The ordinary generating function is ``sum a_n x^n``; with
+    ``exponential=True`` it is ``sum a_n x^n / n!``.  Pure SymPy: this
+    is construction, not computation, so there is nothing for PARI to
+    do (M6 task 5).
+    """
+    terms = list(coefficients)
+    body = sympy.S.Zero
+    for n, a in enumerate(terms):
+        term = sympy.sympify(a) * var**n
+        if exponential:
+            term = term / sympy.factorial(n)
+        body = body + term
+    return sympy.expand(body) + sympy.O(var ** len(terms))

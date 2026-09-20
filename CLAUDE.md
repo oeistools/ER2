@@ -20,8 +20,10 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
   **0.5.1 (scientific articles, ARCHITECTURE §1.3) is done** too: `examples/article.qmd`, and
   **0.5.2 (learnability and speed, §1.4 and §1.5)**: matrix calls are 3–6× faster and §2.1
   records where a call's time actually goes.
-  Next: M6 (0.6, series) in [PLAN.md](PLAN.md). D1–D17 are all resolved; 0.5 is unreleased, so
-  the changes are under **Unreleased** in [CHANGELOG.md](CHANGELOG.md).
+  **M6 (0.6, series) is complete**, acceptance included: power series through PARI, the three
+  operations SymPy lacks, `DirichletSeries`, Euler products and `generating_function`.
+  Next: M7 (0.7, the language specification) in [PLAN.md](PLAN.md). D1–D21 are all resolved; 0.5
+  is unreleased, so the changes are under **Unreleased** in [CHANGELOG.md](CHANGELOG.md).
 
 ## Guiding principle
 

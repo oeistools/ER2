@@ -16,6 +16,7 @@ import sympy
 import er2.runtime
 from er2 import prelude
 from er2.printing import latex
+from er2.runtime.dirichlet import DirichletSeries
 from er2.runtime.factorization import Factorization
 from er2.runtime.finite_field import GF, FiniteField, FiniteFieldElement
 from er2.runtime.modular import Mod
@@ -24,6 +25,13 @@ from er2.runtime.numbers import Integer, Rational
 from er2.runtime.qfb import Qfb
 
 x, y = sympy.symbols("x y")
+
+
+def _reciprocal_zeta(p, local):
+    """Return the Euler factor of 1/zeta(s): 1 - p^{-s}."""
+    return 1 - local
+
+
 f = x**2 + 2 * x + 1
 
 # One instance of every public class in ``er2.runtime``.
@@ -39,6 +47,8 @@ TYPE_SAMPLES = {
     # Q(sqrt(-5)), the standard example of a field where unique
     # factorization fails: 2 ramifies, so (2) = (2, x + 1)^2.
     NumberField: NumberField(x**2 + 5),
+    # 1/zeta(s): the Moebius function as an Euler product (M6).
+    DirichletSeries: DirichletSeries.euler(_reciprocal_zeta, 20),
     PrimeIdeal: NumberField(x**2 + 5).factor(2)[0][0],
 }
 
@@ -82,6 +92,11 @@ FUNCTION_SAMPLES = {
     "series": (
         lambda ns: ns["series"](ns["sin"](x), x, 0, 4),
         r"x - \frac{x^{3}}{6} + O\left(x^{4}\right)",
+    ),
+    # Series (M6): the Fibonacci generating function, truncated.
+    "generating_function": (
+        lambda ns: ns["generating_function"]([0, 1, 1, 2, 3], x),
+        r"x + x^{2} + 2 x^{3} + 3 x^{4} + O\left(x^{5}\right)",
     ),
     # Power series operations PARI has and SymPy does not (M6).
     "series_reverse": (

@@ -321,6 +321,9 @@ TABLE = {
     "hadamard_product": [
         (truncated_series, pari_backend.hadamard_product),
     ],
+    "generating_function": [
+        (anything, sympy_backend("generating_function")),
+    ],
     "series_reverse": [
         (truncated_series, pari_backend.series_reverse),
     ],
@@ -610,6 +613,29 @@ def echelon_form(matrix):
     return _call("echelon_form", matrix)
 
 
+def generating_function(sequence, x=None, n=None, exponential=False):
+    """Return the truncated generating function of a sequence.
+
+    ``sequence`` is anything iterable — a list, or an ``OEISSequence``
+    from ``er2.oeis``, whose terms are taken in order from its offset::
+
+        generating_function(oeis.sequence("A000045"), x, 10)
+
+    gives ``x + x^2 + 2*x^3 + ... + O(x^10)``.  ``n`` truncates the
+    sequence; without it every available term is used.  With
+    ``exponential=True`` the result is the exponential generating
+    function, ``sum a_k x^k / k!``.
+    """
+    terms = list(sequence)
+    if n is not None:
+        terms = terms[:n]
+    if not terms:
+        raise ValueError("a generating function needs at least one term")
+    return _call(
+        "generating_function", terms, _variable(x), exponential=exponential
+    )
+
+
 def series_reverse(s):
     """Return the compositional inverse of the power series ``s``.
 
@@ -685,6 +711,7 @@ FUNCTIONS = {
         integrate,
         limit,
         solve,
+        generating_function,
         series,
         series_laplace,
         series_reverse,

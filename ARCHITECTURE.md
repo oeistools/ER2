@@ -3,7 +3,8 @@
 > Technical design document. The original idea is summarized in §1; the draft it came from is kept
 > locally (`draft/`, ignored by Git).
 > Status: **0.4.2** released (M1–M4 done; M3 was the MVP).
-> **M5 (0.5, algebra) is complete**, acceptance included. See [PLAN.md](PLAN.md).
+> **M5 (0.5, algebra) and M6 (0.6, series) are complete**, acceptances included.
+> See [PLAN.md](PLAN.md).
 
 ## 1. What ER2 is
 
@@ -96,10 +97,73 @@ There are two supported routes, and both were verified with a prototype on 2026-
 | **B. Extension**: `%load_ext er2` in a standard `python3` kernel | First cell `%load_ext er2` | Same, as the first `` ```{python} `` cell |
 
 Details:
-- **Kernelspec language.** Quarto accepted both `"language": "python"` (cells `` ```{python} ``)
-  and `"language": "er2"` (cells `` ```{er2} ``). Proposal (D9): declare `python`, so that
-  syntax highlighting, the VS Code Quarto extension and editor tooling work unchanged, since ER2 is a
+- **Kernelspec language (D9): `python`, and cells are `` ```{python} ``.** So syntax
+  highlighting, the VS Code Quarto extension and editor tooling work unchanged, since ER2 is a
   Python superset. `language_info.file_extension` is `.er2`.
+  **Correction (2026-09-20).** An earlier version of this note said Quarto also accepted
+  `"language": "er2"` with `` ```{er2} `` cells. **It does not**, and the claim was retested on
+  the same Quarto (1.9.38): with the kernelspec declaring `er2`, a `` ```{er2} `` block is
+  copied into the output as literal text and never executed, while a `` ```{python} `` block in
+  the same document runs on the ER2 kernel. The render still exits 0, so the failure is silent —
+  the same shape as the Agg figure in §1.3. Quarto decides what is executable from the block's
+  language before the kernel is consulted, and its Jupyter engine recognises a fixed set.
+  Quarto's own developer notes confirm the mechanism
+  ([dev-notes, 2026-03-04](https://quarto-dev.github.io/dev-notes/posts/2026-03-04/)): a block's
+  language is claimed by an **engine**, through `claimsLanguage`, and there is no mapping from a
+  language name to a Jupyter kernelspec. Supporting `` ```{er2} `` therefore means shipping a
+  Quarto **engine extension** (`quarto create extension engine` scaffolds one; the bundled
+  `julia-engine` is `_extension.yml` plus ~1,300 lines of JavaScript that delegate to a separate
+  Julia package). Since we would need Jupyter to do the executing, that extension would be a
+  reimplementation of Quarto's Jupyter engine, pinned to an API at version 0.1.0, installed per
+  project, and it would lose exactly the editor tooling D9 chose `python` for.
+
+  **What was tested instead (2026-09-20), and works.** The same dev note describes the
+  `firstClass` mechanism, `` ```{python .marimo} ``. Applied here, `` ```{python .er2} ``
+  **executes correctly** — the block stays Python for engine selection, so the ER2 kernel runs
+  it. The class is consumed by Quarto and does not reach the output, so it is a marker in the
+  *source* only. For a marker that survives into HTML, the cell option `#| classes: er2` puts
+  `class="cell er2"` on the cell div, which CSS can label; the inner `<code>` stays
+  `sourceCode python`. Both are optional cosmetics over the same executing `` ```{python} ``.
+
+  | Block | Executes | In the source | In the HTML |
+  |---|---|---|---|
+  | `` ```{python} `` | yes | — | — |
+  | `` ```{er2} `` | **no, silently** | yes | n/a |
+  | `` ```{python .er2} `` | yes | yes | class dropped |
+  | `` ```{python} `` + `#| classes: er2` | yes | yes | `class="cell er2"` |
+
+  **A Lua filter cannot make a block execute, only relabel it.** Quarto runs Lua filters in the
+  pandoc stage, *after* the kernel has run: a logging filter put its first line 20 log lines
+  after `Executing 'doc.quarto_ipynb'`. So a filter that rewrites `` ```{.er} `` to `python`
+  produces a block that is *labelled* Python and has **no output** — the worst outcome, because
+  it looks like a cell that legitimately printed nothing. (Two parsing details: `` ```{.er} ``
+  reaches the filter as `classes[1] == "er"`, while `` ```{er} `` reaches it as a class named
+  literally `{er}`; and the `.er2` of `` ```{python .er2} `` never arrives at all, because
+  Quarto consumes it as `firstClass` — the filter sees `[python, cell-code]`.)
+
+  Filters are the right tool for *display*, though, and no marker is needed: in a document with
+  `jupyter: er2` every executable Python block **is** ER2, so a filter can relabel all of them.
+  That works (the block renders as ` ```er2 `) at a measured cost: Pandoc has no `er2` lexer, so
+  the HTML loses its `sourceCode` classes and all syntax highlighting.
+
+  | Approach | Executes | Source says ER2 | Output says ER2 | HTML highlighting |
+  |---|---|---|---|---|
+  | `` ```{python} `` | yes | no | no | yes |
+  | `` ```{er2} ``, `` ```{.er} `` | **no, silently** | yes | — | — |
+  | `` ```{python .er2} `` | yes | yes | no | yes |
+  | `` ```{python} `` + Lua relabel | yes | no | yes | **no** |
+  | `` ```{python} `` + `#| classes: er2` | yes | yes | yes | yes |
+
+  The last row is the only one that gives the ER2 label everywhere without losing anything, and
+  it is a cell option plus CSS, not a language change.
+
+  **There is no alias mechanism**, no config key that makes `` ```{er2} `` *mean*
+  `` ```{python .er2} ``. The nearest thing, a project `pre-render` script that rewrites the
+  blocks, was tested and works — it also **rewrites the author's `.qmd` in place**, so after one
+  render the source no longer says `` ```{er2} `` and the alias has erased itself. Restoring it
+  in `post-render` leaves the sources rewritten whenever a render fails, and fights
+  `quarto preview`, which re-renders continuously. It also does nothing for the editor, which is
+  what D9 was protecting.
 - **Rich output.** ER2 objects implement `_repr_latex_` (§3.6). Checked 2026-09-18: a cell that
   evaluates to an expression renders as MathJax in Quarto HTML.
 - **Inline math in Quarto.** `` `{python} latex(f)` `` in text renders as inline math, because
@@ -829,7 +893,9 @@ Each must be resolved (and recorded here) before or during 0.1.
 - **D8 — `Omega` violates PEP 8. ✅ Resolved (2026-09-19): `bigomega(n)`** (the PARI name),
   with `omega(n)` for distinct prime factors. PEP 8 requires lowercase function names.
 - **D9 — Kernelspec language. ✅ Resolved (2026-09-18): `python`.** Quarto cells are `` ```{python} `` with
-  `jupyter: er2`. See §1.2.
+  `jupyter: er2`. Reaffirmed 2026-09-20 after the user asked for `` ```{er2} ``: Quarto does not
+  execute such a block whatever the kernelspec says, and it fails silently. See §1.2 for the
+  retest and for what an engine extension would cost.
 - **D11 — `x^2` in `print()`. ✅ Resolved (2026-09-18): only in ER2 sessions.** SymPy results
   are plain SymPy objects, so `print(f)` uses SymPy's printer. The ER2 entry points (CLI, REPL,
   `er2` kernel, `%load_ext er2`) call `er2.printing.install()`, which makes ER2's printer SymPy's

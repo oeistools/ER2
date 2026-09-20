@@ -14,6 +14,7 @@ import types
 from er2 import _lazy, dispatch, oeis, preparser
 from er2.backends.pari_backend import pari
 from er2.printing import latex, show
+from er2.runtime.dirichlet import DirichletSeries
 from er2.runtime.factorization import Factorization
 from er2.runtime.finite_field import GF
 from er2.runtime.modular import Mod
@@ -86,6 +87,7 @@ def namespace(code=None):
         "Rational": Rational,
         "GF": GF,
         "NumberField": NumberField,
+        "DirichletSeries": DirichletSeries,
         "Mod": Mod,
         "Factorization": Factorization,
         "Qfb": Qfb,

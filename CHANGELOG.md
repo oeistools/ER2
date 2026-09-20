@@ -27,6 +27,27 @@ What is stable already, and what is not:
 ## [Unreleased]
 
 ### Added
+- **Series (M6, 0.6)**, with decisions D18–D21:
+  - **Power series stay ordinary expressions** with an `O()` term (D18) — no new type to learn.
+    What was missing were three operations SymPy does not have at all: `series_reverse` (the
+    compositional inverse), `hadamard_product` (coefficientwise) and `series_laplace` (an
+    exponential generating function read as an ordinary one).
+  - **`expand` of a product of power series now goes to PARI**, 3 to 13 times faster depending
+    on the precision (11 ms → 3.4 ms at six terms, 612 ms → 46 ms at eighty). `expand` is the
+    hook because SymPy leaves `s * t` unevaluated, so it is already what a user types; there is
+    no backend to choose.
+  - **`expand` of a *quotient* of series (D21)**, which `sympy.expand` cannot do at all — it
+    leaves nested fractions. ER2 returns the series, the same one `sympy.series` gives for the
+    equivalent expression. This is the one deliberate place ER2's answer differs from
+    `sympy.expand`, and a test pins the premise so it can be revisited.
+  - **`DirichletSeries` (D19)**: `*` and `/` are Dirichlet convolution and division, `+` and `-`
+    are coefficientwise, indexing starts at 1 as the mathematics does, and it renders as
+    mathematics. `DirichletSeries.zeta(n)` and `.moebius(n)`; `DirichletSeries.euler(f, n)`
+    builds a series from its Euler product.
+  - **`generating_function(sequence, x, n)`**, ordinary or exponential, for anything iterable —
+    including an `OEISSequence`, which joins `er2.oeis` (0.4.2) to the series machinery.
+  - `examples/series.qmd` is the M6 acceptance, rendered in CI; `tests/examples/series.er2` is
+    the golden program.
 - **Two more stated goals** (ARCHITECTURE §1.4 and §1.5), both asked for on 2026-09-20.
   §1.4, *learnable in an afternoon by a Python programmer*, makes the §1.1 table the whole of
   what has to be learned and names what that rules out — a second way to write what Python
@@ -110,6 +131,8 @@ What is stable already, and what is not:
 - Requires `oeis-tools` ≥ 0.2.1, so `OEISSequence.bibtex()` works.
 
 ### Fixed
+- A `sympy.expand` in the power-series conversion did nothing in every univariate case and cost
+  250 µs, two thirds of that conversion.
 - `hermite_form` of a matrix with no columns returned a 0×0 matrix, losing the row count, where
   SymPy's `hermite_normal_form` keeps the shape: PARI writes every empty matrix as `[;]`, so the
   shape cannot survive the round trip and the function now keeps it itself.

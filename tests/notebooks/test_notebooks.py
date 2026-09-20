@@ -285,11 +285,25 @@ def test_mvp_notebook(jupyter_path, kernel):
     assert shown == [r"$$\left(x + 1\right)^{2}$$"]
 
 
+# The ER2 display machinery (§1.2, D9) lives beside the examples, not
+# in their front matter: `_quarto.yml` turns it on for all of them.  A
+# Quarto test renders a copy in a temporary directory, so the copy
+# needs those files too, or the render loses the settings silently.
+ER2_DISPLAY = ("_quarto.yml", "er2.xml", "er2-cells.lua")
+
+
+def copy_example(name, target_dir):
+    """Copy an example and the files its front matter references."""
+    shutil.copy(EXAMPLES / name, target_dir / name)
+    for asset in ER2_DISPLAY:
+        shutil.copy(EXAMPLES / asset, target_dir / asset)
+    return target_dir / name
+
+
 @needs_quarto
 def test_mvp_quarto(jupyter_path, tmp_path):
     """The MVP (M3 acceptance) rendered by Quarto with the er2 kernel."""
-    doc = tmp_path / "mvp.qmd"
-    shutil.copy(EXAMPLES / "mvp.qmd", doc)
+    doc = copy_example("mvp.qmd", tmp_path)
     env = {**os.environ, "QUARTO_PYTHON": sys.executable}
     result = subprocess.run(
         ["quarto", "render", str(doc), "--to", "gfm"]
@@ -345,8 +359,7 @@ ALGEBRA_LINES = [
 @needs_quarto
 def test_algebra_quarto(jupyter_path, tmp_path):
     """The M5 acceptance rendered by Quarto with the er2 kernel."""
-    doc = tmp_path / "algebra.qmd"
-    shutil.copy(EXAMPLES / "algebra.qmd", doc)
+    doc = copy_example("algebra.qmd", tmp_path)
     env = {**os.environ, "QUARTO_PYTHON": sys.executable}
     result = subprocess.run(
         ["quarto", "render", str(doc), "--to", "gfm"]
@@ -385,8 +398,8 @@ ARTICLE_VALUES = [
 @pytest.mark.parametrize("fmt", ["html", "pdf"])
 def test_article_renders(jupyter_path, tmp_path, fmt):
     """`examples/article.qmd` renders, with its computed values and figure."""
-    for name in ("article.qmd", "article.bib"):
-        shutil.copy(EXAMPLES / name, tmp_path / name)
+    copy_example("article.qmd", tmp_path)
+    shutil.copy(EXAMPLES / "article.bib", tmp_path / "article.bib")
     env = {**os.environ, "QUARTO_PYTHON": sys.executable}
     result = subprocess.run(
         ["quarto", "render", str(tmp_path / "article.qmd"), "--to", fmt]
@@ -416,3 +429,85 @@ def test_article_renders(jupyter_path, tmp_path, fmt):
     assert 'id="eq-mertens"' in page or "eq-mertens" in page
     assert 'id="tbl-ratio"' in page
     assert 'id="refs"' in page
+
+
+# The M6 acceptance: series, generating functions, Dirichlet series and
+# Euler products, rendered by Quarto with the er2 kernel.
+SERIES_LINES = [
+    "1 + x + x^2/2 + x^3/6 + x^4/24 + x^5/120 + O(x^6)",  # exp(x)
+    "x - x^2/2 + x^3/3 - x^4/4 + x^5/5 + O(x^6)",  # series_reverse
+    "1 + 2^-s + 3^-s + 4^-s + 5^-s + ...  (20 terms)",  # zeta
+    "1 - 2^-s - 3^-s - 5^-s + ...  (20 terms)",  # 1/zeta
+    "[1, -1, -1, 0, -1, 1, -1, 0, 0, 1, -1, 0]",  # mu(n), n = 1..12
+    "[1, 2, 2, 3, 2, 4, 2, 4, 3, 4, 2, 6]",  # d(n) from zeta^2
+    "True",  # the Euler product for 1/zeta equals mu
+]
+
+
+@needs_quarto
+def test_series_quarto(jupyter_path, tmp_path):
+    """The M6 acceptance rendered by Quarto with the er2 kernel."""
+    doc = copy_example("series.qmd", tmp_path)
+    env = {**os.environ, "QUARTO_PYTHON": sys.executable}
+    result = subprocess.run(
+        ["quarto", "render", str(doc), "--to", "gfm"]
+        + ["-M", "execute.daemon:false"],
+        capture_output=True,
+        text=True,
+        env=env,
+        timeout=300,
+    )
+    assert result.returncode == 0, result.stderr
+    rendered = (tmp_path / "series.md").read_text()
+    for line in SERIES_LINES:
+        assert line in rendered, line
+    # D21: the document prints expand(s/t) and series(exp(x)*(1 - x))
+    # one after the other, and the claim is that they are the *same*.
+    # Asserting the line merely appears would pass with the division
+    # removed, because the second print also produces it.
+    quotient = "1 - x^2/2 - x^3/3 - x^4/8 - x^5/30 + O(x^6)"
+    assert rendered.count(quotient) == 2, rendered.count(quotient)
+    # A cell ending in an expression renders as math, not as text.
+    assert r"O\left(x^{6}\right)" in rendered  # expand(s * t)
+    assert r"2 \cdot 2^{-s}" in rendered  # a Dirichlet coefficient
+    assert r"\cdots" in rendered  # the truncation mark
+    # The identity x/(1 - x - x^2), computed rather than asserted.
+    assert r"x + O\left(x^{10}\right)" in rendered
+    # Inline expressions: mu(30) = -1 and d(12) = 6.
+    assert "$-1$" in rendered and "$6$" in rendered
+
+
+@needs_quarto
+def test_cells_are_displayed_as_er2(jupyter_path, tmp_path):
+    """The ER2 display machinery works end to end (§1.2, D9).
+
+    Cells are written ```{python}, because that is what Quarto
+    executes, and are shown as ER2: the Lua filter renames the
+    displayed language and marks the cell, and ``er2.xml`` highlights
+    it.  Without a test, any of the three could stop working and the
+    document would still render -- unhighlighted, or labelled Python.
+    """
+    doc = copy_example("series.qmd", tmp_path)
+    env = {**os.environ, "QUARTO_PYTHON": sys.executable}
+    result = subprocess.run(
+        ["quarto", "render", str(doc), "--to", "html"]
+        + ["-M", "execute.daemon:false"],
+        capture_output=True,
+        text=True,
+        env=env,
+        timeout=300,
+    )
+    assert result.returncode == 0, result.stderr
+    html = (tmp_path / "series.html").read_text()
+    # The language is ER2, and no block is left labelled Python.
+    assert 'class="sourceCode er2"' in html
+    assert 'class="sourceCode python' not in html
+    # Every cell is marked, which is the hook a theme would style.
+    assert html.count('class="cell er2"') >= 10
+    # Highlighting survives the rename: without er2.xml, Pandoc has no
+    # lexer for `er2` and emits no token spans at all.
+    assert html.count('<span class="op">') > 20
+    # `sym` is an ER2 keyword, which is what er2.xml adds to Python's.
+    assert '<span class="kw">sym</span>' in html
+    # And the document still computed its results.
+    assert "2^-s" in html

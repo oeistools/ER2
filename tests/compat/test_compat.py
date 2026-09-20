@@ -7,6 +7,7 @@ between integers, ``sym``).
 
 import contextlib
 import io
+import sys
 import textwrap
 
 import pytest
@@ -151,3 +152,70 @@ def run(source, er2):
 def test_python_code_behaves_the_same(name):
     snippet = SNIPPETS[name]
     assert run(snippet, er2=True) == run(snippet, er2=False)
+
+
+class TestMixingPythonAndEr2:
+    """Both languages in one program or notebook (§1.1 points 1 and 5).
+
+    Only ``.er2`` sources are preparsed, so a ``.py`` module keeps
+    Python's operators — but the *values* crossing into it are still
+    ER2 numbers.  Operators are per file; number types are per object.
+    That combination is what surprises, so it is pinned here.
+    """
+
+    @pytest.fixture
+    def plain_module(self, tmp_path, monkeypatch):
+        """Write an ordinary ``.py`` module and make it importable."""
+        (tmp_path / "plain_helper.py").write_text(
+            textwrap.dedent(
+                '''
+                """Ordinary Python: never preparsed."""
+
+
+                def xor(a, b):
+                    return a ^ b
+
+
+                def halve(n):
+                    return n / 2
+                '''
+            ).lstrip(),
+            encoding="utf-8",
+        )
+        monkeypatch.syspath_prepend(str(tmp_path))
+        yield
+        sys.modules.pop("plain_helper", None)
+
+    def test_operators_keep_python_meaning_in_a_py_module(self, plain_module):
+        """``^`` is XOR in the ``.py`` file and a power in the ER2 one."""
+        out = run(
+            """
+            import plain_helper
+            print(plain_helper.xor(3, 3), 3^3)
+            """,
+            er2=True,
+        )
+        assert out == "0 27\n"
+
+    def test_er2_numbers_keep_their_type_inside_a_py_module(
+        self, plain_module
+    ):
+        """The subtlety: ``n / 2`` there is exact, because ``n`` is ours.
+
+        The module is not preparsed, so ``/`` is Python's true division
+        — but ``Integer.__truediv__`` returns a ``Rational``, so the
+        answer is ``1/2`` and not ``0.5``.
+        """
+        out = run(
+            """
+            import plain_helper
+            print(plain_helper.halve(1), plain_helper.halve(1r))
+            """,
+            er2=True,
+        )
+        assert out == "1/2 0.5\n"
+
+    def test_raw_literals_opt_a_single_expression_out(self):
+        """``5r`` and ``^^`` are the per-expression escapes (§1.1)."""
+        out = run("print(3r^^3r, 1r/3r, type(2r).__name__)\n", er2=True)
+        assert out == "0 0.3333333333333333 int\n"

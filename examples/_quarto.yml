@@ -1,0 +1,11 @@
+# Show ER2 cells as ER2 (ARCHITECTURE.md §1.2, D9).
+#
+# Cells are written ```{python}, because that is what Quarto's Jupyter
+# engine executes and what editor tooling understands.  These two
+# settings are what make a rendered document say ER2 instead, and they
+# live here rather than in each document's front matter: they are the
+# same for every example and are not something an author should retype.
+syntax-definitions:
+  - er2.xml
+filters:
+  - er2-cells.lua

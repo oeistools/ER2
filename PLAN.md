@@ -33,7 +33,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M5 (0.5)  | Algebra                                       | ✅ done     |
 | 0.5.1     | Scientific articles (§1.3)                     | ✅ done     |
 | 0.5.2     | Learnability and speed (§1.4, §1.5)            | ✅ done     |
-| M6 (0.6)  | Series                                        | in progress |
+| M6 (0.6)  | Series                                        | ✅ done     |
 | M7 (0.7)  | Language specification                        | not started |
 | M8 (1.0)  | Stable language and release                   | not started |
 | — (2.0)  | Deep CPython integration                      | long term   |
@@ -516,38 +516,49 @@ distinction is not worth a name, M6 should add nothing and say so.
 
 **Tasks:**
 
-1. **Power series stay SymPy expressions (D18).** No new type: `series()` already returns
-   `1 + x + x^2/2 + O(x^3)`, which prints in ER2 notation, has `latex()` and converts to PARI's
-   `t_SER` and back. Add only what is missing as plain functions, each of which must earn its
-   name: `coefficient(s, n)`, `series_reverse(s)` (PARI `serreverse`), `series_compose`,
-   `hadamard(s, t)` (PARI `serconvol`), `laplace(s)`.
-2. **Send series arithmetic to PARI where it pays.** Measure first (§2.1): SymPy's `O()`
-   arithmetic against PARI's `t_SER` at several precisions, and add a dispatch entry only if the
-   crossover is real, with the size threshold the measurement gives. If PARI does not win after
-   conversion, record that and add nothing — an unused fast path is worse than none.
-3. **A `DirichletSeries` type (D19).** PARI passes these as a bare vector of coefficients, which
-   cannot satisfy the `latex()` hard requirement (§3.6) and tells a reader nothing. The type
-   carries `a_1 … a_n`, supports `*` and `/` (PARI `dirmul`, `dirdiv`), `[n]` indexed from 1 as
-   the mathematics is, `latex()`, and `_repr_latex_`. No PARI object outlives the call (M4).
-4. **Euler products.** Formal: `DirichletSeries.euler(f, n)` over PARI's `direuler`, whose
-   callback takes `(p, X)` — the prime and the local variable — which is worth documenting
-   because it is the one place PARI's calling convention shows through. Numeric:
-   `euler_product(f, a, b)` over `prodeuler`, and `prodeulerrat` for a rational function to
-   infinity.
-5. **Generating functions, tied to `er2.oeis` (0.4.2).** `generating_function(seq, n)` for an
-   `OEISSequence` or a plain list, returning the truncated power series; the ordinary and the
-   exponential kind. This is the task that makes M6 worth doing for a user: it joins the
-   sequence database to the series machinery.
-6. **Dirichlet series a user actually wants by name.** `zeta_series(n)`, `moebius_series(n)`,
-   and whatever else falls out of task 3 for free. Keep this list short on purpose.
-7. **Golden LaTeX samples** for `DirichletSeries` in `TYPE_SAMPLES` and for every new public
-   function in `tests/test_latex_coverage.py` — both tests fail otherwise.
+1. ✅ **Power series stay SymPy expressions (D18).** Three functions added, and each had to earn
+   its name: `series_reverse`, `hadamard_product` and `series_laplace` (the EGF-to-OGF bridge).
+   **`coefficient(s, n)` was dropped**: SymPy's `s.coeff(x, n)` already does it, and §1.4 rules
+   out a second way to write what Python can already write. Applying that rule to our own plan
+   is the point of having it.
+2. ✅ **Series arithmetic goes to PARI where it pays — and it pays everywhere.** Measuring first
+   found two traps of its own: SymPy leaves `s * t` *unevaluated*, so the first benchmark
+   measured nothing, and SymPy caches, so the second measured a cache hit. With distinct inputs,
+   `sympy.expand` of a product of series costs 11 ms at six terms and 612 ms at eighty, against
+   3.4 ms and 46 ms through PARI. The hook is **`expand`**, which the user already types — no
+   backend to choose (§1.4). Only `Mul` and `Pow` are intercepted, since SymPy evaluates `Add`.
+   Also fixed a `sympy.expand` in the series conversion that was a no-op costing 250 µs, two
+   thirds of that conversion; the first guard broke Laurent series and an existing test caught it.
+3. ✅ **A `DirichletSeries` type (D19)** with `*` and `/` (PARI `dirmul`, `dirdiv`), `+` and `-`
+   coefficientwise, indexing from 1, `latex()` and `_repr_latex_`. Operations truncate to the
+   shorter operand. Coefficients are plain ER2 numbers, so no PARI object outlives the call (M4),
+   and a test checks it.
+4. ✅ **Euler products.** Formal: `DirichletSeries.euler(f, n)` over `direuler`. Numeric:
+   `pari_backend.euler_product` over `prodeuler`. Ruff caught a real API bug here — the callback
+   was documented as `(p, X)`, which would have made *users* write non-PEP 8 code, against §6.1.
+5. ✅ **Generating functions, tied to `er2.oeis`.** `generating_function(seq, x, n)` takes
+   anything iterable, and an `OEISSequence` iterates over its terms, so neither side needed code
+   about the other. The test derives `x/(1 - x - x^2)` from `oeis.sequence("A000045")` by
+   multiplying it out rather than asserting it.
+6. ✅ **Named series as classmethods, not prelude names**: `DirichletSeries.zeta(n)` and
+   `.moebius(n)`. Discoverable from the type without spending §1.4's budget on top-level names.
+7. ✅ **Golden LaTeX samples** for `DirichletSeries`, `generating_function`, `series_reverse`,
+   `series_laplace` and `hadamard_product`. Both coverage tests fired on schedule while adding
+   them, which is what they are for.
 
-**Acceptance:** a Quarto document, `examples/series.qmd`, run by the `er2` kernel, that derives
-the Fibonacci generating function from `oeis.sequence("A000045")`, verifies
-`zeta(s) * (1/zeta(s)) = 1` as Dirichlet series, builds the Euler product for `1/zeta` from
-`1 - p^-s`, and shows a numeric Euler product converging. Plus golden tests
-(`tests/examples/series.er2`) and the LaTeX samples.
+**Acceptance: ✅ met (2026-09-20).** `examples/series.qmd` renders with the `er2` kernel and is
+checked by `test_series_quarto`; `tests/examples/series.er2` is the golden program.
+
+Two things worth keeping:
+
+- **An acceptance test can pass vacuously.** The first version asserted that the quotient's
+  series *appears* in the render — but the document prints `expand(s/t)` and
+  `series(exp(x)*(1 - x))` one after the other, so the line appears even with the division
+  removed. Mutating the document proved it passed when it should not. It now asserts the line
+  appears **twice**, which is the actual claim: the two routes agree.
+- **D21 came out of writing the tests**, not out of planning. Multiplication, powers and mixed
+  precisions agree with `sympy.expand` exactly; division does not, because SymPy declines to do
+  it. That needed the user's decision, not a silent choice.
 
 **Deliberately out of scope (D20):** L-functions (PARI's `lfun` family), modular forms, and
 p-adic series. `lfun` is large enough to deserve its own milestone, and nothing in M6 needs it.

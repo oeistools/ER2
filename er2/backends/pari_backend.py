@@ -34,6 +34,8 @@ __all__ = [
     "det",
     "discriminant",
     "expand_series",
+    "euler_product",
+    "euler_product_series",
     "factor",
     "factor_polynomial",
     "factor_polynomial_mod",
@@ -1113,3 +1115,32 @@ def hadamard_product(s, t):
 def series_laplace(s):
     """Turn an exponential generating function into an ordinary one."""
     return from_pari(PARI.serlaplace(to_pari(s)))
+
+
+# Dirichlet series and Euler products (M6 tasks 3 and 4).
+
+
+def euler_product_series(factor, terms):
+    """Return the coefficients of a Dirichlet Euler product.
+
+    PARI's ``direuler``: ``factor(p, x)`` gives the local factor at the
+    prime ``p`` as a rational function of ``x``, which stands for
+    ``p^{-s}``.  Returns plain coefficients, so no PARI object outlives
+    this call (M4).
+    """
+    from er2.backends import pari_closures
+
+    direuler = pari_closures.function("direuler", "Dirichlet Euler product")
+    return list(direuler(factor, 2, terms))
+
+
+def euler_product(factor, start, stop):
+    """Return a numeric Euler product over the primes in a range.
+
+    PARI's ``prodeuler``: a floating-point approximation of the product
+    of ``factor(p)`` over the primes between ``start`` and ``stop``.
+    """
+    from er2.backends import pari_closures
+
+    prodeuler = pari_closures.function("prodeuler", "Euler product")
+    return prodeuler(factor, start, stop)

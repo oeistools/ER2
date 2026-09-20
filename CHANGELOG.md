@@ -2,7 +2,7 @@
 
 All notable changes to ER2 are listed here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). [PLAN.md](PLAN.md) has the full detail of
-each milestone, and [ARCHITECTURE.md](ARCHITECTURE.md) §6 has the design decisions (D1–D16).
+each milestone, and [ARCHITECTURE.md](ARCHITECTURE.md) §6 has the design decisions (D1–D17).
 
 ## Versioning policy
 
@@ -27,6 +27,10 @@ What is stable already, and what is not:
 ## [Unreleased]
 
 ### Added
+- Gröbner bases (M5): `groebner(F, *gens, order="lex")` through SymPy (PARI has none), returning
+  a `GroebnerBasis` that prints in ER2 notation, and `reduce(f, G)`, the remainder of `f` modulo
+  `G` — its normal form when `G` is a Gröbner basis, so `reduce(f, G) == 0` tests membership of
+  the ideal (D17). Note that `f in G` is Python's list membership, not the ideal.
 - Resultants and discriminants (M5): `resultant(f, g, x)` and `discriminant(f, x)`, computed by
   PARI for polynomials over Q and by SymPy for symbolic coefficients. The variable may be left
   out when the arguments have a single variable between them. ER2 uses the standard sign
@@ -47,7 +51,7 @@ What is stable already, and what is not:
 - Example gallery: `examples/hello.er2`, `examples/syntax.er2` and `examples/factorization.er2`,
   checked by the golden tests.
 - `CONTRIBUTING.md`, this changelog, and GitHub issue templates.
-- The M5 (0.5, Algebra) plan, with decisions D12–D16.
+- The M5 (0.5, Algebra) plan, with decisions D12–D17.
 
 ### Changed
 - The preparser is much faster on large files (a 16,000-line file: 22.6 s → 1.1 s).

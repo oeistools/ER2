@@ -30,7 +30,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M2 (0.2)  | CAS on SymPy                                  | ✅ done     |
 | M3 (0.3)  | Number theory on PARI →**MVP**         | ✅ done     |
 | M4 (0.4)  | Backend selection, PARI types, benchmarks     | ✅ done     |
-| M5 (0.5)  | Algebra                                       | in progress (tasks 2–5 done) |
+| M5 (0.5)  | Algebra                                       | in progress (tasks 2–6 done) |
 | M6 (0.6)  | Series                                        | not started |
 | M7 (1.0)  | Stable language and release                   | not started |
 | — (2.0)  | Deep CPython integration                      | long term   |
@@ -344,8 +344,12 @@ handle `t_FFELT`, and it turns `nf`/`bnf` structures into plain lists.
    drops the sign of reordering its arguments, so ER2 follows the standard definition (PARI's)
    and corrects the SymPy route — the first place where "the PARI route returns what SymPy
    returns" could not be kept as written (ARCHITECTURE §3.4, §6).
-6. **Gröbner bases.** `groebner(F, *gens, order="lex")` through SymPy, returning SymPy's
+6. ✅ **Gröbner bases.** `groebner(F, *gens, order="lex")` through SymPy, returning SymPy's
    `GroebnerBasis` printed with ER2's printer; `reduce` of a polynomial modulo a basis.
+   Done 2026-09-20: both are in the prelude, 10 tests. **D17**: `reduce(f, G)` returns the
+   remainder (the normal form), not SymPy's `([quotients], remainder)`. Found while testing:
+   `f in G` is Python's list membership, not membership of the ideal — SymPy's `GroebnerBasis`
+   has `__iter__` and no `__contains__` — so the docstrings point at `reduce(f, G) == 0`.
 7. **Number fields** (D14; may slip to 0.5.1 per D15). Build from an irreducible polynomial over Q: degree,
    discriminant, integral basis, class number and class group, fundamental units, ideal
    factorization of a rational prime, elements as `Mod(poly, x^2 + 5)` (`t_POLMOD`, from M4).
@@ -415,6 +419,7 @@ Revisit this only if the preparser shows real limits.
 | D14 | number-field API                       | M5        | ✅ resolved: `NumberField` class, cached `bnf`     |
 | D15 | scope of 0.5                           | M5        | ✅ resolved: all of M5; number fields may slip to 0.5.1 |
 | D16 | sign of `resultant`                  | M5        | ✅ resolved: the standard definition (PARI), not SymPy's |
+| D17 | reduction modulo a basis             | M5        | ✅ resolved: `reduce(f, G)` returns the remainder |
 
 ## Risks
 

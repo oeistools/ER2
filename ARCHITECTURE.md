@@ -247,6 +247,7 @@ isirreducible(f), isirreducible(f, modulus=p) → PARI  polisirreducible
 resultant(f, g, x), discriminant(f, x)
   with f, g polynomials over Q in x     → PARI  polresultant, poldisc
 the same, symbolic coefficients         → SymPy resultant, discriminant
+groebner(F, *gens), reduce(f, G)        → SymPy groebner, reduced (PARI has none)
 echelon_form(M)                         → SymPy rref
 minpoly(algebraic number)               → SymPy minimal_polynomial
 ```
@@ -287,6 +288,13 @@ minpoly(algebraic number)               → SymPy minimal_polynomial
   `resultant(x - 1, x^3 - 8, x)` is `-7` where `sympy.resultant` answers `7`; the SymPy route
   puts back the `(-1)^(deg f · deg g)` that SymPy drops when it reorders the arguments. The two
   routes were compared on 200 random polynomials over Q and 40 with symbolic coefficients.
+- **Gröbner bases (M5, D17).** SymPy only: PARI has none. `groebner(F, *gens, order="lex")`
+  returns SymPy's `GroebnerBasis`, which ER2's printer already writes in `^` notation, because
+  SymPy prints a basis through `_print_Add` and `ER2StrPrinter` overrides `_print_Pow`.
+  `reduce(f, G)` is the remainder of `f` modulo `G` — its normal form when `G` is a Gröbner
+  basis, so `reduce(f, G) == 0` is membership of the ideal. **`f in G` is not**: SymPy's
+  `GroebnerBasis` defines `__iter__` and no `__contains__`, so Python's `in` asks whether `f` is
+  one of the basis polynomials. `G.contains(f)` is SymPy's own ideal test.
 - All type conversion happens at the backend boundary (`to_pari`, `from_pari`,
   `to_sympy`, `from_sympy`). Users never see a bare `cypari2.gen` or SymPy object unless
   they ask for one.
@@ -612,6 +620,13 @@ The following decisions were taken for M5 (PLAN.md) with the user on 2026-09-19.
   ship a self-inconsistent `resultant`. `discriminant` is unaffected — it is `Res(f, f')` with
   `deg f' = deg f - 1`, so one degree is always even and the swap costs no sign; PARI and SymPy
   agreed on 400 random polynomials.
+- **D17 — Reduction modulo a basis. ✅ Resolved (2026-09-20): `reduce(f, G)`, the remainder.**
+  The name PLAN.md task 6 asks for, with the standard mathematical meaning: "reduce `f` modulo
+  `G`" is the normal form, so `reduce(x^2 + y^2, G)` is `1`, not `([x + y, 1], 1)`. It is safe as
+  a prelude name because `reduce` is not a Python 3 builtin (it is `functools.reduce`, and an
+  `import` of that shadows the prelude as usual). SymPy's `G.reduce(f)` still gives the quotients
+  alongside the remainder. Rejected: SymPy's `([quotients], remainder)` shape, which makes the
+  common case `reduce(f, G)[1]`, and `normal_form`, which departs from the plan's name.
 
 ## 6.1 Code style: PEP 8
 

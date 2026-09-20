@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">ER2 - Mathematical Python</title>
+  <desc id="desc">The ER2 wordmark with a mathematical parabola and exact arithmetic notation.</desc>
+
+  <g transform="translate(24 24)">
+    <rect width="312" height="312" rx="72" fill="#17212b"/>
+    <path d="M74 92h96M74 156h72M74 220h96" fill="none" stroke="#ffd343" stroke-linecap="round" stroke-width="20"/>
+    <path d="M216 82c-36 24-36 124 0 148" fill="none" stroke="#4b8bbe" stroke-linecap="round" stroke-width="20"/>
+    <path d="M180 232c18-18 32-38 43-60 11-22 19-45 24-70" fill="none" stroke="#63b76c" stroke-linecap="round" stroke-width="12"/>
+    <circle cx="247" cy="102" r="8" fill="#63b76c"/>
+    <circle cx="223" cy="172" r="8" fill="#63b76c"/>
+  </g>
+
+  <g transform="translate(392 70)">
+    <text x="0" y="144" fill="#17212b" font-family="Georgia, 'Times New Roman', serif" font-size="156" font-weight="700" letter-spacing="2">ER</text>
+    <text x="202" y="72" fill="#4b8bbe" font-family="Georgia, 'Times New Roman', serif" font-size="76" font-weight="700">2</text>
+    <path d="M2 184h260" stroke="#ffd343" stroke-linecap="round" stroke-width="10"/>
+    <text x="0" y="246" fill="#425466" font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size="32" font-weight="600" letter-spacing="3">MATHEMATICAL PYTHON</text>
+    <text x="0" y="292" fill="#637381" font-family="'IBM Plex Sans', 'DejaVu Sans', sans-serif" font-size="22" letter-spacing="1">SYMBOLIC SYNTAX  ·  EXACT ARITHMETIC  ·  PARI/GP</text>
+  </g>
+</svg>

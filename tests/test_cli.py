@@ -7,6 +7,7 @@ import textwrap
 
 import pytest
 
+from er2 import __version__ as er2_version
 from er2 import importer
 
 ER2 = [sys.executable, "-m", "er2"]
@@ -195,11 +196,9 @@ def test_version_is_the_same_everywhere():
     import tomllib
     from pathlib import Path
 
-    import er2 as package
-
     root = Path(__file__).resolve().parent.parent
     project = tomllib.loads((root / "pyproject.toml").read_text())
     version = project["project"]["version"]
-    assert package.__version__ == version
+    assert er2_version == version
     assert f"version: {version}\n" in (root / "CITATION.cff").read_text()
     assert er2("--version").stdout == f"er2 {version}\n"

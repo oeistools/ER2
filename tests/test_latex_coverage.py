@@ -100,6 +100,18 @@ FUNCTION_SAMPLES = {
         r"\right]",
     ),
     "minpoly": (lambda ns: ns["minpoly"](_m(ns)), "x^{2} - 5 x + 5"),
+    # Gröbner bases (M5): SymPy's own LaTeX for its ``GroebnerBasis``.
+    "groebner": (
+        lambda ns: ns["groebner"]([x**2 + y**2 - 1, x - y], x, y),
+        r"\operatorname{GroebnerBasis}\left(\left( x - y, \  2 y^{2} - "
+        r"1\right), \left( x, \  y\right)\right)",
+    ),
+    "reduce": (
+        lambda ns: ns["reduce"](
+            x**2 + y**2, ns["groebner"]([x**2 + y**2 - 1, x - y], x, y)
+        ),
+        "1",
+    ),
     # Resultants (M5); values checked against cypari2.
     "resultant": (
         lambda ns: ns["resultant"](x**2 + 1, x**3 - 2, x),

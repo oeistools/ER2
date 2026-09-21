@@ -718,10 +718,14 @@ been installed by anyone would be a guess.
 
 1. **Publish 0.7.0** — the maintainer, following `docs/RELEASING.md`. Everything else waits on
    this, because 1.0 freezes an API and freezing an unpublished one would be guessing.
-2. **Turn on Settings → Pages → Source: GitHub Actions**, once. A private repository needs a paid
-   plan for Pages; `make site` builds locally either way. Until it is on, the
-   `Documentation` URL in `pyproject.toml` and the site link in `README.md` point at a page that
-   does not exist yet.
+2. ✅ **Pages enablement, fixed 2026-09-22.** The first run of the workflow failed with
+   `Get Pages site failed ... Not Found`: Pages was not switched on for the repository. Rather
+   than leave a manual click as a prerequisite, `actions/configure-pages` now gets
+   `enablement: true` and turns Pages on itself on the first run — the `pages: write` permission
+   the workflow already declares is what allows it. The repository is public, so Pages is free;
+   the earlier note here about needing a paid plan applied only to private repositories and was
+   misleading. Until a run succeeds, the `Documentation` URL in `pyproject.toml` and the site
+   link in `README.md` point at a page that does not exist yet.
 3. **Freeze**, and say so in `docs/STABILITY.md` (it is written as in force at 1.0) and in the
    `CHANGELOG.md` versioning table.
 4. **Decide** whether 1.0 also brings a trusted-publisher workflow, so releases stop being

@@ -40,7 +40,14 @@ jobs:
       - run: quarto render site
         env:
           QUARTO_PYTHON: .venv/bin/python
+      # `enablement` turns Pages on through the API on the first run.
+      # Without it the job fails with "Get Pages site failed ... Not Found"
+      # until someone sets Settings -> Pages -> Source: GitHub Actions by
+      # hand, which is a manual step the repository should not need.
+      # The `pages: write` permission above is what makes this allowed.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site/_site

@@ -86,8 +86,12 @@ You need a PyPI account and an API token, or a configured trusted publisher.
 ## The documentation site
 
 `.github/workflows/pages.yml` renders `site/` and deploys it to GitHub Pages on every push to
-`main`. It needs **Settings → Pages → Source: GitHub Actions** enabled once. On a private
-repository, Pages requires a paid plan; the site otherwise builds locally with `make site`.
+`main`. It passes `enablement: true` to `actions/configure-pages`, so the first run turns Pages
+on by itself; no setting has to be clicked. Should that ever be refused, the manual equivalent is
+**Settings → Pages → Source: GitHub Actions**. The site also builds locally with `make site`.
+
+The repository is public, so Pages costs nothing. (A *private* repository would need a paid plan
+for it.)
 
 The site executes ER2 while it renders, so a build failure there means documented behaviour
 stopped being true.

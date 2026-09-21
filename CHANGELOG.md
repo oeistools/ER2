@@ -16,8 +16,9 @@ ER2 follows [Semantic Versioning](https://semver.org/) with the usual rule for 0
 
 What is stable already, and what is not:
 
-- **Stable:** the ER2 syntax in the §1.1 table of ARCHITECTURE.md (`^`, `^^`, exact integer
-  literals, `sym`, `5r`). Any change to it requires updating that table and a changelog entry.
+- **Stable:** the ER2 syntax in the §3 table of [docs/LANGUAGE.md](docs/LANGUAGE.md) (`^`, `^^`,
+  exact integer literals, `sym`, `5r`). Any change to it requires updating that table and a
+  changelog entry.
   Python compatibility (all Python syntax, any library through `import`) is a hard requirement.
 - **Stable in intent, may still change before 1.0:** the curated prelude (`factor`, `phi`,
   `isprime`, `Mod`, …), `latex()` and `show()`, and the `er2` command.
@@ -27,8 +28,25 @@ What is stable already, and what is not:
 ## [Unreleased]
 
 ### Added
+- **The language specification, [docs/LANGUAGE.md](docs/LANGUAGE.md) (M7, 0.7).** One normative
+  document defines ER2: what is preparsed, the two-pass translation and its error and
+  line-number rules, the exhaustive table of differences from Python, precedence and
+  associativity, the `Integer`/`Rational` model and where conversion stops, symbols and the
+  prelude, dispatch, the three conversion boundaries, printing and LaTeX, notebooks, and what is
+  stable before 1.0. Every rule carries an identifier, and Appendix B maps each one to the test
+  that would fail if it changed. `tests/test_language_spec.py` pins the rules that had no test
+  of their own — precedence, symbol semantics, the conversion boundary — and fails if the table
+  of differences grows or if a cited test disappears.
+- **Scientific interoperability, tested across the stack (M7, 0.7).**
+  `tests/compat/test_scientific.py` now covers all four libraries the README names — NumPy,
+  Matplotlib, pandas and SciPy — in 16 tests. `Integer` subclasses `int`, so every library gives
+  it a real integer dtype. `Rational` is not a machine number, and the stack splits on it: NumPy
+  and pandas keep it in an object array, pandas keeping the arithmetic exact (`1/2 + 1/3` sums to
+  `5/6`), while SciPy's ufuncs reject it with `TypeError`, having no object fallback. The escape
+  hatch stays explicit, `float(...)`. pandas and SciPy joined the dev group for this; neither is
+  a runtime dependency.
 - **Quarto documents show their cells as ER2 (0.6.1)**, with real ER2 syntax highlighting:
-  `examples/er2.xml` is a KDE syntax definition that states the §1.1 table — `sym`, `5r`
+  `examples/er2.xml` is a KDE syntax definition that states the LANGUAGE.md §3 table — `sym`, `5r`
   literals, `^^` — and includes Python's rules, so Python's half stays Pandoc's own.
   `examples/er2-cells.lua` renames the displayed language, and `examples/_quarto.yml` turns both
   on for every example in one place. Cells are still written `` ```{python} ``, which is what
@@ -56,7 +74,7 @@ What is stable already, and what is not:
   - `examples/series.qmd` is the M6 acceptance, rendered in CI; `tests/examples/series.er2` is
     the golden program.
 - **Two more stated goals** (ARCHITECTURE §1.4 and §1.5), both asked for on 2026-09-20.
-  §1.4, *learnable in an afternoon by a Python programmer*, makes the §1.1 table the whole of
+  §1.4, *learnable in an afternoon by a Python programmer*, makes the LANGUAGE.md §3 table the whole of
   what has to be learned and names what that rules out — a second way to write what Python
   already writes, names that need translating from PARI, a backend the user has to choose.
   §1.5, *faster than SymPy and close to PARI*, is stated as two separate comparisons because
@@ -74,9 +92,6 @@ What is stable already, and what is not:
   dev dependencies for the figure.
 - The M5 acceptance: `examples/algebra.qmd` and the extended golden program
   `tests/examples/algebra.er2`, run in the CLI, in Quarto and through both Jupyter routes.
-- `tests/compat/test_scientific.py`: the README's promise that ER2 numbers pass into NumPy is now
-  tested, in CI too. It records that `Integer` gets a real NumPy dtype while `Rational` lands in
-  an object array, which keeps `1/3` exact instead of silently rounding it.
 - Number fields (M5, D14): `NumberField(x^2 + 5)` in the prelude, with `degree`, `discriminant`
   (the field's, not the polynomial's), `integral_basis()`, `class_number()`, `class_group()`,
   `units()`, `roots_of_unity()` and `factor(p)` into `PrimeIdeal`s. Elements are `Mod` objects
@@ -138,6 +153,10 @@ What is stable already, and what is not:
 - Requires `oeis-tools` ≥ 0.2.1, so `OEISSequence.bibtex()` works.
 
 ### Fixed
+- The Matplotlib guard in `tests/compat/test_scientific.py` was a module-level `importorskip` in
+  the *middle* of the file, which aborts the import and takes every test with it: with Matplotlib
+  absent the file collected **zero** tests, including the six that only need NumPy. Each library
+  now has its own fixture, verified by blocking each of the three in turn.
 - A `sympy.expand` in the power-series conversion did nothing in every univariate case and cost
   250 µs, two thirds of that conversion.
 - `hermite_form` of a matrix with no columns returned a 0×0 matrix, losing the row count, where

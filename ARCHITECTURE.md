@@ -43,30 +43,37 @@ Python ecosystem through ordinary `import`. Chosen model: **the SageMath model**
    comprehensions, f-strings, type hints, `with`, exceptions, `if __name__ == "__main__"`, … The
    preparser rewrites tokens, never syntax structure, so anything `ast.parse` accepts after
    preparsing keeps its Python meaning.
-4. **The only semantic differences inside `.er2` sources** are, deliberately and exhaustively:
-
-   | Construct   | Python                 | ER2                                  |
-   |-------------|------------------------|--------------------------------------|
-   | `a ^ b`     | XOR                    | power (`a ** b`)                     |
-   | `a ^^ b`    | syntax error           | XOR (Python's `a ^ b`)               |
-   | `a ^= b`    | XOR-assign             | power-assign (`a **= b`)             |
-   | `a ^^= b`   | syntax error           | XOR-assign                           |
-   | int literal | `int`                  | ER2 `Integer` (exact), so `1/3` is the rational 1/3 |
-   | `sym x, y`  | syntax error           | symbol declaration                   |
-   | `5r`        | syntax error           | raw literal: the plain Python `int` 5 (added 2026-09-19) |
-
-   Anything not in this table behaves exactly as in Python. Adding a row requires updating this
-   contract.
+4. **The only semantic differences inside `.er2` sources** are listed, deliberately and
+   exhaustively, in **[docs/LANGUAGE.md §3](docs/LANGUAGE.md#3-the-differences-from-python)**,
+   which owns that table as of M7: `^` for power, `^^` for XOR, their assignment forms, exact
+   integer literals, the raw literal `5r`, `sym`, and the ER2 text echoed by `f"{a^2=}"`.
+   Anything not in that table behaves exactly as in Python, and adding a row is a change to the
+   language, not to this document. `tests/test_language_spec.py` fails if the table grows or if
+   this section restates it.
 5. **Values cross into the ecosystem transparently.** ER2 numbers implement `__index__`,
    `__int__`, `__float__`, `__complex__`, `__hash__` (equal to the corresponding `int` hash) and
    compare equal to Python numbers, so `range(n)`, `lst[n]`, `np.zeros(n)`, `math.sqrt(n)`,
    dict keys and `json` keep working. See D6 for `isinstance(n, int)`.
-   This holds fully for `Integer`, which subclasses `int`, so NumPy gives it a real dtype
-   (`np.array([2^3, 3^2]).dtype` is `int64`). `Rational` has no NumPy dtype and lands in an
-   **object array** instead. That is the right answer rather than a gap: a `float64` array would
-   silently drop the exactness ER2 exists to keep, so `1/3` stays `1/3` and the user asks for
-   `float(...)` when they want speed. `tests/compat/test_scientific.py` pins both behaviours, and
-   is skipped unless NumPy is installed (CI installs it).
+   This holds fully for `Integer`, which subclasses `int`, so **every** library gives it a real
+   integer dtype (`np.array([2^3, 3^2]).dtype` is `int64`; a pandas column of `Integer` is
+   `int64`; SciPy takes it as an argument, as a shape and as an interval bound).
+
+   `Rational` is not a machine number, and the stack answers that in two ways, both measured
+   (2026-09-21):
+
+   | Library | `Rational` | Note |
+   |---|---|---|
+   | NumPy | **object array** | `1/3` stays `1/3`; mixing with floats yields floats, still object |
+   | pandas | **object column**, arithmetic exact | `Series([1/2, 1/3]).sum()` is `5/6`, not `0.8333…` |
+   | SciPy | **`TypeError`** | a ufunc has no object fallback: `scipy.special.gamma(1/2)` raises |
+
+   That is the right answer rather than a gap: a `float64` conversion would silently drop the
+   exactness ER2 exists to keep. The escape hatch is explicit and documented — `float(...)` when
+   the exactness is no longer needed. `tests/compat/test_scientific.py` pins all of it, 16 tests.
+   NumPy guards the module; Matplotlib, pandas and SciPy are guarded by **their own fixtures**,
+   because a module-level `importorskip` in the middle of a file aborts the import and skips
+   every test in it, including those that do not need that library. The libraries are in the dev
+   group, so CI runs these in the ordinary test job.
 6. **Escape hatches**: `int(...)`/`float(...)` for explicit conversion, and the raw-literal suffix
    `5r` (Sage's convention) for a plain Python `int` (implemented 2026-09-19, user decision), for
    example in hot numeric loops (D2). It works for every integer literal (`0x1Fr`, `1_000r`); there
@@ -218,7 +225,7 @@ Two consequences for design decisions:
 learning a language. This is the same principle as §1.1 ("do not create a new language
 unnecessarily") stated as a target for the *user's* effort rather than for the implementation.
 
-The whole of what has to be learned is the §1.1 table — five differences — plus the names of the
+The whole of what has to be learned is the [docs/LANGUAGE.md](docs/LANGUAGE.md) §3 table — plus the names of the
 mathematical functions:
 
 | To learn | Size |
@@ -233,7 +240,7 @@ Everything else is Python, and that is enforced rather than promised (`tests/com
 
 What the goal rules out, in order of how tempting they are:
 
-- **A second way to write something Python can already write.** New syntax needs the §1.1 table
+- **A second way to write something Python can already write.** New syntax needs the LANGUAGE.md §3 table
   amended and the user asked, and the bar is that Python is *unnatural* for it, not merely longer.
 - **Names a Python programmer must translate.** ER2 names follow PEP 8 and mathematical usage,
   not PARI's abbreviations (D5, D8): `dedekind_psi`, not `psi`; `bigomega`, not `Omega`.

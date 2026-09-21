@@ -12,7 +12,7 @@ before.
 These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 
 - **Python compatibility.** `tests/compat/` stays green. The semantic differences are only those
-  in the §1.1 table.
+  in the [docs/LANGUAGE.md](docs/LANGUAGE.md) §3 table.
 - **Notebooks.** Every user-facing feature works in `er2 file.er2`, in Jupyter (the `er2` kernel
   and `%load_ext er2`), and in Quarto.
 - **PEP 8.** `uv run ruff format` and `uv run ruff check` are clean.
@@ -35,7 +35,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | 0.5.2     | Learnability and speed (§1.4, §1.5)            | ✅ done     |
 | M6 (0.6)  | Series                                        | ✅ done     |
 | 0.6.1     | ER2 cells and highlighting in Quarto (D9)     | ✅ done     |
-| M7 (0.7)  | Language specification                        | not started |
+| M7 (0.7)  | Language specification                        | ✅ done     |
 | M8 (1.0)  | Stable language and release                   | not started |
 | — (2.0)  | Deep CPython integration                      | long term   |
 
@@ -622,23 +622,59 @@ Everything ER2 does is currently described across `ARCHITECTURE.md`, the README 
 
 **Tasks:**
 
-1. `docs/LANGUAGE.md`, covering at least:
-   ER2 syntax; the exact differences from Python; operator precedence and associativity; exact
-   literals; `sym`; the `Integer`/`Rational` model; Python ↔ ER2 conversion; SymPy ↔ ER2;
-   PARI ↔ ER2; the dispatch rules; representation and LaTeX; Jupyter and Quarto; compatibility
-   with Python code; and what counts as stable syntax before 1.0.
-2. The §1.1 table of `ARCHITECTURE.md` becomes **normative**: `docs/LANGUAGE.md` owns it, and
-   §1.1 links to it rather than restating it.
-3. ✅ **Scientific interoperability, tested.** The README promises that ER2 numbers pass into
-   NumPy, SciPy, pandas and Matplotlib, and nothing in `tests/` imported any of them.
-   Done 2026-09-20 for NumPy: `tests/compat/test_scientific.py`, skipped without NumPy and run by
-   its own CI job. Writing it turned up an undocumented asymmetry — `Integer` gets a real dtype,
-   `Rational` falls back to an object array — which ARCHITECTURE §1.1 point 5 now states.
-   SciPy, pandas and Matplotlib are still uncovered.
-4. Every difference in the specification has a test that would fail if it changed.
+1. ✅ **`docs/LANGUAGE.md` (2026-09-21).** Covers what is preparsed and what is not; the two-pass
+   translation, with its error, warning and line-number rules; the exhaustive table of
+   differences from Python; precedence and associativity, including the one place a Python
+   reader's intuition is wrong (`^` at level 14, `^^` at level 8); the `Integer`/`Rational`
+   model and the boundary where conversion stops; symbols and the prelude; dispatch; the three
+   conversion boundaries; printing and LaTeX; notebooks; Python compatibility; stability before
+   1.0. Appendix A gives the grammar of the additions, Appendix B maps every rule to its test.
+   Each rule has an identifier (`§3.5 R1`) so a test can cite it.
+2. ✅ **The table is normative and lives in one place (2026-09-21).** `docs/LANGUAGE.md` §3 owns
+   it; `ARCHITECTURE.md` §1.1 point 4 now links to it and no longer restates it.
+   `test_architecture_points_at_the_specification` fails if the table comes back.
+3. ✅ **Scientific interoperability, tested (completed 2026-09-21).** The README promises that
+   ER2 numbers pass into NumPy, SciPy, pandas and Matplotlib, and nothing in `tests/` imported
+   any of them. `tests/compat/test_scientific.py` now covers all four, 16 tests. NumPy and
+   Matplotlib were done 2026-09-20; pandas and SciPy on 2026-09-21, which meant adding both to
+   the dev group (NumPy needs no entry — all three require it).
 
-**Acceptance:** a reader can implement a compatible preparser from `docs/LANGUAGE.md` alone,
-and every statement in it is backed by a test.
+   The asymmetry NumPy turned up runs through the whole stack, and each library answers it
+   differently: `Integer` subclasses `int`, so **every** library gives it a real integer dtype;
+   `Rational` is not a machine number, so NumPy and pandas keep it in an **object array** — and
+   pandas keeps the arithmetic exact, `1/2 + 1/3` summing to `5/6` — while **SciPy's ufuncs
+   reject it outright with `TypeError`**, having no object fallback. The escape hatch is the
+   documented one, `float(...)`. ARCHITECTURE §1.1 point 5 states it.
+
+   Two corrections to what this task previously claimed. Matplotlib was **already** covered, not
+   pending. And these tests have no CI job of their own: they run in the ordinary `test` job,
+   because the libraries are in the dev group that `uv sync --locked` installs.
+
+   Found and fixed while writing it: the Matplotlib guard was a module-level `importorskip` in
+   the *middle* of the file, which aborts the import and takes every test with it — with
+   Matplotlib blocked, the file collected **zero** tests, including the six that only need NumPy.
+   Each library is now guarded by its own fixture, verified by blocking each of the three in
+   turn.
+4. ✅ **Every difference in the specification has a test that would fail if it changed.**
+   `tests/test_language_spec.py` (2026-09-21) adds the rules that had no test of their own:
+   precedence and associativity of `^` and `^^` at the value level, the closure rule and the
+   boundary where it stops (`sum([1, 2])` is an `Integer`, `len(lst)` is an `int`), symbol
+   semantics, that the prelude never shadows a user name, and that a traceback points at the ER2
+   line. Two tests guard the specification itself: the §3 table must keep exactly its eight rows,
+   and every test Appendix B cites must exist.
+
+   The acceptance is made executable by the `COVERAGE` table in that file, which maps each of the
+   **85 rules** to the test file that exercises it. Three tests keep it honest: every rule the
+   document defines must have an entry, every entry must name a file that exists, and the only
+   rules allowed to have none are the five of §12 — the stability policy, which promises how the
+   project will behave rather than stating what the language does. A rule added to the
+   specification without deciding how it is checked fails the suite.
+
+**Acceptance: ✅ met (2026-09-21).** `docs/LANGUAGE.md` states the translation algorithm in
+enough detail to reimplement it — the two passes and their order, the token-adjacency rules for
+`^^` and `5r`, the four conditions that make `sym` a statement, the `case`-pattern exclusion, the
+error and line-number rules — with the grammar of the additions in Appendix A. All 85 rules are
+mapped to tests, and the mapping is enforced by the suite rather than by review.
 
 ## M8 — 1.0: Stable language and release
 

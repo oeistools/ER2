@@ -100,6 +100,7 @@ test suite.
 | If you want to… | Read |
 |-----------------|------|
 | **Use ER2** | This README, the [examples](#examples), and [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTIONS.md) (every PARI function and its ER2 name) |
+| **Know exactly what the language is** | [docs/LANGUAGE.md](docs/LANGUAGE.md): the normative specification — the differences from Python, precedence, the number model, and what is stable before 1.0 |
 | **Understand the design** | [ARCHITECTURE.md](ARCHITECTURE.md): the compatibility contract, the components, and the design decisions D1–D17 |
 | **Follow the project** | [PLAN.md](PLAN.md) (milestones and acceptance criteria), [CHANGELOG.md](CHANGELOG.md) (releases and versioning policy), [docs/BENCHMARKS.md](docs/BENCHMARKS.md) |
 | **Contribute** | [CONTRIBUTING.md](CONTRIBUTING.md): setup, tests, rules for each part of the code, good first contributions |

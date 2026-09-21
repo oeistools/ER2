@@ -11,6 +11,8 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
 
 - Original idea: [draft/ER2_idea_summary.md](draft/ER2_idea_summary.md) (local only: `draft/` is gitignored)
 - Project plan (phases, tasks, acceptance criteria): [PLAN.md](PLAN.md)
+- **The language, normatively: [docs/LANGUAGE.md](docs/LANGUAGE.md)** — it owns the table of
+  differences from Python (§3) and every rule carries an identifier a test can cite.
 - PARI → ER2 function names: [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTIONS.md)
 - Technical design and decisions (D1–D15): [ARCHITECTURE.md](ARCHITECTURE.md) — **read before implementing**.
 - Releases and versioning policy: [CHANGELOG.md](CHANGELOG.md). Contributor rules: [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -23,14 +25,19 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
   **M6 (0.6, series) is complete**, acceptance included: power series through PARI, the three
   operations SymPy lacks, `DirichletSeries`, Euler products and `generating_function`. **0.6.1**
   makes Quarto documents show their cells as ER2, with real ER2 highlighting.
-  Next: M7 (0.7, the language specification) in [PLAN.md](PLAN.md). D1–D21 are all resolved; 0.5
-  is unreleased, so the changes are under **Unreleased** in [CHANGELOG.md](CHANGELOG.md).
+  **M7 (0.7, the language specification) is complete**, acceptance included:
+  [docs/LANGUAGE.md](docs/LANGUAGE.md) is normative and owns the table of differences,
+  `ARCHITECTURE.md` §1.1 links to it, and all 85 of its rules are mapped to tests by the
+  `COVERAGE` table in `tests/test_language_spec.py`, which fails if a rule is added without
+  deciding how it is checked. Scientific interop is tested across NumPy, Matplotlib, pandas and
+  SciPy. Next: M8 (1.0) in [PLAN.md](PLAN.md). D1–D21 are all resolved; 0.5 is unreleased, so the
+  changes are under **Unreleased** in [CHANGELOG.md](CHANGELOG.md).
 
 ## Guiding principle
 
 > Do not create a new language unnecessarily. Extend Python only where it is unnatural for mathematics.
 
-**Python compatibility is a hard requirement** (ARCHITECTURE.md §1.1, SageMath model): all Python syntax works in ER2, and any library is usable via normal `import`. Only `.er2` sources are preparsed — `.py` modules and installed libraries are never touched. The only intended differences inside `.er2` files are listed in the §1.1 table (`^` = power, `^^` = XOR, exact integer literals, `sym`, `5r` raw literals); never add another without updating that table and asking the user.
+**Python compatibility is a hard requirement** (ARCHITECTURE.md §1.1, SageMath model): all Python syntax works in ER2, and any library is usable via normal `import`. Only `.er2` sources are preparsed — `.py` modules and installed libraries are never touched. The only intended differences inside `.er2` files are listed in the **[docs/LANGUAGE.md](docs/LANGUAGE.md) §3 table**, which owns them (`^` = power, `^^` = XOR, exact integer literals, `sym`, `5r` raw literals, the ER2 text echoed by `f"{a^2=}"`); never add another without updating that table and asking the user, and `tests/test_language_spec.py` fails if it grows.
 
 **Notebooks are a hard requirement** (ARCHITECTURE.md §1.2): ER2 code must run in Jupyter and Quarto, through the `er2` kernel and through `%load_ext er2`. Every feature must work in those environments, not only in `er2 file.er2`.
 
@@ -44,8 +51,8 @@ switched on in `examples/_quarto.yml`. A test fails if any of those stops workin
 **PEP 8 is a hard requirement** (ARCHITECTURE.md §6.1): it applies to the implementation, the public API names, and the ER2 code in examples and docs.
 
 **Three goals shape design choices** (ARCHITECTURE.md §1.3, §1.4, §1.5): a paper should be
-writable in ER2; a Python programmer should learn ER2 in an afternoon, so the §1.1 table stays
-the whole language; and ER2 should be faster than SymPy while charging little over PARI. On the
+writable in ER2; a Python programmer should learn ER2 in an afternoon, so the LANGUAGE.md §3 table
+stays the whole language; and ER2 should be faster than SymPy while charging little over PARI. On the
 last one, **measure before you explain** — dispatch is cheap and conversion is not (§2.1), and
 the end-to-end figure is the only one to quote, never the backend's.
 

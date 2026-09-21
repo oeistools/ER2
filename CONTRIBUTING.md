@@ -82,7 +82,7 @@ the **runtime** provides the types and public functions, and the **backends** do
 
 | Area | Files | Tests | Rules |
 |------|-------|-------|-------|
-| Preparser | `er2/preparser.py` | `tests/preparser/`, `tests/compat/` | Work on tokens (`tokenize`), never with regular expressions over the text. Never change strings, comments or f-string text. Keep line numbers identical. **New syntax needs a new row in the ARCHITECTURE.md §1.1 table and the maintainer's agreement**, because Python compatibility is a hard requirement. |
+| Preparser | `er2/preparser.py` | `tests/preparser/`, `tests/compat/` | Work on tokens (`tokenize`), never with regular expressions over the text. Never change strings, comments or f-string text. Keep line numbers identical. **New syntax needs a new row in the [docs/LANGUAGE.md](docs/LANGUAGE.md) §3 table and the maintainer's agreement**, because Python compatibility is a hard requirement. |
 | Numbers and types | `er2/runtime/` | `tests/runtime/`, `tests/compat/` | `Integer` must keep behaving like `int` everywhere (`range`, indexing, NumPy, `json`). Results stay exact ER2 numbers. |
 | Public functions | `er2/dispatch.py` | `tests/test_dispatch.py` | This is the only place that chooses a backend. |
 | PARI backend | `er2/backends/pari_backend.py`, `er2/data/pari_functions.csv` | `tests/backends/`, `tests/test_pari_functions.py` | Convert only at the boundary (`to_pari`/`from_pari`): users never get a raw `cypari2` object. Do not reimplement what PARI already does. Edit the CSV by hand, then run `make sync-pari`; never edit `docs/PARI_FUNCTIONS.md`. |

@@ -42,6 +42,14 @@ dev = [
     # (ARCHITECTURE.md §1.3).  ER2 wraps nothing here; this is the kernel's
     # interpreter needing the library the document imports.
     "matplotlib>=3.9",
+    # The rest of tests/compat/test_scientific.py.  The README promises
+    # that the whole ecosystem works through a normal import and names
+    # "NumPy, SciPy, pandas, Matplotlib"; a promise nothing imports is a
+    # promise nothing checks (PLAN.md, M7 task 3).  NumPy needs no entry:
+    # Matplotlib, pandas and SciPy all require it.  ER2 wraps none of
+    # them, so these are test-only and never runtime dependencies.
+    "pandas>=2.2",
+    "scipy>=1.13",
 ]
 
 [build-system]

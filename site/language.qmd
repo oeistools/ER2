@@ -1,0 +1,9 @@
+---
+title: "The ER2 language"
+---
+
+::: {.callout-note appearance="simple"}
+The normative specification. Where a statement here and the implementation disagree, this document wins.
+:::
+
+{{< include ../docs/LANGUAGE.md >}}

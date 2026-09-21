@@ -6,7 +6,7 @@
 </h1>
 
 [![CI](https://github.com/oeistools/ER2/actions/workflows/ci.yml/badge.svg)](https://github.com/oeistools/ER2/actions/workflows/ci.yml)
-[![Status: early development](https://img.shields.io/badge/status-0.4.2%20early%20development-orange)](PLAN.md)
+[![Status: early development](https://img.shields.io/badge/status-0.7.0%20early%20development-orange)](PLAN.md)
 [![Python 3.12 | 3.13 | 3.14](https://img.shields.io/badge/python-3.12%20%7C%203.13%20%7C%203.14-blue?logo=python&logoColor=white)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Code style: PEP 8](https://img.shields.io/badge/code%20style-PEP%208-blue)](https://peps.python.org/pep-0008/)
@@ -88,24 +88,26 @@ test suite.
 
 | Example | What it shows |
 |---------|---------------|
-| [hello.er2](examples/hello.er2) | The smallest tour: power, exact division, algebra, a primality test |
-| [syntax.er2](examples/syntax.er2) | Every ER2 syntax difference from Python: `^`, `^^`, exact literals, `sym`, `5r` |
-| [factorization.er2](examples/factorization.er2) | One `factor` for integers, rationals and polynomials; partial factorizations |
-| [mvp.er2](examples/mvp.er2) | The MVP program: CAS and number theory together |
-| [demo.qmd](examples/demo.qmd) | A Quarto tour with rendered math, including the OEIS (`make render`) |
-| [mvp.ipynb](examples/mvp.ipynb) | The MVP as a Jupyter notebook |
+| [hello.er2](https://github.com/oeistools/ER2/blob/main/examples/hello.er2) | The smallest tour: power, exact division, algebra, a primality test |
+| [syntax.er2](https://github.com/oeistools/ER2/blob/main/examples/syntax.er2) | Every ER2 syntax difference from Python: `^`, `^^`, exact literals, `sym`, `5r` |
+| [factorization.er2](https://github.com/oeistools/ER2/blob/main/examples/factorization.er2) | One `factor` for integers, rationals and polynomials; partial factorizations |
+| [mvp.er2](https://github.com/oeistools/ER2/blob/main/examples/mvp.er2) | The MVP program: CAS and number theory together |
+| [demo.qmd](https://github.com/oeistools/ER2/blob/main/examples/demo.qmd) | A Quarto tour with rendered math, including the OEIS (`make render`) |
+| [mvp.ipynb](https://github.com/oeistools/ER2/blob/main/examples/mvp.ipynb) | The MVP as a Jupyter notebook |
 
 ## Documentation
 
+The documentation site is at **<https://oeistools.github.io/ER2/>**, built by Quarto and executed by ER2 itself.
+
 | If you want to… | Read |
 |-----------------|------|
-| **Use ER2** | This README, the [examples](#examples), and [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTIONS.md) (every PARI function and its ER2 name) |
-| **Know exactly what the language is** | [docs/LANGUAGE.md](docs/LANGUAGE.md): the normative specification — the differences from Python, precedence, the number model, and what is stable before 1.0 |
-| **Understand the design** | [ARCHITECTURE.md](ARCHITECTURE.md): the compatibility contract, the components, and the design decisions D1–D17 |
-| **Follow the project** | [PLAN.md](PLAN.md) (milestones and acceptance criteria), [CHANGELOG.md](CHANGELOG.md) (releases and versioning policy), [docs/BENCHMARKS.md](docs/BENCHMARKS.md) |
-| **Contribute** | [CONTRIBUTING.md](CONTRIBUTING.md): setup, tests, rules for each part of the code, good first contributions |
+| **Use ER2** | This README, the [examples](#examples), and [docs/PARI_FUNCTIONS.md](https://github.com/oeistools/ER2/blob/main/docs/PARI_FUNCTIONS.md) (every PARI function and its ER2 name) |
+| **Know exactly what the language is** | [docs/LANGUAGE.md](https://github.com/oeistools/ER2/blob/main/docs/LANGUAGE.md): the normative specification — the differences from Python, precedence, the number model, and what is stable before 1.0 |
+| **Understand the design** | [ARCHITECTURE.md](https://github.com/oeistools/ER2/blob/main/ARCHITECTURE.md): the compatibility contract, the components, and the design decisions D1–D17 |
+| **Follow the project** | [PLAN.md](https://github.com/oeistools/ER2/blob/main/PLAN.md) (milestones and acceptance criteria), [CHANGELOG.md](https://github.com/oeistools/ER2/blob/main/CHANGELOG.md) (releases and versioning policy), [docs/BENCHMARKS.md](https://github.com/oeistools/ER2/blob/main/docs/BENCHMARKS.md) |
+| **Contribute** | [CONTRIBUTING.md](https://github.com/oeistools/ER2/blob/main/CONTRIBUTING.md): setup, tests, rules for each part of the code, good first contributions |
 
-The rules for AI-assisted development are in [CLAUDE.md](CLAUDE.md).
+The rules for AI-assisted development are in [CLAUDE.md](https://github.com/oeistools/ER2/blob/main/CLAUDE.md).
 
 ## Algebra (0.5)
 
@@ -196,11 +198,12 @@ ER2 does not introduce a new interpreter. It has three parts:
 
 ## Status and roadmap
 
-**Version 0.4.2, early development.** Milestones M1–M4 are done (M3 was the MVP). M5 is nearly
-complete on the main branch: matrices (`det`, `kernel`, `smith_form`, …), finite fields
-(`GF(9)`), factorization over `F_p`, `resultant` and `discriminant`, Gröbner bases, and number
-fields (`NumberField`) all work. [CHANGELOG.md](CHANGELOG.md) says what is stable, what
-is still experimental, and what has changed since 0.4.2.
+**Version 0.7.0, early development.** Milestones M1–M7 are done (M3 was the MVP). Algebra
+(matrices, finite fields, `F_p`, resultants, Gröbner bases, `NumberField`), series (power,
+Dirichlet, Euler products) and the language specification are all in.
+[docs/LANGUAGE.md](https://github.com/oeistools/ER2/blob/main/docs/LANGUAGE.md) now defines the language normatively, and
+[CHANGELOG.md](https://github.com/oeistools/ER2/blob/main/CHANGELOG.md) says what is stable, what is still experimental, and what has
+changed. What remains before 1.0 is the documentation site and the stability policy.
 
 | Version | Focus | Status |
 |---------|-------|--------|
@@ -208,9 +211,10 @@ is still experimental, and what has changed since 0.4.2.
 | 0.2 | CAS on SymPy: `expand`, `factor`, `simplify`, `diff`, `integrate`, `limit`, `solve`, `series` | ✅ |
 | 0.3 | Number theory on PARI: primality, factorization, `phi`, `sigma`, `mu`, … (the MVP) | ✅ |
 | 0.4 | Automatic backend selection, PARI types (`Mod`, `Qfb`, series), benchmarks, the OEIS | ✅ |
-| 0.5 | Algebra: matrices, finite fields, resultants, Gröbner bases, number fields | in progress |
-| 0.6 | Series: power, Dirichlet, Euler products | |
-| 1.0 | Stable language: specification, PyPI package, documentation site | |
+| 0.5 | Algebra: matrices, finite fields, resultants, Gröbner bases, number fields | ✅ |
+| 0.6 | Series: power, Dirichlet, Euler products | ✅ |
+| 0.7 | The language specification, `docs/LANGUAGE.md`; first PyPI release | ✅ |
+| 1.0 | Frozen syntax and public API: documentation site, stability policy | in progress |
 
 Beyond the table, every PARI function is available as `pari.<name>`, and PARI's sums and integrals
 take Python functions (`pari.sum(lambda n: 1/n^2, 1, 10)`). Deeper CPython integration comes only
@@ -238,16 +242,16 @@ We keep dependencies deliberately minimal: `sympy` and `cypari2` at runtime, plu
 ER2 is maintained by **Enrique Pérez Herrero** ([energycode.org@gmail.com](mailto:energycode.org@gmail.com)).
 
 Contributions are welcome, from a bug report with a three-line example to a new feature.
-[CONTRIBUTING.md](CONTRIBUTING.md) explains how to set up, what a pull request needs, and where to
+[CONTRIBUTING.md](https://github.com/oeistools/ER2/blob/main/CONTRIBUTING.md) explains how to set up, what a pull request needs, and where to
 start if you are new to the project.
 
 ## Citation
 
-If you use ER2 in your work, please cite it. The metadata is in [CITATION.cff](CITATION.cff), and
+If you use ER2 in your work, please cite it. The metadata is in [CITATION.cff](https://github.com/oeistools/ER2/blob/main/CITATION.cff), and
 GitHub shows it through **"Cite this repository"**. Please also cite
 [PARI/GP](https://pari.math.u-bordeaux.fr/) and [SymPy](https://doi.org/10.7717/peerj-cs.103),
 which ER2 builds on.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/oeistools/ER2/blob/main/LICENSE)

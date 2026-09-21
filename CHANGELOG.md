@@ -12,7 +12,7 @@ ER2 follows [Semantic Versioning](https://semver.org/) with the usual rule for 0
 |---------|---------|
 | **0.x** (now) | Early development. A minor release (0.4 → 0.5) may change the public API. Each such change is listed here under **Changed** or **Removed**. |
 | **0.x.y** | Additions and fixes only: no intended breaking change. |
-| **1.0** | The language is stable (PLAN.md, M7): a normative preparser specification, a PyPI release and a deprecation policy. |
+| **1.0** | The language is stable (PLAN.md, M8): the syntax and the public API freeze, and change afterwards only through the deprecation policy. The normative specification is [docs/LANGUAGE.md](docs/LANGUAGE.md), shipped in 0.7. |
 
 What is stable already, and what is not:
 
@@ -27,7 +27,33 @@ What is stable already, and what is not:
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.7.0] — 2026-09-21
+
+The first release prepared for PyPI, and the one that makes ER2 a *specified* language rather
+than an implemented one. It carries the whole of M5 (algebra), M6 (series) and M7 (the language
+specification), which had accumulated unreleased since 0.4.2.
+
 ### Added
+- **Packaging for PyPI (M8).** `pip install er2`, with `er2[jupyter]` and `er2[oeis]`. Keywords,
+  classifiers and `Documentation`/`Changelog` URLs; the README's links are absolute, because the
+  README is the PyPI description and PyPI does not resolve relative paths. The upload itself is
+  run by the maintainer, following [docs/RELEASING.md](docs/RELEASING.md) — nothing in the
+  repository publishes anything.
+- **A stability and deprecation policy, [docs/STABILITY.md](docs/STABILITY.md) (M8).** What is
+  stable — the language, the number model, the prelude names, the predefined symbols, the `er2`
+  command, `.er2` imports — and what is deliberately not: `pari.<name>`, `er2.oeis`, printed
+  forms, backend routing, everything private, performance. Deprecation is concrete: announce,
+  warn, wait two minor releases and six months, remove only in a major. A mathematically wrong
+  answer is the one exception: that is a bug, not an API. `tests/test_stability.py` pins the
+  public surface, so a name cannot appear or vanish unnoticed.
+- **A documentation site, [`site/`](site/) (M8)**, Quarto to GitHub Pages. Its prose pages
+  *include* `docs/*.md` instead of copying them, so the site cannot drift from the repository,
+  and its home page **executes ER2 on the er2 kernel while it renders** — the site that documents
+  ER2 is built by ER2. `site/doc-links.lua` rewrites the included documents' relative links so
+  they work both on GitHub and on the site, and `tests/test_site.py` fails if a new link is left
+  unmapped. Published by `.github/workflows/pages.yml`.
 - **The language specification, [docs/LANGUAGE.md](docs/LANGUAGE.md) (M7, 0.7).** One normative
   document defines ER2: what is preparsed, the two-pass translation and its error and
   line-number rules, the exhaustive table of differences from Python, precedence and

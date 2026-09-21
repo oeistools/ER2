@@ -1,0 +1,88 @@
+---
+title: "Get started"
+---
+
+## Install
+
+```bash
+pip install er2
+```
+
+That is everything. PARI comes inside the [cypari2](https://github.com/sagemath/cypari2) wheel, so
+there is no system PARI/GP to install, and SymPy arrives with it. ER2 needs Python 3.12 or later.
+
+For notebooks, ask for the extra:
+
+```bash
+pip install "er2[jupyter]"
+er2 kernel install
+```
+
+## A first program
+
+Put this in `first.er2`:
+
+```er2
+sym x
+
+f = x^2 + 2*x + 1
+print(factor(f))            # (x + 1)^2
+print(1/3)                  # 1/3, exact
+print(isprime(2^521 - 1))   # True
+```
+
+and run it:
+
+```bash
+er2 first.er2
+```
+
+To see what the preparser produced — which is ordinary Python — ask for it:
+
+```bash
+er2 --show-python first.er2
+```
+
+There is also a REPL: run `er2` with no arguments.
+
+## The three things to know
+
+**`^` is power, not XOR.** This is the one change that can silently alter pasted Python. Write
+`^^` when you want XOR. ER2 warns when a `^` shares a line with obvious bit manipulation.
+
+**Integer literals are exact.** `1/3` is the rational one third, not `0.333…`. When you want a
+plain Python `int` — in a hot loop, say — write `5r`.
+
+**`sym x` declares a symbol.** Or use the predefined `_x`, `_y`, `_z`, `_n`, `_k`, `_p` without
+declaring anything.
+
+Those, plus `5r` and the way `f"{a^2=}"` echoes ER2 rather than the generated Python, are the
+**whole** of the difference from Python. The [specification](language.qmd) says so normatively and
+exhaustively.
+
+## In Jupyter and Quarto
+
+Two routes, both supported:
+
+- **The ER2 kernel.** `er2 kernel install`, then pick "ER2" in Jupyter. In Quarto, put
+  `jupyter: er2` in the front matter.
+- **The extension.** `%load_ext er2` as the first cell of an ordinary `python3` kernel.
+
+Quarto cells stay `` ```{python} ``, because that is what Quarto executes and what editor tooling
+understands. This very site is built that way: its [home page](index.qmd) runs ER2 as it renders.
+
+## Using the Python ecosystem
+
+Plain `import`, and it is the real library — ER2 translates only `.er2` sources:
+
+```er2
+import numpy as np
+
+print(np.zeros(2^3).shape)      # (8,)
+print(np.array([2^3, 3^2]).dtype)   # int64
+```
+
+`Integer` subclasses `int`, so NumPy, pandas, SciPy and Matplotlib give it a real integer dtype.
+`Rational` is not a machine number: NumPy and pandas keep it in an object array — exactly, so
+`1/3` stays `1/3` — while SciPy's ufuncs reject it. Ask for `float(...)` when you want speed
+rather than exactness.

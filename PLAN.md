@@ -36,7 +36,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | M6 (0.6)  | Series                                        | ✅ done     |
 | 0.6.1     | ER2 cells and highlighting in Quarto (D9)     | ✅ done     |
 | M7 (0.7)  | Language specification                        | ✅ done     |
-| M8 (1.0)  | Stable language and release                   | not started |
+| M8 (1.0)  | Stable language and release                   | in progress |
 | — (2.0)  | Deep CPython integration                      | long term   |
 
 ---
@@ -678,10 +678,66 @@ mapped to tests, and the mapping is enforced by the suite rather than by review.
 
 ## M8 — 1.0: Stable language and release
 
-- A documentation site. Quarto is a natural choice, since ER2 already runs in it.
-- PyPI release: `pip install er2` and `pip install er2[jupyter]`.
-- A stability policy for the public API and deprecations.
-- The syntax and the public API are frozen: after 1.0 they change only through that policy.
+Decided with the user on 2026-09-21: **0.7 is cut and released first**, and 1.0 follows once the
+site and the policy have been in the wild. 1.0 means freezing, and freezing an API that has never
+been installed by anyone would be a guess.
+
+**Tasks:**
+
+1. ✅ **0.7.0 cut (2026-09-21).** The version had sat at 0.4.2 while M5, M6 and M7 accumulated
+   under **Unreleased**; 0.7.0 consolidates all three. PyPI metadata added (keywords, classifiers,
+   `Documentation`/`Changelog` URLs; no `License ::` classifier, which PEP 639 forbids beside the
+   SPDX `license` field). The README's 19 relative links became absolute, because the README *is*
+   the PyPI description and PyPI does not resolve relative paths — they would have been 19 dead
+   links on the project page.
+2. ✅ **The release is prepared, not published** (user's decision). `docs/RELEASING.md` is the
+   checklist; `make dist` builds. The upload is run by the maintainer, because it is irreversible:
+   a version can be yanked but never replaced, and the name is claimed for good. Verified here:
+   `twine check` passes on both artifacts, and the wheel installs into a clean 3.12 venv and runs
+   ER2 with PARI and SymPy. The name `er2` was free on PyPI on 2026-09-21.
+3. ✅ **Stability policy (`docs/STABILITY.md`).** What is stable (the language, the number model,
+   the 87 prelude names, the predefined symbols, the `er2` command, `.er2` imports) and what is
+   not (`pari.<name>`, `er2.oeis`, printed forms, backend routing, everything private,
+   performance). The deprecation process is concrete: announce, warn with `DeprecationWarning`,
+   wait two minor releases and six months, remove only in a major — with one exception, a
+   mathematically *wrong* answer, which is a bug and not an API.
+   `tests/test_stability.py` pins the surface, so adding or removing a public name fails the
+   suite until it is done on purpose. Checked by simulating an added name.
+4. ✅ **Documentation site (`site/`, Quarto → GitHub Pages).** The prose pages include
+   `docs/*.md` with `{{< include >}}` rather than copying them, so the site and the repository
+   cannot drift. `site/index.qmd` **executes real ER2 on the er2 kernel as it renders**, which is
+   the point: the site that documents ER2 is built by ER2. All six pages render, every cell is
+   labelled `er2` and none `python` (D9 holds here too).
+   `site/doc-links.lua` rewrites the included documents' repository-relative links to site pages
+   or to GitHub — the documents stay correct on GitHub and the site gets working links.
+   `.github/workflows/pages.yml` renders and deploys on every push to `main`.
+   `tests/test_site.py` guards the wiring, including that every relative link in an included
+   document is one the filter knows.
+
+**Remaining for 1.0**, in order. The first two are outside this repository:
+
+1. **Publish 0.7.0** — the maintainer, following `docs/RELEASING.md`. Everything else waits on
+   this, because 1.0 freezes an API and freezing an unpublished one would be guessing.
+2. **Turn on Settings → Pages → Source: GitHub Actions**, once. A private repository needs a paid
+   plan for Pages; `make site` builds locally either way. Until it is on, the
+   `Documentation` URL in `pyproject.toml` and the site link in `README.md` point at a page that
+   does not exist yet.
+3. **Freeze**, and say so in `docs/STABILITY.md` (it is written as in force at 1.0) and in the
+   `CHANGELOG.md` versioning table.
+4. **Decide** whether 1.0 also brings a trusted-publisher workflow, so releases stop being
+   manual. Not required for 1.0; a long-lived PyPI token in a repository secret is the thing to
+   avoid.
+
+**State at the end of 2026-09-21** (all of it committed, nothing in flight): 768 tests pass and
+3 skip, ruff is clean, `dist/` holds the built 0.7.0 sdist and wheel ready to upload, and
+`uv.lock` is in sync — its only change is the version, because pandas and SciPy had already
+entered the lock with M7. `uv sync --locked` resolves on 3.12, 3.13 and 3.14, so the CI matrix
+is safe now that the tests import pandas and SciPy. The tracked tree was reviewed file by file:
+114 files, nothing surplus, no generated artefact committed. `make clean` now also clears
+`site/_site` and `site/.quarto`, which it did not know about.
+
+**Acceptance:** `pip install er2` works from PyPI, the site is live, `docs/STABILITY.md` is in
+force, and the syntax and public API are frozen.
 
 ## 2.0 — Deep CPython integration (long term)
 

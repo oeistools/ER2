@@ -1,0 +1,9 @@
+---
+title: "Stability and deprecation"
+---
+
+::: {.callout-note appearance="simple"}
+What a user may rely on, and what may still move.
+:::
+
+{{< include ../docs/STABILITY.md >}}

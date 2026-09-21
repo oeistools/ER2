@@ -1,0 +1,9 @@
+---
+title: "Benchmarks"
+---
+
+::: {.callout-note appearance="simple"}
+What ER2 costs against SymPy and against raw PARI. These record what is true today, not a promise (see [Stability](stability.qmd), N6).
+:::
+
+{{< include ../docs/BENCHMARKS.md >}}

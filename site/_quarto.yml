@@ -1,0 +1,54 @@
+# The ER2 documentation site (PLAN.md, M8).
+#
+# The prose pages include the repository's own documents with
+# `{{< include ../docs/... >}}` rather than copying them, so the site and
+# the repository cannot drift apart.  `index.qmd` executes real ER2, on
+# the er2 kernel, which is the point: the site that documents ER2 is
+# built by ER2.
+#
+# The two settings that show cells as ER2 are the examples' own
+# (ARCHITECTURE.md §1.2, D9); they are reused here rather than copied.
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "ER2"
+  description: "Mathematical Python: symbolic syntax, exact arithmetic and PARI/GP."
+  site-url: "https://oeistools.github.io/ER2/"
+  repo-url: "https://github.com/oeistools/ER2"
+  repo-actions: [issue]
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: start.qmd
+        text: Get started
+      - href: language.qmd
+        text: Language
+      - href: reference.qmd
+        text: PARI reference
+      - href: stability.qmd
+        text: Stability
+      - href: benchmarks.qmd
+        text: Benchmarks
+    right:
+      - icon: github
+        href: "https://github.com/oeistools/ER2"
+        aria-label: ER2 on GitHub
+  page-footer:
+    left: "ER2 — MIT licensed."
+    right: "Built with [Quarto](https://quarto.org/), running ER2."
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    code-copy: true
+    code-overflow: wrap
+
+syntax-definitions:
+  - ../examples/er2.xml
+filters:
+  - ../examples/er2-cells.lua
+  - doc-links.lua

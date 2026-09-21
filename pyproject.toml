@@ -1,6 +1,6 @@
 [project]
 name = "er2"
-version = "0.4.2"
+version = "0.7.0"
 description = "ER2 — mathematical Python: symbolic syntax, exact arithmetic and PARI/GP number theory on top of Python."
 readme = "README.md"
 license = "MIT"
@@ -8,6 +8,31 @@ license-files = ["LICENSE"]
 requires-python = ">=3.12"
 authors = [{ name = "Enrique Pérez Herrero", email = "energycode.org@gmail.com" }]
 maintainers = [{ name = "Enrique Pérez Herrero", email = "energycode.org@gmail.com" }]
+keywords = [
+    "mathematics",
+    "computer-algebra",
+    "number-theory",
+    "symbolic",
+    "exact-arithmetic",
+    "pari",
+    "sympy",
+    "preparser",
+]
+# No "License ::" classifier: PEP 639 forbids it beside the SPDX
+# ``license`` field above.
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Software Development :: Interpreters",
+    "Framework :: Jupyter",
+    "Operating System :: OS Independent",
+]
 dependencies = [
     "sympy>=1.14",
     "cypari2>=2.2",
@@ -23,8 +48,10 @@ oeis = ["oeis-tools>=0.2.1"]
 er2 = "er2.__main__:main"
 
 [project.urls]
+Documentation = "https://oeistools.github.io/ER2/"
 Repository = "https://github.com/oeistools/ER2"
 Issues = "https://github.com/oeistools/ER2/issues"
+Changelog = "https://github.com/oeistools/ER2/blob/main/CHANGELOG.md"
 
 [dependency-groups]
 dev = [

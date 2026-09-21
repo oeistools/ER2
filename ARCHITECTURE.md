@@ -2,8 +2,9 @@
 
 > Technical design document. The original idea is summarized in §1; the draft it came from is kept
 > locally (`draft/`, ignored by Git).
-> Status: **0.4.2** released (M1–M4 done; M3 was the MVP).
-> **M5 (0.5, algebra) and M6 (0.6, series) are complete**, acceptances included.
+> Status: **0.7.0** (M1–M7 done; M3 was the MVP).
+> M5 (algebra), M6 (series) and M7 (the language specification, [docs/LANGUAGE.md](docs/LANGUAGE.md))
+> are complete, acceptances included.
 > See [PLAN.md](PLAN.md).
 
 ## 1. What ER2 is

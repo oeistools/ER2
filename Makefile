@@ -13,7 +13,7 @@ FILE ?= examples/demo.qmd
 
 .DEFAULT_GOAL := help
 .PHONY: help install install-global uninstall-global test test-fast lint \
-	format check render preview bench sync-pari clean
+	format check render preview site site-preview dist bench sync-pari clean
 
 help:  ## List the available targets
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) \
@@ -53,6 +53,18 @@ render:  ## Render a Quarto document with the ER2 kernel (FILE=...)
 preview:  ## Live preview of a Quarto document (FILE=...)
 	$(QUARTO) preview $(FILE) --execute-daemon-restart
 
+site:  ## Render the documentation site into site/_site
+	$(QUARTO) render site --execute-daemon-restart
+
+site-preview:  ## Live preview of the documentation site
+	$(QUARTO) preview site --execute-daemon-restart
+
+dist:  ## Build the sdist and wheel into dist/ (does not publish)
+	rm -rf dist
+	uv build
+	@echo
+	@echo "Built. To publish (docs/RELEASING.md):  uv publish"
+
 bench:  ## Run the benchmarks and update docs/BENCHMARKS.md
 	uv run python benchmarks/run.py --write
 
@@ -63,7 +75,8 @@ logo:  ## Regenerate the logo and icon in assets/
 	uv run --with fonttools python tools/make_logo.py
 
 clean:  ## Remove caches and Quarto output
-	rm -rf .pytest_cache .ruff_cache .quarto examples/.quarto
+	rm -rf .pytest_cache .ruff_cache .quarto examples/.quarto site/.quarto
 	rm -rf examples/*.html examples/*_files examples/*.quarto_ipynb
+	rm -rf site/_site site/*.quarto_ipynb
 	find . -name __pycache__ -type d -not -path './.venv/*' -prune \
 		-exec rm -rf {} +

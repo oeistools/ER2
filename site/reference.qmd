@@ -1,0 +1,9 @@
+---
+title: "PARI reference"
+---
+
+::: {.callout-note appearance="simple"}
+Every PARI function, its ER2 name, and whether the prelude exposes it. Generated from `er2/data/pari_functions.csv`.
+:::
+
+{{< include ../docs/PARI_FUNCTIONS.md >}}

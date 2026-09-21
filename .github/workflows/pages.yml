@@ -1,0 +1,57 @@
+# Build the documentation site and publish it to GitHub Pages.
+#
+# The site executes real ER2 as it renders (site/index.qmd runs on the
+# er2 kernel), so a build failure here means the documented behaviour
+# stopped being true -- which is the point of documenting it this way.
+name: Documentation site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; let a running one finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Render the site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          cache-suffix: ${{ github.job }}
+      - uses: quarto-dev/quarto-actions/setup@v2
+        env:
+          # Quarto asks the GitHub API which release is current;
+          # unauthenticated that shares the runner's rate limit.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: uv sync --locked
+      # The site's home page runs on the ER2 kernel, so it must exist.
+      - run: uv run er2 kernel install --sys-prefix
+      - run: quarto render site
+        env:
+          QUARTO_PYTHON: .venv/bin/python
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/_site
+
+  deploy:
+    name: Publish
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

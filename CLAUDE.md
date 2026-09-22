@@ -17,7 +17,8 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
   deprecation process. `tests/test_stability.py` pins the surface, so a public name cannot
   appear or vanish by accident.
 - Cutting a release: [docs/RELEASING.md](docs/RELEASING.md). **Never publish to PyPI** — the
-  maintainer does that; it is irreversible.
+  maintainer does that; it is irreversible. **Never push a `v*` tag** either: it starts
+  `.github/workflows/release.yml`, which uploads once the `pypi` environment is approved.
 - PARI → ER2 function names: [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTIONS.md)
 - Technical design and decisions (D1–D15): [ARCHITECTURE.md](ARCHITECTURE.md) — **read before implementing**.
 - Releases and versioning policy: [CHANGELOG.md](CHANGELOG.md). Contributor rules: [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -39,9 +40,10 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
   **M8 (1.0) is in progress**: 0.7.0 is cut (it consolidates M5–M7, which had piled up unreleased
   since 0.4.2), the PyPI metadata and `docs/RELEASING.md` are ready, `docs/STABILITY.md` is
   written and enforced, and the documentation site is in `site/`. What is left is outside this
-  repository: the maintainer publishes 0.7.0 and turns on GitHub Pages, and only then does 1.0
-  freeze the syntax and the public API. D1–D21 are all resolved, and the changes are under
-  **[0.7.0]** in [CHANGELOG.md](CHANGELOG.md); **Unreleased** is empty again.
+  repository: the maintainer publishes 0.7.0, and only then does 1.0 freeze the syntax and the
+  public API. The site is live at <https://oeistools.github.io/ER2/> (verified 2026-09-22). D1–D21 are all resolved, and the changes are under
+  **[0.7.0]** in [CHANGELOG.md](CHANGELOG.md); **Unreleased** holds only the release
+  workflow (trusted publishing, `.github/workflows/release.yml`).
 
 ## Guiding principle
 

@@ -1,0 +1,89 @@
+# Publish a release to PyPI through a trusted publisher (docs/RELEASING.md).
+#
+# Pushing a tag vX.Y.Z starts it.  Nothing reaches PyPI until:
+#
+# * the build job has checked the tag against pyproject.toml, run the
+#   suite, built the sdist and wheel, and run the built wheel in a clean
+#   environment (the check that catches a missing data file), and
+# * a maintainer has approved the `pypi` environment's deployment.
+#
+# There is no token anywhere: PyPI trusts this workflow, in this
+# repository, in that environment, and nothing else.  Only the publish
+# job can ask for the OIDC identity that proves it.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+# Never two releases at once, and never cancel one halfway.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Check and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # The whole history, to check that the tag is on main.
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v7
+        with:
+          cache-suffix: ${{ github.job }}
+      - name: The tag names the version in pyproject.toml
+        run: |
+          version="$(uv version --short)"
+          if [ "${GITHUB_REF_NAME}" != "v${version}" ]; then
+            echo "::error::tag ${GITHUB_REF_NAME} but pyproject.toml says ${version}"
+            exit 1
+          fi
+      - name: The tagged commit is on main
+        run: |
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::${GITHUB_REF_NAME} is not on main"
+            exit 1
+          fi
+      - run: uv sync --locked
+      - run: uv run ruff format --check
+      - run: uv run ruff check
+      - run: uv run pytest
+      - run: uv build
+      - run: uv run --with twine twine check dist/*
+      - name: The built wheel runs ER2 in a clean environment
+        run: |
+          uv venv "$RUNNER_TEMP/clean" --python 3.12
+          uv pip install --python "$RUNNER_TEMP/clean/bin/python" dist/er2-*.whl
+          printf 'sym x\nprint(2^10, 1/3, factor(x^4 - 1))\nprint(isprime(2^521 - 1))\n' \
+            > "$RUNNER_TEMP/first.er2"
+          printf '1024 1/3 (x - 1)*(x + 1)*(x^2 + 1)\nTrue\n' > "$RUNNER_TEMP/expected"
+          "$RUNNER_TEMP/clean/bin/er2" "$RUNNER_TEMP/first.er2" > "$RUNNER_TEMP/actual"
+          diff "$RUNNER_TEMP/expected" "$RUNNER_TEMP/actual"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+  publish:
+    name: Upload to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    # Give this environment required reviewers in the repository settings:
+    # the approval is the moment a person decides to publish.
+    environment:
+      name: pypi
+      url: https://pypi.org/p/er2
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

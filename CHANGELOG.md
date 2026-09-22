@@ -27,7 +27,14 @@ What is stable already, and what is not:
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+- **Releases through a trusted publisher (M8).** Pushing a tag `vX.Y.Z` starts
+  `.github/workflows/release.yml`. It checks the tag against the version and that the commit
+  is on `main`, runs the suite, builds, and runs the built wheel in a clean environment. It then
+  waits for a maintainer to approve the upload to PyPI. No token is stored anywhere: PyPI trusts
+  that workflow in that environment and nothing else. The manual route in
+  [docs/RELEASING.md](docs/RELEASING.md) remains as the fallback, and `tests/test_release.py`
+  checks that only the approved job can publish.
 
 ## [0.7.0] — 2026-09-21
 

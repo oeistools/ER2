@@ -1,8 +1,9 @@
 # Releasing ER2
 
 For the maintainer. Publishing is **irreversible**: a version uploaded to PyPI can be yanked but
-never replaced, and the project name is claimed for good. Nothing in this repository uploads
-anything — the last step is run by a person, on purpose.
+never replaced, and the project name is claimed for good. So a person always takes the last
+step, on purpose. Either they run the upload by hand, or they approve the upload that
+`.github/workflows/release.yml` has prepared. Nothing uploads by itself.
 
 ## Before you start
 
@@ -13,7 +14,33 @@ first upload, because a name can be taken at any time:
 curl -s -o /dev/null -w "%{http_code}\n" https://pypi.org/pypi/er2/json   # 404 = free
 ```
 
-You need a PyPI account and an API token, or a configured trusted publisher.
+You need a PyPI account. The upload then goes one of two ways. **Trusted publishing** through
+the workflow is the one to use: no token exists anywhere. **By hand with an API token** is the
+fallback.
+
+## One-time setup for trusted publishing
+
+Nothing here can be done from the repository. It needs your accounts:
+
+1. **On PyPI**, add a publisher at <https://pypi.org/manage/account/publishing/>. For the first
+   release the project does not exist yet, so add it as a *pending* publisher, which also
+   reserves the name for this repository:
+
+   | Field             | Value         |
+   |-------------------|---------------|
+   | PyPI project name | `er2`         |
+   | Owner             | `oeistools`   |
+   | Repository name   | `ER2`         |
+   | Workflow name     | `release.yml` |
+   | Environment name  | `pypi`        |
+
+2. **On GitHub**, create the environment under **Settings → Environments → New environment**,
+   named `pypi`. Give it yourself as a **required reviewer**, and restrict its deployment
+   branches and tags to the tag pattern `v*`. The required reviewer is what makes the upload wait
+   for a person. Without one, pushing a tag would publish straight away.
+
+PyPI then accepts uploads only from that workflow file, in that repository, running in that
+environment. A fork or another workflow cannot publish, and there is no secret to leak.
 
 ## The checklist
 
@@ -56,7 +83,23 @@ You need a PyPI account and an API token, or a configured trusted publisher.
 
    Expected: `1024 1/3 (x - 1)*(x + 1)*(x^2 + 1)` and `True`.
 
-8. **Publish.** Not done by any script here:
+8. **Publish**, with the workflow or by hand.
+
+   **With the workflow** (trusted publishing, set up as above), the tag is what starts it:
+
+   ```bash
+   git tag -a v0.7.0 -m "ER2 0.7.0"
+   git push origin v0.7.0
+   ```
+
+   The *Release* run first checks the tag against `pyproject.toml` and checks that the commit is
+   on `main`. It then runs ruff and the full suite, builds, runs `twine check`, and runs the
+   built wheel in a clean 3.12 environment (steps 1 and 5–7 again, on a clean machine). Only
+   then does it stop and wait at the `pypi` environment. **Approving that deployment is the
+   publication.** If anything fails before that point, nothing has been uploaded: delete the tag
+   (`git push --delete origin v0.7.0`, then `git tag -d v0.7.0`), fix the problem, and tag again.
+
+   **By hand**, with an API token:
 
    ```bash
    uv publish                     # asks for the token, or uses UV_PUBLISH_TOKEN
@@ -68,12 +111,15 @@ You need a PyPI account and an API token, or a configured trusted publisher.
    uv publish --publish-url https://test.pypi.org/legacy/
    ```
 
-9. **Tag and push.**
+9. **Tag and push**, after a manual upload only. The workflow route tagged in step 8.
 
    ```bash
    git tag -a v0.7.0 -m "ER2 0.7.0"
    git push origin v0.7.0
    ```
+
+   This tag also starts the *Release* workflow. Its upload then fails, harmlessly, because PyPI
+   refuses a version that already exists. Reject the pending deployment instead of approving it.
 
 10. **Confirm the install path users will take.**
 
@@ -102,5 +148,8 @@ stopped being true.
   patch.
 - **Do not publish from CI without trusted publishing.** A long-lived token in a secret is worth
   more to an attacker than the release is worth to you.
-- **Do not tag before the upload succeeds.** A tag that points at a version nobody can install is
-  a lie that is awkward to undo.
+- **Do not leave a tag behind a failed release.** A tag that points at a version nobody can
+  install is a lie. With the workflow the tag comes first by design, because it is the trigger.
+  So if the run fails or you reject it, delete the tag before doing anything else.
+- **Do not remove the `pypi` environment's required reviewer.** It is the only thing between
+  pushing a tag and publishing.

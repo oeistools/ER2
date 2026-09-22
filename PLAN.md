@@ -714,7 +714,7 @@ been installed by anyone would be a guess.
    `tests/test_site.py` guards the wiring, including that every relative link in an included
    document is one the filter knows.
 
-**Remaining for 1.0**, in order. The first two are outside this repository:
+**Remaining for 1.0**, in order. The first is outside this repository, and the second is done:
 
 1. **Publish 0.7.0** — the maintainer, following `docs/RELEASING.md`. Everything else waits on
    this, because 1.0 freezes an API and freezing an unpublished one would be guessing.
@@ -724,13 +724,24 @@ been installed by anyone would be a guess.
    `enablement: true` and turns Pages on itself on the first run — the `pages: write` permission
    the workflow already declares is what allows it. The repository is public, so Pages is free;
    the earlier note here about needing a paid plan applied only to private repositories and was
-   misleading. Until a run succeeds, the `Documentation` URL in `pyproject.toml` and the site
-   link in `README.md` point at a page that does not exist yet.
+   misleading. **Verified live on 2026-09-22**: the `update pages` run succeeded, the repository
+   reports `build_type: workflow`, and all six pages of <https://oeistools.github.io/ER2/> return
+   200, with the index's executed cells labelled `er2` and free of tracebacks. The
+   `Documentation` URL in `pyproject.toml` and the site link in `README.md` now resolve.
 3. **Freeze**, and say so in `docs/STABILITY.md` (it is written as in force at 1.0) and in the
    `CHANGELOG.md` versioning table.
-4. **Decide** whether 1.0 also brings a trusted-publisher workflow, so releases stop being
-   manual. Not required for 1.0; a long-lived PyPI token in a repository secret is the thing to
-   avoid.
+4. ✅ **Trusted-publisher workflow, decided and added 2026-09-22** (user's decision: yes).
+   `.github/workflows/release.yml` runs on a `v*` tag. The `build` job has no publishing rights.
+   It checks that the tag matches `pyproject.toml` and that the commit is on `main`, runs ruff
+   and the suite, builds, runs `twine check`, and runs the wheel in a clean 3.12 venv against
+   the expected output. The `publish` job is the only one with `id-token: write`. It runs in the
+   `pypi` environment, whose required reviewer is the human step, and uploads with
+   `pypa/gh-action-pypi-publish`, with no token. `actionlint` is clean, and
+   `tests/test_release.py` guards the permissions, the ordering and the smoke test's expected
+   output; planting a regression in either was checked to fail it. What is left is the
+   maintainer's one-time setup (`docs/RELEASING.md`): the pending publisher on PyPI and the
+   `pypi` environment on GitHub. Until both exist, a pushed tag builds and then fails at the
+   upload, harmlessly.
 
 **State at the end of 2026-09-21** (all of it committed, nothing in flight): 768 tests pass and
 3 skip, ruff is clean, `dist/` holds the built 0.7.0 sdist and wheel ready to upload, and

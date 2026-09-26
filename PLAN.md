@@ -25,7 +25,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 
 | Milestone | Focus                                         | Status      |
 | --------- | --------------------------------------------- | ----------- |
-| M0        | Foundations                                   | ✅ done (CI result not yet checked) |
+| M0        | Foundations                                   | ✅ done     |
 | M1 (0.1)  | Preparser, number types, CLI, Jupyter, Quarto | ✅ done     |
 | M2 (0.2)  | CAS on SymPy                                  | ✅ done     |
 | M3 (0.3)  | Number theory on PARI →**MVP**         | ✅ done     |
@@ -384,8 +384,8 @@ handle `t_FFELT`, and it turns `nf`/`bnf` structures into plain lists.
     Done 2026-09-20. The numbers corrected a documented claim: `factor(f, modulus=p)` was said to
     be ×40 faster than SymPy at degree 49, which is the *raw PARI* ratio; end to end ER2 is
     ×2–10, because converting to and from SymPy's form costs more than the factoring.
-    `hermite_form` is ×3.3 **slower** than SymPy at 10×10 — a size threshold for its dispatch is
-    open work (ARCHITECTURE §3.4).
+    `hermite_form` was ×3.3 **slower** than SymPy at 10×10; 0.5.2 made it ×1.4 faster by cutting
+    the conversion cost, so no size threshold was needed (ARCHITECTURE §2.1, §3.4).
 
 **Tests.** Expected values from cypari2 and SymPy, hard-coded. The PARI and SymPy routes of task 2
 agree on random integer matrices (like the 248-polynomial check for `factor` in M4). Finite-field
@@ -714,7 +714,7 @@ been installed by anyone would be a guess.
    `tests/test_site.py` guards the wiring, including that every relative link in an included
    document is one the filter knows.
 
-**Remaining for 1.0**, in order. The first two are done:
+**Remaining for 1.0**, in order. Only item 3, the freeze, is still open:
 
 1. ✅ **0.7.0 published, 2026-09-26.** The maintainer pushed the tag `v0.7.0` (on `19f26e5`,
    `main`) and the trusted-publisher workflow (task 4) uploaded it: *Check and build* and
@@ -751,10 +751,11 @@ been installed by anyone would be a guess.
    `pypi` environment on GitHub. Until both exist, a pushed tag builds and then fails at the
    upload, harmlessly.
    Both were set up before 2026-09-26, when this workflow published 0.7.0 (item 1).
-5. **Give the `pypi` environment a required reviewer** — the maintainer, in the repository
-   settings (Settings → Environments → pypi → Required reviewers; optionally a deployment-tag
-   rule `v*`). Until then, pushing any `v*` tag that passes the build publishes to PyPI
-   without a human step, which is irreversible.
+5. ✅ **The `pypi` environment has a required reviewer, 2026-09-26.** Set by the maintainer and
+   checked through the API: `protection_rules` holds a `required_reviewers` rule, so an upload
+   now waits for approval as task 4 intended. Not set, and optional: a deployment-tag rule
+   `v*` (the workflow already runs only on `v*` tags from `main`), and administrators may
+   still bypass the approval.
 
 **State at the end of 2026-09-21** (all of it committed, nothing in flight): 768 tests pass and
 3 skip, ruff is clean, `dist/` holds the built 0.7.0 sdist and wheel ready to upload, and

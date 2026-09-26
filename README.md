@@ -5,6 +5,7 @@
   </picture>
 </h1>
 
+[![ER2](https://img.shields.io/badge/ER2-mathematical%20Python-8a2be2)](https://oeistools.github.io/ER2/)
 [![CI](https://github.com/oeistools/ER2/actions/workflows/ci.yml/badge.svg)](https://github.com/oeistools/ER2/actions/workflows/ci.yml)
 [![Release](https://github.com/oeistools/ER2/actions/workflows/release.yml/badge.svg)](https://github.com/oeistools/ER2/releases/latest)
 [![PyPI](https://img.shields.io/pypi/v/er2?label=pypi)](https://pypi.org/project/er2/)
@@ -15,7 +16,7 @@
 [![PARI/GP](https://img.shields.io/badge/powered%20by-PARI%2FGP-8a2be2)](https://pari.math.u-bordeaux.fr/)
 [![SymPy](https://img.shields.io/badge/powered%20by-SymPy-3b5526)](https://www.sympy.org/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/oeistools/ER2/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](https://github.com/oeistools/ER2/blob/main/LICENSE)
 
 **ER2** is Python with mathematics built in: symbolic syntax, exact arithmetic by default, and
 computational number theory powered by [PARI/GP](https://pari.math.u-bordeaux.fr/).

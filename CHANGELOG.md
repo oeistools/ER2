@@ -30,7 +30,7 @@ What is stable already, and what is not:
 ### Added
 - **macOS is supported**, on Apple Silicon: CI now runs the whole test suite on macOS as well as
   Linux, for Python 3.12–3.14, and the package declares `Operating System :: MacOS`. Intel Macs
-  are experimental, since CI cannot test them.
+  are experimental until CI's first run on them passes.
 - **Releases through a trusted publisher (M8).** Pushing a tag `vX.Y.Z` starts
   `.github/workflows/release.yml`. It checks the tag against the version and that the commit
   is on `main`, runs the suite, builds, and runs the built wheel in a clean environment. It then

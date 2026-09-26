@@ -792,8 +792,10 @@ and the README has a platform table (CHANGELOG, Unreleased).
    The first run (`44d8fb2`) was green on all three, on a macOS 26 arm64 image, with the same
    766 passed and 12 skipped as Ubuntu, so no test is skipped for being on macOS. The README
    now lists *macOS (Apple Silicon)* as supported and `pyproject.toml` declares
-   `Operating System :: MacOS`. The Intel wheel (macOS ≥ 13) stays experimental: GitHub is
-   retiring its Intel runners, so CI cannot test it.
+   `Operating System :: MacOS`. Intel was first left untested on the belief that GitHub had
+   no Intel runners left; it does (`macos-15-intel`, a standard runner, free for public
+   repositories), so the matrix now includes it. **Waiting for the first run**: when it is
+   green, the README's *macOS (Intel)* row becomes supported.
 4. **`er2 --info`** for bug reports: the versions of ER2, Python, SymPy, cypari2 and libpari in
    one place. `er2 --version` already exists and prints ER2's alone.
 

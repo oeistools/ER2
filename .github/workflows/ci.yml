@@ -30,10 +30,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # macOS runs the suite so that it can move from experimental to
-        # supported (README, platform table; PLAN.md, backlog).  The other
-        # jobs do not depend on the operating system and stay on Linux.
-        os: [ubuntu-latest, macos-latest]
+        # The platforms of the README's table: macos-latest is Apple
+        # Silicon and macos-15-intel is x86-64, which cypari2 has separate
+        # wheels for.  The other jobs do not depend on the operating system
+        # and stay on Linux.
+        os: [ubuntu-latest, macos-latest, macos-15-intel]
         python-version: ["3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v5

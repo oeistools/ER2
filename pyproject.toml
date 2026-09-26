@@ -32,7 +32,7 @@ classifiers = [
     "Topic :: Software Development :: Interpreters",
     "Framework :: Jupyter",
     # Not "OS Independent": cypari2 has no Windows build.  Both are tested
-    # in CI (macOS on Apple Silicon; README, platform table).
+    # in CI, macOS on Apple Silicon and Intel (README, platform table).
     "Operating System :: POSIX :: Linux",
     "Operating System :: MacOS",
 ]

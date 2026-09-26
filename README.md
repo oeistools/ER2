@@ -42,8 +42,7 @@ inside the cypari2 wheel, so there is nothing else to install.
 | Platform | Status |
 |----------|--------|
 | Linux | ✅ Supported, and tested in CI |
-| macOS (Apple Silicon) | ✅ Supported, and tested in CI |
-| macOS (Intel) | ⚠️ Experimental: CI now runs on it; supported once a run is green |
+| macOS | ✅ Supported, Apple Silicon and Intel, and tested in CI |
 | Windows | ❌ Not supported: cypari2 has no Windows build (WSL works, as Linux) |
 
 ```bash

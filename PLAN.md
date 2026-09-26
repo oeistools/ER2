@@ -714,10 +714,18 @@ been installed by anyone would be a guess.
    `tests/test_site.py` guards the wiring, including that every relative link in an included
    document is one the filter knows.
 
-**Remaining for 1.0**, in order. The first is outside this repository, and the second is done:
+**Remaining for 1.0**, in order. The first two are done:
 
-1. **Publish 0.7.0** — the maintainer, following `docs/RELEASING.md`. Everything else waits on
-   this, because 1.0 freezes an API and freezing an unpublished one would be guessing.
+1. ✅ **0.7.0 published, 2026-09-26.** The maintainer pushed the tag `v0.7.0` (on `19f26e5`,
+   `main`) and the trusted-publisher workflow (task 4) uploaded it: *Check and build* and
+   *Upload to PyPI* both succeeded, in 1 min 27 s. The GitHub release "ER2 first release" is
+   attached to the tag. **Verified from PyPI the same day**: `er2` 0.7.0 is the only version,
+   and `uv run --isolated --with er2==0.7.0 er2 t.er2` runs a program that factors a
+   polynomial, calls PARI (`phi`) and prints an exact `Rational`. **Found while checking**: the
+   `pypi` environment on GitHub has *no* required reviewer (`protection_rules: []`), so the
+   upload started 3 s after the build with nobody approving it. Nothing went wrong this time,
+   but the approval that task 4 and `docs/RELEASING.md` describe does not exist yet — see
+   item 5.
 2. ✅ **Pages enablement, fixed 2026-09-22.** The first run of the workflow failed with
    `Get Pages site failed ... Not Found`: Pages was not switched on for the repository. Rather
    than leave a manual click as a prerequisite, `actions/configure-pages` now gets
@@ -742,6 +750,11 @@ been installed by anyone would be a guess.
    maintainer's one-time setup (`docs/RELEASING.md`): the pending publisher on PyPI and the
    `pypi` environment on GitHub. Until both exist, a pushed tag builds and then fails at the
    upload, harmlessly.
+   Both were set up before 2026-09-26, when this workflow published 0.7.0 (item 1).
+5. **Give the `pypi` environment a required reviewer** — the maintainer, in the repository
+   settings (Settings → Environments → pypi → Required reviewers; optionally a deployment-tag
+   rule `v*`). Until then, pushing any `v*` tag that passes the build publishes to PyPI
+   without a human step, which is irreversible.
 
 **State at the end of 2026-09-21** (all of it committed, nothing in flight): 768 tests pass and
 3 skip, ruff is clean, `dist/` holds the built 0.7.0 sdist and wheel ready to upload, and

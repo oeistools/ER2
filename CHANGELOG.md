@@ -36,6 +36,11 @@ What is stable already, and what is not:
   [docs/RELEASING.md](docs/RELEASING.md) remains as the fallback, and `tests/test_release.py`
   checks that only the approved job can publish.
 
+### Fixed
+- The README's logo and five of its badges used relative paths, which are dead on the PyPI
+  project page, since the README is the PyPI description. They are now absolute, and
+  `tests/test_release.py` fails if a relative link comes back.
+
 ## [0.7.0] — 2026-09-21
 
 The first release prepared for PyPI, and the one that makes ER2 a *specified* language rather

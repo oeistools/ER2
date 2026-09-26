@@ -82,3 +82,17 @@ def test_the_smoke_test_expects_what_er2_prints(tmp_path):
     )
     assert result.returncode == 0, result.stderr
     assert result.stdout == expected.replace("\\n", "\n")
+
+
+def test_readme_links_are_absolute():
+    # The README is the PyPI description, and PyPI resolves no relative
+    # path: a relative link or image is dead on the project page.
+    text = (ROOT / "README.md").read_text(encoding="utf-8")
+    targets = re.findall(r"\]\(([^)]*)\)", text)
+    targets += re.findall(r'(?:src|srcset|href)="([^"]*)"', text)
+    relative = [
+        t
+        for t in targets
+        if not t.startswith(("https://", "http://", "mailto:", "#"))
+    ]
+    assert relative == []

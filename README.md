@@ -43,7 +43,7 @@ inside the cypari2 wheel, so there is nothing else to install.
 |----------|--------|
 | Linux | ✅ Supported, and tested in CI |
 | macOS | ✅ Supported, Apple Silicon and Intel, and tested in CI |
-| Windows | ❌ Not supported: cypari2 has no Windows build (WSL works, as Linux) |
+| Windows | ❌ Not supported yet: cypari2 has no Windows build, in progress upstream in [cypari2#186](https://github.com/sagemath/cypari2/pull/186) (WSL works, as Linux) |
 
 ```bash
 pip install er2                 # or: uv tool install er2

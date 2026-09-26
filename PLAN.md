@@ -37,7 +37,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | 0.6.1     | ER2 cells and highlighting in Quarto (D9)     | ✅ done     |
 | M7 (0.7)  | Language specification                        | ✅ done     |
 | M8 (1.0)  | Stable language and release                   | in progress |
-| Backlog   | From a review of 0.7.0 (14 items)             | not scheduled |
+| Backlog   | From a review of 0.7.0 (15 items)             | not scheduled |
 | — (2.0)  | Deep CPython integration                      | long term   |
 
 ---
@@ -799,37 +799,69 @@ and the README has a platform table (CHANGELOG, Unreleased).
    both, in one row.
 4. **`er2 --info`** for bug reports: the versions of ER2, Python, SymPy, cypari2 and libpari in
    one place. `er2 --version` already exists and prints ER2's alone.
+5. **Windows.** Not supported today (README, platform table), because `cypari2` has no Windows
+   wheel. PARI is not the
+   obstacle, and neither is `cysignals` any more: 1.12.6 ships `win_amd64` and `win_arm64`
+   wheels. ER2 itself needs no Windows wheel, since its own wheel is pure Python
+   (`py3-none-any`); only the PARI extension does. Two routes:
+   - **Upstream (preferred, chosen by the user 2026-09-26):** Windows wheels for cypari2
+     itself. ER2 changes nothing and keeps one PARI (2.17) everywhere. The work exists as a
+     **draft PR, [cypari2#186](https://github.com/sagemath/cypari2/pull/186)** "Make it
+     compile on Windows" (tobiasdiez), stalled: last commit 2025-10-01, now conflicting with
+     `main`, whose build system changed since (#188, merged 2026-01). State as of 2026-09-26:
+     it compiles with MSVC (the `#define long long long` clash solved as CyPari does), but
+     crashes at run time, because on Windows PARI builds only as a *static* library, so each
+     Cython extension embeds its own uninitialised copy; a shared `libpari` DLL is the open
+     problem, raised on the PARI mailing list. Its CI: Linux and macOS green, all four Windows
+     jobs red. ER2's part is to follow it, and to offer ER2's suite as a downstream test once
+     a Windows wheel exists; the fix itself is C/MSVC work in PARI and cypari2.
+   - **CyPari** (`cypari` 2.5.6, SnapPy's stand-alone fork, `win_amd64` for CPython 3.9–3.14),
+     chosen by platform marker (`cypari; sys_platform == 'win32'`). **Measured on Linux,
+     2026-09-26**, by running the suite with a stand-in `cypari2` that re-exports
+     `cypari._pari`: **751 passed, 3 failed, 3 skipped**, no crash (notebooks not run). It
+     needed one bridge: 42 functions ER2 binds are not methods of CyPari's `Pari` (4 in the
+     prelude: `ispower`, `isprimepower`, `issquare`, `sqrtint`), and CyPari's `Gen` methods
+     of those names return other conventions (`ispower(10)` is `(1, 10)`, not `0`); calling
+     GP for a missing name (`pari("ispower")`) gives GP's, as cypari2 does. What remains:
+     13 functions do not exist in its PARI 2.15.4 (`polfromroots`, `qfcvp`, `ellisisom`, …;
+     all `pari.<name>`, none in the prelude), and `pari.factorial(5)` returns the integer
+     `120` where cypari2 returns the real `120.000…`. Loading cypari and cypari2 in one
+     process aborts, so they must never be installed together.
+   Costs of the CyPari route, each the user's decision: a second runtime dependency (CLAUDE.md
+   allows `sympy` and `cypari2`), an older PARI on one platform with a list of known
+   differences to maintain, and a Windows CI job (`windows-latest`), without which Windows
+   would only move from *not supported* to *untested*.
 
 **The REPL and errors**
 
-5. **A better REPL.** `er2` is a `code.InteractiveConsole` (`er2/session.py`) and does not
+6. **A better REPL.** `er2` is a `code.InteractiveConsole` (`er2/session.py`) and does not
    import `readline`, so history and line editing should be checked first; then help (`?`) and
    timing. Keep it Python's console underneath, not a new one.
-6. **ER2-specific error messages**, with the ER2 source line and a caret. `ER2Warning` exists in
+7. **ER2-specific error messages**, with the ER2 source line and a caret. `ER2Warning` exists in
    the preparser; the question is where Python's own `SyntaxError` reaches the user unexplained,
    which needs measuring before designing.
 
 **Documentation**
 
-7. **"ER2 for a Python programmer" as one table**: `1/3`, `2^100`, `sym x`, `factor(360)`,
+8. **"ER2 for a Python programmer" as one table**: `1/3`, `2^100`, `sym x`, `factor(360)`,
    side by side in Python and ER2. It is the §3 table seen from the user's side (§1.4).
-8. **ER2 compared with Python, SymPy, SageMath and PARI/GP**: a technical page, not marketing,
+9. **ER2 compared with Python, SymPy, SageMath and PARI/GP**: a technical page, not marketing,
    stating what each one is for and where ER2 stops.
-9. **"Ten programs in ER2"**: Mersenne primes, factorization, `phi`, `mu`, algebra, calculus,
+10. **"Ten programs in ER2"**: Mersenne primes, factorization, `phi`, `mu`, algebra, calculus,
    a matrix, a finite field, a series, the OEIS; golden-tested like `tests/examples/`.
-10. **A short architecture overview** (one or two pages, the pipeline diagram of ARCHITECTURE §2)
+11. **A short architecture overview** (one or two pages, the pipeline diagram of ARCHITECTURE §2)
    for new contributors, pointing to ARCHITECTURE.md for the decisions.
-11. **A searchable function reference.** `docs/PARI_FUNCTIONS.md` is generated and large; the
+12. **A searchable function reference.** `docs/PARI_FUNCTIONS.md` is generated and large; the
     site could offer it by topic, without editing the generated file.
 
 **Tests and tooling**
 
-12. **Property-based tests** of mathematical invariants (`factor` reconstructs `n`,
+13. **Property-based tests** of mathematical invariants (`factor` reconstructs `n`,
     `expand(factor(f)) == expand(f)`). Hypothesis would be a new dev dependency, which needs the
     user's agreement (minimal dependencies, CLAUDE.md).
-13. **Benchmark regression in CI**, from `benchmarks/run.py`, allowing for the noise of shared
+14. **Benchmark regression in CI**, from `benchmarks/run.py`, allowing for the noise of shared
     runners (§1.5: only end-to-end figures count).
-14. **Editor support**: a TextMate grammar for `.er2` (VS Code), from the same rules as
+15. **Editor support**: a TextMate grammar for `.er2` (VS Code), from the same rules as
     `examples/er2.xml`. Probably a sibling repository, as ER2-ENGINE is for Quarto.
 
 **Not taken, and why**
@@ -838,7 +870,8 @@ and the README has a platform table (CHANGELOG, Unreleased).
   `er2 --version`*: done.
 - *Differential testing of PARI against SymPy*: already a rule (CLAUDE.md, "Same answer from
   both backends"), with random-input tests for `factor` and linear algebra.
-- *Test on Windows*: impossible while cypari2 has no Windows build; the classifiers now say so.
+- *Test on Windows* as proposed: nothing to test while cypari2 has no Windows build; Windows
+  support itself is item 5.
 - *Make `_x` the preferred symbol syntax*: a language change (LANGUAGE.md §3), not a backlog
   item. Only on the user's decision.
 - *A "mathematical API" layer between ER2 and its backends*: it exists; it is `er2/dispatch.py`

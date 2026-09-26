@@ -60,6 +60,21 @@ def test_the_site_shows_cells_as_er2():
     assert (ROOT / "examples" / "er2-cells.lua").is_file()
 
 
+def test_the_syntax_definition_is_well_formed_xml():
+    """``er2.xml`` must parse as XML, not only as Pandoc reads it.
+
+    Pandoc forgave a ``--`` inside the header comment, which XML
+    forbids, so the file rendered fine and was still invalid for every
+    other reader, including ER2-ENGINE, which ships a copy of it.
+    """
+    from xml.dom import minidom
+
+    document = minidom.parse(str(ROOT / "examples" / "er2.xml"))
+    language = document.documentElement
+    assert language.tagName == "language"
+    assert language.getAttribute("name") == "ER2"
+
+
 def test_the_home_page_runs_er2():
     """The site's claim that ER2 runs is checked by running it."""
     index = (SITE / "index.qmd").read_text(encoding="utf-8")

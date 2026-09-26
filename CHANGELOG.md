@@ -40,6 +40,9 @@ What is stable already, and what is not:
 - The README's logo and five of its badges used relative paths, which are dead on the PyPI
   project page, since the README is the PyPI description. They are now absolute, and
   `tests/test_release.py` fails if a relative link comes back.
+- `examples/er2.xml` was not well-formed XML: its header comment contained `--`, which XML
+  forbids. Pandoc accepted it, so highlighting worked, but a strict XML parser rejected it,
+  and so did any tool that read the file other than Pandoc. `tests/test_site.py` now parses it.
 
 ## [0.7.0] — 2026-09-21
 

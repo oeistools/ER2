@@ -19,7 +19,7 @@
     - `^^`, `^^=`  XOR; plain `^` is a power and Python's operator
                    rule already covers it
   Strings and comments are Python's, so `sym` inside one is not
-  highlighted as a keyword -- the same rule the preparser follows.
+  highlighted as a keyword: the same rule the preparser follows.
 -->
 <language name="ER2" section="Sources" version="1" kateversion="5.0"
           extensions="*.er2" mimetype="text/x-er2"

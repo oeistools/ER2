@@ -28,6 +28,9 @@ What is stable already, and what is not:
 ## [Unreleased]
 
 ### Added
+- **macOS is supported**, on Apple Silicon: CI now runs the whole test suite on macOS as well as
+  Linux, for Python 3.12–3.14, and the package declares `Operating System :: MacOS`. Intel Macs
+  are experimental, since CI cannot test them.
 - **Releases through a trusted publisher (M8).** Pushing a tag `vX.Y.Z` starts
   `.github/workflows/release.yml`. It checks the tag against the version and that the commit
   is on `main`, runs the suite, builds, and runs the built wheel in a clean environment. It then
@@ -44,9 +47,8 @@ What is stable already, and what is not:
   forbids. Pandoc accepted it, so highlighting worked, but a strict XML parser rejected it,
   and so did any tool that read the file other than Pandoc. `tests/test_site.py` now parses it.
 - The package declared `Operating System :: OS Independent`, but cypari2 has no Windows build,
-  so ER2 cannot be installed on Windows (WSL works), and CI tests Linux only. The classifiers
-  now declare Linux, and the README's Quick start has a platform table: Linux supported, macOS
-  experimental, Windows not supported.
+  so ER2 cannot be installed on Windows (WSL works). The classifiers now declare Linux and
+  macOS, the two platforms CI tests, and the README's Quick start has a platform table.
 
 ## [0.7.0] — 2026-09-21
 

@@ -785,13 +785,15 @@ and the README has a platform table (CHANGELOG, Unreleased).
 2. **`er2/py.typed`**, so type checkers read ER2's annotations. Only after checking that the
    public API (the `PRELUDE_NAMES` of `tests/test_stability.py`) is annotated: the marker is a
    promise that the hints are worth reading.
-3. **Test macOS in CI**, so the README's platform table can move macOS from *experimental*
+3. ✅ **Test macOS in CI**, so the README's platform table can move macOS from *experimental*
    to *supported* and `pyproject.toml` can declare `Operating System :: MacOS`. cypari2 has
    macOS wheels (x86-64 and arm64); what is missing is ER2's own run on them.
-   **In progress, 2026-09-26:** the `test` job of `ci.yml` now runs on `macos-latest` too, for
-   3.12–3.14 (`actionlint` clean). `macos-latest` is Apple Silicon, so a green run supports
-   *macOS on arm64*; the Intel wheel (macOS ≥ 13) stays untested, as GitHub is retiring its
-   Intel runners. Waiting for the first run after the push.
+   **Done 2026-09-26:** the `test` job of `ci.yml` runs on `macos-latest` too, for 3.12–3.14.
+   The first run (`44d8fb2`) was green on all three, on a macOS 26 arm64 image, with the same
+   766 passed and 12 skipped as Ubuntu, so no test is skipped for being on macOS. The README
+   now lists *macOS (Apple Silicon)* as supported and `pyproject.toml` declares
+   `Operating System :: MacOS`. The Intel wheel (macOS ≥ 13) stays experimental: GitHub is
+   retiring its Intel runners, so CI cannot test it.
 4. **`er2 --info`** for bug reports: the versions of ER2, Python, SymPy, cypari2 and libpari in
    one place. `er2 --version` already exists and prints ER2's alone.
 

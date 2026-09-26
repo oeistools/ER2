@@ -36,13 +36,29 @@ It is named after the Hungarian mathematician **Paul Erdős**. In Spanish, "Erd�
 
 ## Quick start
 
-ER2 is not on PyPI yet. You need Python ≥ 3.12 and [uv](https://docs.astral.sh/uv/); PARI comes
+ER2 is on PyPI as [`er2`](https://pypi.org/project/er2/). It needs Python ≥ 3.12. PARI comes
 inside the cypari2 wheel, so there is nothing else to install.
 
+| Platform | Status |
+|----------|--------|
+| Linux | ✅ Supported, and tested in CI |
+| macOS | ⚠️ Experimental: cypari2 has macOS wheels, but ER2's CI does not run on macOS yet |
+| Windows | ❌ Not supported: cypari2 has no Windows build (WSL works, as Linux) |
+
 ```bash
-git clone https://github.com/oeistools/ER2.git && cd ER2
-uv sync
-uv run er2 examples/hello.er2
+pip install er2                 # or: uv tool install er2
+pip install "er2[jupyter]"      # with the Jupyter kernel
+pip install "er2[oeis]"         # with access to the OEIS
+```
+
+Save this as `hello.er2` and run `er2 hello.er2`:
+
+```python
+print("Hello from ER2")
+print(2^10, 1/3 + 1/6)      # ^ is power; division is exact
+sym x
+print(expand((x + 1)^3))    # symbolic algebra
+print(isprime(2^127 - 1))   # number theory, by PARI
 ```
 
 ```text
@@ -52,9 +68,9 @@ x^3 + 3*x^2 + 3*x + 1
 True
 ```
 
-Then try the REPL (`uv run er2`), write your own `program.er2`, or open a notebook: see
-[Jupyter and Quarto](#jupyter-and-quarto). `uv run er2 --show-python program.er2` shows the Python
-that ER2 generates.
+Then try the REPL (`er2`) or open a notebook: see [Jupyter and Quarto](#jupyter-and-quarto).
+`er2 --show-python hello.er2` shows the Python that ER2 generates. To work on ER2 itself, clone
+the repository instead: see [Development](#development).
 
 ## A taste of ER2
 
@@ -203,7 +219,10 @@ ER2 does not introduce a new interpreter. It has three parts:
 Dirichlet, Euler products) and the language specification are all in.
 [docs/LANGUAGE.md](https://github.com/oeistools/ER2/blob/main/docs/LANGUAGE.md) now defines the language normatively, and
 [CHANGELOG.md](https://github.com/oeistools/ER2/blob/main/CHANGELOG.md) says what is stable, what is still experimental, and what has
-changed. What remains before 1.0 is the documentation site and the stability policy.
+changed. 0.7.0 is [on PyPI](https://pypi.org/project/er2/), the
+[documentation site](https://oeistools.github.io/ER2/) is live, and
+[docs/STABILITY.md](https://github.com/oeistools/ER2/blob/main/docs/STABILITY.md) sets the
+stability policy. What remains is 1.0 itself, which freezes the syntax and the public API.
 
 | Version | Focus | Status |
 |---------|-------|--------|
@@ -214,7 +233,7 @@ changed. What remains before 1.0 is the documentation site and the stability pol
 | 0.5 | Algebra: matrices, finite fields, resultants, Gröbner bases, number fields | ✅ |
 | 0.6 | Series: power, Dirichlet, Euler products | ✅ |
 | 0.7 | The language specification, `docs/LANGUAGE.md`; first PyPI release | ✅ |
-| 1.0 | Frozen syntax and public API: documentation site, stability policy | in progress |
+| 1.0 | Frozen syntax and public API (documentation site and stability policy done) | in progress |
 
 Beyond the table, every PARI function is available as `pari.<name>`, and PARI's sums and integrals
 take Python functions (`pari.sum(lambda n: 1/n^2, 1, 10)`). Deeper CPython integration comes only

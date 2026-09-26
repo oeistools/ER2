@@ -31,7 +31,9 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Mathematics",
     "Topic :: Software Development :: Interpreters",
     "Framework :: Jupyter",
-    "Operating System :: OS Independent",
+    # Not "OS Independent": cypari2 has no Windows build, and CI runs on
+    # Linux only, so macOS is experimental until it is tested (README).
+    "Operating System :: POSIX :: Linux",
 ]
 dependencies = [
     "sympy>=1.14",

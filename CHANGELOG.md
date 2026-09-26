@@ -43,6 +43,10 @@ What is stable already, and what is not:
 - `examples/er2.xml` was not well-formed XML: its header comment contained `--`, which XML
   forbids. Pandoc accepted it, so highlighting worked, but a strict XML parser rejected it,
   and so did any tool that read the file other than Pandoc. `tests/test_site.py` now parses it.
+- The package declared `Operating System :: OS Independent`, but cypari2 has no Windows build,
+  so ER2 cannot be installed on Windows (WSL works), and CI tests Linux only. The classifiers
+  now declare Linux, and the README's Quick start has a platform table: Linux supported, macOS
+  experimental, Windows not supported.
 
 ## [0.7.0] — 2026-09-21
 

@@ -37,6 +37,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | 0.6.1     | ER2 cells and highlighting in Quarto (D9)     | ✅ done     |
 | M7 (0.7)  | Language specification                        | ✅ done     |
 | M8 (1.0)  | Stable language and release                   | in progress |
+| Backlog   | From a review of 0.7.0 (14 items)             | not scheduled |
 | — (2.0)  | Deep CPython integration                      | long term   |
 
 ---
@@ -767,6 +768,76 @@ is safe now that the tests import pandas and SciPy. The tracked tree was reviewe
 
 **Acceptance:** `pip install er2` works from PyPI, the site is live, `docs/STABILITY.md` is in
 force, and the syntax and public API are frozen.
+
+## Backlog — from a review of the repository (2026-09-26)
+
+An outside review of the repository listed 21 suggestions; each was checked against the code
+before it went here. None is scheduled yet, and none may change the language: anything that
+would touch the LANGUAGE.md §3 table needs the user's decision, and 1.0 waits for real users of
+0.7.0 anyway (M8). Fixed on the spot: the package claimed `Operating System :: OS Independent`,
+but cypari2 has no Windows build and CI tests Linux only, so the classifiers now declare Linux
+and the README has a platform table (CHANGELOG, Unreleased).
+
+**Release and packaging**
+
+1. **Run the release smoke test on 3.12, 3.13 and 3.14.** `release.yml` installs the built wheel
+   in a clean venv on 3.12 only; CI tests the source on all three, but not the artefact users get.
+2. **`er2/py.typed`**, so type checkers read ER2's annotations. Only after checking that the
+   public API (the `PRELUDE_NAMES` of `tests/test_stability.py`) is annotated: the marker is a
+   promise that the hints are worth reading.
+3. **Test macOS in CI**, so the README's platform table can move macOS from *experimental*
+   to *supported* and `pyproject.toml` can declare `Operating System :: MacOS`. cypari2 has
+   macOS wheels (x86-64 and arm64); what is missing is ER2's own run on them.
+   **In progress, 2026-09-26:** the `test` job of `ci.yml` now runs on `macos-latest` too, for
+   3.12–3.14 (`actionlint` clean). `macos-latest` is Apple Silicon, so a green run supports
+   *macOS on arm64*; the Intel wheel (macOS ≥ 13) stays untested, as GitHub is retiring its
+   Intel runners. Waiting for the first run after the push.
+4. **`er2 --info`** for bug reports: the versions of ER2, Python, SymPy, cypari2 and libpari in
+   one place. `er2 --version` already exists and prints ER2's alone.
+
+**The REPL and errors**
+
+5. **A better REPL.** `er2` is a `code.InteractiveConsole` (`er2/session.py`) and does not
+   import `readline`, so history and line editing should be checked first; then help (`?`) and
+   timing. Keep it Python's console underneath, not a new one.
+6. **ER2-specific error messages**, with the ER2 source line and a caret. `ER2Warning` exists in
+   the preparser; the question is where Python's own `SyntaxError` reaches the user unexplained,
+   which needs measuring before designing.
+
+**Documentation**
+
+7. **"ER2 for a Python programmer" as one table**: `1/3`, `2^100`, `sym x`, `factor(360)`,
+   side by side in Python and ER2. It is the §3 table seen from the user's side (§1.4).
+8. **ER2 compared with Python, SymPy, SageMath and PARI/GP**: a technical page, not marketing,
+   stating what each one is for and where ER2 stops.
+9. **"Ten programs in ER2"**: Mersenne primes, factorization, `phi`, `mu`, algebra, calculus,
+   a matrix, a finite field, a series, the OEIS; golden-tested like `tests/examples/`.
+10. **A short architecture overview** (one or two pages, the pipeline diagram of ARCHITECTURE §2)
+   for new contributors, pointing to ARCHITECTURE.md for the decisions.
+11. **A searchable function reference.** `docs/PARI_FUNCTIONS.md` is generated and large; the
+    site could offer it by topic, without editing the generated file.
+
+**Tests and tooling**
+
+12. **Property-based tests** of mathematical invariants (`factor` reconstructs `n`,
+    `expand(factor(f)) == expand(f)`). Hypothesis would be a new dev dependency, which needs the
+    user's agreement (minimal dependencies, CLAUDE.md).
+13. **Benchmark regression in CI**, from `benchmarks/run.py`, allowing for the noise of shared
+    runners (§1.5: only end-to-end figures count).
+14. **Editor support**: a TextMate grammar for `.er2` (VS Code), from the same rules as
+    `examples/er2.xml`. Probably a sibling repository, as ER2-ENGINE is for Quarto.
+
+**Not taken, and why**
+
+- *Publish 0.7.0, create the GitHub release, fix the README's "not on PyPI yet", add
+  `er2 --version`*: done.
+- *Differential testing of PARI against SymPy*: already a rule (CLAUDE.md, "Same answer from
+  both backends"), with random-input tests for `factor` and linear algebra.
+- *Test on Windows*: impossible while cypari2 has no Windows build; the classifiers now say so.
+- *Make `_x` the preferred symbol syntax*: a language change (LANGUAGE.md §3), not a backlog
+  item. Only on the user's decision.
+- *A "mathematical API" layer between ER2 and its backends*: it exists; it is `er2/dispatch.py`
+  and the rule that the backend is unobservable (ARCHITECTURE §3).
 
 ## 2.0 — Deep CPython integration (long term)
 

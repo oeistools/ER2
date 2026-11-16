@@ -104,7 +104,9 @@ select = ["E", "W", "F", "I", "N", "D"]
 "tests/**" = ["D1"]
 
 [tool.ruff.lint.pydocstyle]
-convention = "pep257"
+# PEP 257 with the NumPy section style (PROYECTOS convention 01-PYTHON,
+# 2026-11-15); the package already met it when pep257 was set.
+convention = "numpy"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

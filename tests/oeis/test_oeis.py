@@ -29,14 +29,18 @@ BFILES = {"b000010.txt", "b000045.txt"}
 
 
 class FakeResponse:
+    """Stand-in for ``requests.Response``, built from a recorded body."""
+
     def __init__(self, url, text, status=200):
         self.url, self.text, self.status_code = url, text, status
 
     def raise_for_status(self):
+        """Raise ``requests.HTTPError`` unless the status is 200."""
         if self.status_code != 200:
             raise requests.HTTPError(f"{self.status_code} for {self.url}")
 
     def json(self):
+        """Return the body decoded as JSON."""
         return json.loads(self.text)
 
 

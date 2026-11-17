@@ -27,6 +27,10 @@ What is stable already, and what is not:
 
 ## [Unreleased]
 
+### Changed
+
+- The web no longer loads Google Fonts (sin-google-fonts.scss: \$web-font-path: false; no font links).
+
 ### Added
 - **macOS is supported**, on Apple Silicon and Intel: CI now runs the whole test suite on both
   as well as on Linux, for Python 3.12–3.14, and the package declares

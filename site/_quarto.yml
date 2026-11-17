@@ -42,7 +42,7 @@ website:
 
 format:
   html:
-    theme: cosmo
+    theme: [cosmo, sin-google-fonts.scss]
     toc: true
     code-copy: true
     code-overflow: wrap

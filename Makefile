@@ -12,7 +12,7 @@ QUARTO := QUARTO_PYTHON=$(VENV_PYTHON) quarto
 FILE ?= examples/demo.qmd
 
 .DEFAULT_GOAL := help
-.PHONY: bench-baseline bench-compare help install install-global uninstall-global test test-fast lint \
+.PHONY: bench-baseline bench-compare bench-record help install install-global uninstall-global test test-fast lint \
 	format check render preview site site-preview dist bench sync-pari clean
 
 help:  ## List the available targets
@@ -73,6 +73,10 @@ bench-baseline:  ## Save the benchmark times as the reference (benchmarks/baseli
 
 bench-compare:  ## Measure again and compare with benchmarks/baseline.json
 	uv run python benchmarks/run.py --compare benchmarks/baseline.json
+
+bench-record:  ## Keep a run in benchmarks/history/ and redraw docs/PERFORMANCE.md (NOTE="what changed")
+	uv run python benchmarks/run.py --record --note "$(NOTE)" --write
+	uv run python benchmarks/history.py
 
 sync-pari:  ## Regenerate docs/PARI_FUNCTIONS.md from the PARI table
 	uv run python tools/sync_pari_functions.py

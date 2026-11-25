@@ -30,6 +30,7 @@ INCLUDED = (
     "STABILITY.md",
     "PARI_FUNCTIONS.md",
     "BENCHMARKS.md",
+    "PERFORMANCE.md",
 )
 
 
@@ -93,12 +94,20 @@ def test_every_included_link_is_rewritten(document):
     """
     source = (ROOT / "docs" / document).read_text(encoding="utf-8")
     lua = FILTER.read_text(encoding="utf-8")
+    links = re.findall(r"(!?)\[([^\]]+)\]\(([^)]+)\)", source)
     targets = {
         target.split("#")[0]
-        for _, target in re.findall(r"\[([^\]]+)\]\(([^)]+)\)", source)
-        if not target.startswith(("http", "#", "mailto"))
+        for image, _, target in links
+        if not image and not target.startswith(("http", "#", "mailto"))
     }
     unmapped = sorted(t for t in targets - {""} if f'["{t}"]' not in lua)
+    # Images (the performance graphs) are not rewritten: the same
+    # relative path must exist under site/ too.
+    images = [t for image, _, t in links if image and not t.startswith("http")]
+    missing = [t for t in images if not (SITE / t).is_file()]
+    assert not missing, (
+        f"{document} shows images missing from site/: {missing}"
+    )
     assert not unmapped, (
         f"{document} links to {unmapped}, which site/doc-links.lua does "
         f"not map; the site would show a dead link."

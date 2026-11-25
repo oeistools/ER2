@@ -20,6 +20,7 @@ local pages = {
   ["STABILITY.md"] = "stability.html",
   ["PARI_FUNCTIONS.md"] = "reference.html",
   ["BENCHMARKS.md"] = "benchmarks.html",
+  ["PERFORMANCE.md"] = "performance.html",
 }
 
 -- Everything else lives in the repository and is linked there.

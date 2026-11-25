@@ -34,6 +34,10 @@ What is stable already, and what is not:
 ### Added
 - **Faster rational arithmetic**: `+ - * /` between rationals and integers are about 1.7 times
   faster (same results as `fractions.Fraction`, checked on random input).
+- **Performance history**: `make bench-record NOTE="…"` keeps every benchmark run in
+  `benchmarks/history/` (all the times, the commit and the machine) and redraws
+  `docs/PERFORMANCE.md`, one graph per section of ER2 against its reference, run after run; it
+  is also the site's new *Performance* page.
 - **Speed baseline for improvements**: `make bench-baseline` saves the benchmark times in
   `benchmarks/baseline.json` and `make bench-compare` measures again and shows the change of each
   one. New benchmark groups: calculus and series, and exact rationals and large integers.

@@ -32,6 +32,8 @@ website:
         text: Stability
       - href: benchmarks.qmd
         text: Benchmarks
+      - href: performance.qmd
+        text: Performance
     right:
       - icon: github
         href: "https://github.com/oeistools/ER2"

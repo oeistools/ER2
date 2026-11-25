@@ -8,6 +8,9 @@ To measure an improvement, save a baseline before it and compare after:
 ``--json benchmarks/baseline.json`` writes the times (with the machine
 and versions), and ``--compare benchmarks/baseline.json`` measures again
 and prints, for each benchmark, ``now / baseline`` (below 1: faster).
+``--record`` keeps every run in ``benchmarks/history/`` (with the commit),
+and ``benchmarks/history.py`` turns them into the graphs of
+``docs/PERFORMANCE.md``.
 
 Each row reports the median time per call and ER2's overhead, which is
 ``ER2 time / reference time``.
@@ -36,6 +39,7 @@ from er2.runtime.numbers import Integer
 
 ROOT = Path(__file__).resolve().parent.parent
 REPORT = ROOT / "docs" / "BENCHMARKS.md"
+HISTORY = ROOT / "benchmarks" / "history"
 
 
 def measure(function, quick):
@@ -556,10 +560,27 @@ def environment():
     }
 
 
-def to_json(results):
-    """Return the results as a JSON document (a baseline)."""
+def git(*args):
+    """Return the output of a git command in the repository, or ''."""
+    try:
+        return subprocess.run(
+            ["git", "-C", str(ROOT), *args],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return ""
+
+
+def to_json(results, note=""):
+    """Return the results as a JSON document (a baseline or a run)."""
     data = {
         "date": time.strftime("%Y-%m-%d %H:%M"),
+        "commit": git("rev-parse", "HEAD"),
+        "branch": git("branch", "--show-current"),
+        "dirty": bool(git("status", "--porcelain", "--", "er2")),
+        "note": note,
         "environment": environment(),
         "benchmarks": [
             {
@@ -655,16 +676,32 @@ def main(argv=None):
     parser.add_argument(
         "--compare", metavar="FILE", help="compare with a saved baseline"
     )
+    parser.add_argument(
+        "--record",
+        action="store_true",
+        help="keep this run in benchmarks/history/",
+    )
+    parser.add_argument("--note", default="", help="what changed (--record)")
     args = parser.parse_args(argv)
     results = measurements(quick=args.quick)
     if args.json:
         Path(args.json).write_text(to_json(results), encoding="utf-8")
         print(f"wrote {args.json}")
+    if args.record:
+        HISTORY.mkdir(exist_ok=True)
+        name = (
+            time.strftime("%Y-%m-%d_%H%M")
+            + "_"
+            + git("rev-parse", "--short", "HEAD")
+        )
+        path = HISTORY / f"{name}.json"
+        path.write_text(to_json(results, args.note), encoding="utf-8")
+        print(f"wrote {path.relative_to(ROOT)}")
     if args.compare:
         baseline = json.loads(Path(args.compare).read_text("utf-8"))
         sys.stdout.write(compare(results, baseline))
         return
-    if args.json and not args.write:
+    if (args.json or args.record) and not args.write:
         return
     text = report(results=results)
     if args.write:

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="374" font-family="sans-serif" font-size="12">
+<title>Exact rationals and large integers</title>
+<rect width="760" height="374" fill="white"/>
+<line x1="70" x2="740" y1="222.9" y2="222.9" stroke="#e5e5e5"/><text x="64" y="226.9" text-anchor="end">×1</text>
+<line x1="70" x2="740" y1="111.4" y2="111.4" stroke="#e5e5e5"/><text x="64" y="115.4" text-anchor="end">×2</text>
+<line x1="70" x2="740" y1="222.9" y2="222.9" stroke="black" stroke-dasharray="5 3"/><text x="740" y="218.9" text-anchor="end">as fast as the reference</text>
+<text x="405.0" y="276" text-anchor="middle" font-size="10">2026-11-25 b44083f</text>
+<circle cx="405.0" cy="57.1" r="3" fill="#1f77b4"/>
+<rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">`a + b`, rationals</text>
+<circle cx="405.0" cy="65.3" r="3" fill="#d62728"/>
+<rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">`a * b / (a - b)`, rationals</text>
+<circle cx="405.0" cy="221.7" r="3" fill="#2ca02c"/>
+<rect x="70" y="337" width="12" height="12" fill="#2ca02c"/><text x="88" y="347">`3^20000 * 3^20000`, large integers</text>
+</svg>

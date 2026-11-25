@@ -1,0 +1,9 @@
+---
+title: "Performance history"
+---
+
+::: {.callout-note appearance="simple"}
+How the speed of ER2 changes, run after run, against Python, SymPy and PARI. Drawn from every recorded run (`make bench-record`); the goal is ER2 faster than Python and not much slower than PARI/GP.
+:::
+
+{{< include ../docs/PERFORMANCE.md >}}

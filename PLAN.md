@@ -874,8 +874,8 @@ and the README has a platform table (CHANGELOG, Unreleased).
 15. **Editor support**: a TextMate grammar for `.er2` (VS Code), from the same rules as
     `examples/er2.xml`. Probably a sibling repository, as ER2-ENGINE is for Quarto.
 
-16. **Performance targets** (outside review of 2026-11-25, `03-IDEAS/01-REVISADAS/er2-mejoras.md`
-    in CEREBRO): lower the startup cost (×5.87 without SymPy, ×21.80 with it), the cost of
+16. **Performance targets** (from an outside review of 2026-11-25):
+    lower the startup cost (×5.87 without SymPy, ×21.80 with it), the cost of
     elementary `Integer` operations (`a + b` ×8.22, the numeric loop ×13.78) and the
     SymPy ↔ PARI conversions — never at the cost of exactness or of Python compatibility.
     Each change is measured with `make bench-compare` against item 14's baseline.

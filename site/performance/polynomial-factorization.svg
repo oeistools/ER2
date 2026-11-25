@@ -7,13 +7,22 @@
 <line x1="70" x2="740" y1="80.3" y2="80.3" stroke="#e5e5e5"/><text x="64" y="84.3" text-anchor="end">×0.5</text>
 <line x1="70" x2="740" y1="35.0" y2="35.0" stroke="#e5e5e5"/><text x="64" y="39.0" text-anchor="end">×1</text>
 <line x1="70" x2="740" y1="35.0" y2="35.0" stroke="black" stroke-dasharray="5 3"/><text x="740" y="31.0" text-anchor="end">as fast as the reference</text>
-<text x="405.0" y="276" text-anchor="middle" font-size="10">2026-11-25 b44083f</text>
-<circle cx="405.0" cy="83.9" r="3" fill="#1f77b4"/>
+<text x="70.0" y="276" text-anchor="middle" font-size="10">2026-11-25 b44083f</text>
+<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
+<polyline points="70.0,83.9 740.0,89.5" fill="none" stroke="#1f77b4" stroke-width="2"/>
+<circle cx="70.0" cy="83.9" r="3" fill="#1f77b4"/>
+<circle cx="740.0" cy="89.5" r="3" fill="#1f77b4"/>
 <rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">factor, degree 4</text>
-<circle cx="405.0" cy="107.6" r="3" fill="#d62728"/>
+<polyline points="70.0,107.6 740.0,108.9" fill="none" stroke="#d62728" stroke-width="2"/>
+<circle cx="70.0" cy="107.6" r="3" fill="#d62728"/>
+<circle cx="740.0" cy="108.9" r="3" fill="#d62728"/>
 <rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">factor, degree 9</text>
-<circle cx="405.0" cy="155.5" r="3" fill="#2ca02c"/>
+<polyline points="70.0,155.5 740.0,153.7" fill="none" stroke="#2ca02c" stroke-width="2"/>
+<circle cx="70.0" cy="155.5" r="3" fill="#2ca02c"/>
+<circle cx="740.0" cy="153.7" r="3" fill="#2ca02c"/>
 <rect x="70" y="337" width="12" height="12" fill="#2ca02c"/><text x="88" y="347">factor, degree 22</text>
-<circle cx="405.0" cy="245.0" r="3" fill="#9467bd"/>
+<polyline points="70.0,245.0 740.0,242.9" fill="none" stroke="#9467bd" stroke-width="2"/>
+<circle cx="70.0" cy="245.0" r="3" fill="#9467bd"/>
+<circle cx="740.0" cy="242.9" r="3" fill="#9467bd"/>
 <rect x="70" y="355" width="12" height="12" fill="#9467bd"/><text x="88" y="365">factor, degree 60</text>
 </svg>

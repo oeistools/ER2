@@ -7,9 +7,14 @@
 <line x1="70" x2="740" y1="86.9" y2="86.9" stroke="#e5e5e5"/><text x="64" y="90.9" text-anchor="end">×10</text>
 <line x1="70" x2="740" y1="39.6" y2="39.6" stroke="#e5e5e5"/><text x="64" y="43.6" text-anchor="end">×20</text>
 <line x1="70" x2="740" y1="244.3" y2="244.3" stroke="black" stroke-dasharray="5 3"/><text x="740" y="240.3" text-anchor="end">as fast as the reference</text>
-<text x="405.0" y="276" text-anchor="middle" font-size="10">2026-11-25 b44083f</text>
-<circle cx="405.0" cy="118.2" r="3" fill="#1f77b4"/>
+<text x="70.0" y="276" text-anchor="middle" font-size="10">2026-11-25 b44083f</text>
+<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
+<polyline points="70.0,118.2 740.0,119.4" fill="none" stroke="#1f77b4" stroke-width="2"/>
+<circle cx="70.0" cy="118.2" r="3" fill="#1f77b4"/>
+<circle cx="740.0" cy="119.4" r="3" fill="#1f77b4"/>
 <rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">`er2` startup, number theory only</text>
-<circle cx="405.0" cy="35.7" r="3" fill="#d62728"/>
+<polyline points="70.0,35.7 740.0,38.0" fill="none" stroke="#d62728" stroke-width="2"/>
+<circle cx="70.0" cy="35.7" r="3" fill="#d62728"/>
+<circle cx="740.0" cy="38.0" r="3" fill="#d62728"/>
 <rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">`er2` startup, with symbols (loads SymPy)</text>
 </svg>

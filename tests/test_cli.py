@@ -153,6 +153,35 @@ def test_version_and_bad_option():
     assert er2("--nope").returncode == 2
 
 
+def test_info_lists_the_versions():
+    """``er2 --info``: one line per component, ER2's version first."""
+    out = er2("--info").stdout.splitlines()
+    assert out[0].split() == ["er2", er2_version]
+    names = [line.split()[0] for line in out]
+    assert names == [
+        "er2",
+        "Python",
+        "platform",
+        "SymPy",
+        "cypari2",
+        "libpari",
+    ]
+    libpari = out[-1].split()[1]
+    assert all(part.isdigit() for part in libpari.split("."))
+
+
+def test_info_does_not_load_sympy():
+    """SymPy's version comes from its metadata, not from importing it."""
+    code = (
+        "import sys; from er2.__main__ import main; main(['--info']); "
+        "print('sympy' in sys.modules)"
+    )
+    run = subprocess.run(
+        [sys.executable, "-c", code], capture_output=True, text=True
+    )
+    assert run.stdout.splitlines()[-1] == "False"
+
+
 @pytest.fixture
 def er2_imports(monkeypatch, tmp_path):
     monkeypatch.syspath_prepend(str(tmp_path))

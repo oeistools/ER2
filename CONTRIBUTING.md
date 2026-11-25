@@ -28,6 +28,7 @@ make test-fast        # the tests without Jupyter and Quarto (~15 s)
 | `make check` | `ruff` + the full test suite: exactly what CI runs. Run it before a pull request. |
 | `make format` | Format the code (`ruff format`, then `ruff check --fix`). |
 | `uv run er2 --show-python file.er2` | Show the Python the preparser generates. |
+| `uv run er2 --info` | Versions of ER2, Python, SymPy, cypari2 and libpari, for bug reports. |
 | `uv run pytest tests/preparser -x` | One area of the suite (see the layout below). |
 
 The notebook tests need Jupyter (installed by `uv sync`); the Quarto tests are skipped when
@@ -43,7 +44,7 @@ program:
 print(divmod(7, 1/3))
 ```
 
-with what it printed, what you expected, and the output of `er2 --version`. If the Python that
+with what it printed, what you expected, and the output of `er2 --info`. If the Python that
 ER2 generates looks wrong, add the output of `er2 --show-python bug.er2`. For a wrong mathematical
 value, say where the expected value comes from (GP, SageMath, SymPy, the OEIS, a reference).
 

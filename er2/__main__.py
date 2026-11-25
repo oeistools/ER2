@@ -8,6 +8,7 @@ Usage::
     er2 kernel install [--user | --sys-prefix | --prefix DIR]
                                  install the ER2 Jupyter kernel
     er2 --version
+    er2 --info                   versions of ER2, Python, SymPy and PARI
 """
 
 import sys
@@ -32,6 +33,8 @@ def main(argv=None):
     if first == "--version":
         print(f"er2 {er2.__version__}")
         return 0
+    if first == "--info":
+        return _info()
     if first == "--show-python":
         return _show_python(args[1:])
     if first == "kernel":
@@ -42,6 +45,37 @@ def main(argv=None):
     from er2.session import run_file
 
     return run_file(first, args[1:])
+
+
+def _info():
+    """Print the versions ER2 runs on, for bug reports.
+
+    SymPy's version is read from the installed metadata, so asking for
+    it does not load SymPy (tests/test_lazy_sympy.py).
+    """
+    import platform
+    from importlib.metadata import PackageNotFoundError, version
+
+    from er2.backends.pari_backend import PARI
+
+    def installed(dist):
+        try:
+            return version(dist)
+        except PackageNotFoundError:
+            return "not installed"
+
+    python = platform.python_version()
+    rows = [
+        ("er2", er2.__version__),
+        ("Python", f"{python} ({platform.python_implementation()})"),
+        ("platform", platform.platform()),
+        ("SymPy", installed("sympy")),
+        ("cypari2", installed("cypari2")),
+        ("libpari", ".".join(str(n) for n in PARI.version())),
+    ]
+    for name, value in rows:
+        print(f"{name:<9} {value}")
+    return 0
 
 
 def _show_python(args):

@@ -32,6 +32,8 @@ What is stable already, and what is not:
 - The web no longer loads Google Fonts (sin-google-fonts.scss: \$web-font-path: false; no font links).
 
 ### Added
+- **`er2 --info`**: the versions of ER2, Python, the platform, SymPy, cypari2 and libpari in
+  one place, for bug reports (the issue template asks for it). It does not load SymPy.
 - **macOS is supported**, on Apple Silicon and Intel: CI now runs the whole test suite on both
   as well as on Linux, for Python 3.12–3.14, and the package declares
   `Operating System :: MacOS`.

@@ -51,7 +51,7 @@ body:
     id: version
     attributes:
       label: Versions
-      description: The output of `er2 --version` and `python --version`, and your operating system.
+      description: The output of `er2 --info` (versions of ER2, Python, SymPy, cypari2, libpari and the operating system).
       render: text
     validations:
       required: true

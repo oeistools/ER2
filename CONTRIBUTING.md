@@ -28,6 +28,7 @@ make test-fast        # the tests without Jupyter and Quarto (~15 s)
 | `make check` | `ruff` + the full test suite: exactly what CI runs. Run it before a pull request. |
 | `make format` | Format the code (`ruff format`, then `ruff check --fix`). |
 | `uv run er2 --show-python file.er2` | Show the Python the preparser generates. |
+| `make bench-compare` | Speed of each benchmark against `benchmarks/baseline.json` (below ×1.00 is faster). |
 | `uv run er2 --info` | Versions of ER2, Python, SymPy, cypari2 and libpari, for bug reports. |
 | `uv run pytest tests/preparser -x` | One area of the suite (see the layout below). |
 

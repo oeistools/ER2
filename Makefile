@@ -12,7 +12,7 @@ QUARTO := QUARTO_PYTHON=$(VENV_PYTHON) quarto
 FILE ?= examples/demo.qmd
 
 .DEFAULT_GOAL := help
-.PHONY: help install install-global uninstall-global test test-fast lint \
+.PHONY: bench-baseline bench-compare help install install-global uninstall-global test test-fast lint \
 	format check render preview site site-preview dist bench sync-pari clean
 
 help:  ## List the available targets
@@ -67,6 +67,12 @@ dist:  ## Build the sdist and wheel into dist/ (does not publish)
 
 bench:  ## Run the benchmarks and update docs/BENCHMARKS.md
 	uv run python benchmarks/run.py --write
+
+bench-baseline:  ## Save the benchmark times as the reference (benchmarks/baseline.json)
+	uv run python benchmarks/run.py --json benchmarks/baseline.json --write
+
+bench-compare:  ## Measure again and compare with benchmarks/baseline.json
+	uv run python benchmarks/run.py --compare benchmarks/baseline.json
 
 sync-pari:  ## Regenerate docs/PARI_FUNCTIONS.md from the PARI table
 	uv run python tools/sync_pari_functions.py

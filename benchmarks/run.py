@@ -4,13 +4,20 @@ Run ``uv run python benchmarks/run.py`` to print a Markdown report, or
 ``--write`` to save it as ``docs/BENCHMARKS.md``.  ``--quick`` runs every
 benchmark once with small inputs (the test suite uses it).
 
+To measure an improvement, save a baseline before it and compare after:
+``--json benchmarks/baseline.json`` writes the times (with the machine
+and versions), and ``--compare benchmarks/baseline.json`` measures again
+and prints, for each benchmark, ``now / baseline`` (below 1: faster).
+
 Each row reports the median time per call and ER2's overhead, which is
 ``ER2 time / reference time``.
 """
 
 import argparse
+import fractions
 import importlib.metadata
 import itertools
+import json
 import platform
 import random
 import statistics
@@ -414,17 +421,207 @@ def table(title, rows):
     return "\n".join(lines)
 
 
-def report(quick=False):
-    """Run every benchmark and return the Markdown report."""
-    sections = [
-        table("Startup", startup_rows(quick)),
-        table("Dispatch overhead (§2.1)", dispatch_rows(quick)),
-        table("Integer arithmetic (D2)", integer_rows(quick)),
-        table("Number theory", number_theory_rows(quick)),
-        table("Polynomial factorization", polynomial_rows(quick)),
-        table("Polynomials over F_p (M5)", modular_polynomial_rows(quick)),
-        table("Linear algebra (M5)", linear_algebra_rows(quick)),
+def _uncached(function, args):
+    """Like :func:`_cycling`, but clearing SymPy's cache before each call.
+
+    Cycling the arguments is not enough for calculus: after one lap
+    SymPy answers from its cache, and the benchmark would time that.
+    Both sides pay the same clearing cost.
+    """
+    call = _cycling(function, args)
+
+    def uncached():
+        sympy.core.cache.clear_cache()
+        return call()
+
+    return uncached
+
+
+def calculus_rows(quick):
+    """Rows for calculus and series: ER2's prelude against SymPy.
+
+    SymPy's cache is cleared before every call (:func:`_uncached`).
+    """
+    ns = prelude.namespace()
+    x = sympy.Symbol("x")
+    ks = range(1, 4) if quick else range(1, 41)
+    expands = [(x + k) ** 20 for k in ks]
+    derivatives = [x**k * sympy.exp(x) * sympy.sin(x) for k in ks]
+    integrals = [x**k * sympy.exp(x) for k in ks]
+    series = [sympy.sin(x) * sympy.exp(k * x) for k in ks]
+    limits = [(sympy.sin(k * x) - k * x) / x**3 for k in ks]
+    return [
+        (
+            "expand((x + k)^20)",
+            measure(_uncached(ns["expand"], expands), quick),
+            "SymPy `expand`",
+            measure(_uncached(sympy.expand, expands), quick),
+        ),
+        (
+            "diff, 5th derivative of x^k e^x sin(x)",
+            measure(
+                _uncached(lambda f: ns["diff"](f, x, 5), derivatives), quick
+            ),
+            "SymPy `diff`",
+            measure(
+                _uncached(lambda f: sympy.diff(f, x, 5), derivatives), quick
+            ),
+        ),
+        (
+            "integrate x^k e^x",
+            measure(
+                _uncached(lambda f: ns["integrate"](f, x), integrals), quick
+            ),
+            "SymPy `integrate`",
+            measure(
+                _uncached(lambda f: sympy.integrate(f, x), integrals), quick
+            ),
+        ),
+        (
+            "series of sin(x) e^(kx), order 10",
+            measure(
+                _uncached(lambda f: ns["series"](f, x, 0, 10), series), quick
+            ),
+            "SymPy `series`",
+            measure(
+                _uncached(lambda f: sympy.series(f, x, 0, 10), series), quick
+            ),
+        ),
+        (
+            "limit of (sin(kx) - kx) / x^3 at 0",
+            measure(_uncached(lambda f: ns["limit"](f, x, 0), limits), quick),
+            "SymPy `limit`",
+            measure(_uncached(lambda f: sympy.limit(f, x, 0), limits), quick),
+        ),
     ]
+
+
+def exact_rows(quick):
+    """Rows for exact rationals and large integers against Python's."""
+    rational = prelude.namespace()["Rational"]
+    a, b = rational(355, 113), rational(-22, 7)
+    fa, fb = fractions.Fraction(355, 113), fractions.Fraction(-22, 7)
+    e = 2000 if quick else 20000
+    big, ibig = Integer(3) ** e, 3**e
+    return [
+        (
+            "`a + b`, rationals",
+            measure(lambda: a + b, quick),
+            "`fractions.Fraction`",
+            measure(lambda: fa + fb, quick),
+        ),
+        (
+            "`a * b / (a - b)`, rationals",
+            measure(lambda: a * b / (a - b), quick),
+            "`fractions.Fraction`",
+            measure(lambda: fa * fb / (fa - fb), quick),
+        ),
+        (
+            f"`3^{e} * 3^{e}`, large integers",
+            measure(lambda: big * big, quick),
+            "`int`",
+            measure(lambda: ibig * ibig, quick),
+        ),
+    ]
+
+
+SECTIONS = [
+    ("Startup", startup_rows),
+    ("Dispatch overhead (§2.1)", dispatch_rows),
+    ("Integer arithmetic (D2)", integer_rows),
+    ("Exact rationals and large integers", exact_rows),
+    ("Number theory", number_theory_rows),
+    ("Polynomial factorization", polynomial_rows),
+    ("Polynomials over F_p (M5)", modular_polynomial_rows),
+    ("Linear algebra (M5)", linear_algebra_rows),
+    ("Calculus and series", calculus_rows),
+]
+
+
+def measurements(quick=False):
+    """Run every benchmark; return ``[(section title, rows), ...]``."""
+    return [(title, rows(quick)) for title, rows in SECTIONS]
+
+
+def environment():
+    """Return the machine and versions the times were measured on."""
+    return {
+        "python": platform.python_version(),
+        "sympy": sympy.__version__,
+        "cypari2": importlib.metadata.version("cypari2"),
+        "er2": importlib.metadata.version("er2"),
+        "machine": platform.machine(),
+        "platform": platform.platform(),
+        "processor": platform.processor(),
+    }
+
+
+def to_json(results):
+    """Return the results as a JSON document (a baseline)."""
+    data = {
+        "date": time.strftime("%Y-%m-%d %H:%M"),
+        "environment": environment(),
+        "benchmarks": [
+            {
+                "section": title,
+                "label": label,
+                "er2_s": er2_time,
+                "reference": reference,
+                "reference_s": reference_time,
+            }
+            for title, rows in results
+            for label, er2_time, reference, reference_time in rows
+        ],
+    }
+    return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+
+
+def compare(results, baseline):
+    """Return a Markdown table: each ER2 time against the baseline's.
+
+    The change is ``now / baseline``: below 1 is faster.  Benchmarks
+    that are not in the baseline (new ones) say so.
+    """
+    before = {(b["section"], b["label"]): b for b in baseline["benchmarks"]}
+    env = baseline["environment"]
+    lines = [
+        "# ER2 benchmarks against the baseline",
+        "",
+        f"Baseline of {baseline['date']}: er2 {env['er2']}, Python "
+        + f"{env['python']}, {env['machine']}.  Change = now / baseline "
+        + "(below 1.00 is faster).  Differences under about 10 % are "
+        + "usually noise.",
+        "",
+        "| Section | Benchmark | Baseline | Now | Change |",
+        "|---|---|---|---|---|",
+    ]
+    changes = []
+    for title, rows in results:
+        for label, er2_time, _, _ in rows:
+            old = before.get((title, label))
+            if old is None:
+                lines.append(
+                    f"| {title} | {label} | — | {format_time(er2_time)} "
+                    + "| new |"
+                )
+                continue
+            change = er2_time / old["er2_s"]
+            changes.append(change)
+            lines.append(
+                f"| {title} | {label} | {format_time(old['er2_s'])} "
+                + f"| {format_time(er2_time)} | ×{change:.2f} |"
+            )
+    if changes:
+        mean = statistics.geometric_mean(changes)
+        lines += ["", f"Geometric mean of the changes: ×{mean:.2f}."]
+    return "\n".join(lines) + "\n"
+
+
+def report(quick=False, results=None):
+    """Run every benchmark (or use ``results``); return the report."""
+    if results is None:
+        results = measurements(quick)
+    sections = [table(title, rows) for title, rows in results]
     header = [
         "# ER2 benchmarks",
         "",
@@ -448,12 +645,28 @@ def report(quick=False):
 
 
 def main(argv=None):
-    """Print the report, or write it to ``docs/BENCHMARKS.md``."""
+    """Print the report, write it, save a baseline or compare with one."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--quick", action="store_true")
     parser.add_argument("--write", action="store_true")
+    parser.add_argument(
+        "--json", metavar="FILE", help="save the times as a baseline"
+    )
+    parser.add_argument(
+        "--compare", metavar="FILE", help="compare with a saved baseline"
+    )
     args = parser.parse_args(argv)
-    text = report(quick=args.quick)
+    results = measurements(quick=args.quick)
+    if args.json:
+        Path(args.json).write_text(to_json(results), encoding="utf-8")
+        print(f"wrote {args.json}")
+    if args.compare:
+        baseline = json.loads(Path(args.compare).read_text("utf-8"))
+        sys.stdout.write(compare(results, baseline))
+        return
+    if args.json and not args.write:
+        return
+    text = report(results=results)
     if args.write:
         REPORT.write_text(text, encoding="utf-8")
         print(f"wrote {REPORT.relative_to(ROOT)}")

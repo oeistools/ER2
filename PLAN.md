@@ -797,8 +797,11 @@ and the README has a platform table (CHANGELOG, Unreleased).
    repositories), so the matrix now includes it. Its first run (`9d2f0a8`) was green on
    3.12–3.14, again 766 passed and 12 skipped, so the README lists macOS as supported on
    both, in one row.
-4. **`er2 --info`** for bug reports: the versions of ER2, Python, SymPy, cypari2 and libpari in
+4. ✅ **`er2 --info`** for bug reports: the versions of ER2, Python, SymPy, cypari2 and libpari in
    one place. `er2 --version` already exists and prints ER2's alone.
+   **Done 2026-11-25:** also the platform; SymPy's version comes from its metadata, so the
+   command does not load SymPy (`tests/test_cli.py` checks both). The bug-report template and
+   CONTRIBUTING now ask for `er2 --info`.
 5. **Windows.** Not supported today (README, platform table), because `cypari2` has no Windows
    wheel. PARI is not the
    obstacle, and neither is `cysignals` any more: 1.12.6 ships `win_amd64` and `win_arm64`
@@ -861,8 +864,21 @@ and the README has a platform table (CHANGELOG, Unreleased).
     user's agreement (minimal dependencies, CLAUDE.md).
 14. **Benchmark regression in CI**, from `benchmarks/run.py`, allowing for the noise of shared
     runners (§1.5: only end-to-end figures count).
+    **First step done 2026-11-25 (user: «tests that rate the speed of different calculations
+    as a reference for the improvements»):** `make bench-baseline` saves every time in
+    `benchmarks/baseline.json` (with machine and versions) and `make bench-compare` measures
+    again and prints `now / baseline` per benchmark and its geometric mean. Two new groups:
+    calculus and series (`expand`, `diff`, `integrate`, `series`, `limit` against SymPy) and
+    exact rationals and large integers (against `fractions.Fraction` and `int`). The baseline
+    is this laptop's: compare on the same machine. CI is still to do.
 15. **Editor support**: a TextMate grammar for `.er2` (VS Code), from the same rules as
     `examples/er2.xml`. Probably a sibling repository, as ER2-ENGINE is for Quarto.
+
+16. **Performance targets** (outside review of 2026-11-25, `03-IDEAS/01-REVISADAS/er2-mejoras.md`
+    in CEREBRO): lower the startup cost (×5.87 without SymPy, ×21.80 with it), the cost of
+    elementary `Integer` operations (`a + b` ×8.22, the numeric loop ×13.78) and the
+    SymPy ↔ PARI conversions — never at the cost of exactness or of Python compatibility.
+    Each change is measured with `make bench-compare` against item 14's baseline.
 
 **Not taken, and why**
 

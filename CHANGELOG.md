@@ -32,6 +32,8 @@ What is stable already, and what is not:
 - The web no longer loads Google Fonts (sin-google-fonts.scss: \$web-font-path: false; no font links).
 
 ### Added
+- **Faster rational arithmetic**: `+ - * /` between rationals and integers are about 1.7 times
+  faster (same results as `fractions.Fraction`, checked on random input).
 - **Speed baseline for improvements**: `make bench-baseline` saves the benchmark times in
   `benchmarks/baseline.json` and `make bench-compare` measures again and shows the change of each
   one. New benchmark groups: calculus and series, and exact rationals and large integers.

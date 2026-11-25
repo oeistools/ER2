@@ -7,6 +7,7 @@ The only difference is that ``/`` and negative powers are exact: they
 return a ``Rational`` instead of a ``float``.
 """
 
+import math
 from fractions import Fraction
 
 from er2.printing import latex
@@ -25,7 +26,12 @@ def normalize(value):
         if value.denominator == 1:
             return Integer(value.numerator)
         if type(value) is not Rational:
-            return Rational(value.numerator, value.denominator)
+            # already in lowest terms with a positive denominator: skip
+            # the gcd and checks of the constructor (the hot path of
+            # rational arithmetic; Python >= 3.12)
+            return Rational._from_coprime_ints(
+                value.numerator, value.denominator
+            )
     return value
 
 
@@ -156,6 +162,94 @@ class Integer(int):
     __rdivmod__ = _exact_pair(int.__rdivmod__)
 
 
+# Rational arithmetic is the other hot path (benchmarks: ``a + b`` was
+# about 3 times ``Fraction``'s).  ``+ - * /`` between rationals and
+# integers run the same algorithms as ``fractions.Fraction`` (so the
+# results are identical) and build the ER2 number directly, instead of
+# making a ``Fraction`` and converting it.  Anything else (``float``,
+# ``complex``, SymPy, ...) takes the generic route below.
+
+
+def _parts(x):
+    """Return ``(numerator, denominator)`` of an exact rational, or None."""
+    if isinstance(x, Fraction):
+        return x._numerator, x._denominator
+    if isinstance(x, int) and not isinstance(x, bool):
+        return int(x), 1
+    return None
+
+
+def _number(n, d):
+    """Return ``n/d`` (lowest terms, ``d > 0``) as an ER2 number."""
+    if d == 1:
+        return Integer(n)
+    return Rational._from_coprime_ints(n, d)
+
+
+def _add_parts(na, da, nb, db):
+    """``na/da + nb/db`` as Fraction._add computes it."""
+    g = math.gcd(da, db)
+    if g == 1:
+        return _number(na * db + da * nb, da * db)
+    s = da // g
+    t = na * (db // g) + nb * s
+    g2 = math.gcd(t, g)
+    if g2 == 1:
+        return _number(t, s * db)
+    return _number(t // g2, s * (db // g2))
+
+
+def _mul_parts(na, da, nb, db):
+    """``na/da * nb/db`` as Fraction._mul computes it."""
+    g1 = math.gcd(na, db)
+    if g1 > 1:
+        na //= g1
+        db //= g1
+    g2 = math.gcd(nb, da)
+    if g2 > 1:
+        nb //= g2
+        da //= g2
+    return _number(na * nb, db * da)
+
+
+def _div_parts(na, da, nb, db):
+    """``(na/da) / (nb/db)`` as Fraction._div computes it."""
+    if nb == 0:
+        raise ZeroDivisionError(f"Fraction({db}, 0)")
+    g1 = math.gcd(na, nb)
+    if g1 > 1:
+        na //= g1
+        nb //= g1
+    g2 = math.gcd(db, da)
+    if g2 > 1:
+        da //= g2
+        db //= g2
+    n, d = na * db, nb * da
+    if d < 0:
+        n, d = -n, -d
+    return _number(n, d)
+
+
+def _fast(compute, fallback, reflected=False):
+    """Operator with the exact fast path and ``fallback`` for the rest."""
+
+    def method(self, other):
+        b = _parts(other)
+        if b is None:
+            return fallback(self, other)
+        a = (self._numerator, self._denominator)
+        return compute(*b, *a) if reflected else compute(*a, *b)
+
+    method.__name__ = fallback.__name__
+    method.__doc__ = f"Exact version of ``{fallback.__name__}``."
+    return method
+
+
+def _sub_parts(na, da, nb, db):
+    """``na/da - nb/db``."""
+    return _add_parts(na, da, -nb, db)
+
+
 class Rational(Fraction):
     """Exact rational number; integral results become ``Integer``."""
 
@@ -169,14 +263,16 @@ class Rational(Fraction):
         """Render as math in Jupyter and Quarto."""
         return latex(self)._repr_latex_()
 
-    __add__ = _exact(Fraction.__add__)
-    __radd__ = _exact(Fraction.__radd__)
-    __sub__ = _exact(Fraction.__sub__)
-    __rsub__ = _exact(Fraction.__rsub__)
-    __mul__ = _exact(Fraction.__mul__)
-    __rmul__ = _exact(Fraction.__rmul__)
-    __truediv__ = _exact(Fraction.__truediv__)
-    __rtruediv__ = _exact(Fraction.__rtruediv__)
+    __add__ = _fast(_add_parts, _exact(Fraction.__add__))
+    __radd__ = _fast(_add_parts, _exact(Fraction.__radd__), reflected=True)
+    __sub__ = _fast(_sub_parts, _exact(Fraction.__sub__))
+    __rsub__ = _fast(_sub_parts, _exact(Fraction.__rsub__), reflected=True)
+    __mul__ = _fast(_mul_parts, _exact(Fraction.__mul__))
+    __rmul__ = _fast(_mul_parts, _exact(Fraction.__rmul__), reflected=True)
+    __truediv__ = _fast(_div_parts, _exact(Fraction.__truediv__))
+    __rtruediv__ = _fast(
+        _div_parts, _exact(Fraction.__rtruediv__), reflected=True
+    )
     __floordiv__ = _exact(Fraction.__floordiv__)
     __rfloordiv__ = _exact(Fraction.__rfloordiv__)
     __mod__ = _exact(Fraction.__mod__)

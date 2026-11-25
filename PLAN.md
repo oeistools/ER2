@@ -874,7 +874,11 @@ and the README has a platform table (CHANGELOG, Unreleased).
 15. **Editor support**: a TextMate grammar for `.er2` (VS Code), from the same rules as
     `examples/er2.xml`. Probably a sibling repository, as ER2-ENGINE is for Quarto.
 
-16. **Performance targets** (from an outside review of 2026-11-25):
+16. **Performance targets** (from an outside review of 2026-11-25). **The user's goal
+    (2026-11-25): ER2 faster than Python, and not much slower than PARI/GP.** First step done
+    the same day: rational `+ - * /` build the result directly with `fractions`' own algorithms
+    (`a + b` from ×3.1 to ×1.8 of `Fraction`, `tests/test_rational_fast_path.py` checks the results
+    are identical). Next:
     lower the startup cost (×5.87 without SymPy, ×21.80 with it), the cost of
     elementary `Integer` operations (`a + b` ×8.22, the numeric loop ×13.78) and the
     SymPy ↔ PARI conversions — never at the cost of exactness or of Python compatibility.

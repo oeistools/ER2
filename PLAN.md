@@ -870,7 +870,8 @@ and the README has a platform table (CHANGELOG, Unreleased).
     again and prints `now / baseline` per benchmark and its geometric mean. Two new groups:
     calculus and series (`expand`, `diff`, `integrate`, `series`, `limit` against SymPy) and
     exact rationals and large integers (against `fractions.Fraction` and `int`). The baseline
-    is this laptop's: compare on the same machine. CI is still to do.
+    is this laptop's: compare on the same machine. **Done 2026-11-26:** the `benchmarks` job of
+    `ci.yml` runs `--quick` and writes the report to the job summary; it never fails a build.
 15. **Editor support**: a TextMate grammar for `.er2` (VS Code), from the same rules as
     `examples/er2.xml`. Probably a sibling repository, as ER2-ENGINE is for Quarto.
 
@@ -883,6 +884,12 @@ and the README has a platform table (CHANGELOG, Unreleased).
     elementary `Integer` operations (`a + b` ×8.22, the numeric loop ×13.78) and the
     SymPy ↔ PARI conversions — never at the cost of exactness or of Python compatibility.
     Each change is measured with `make bench-compare` against item 14's baseline.
+    **Status 2026-11-26** (targets and history: `docs/PERFORMANCE_ROADMAP.md`,
+    `docs/PERFORMANCE.md`): integers ×1.0 of Python (D22), rationals ×1.1–1.2 of `Fraction`,
+    number theory ×1.0–1.9 of cypari2, matrices and polynomials ×2–6 of cypari2 at size 20 /
+    degree 48 (D23), REPL and kernel preload SymPy. Open: startup without symbols is ×3.6–4 of
+    Python (target 3); what is left is mostly importing cypari2, only saved by loading PARI on
+    first use (on hold).
 
 **Not taken, and why**
 

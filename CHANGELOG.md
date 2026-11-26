@@ -29,6 +29,9 @@ What is stable already, and what is not:
 
 ### Changed
 
+- **Matrix results come back faster**: an integer or rational matrix from PARI is read from its
+  text in one step instead of entry by entry (`hermite_form` of a 10x10 integer matrix: about
+  half the time).
 - **`kernel` of an invertible matrix is faster**: the empty result no longer goes through SymPy's
   general matrix constructor.
 - **Integer matrix calls are faster** (`det`, `kernel`, `hermite_form`, `smith_form` over Z): the matrix

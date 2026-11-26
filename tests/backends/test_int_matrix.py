@@ -36,3 +36,20 @@ def test_sympy_matrices_over_z_and_q():
     q = sympy.Matrix([[sympy.Rational(1, 2), 1]])
     assert to_pari(q) == PARI.matrix(1, 2, [PARI(1) / 2, 1])
     assert to_pari(sympy.zeros(0, 0)) == PARI.matrix(0, 0)
+
+
+def test_matrices_come_back_from_their_text():
+    """PARI to SymPy: Z and Q read from the text, the rest entry by entry."""
+    from er2.backends.pari_backend import _rational_entries, from_pari
+
+    z = PARI.matrix(2, 2, [1, -2, 10**40, 4])
+    assert from_pari(z) == sympy.Matrix([[1, -2], [10**40, 4]])
+    q = PARI.matrix(1, 2, [PARI(1) / 2, -3])
+    assert from_pari(q) == sympy.Matrix([[sympy.Rational(1, 2), -3]])
+    for other in (
+        PARI.matrix(1, 2, [PARI.Mod(1, 3), 2]),
+        PARI("[x, 1; 2, 3]"),
+        PARI("[1.5, 2]"),
+    ):
+        size = PARI.matsize(other)
+        assert _rational_entries(other, int(size[0]) * int(size[1])) is None

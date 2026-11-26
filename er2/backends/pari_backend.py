@@ -441,6 +441,10 @@ def _matrix(obj):
         # an empty result (the kernel of an invertible matrix) needs no
         # entries converted: the general route below costs 60 us for it
         return sympy.zeros(rows, cols)
+    read = _rational_entries(obj, rows * cols)
+    if read is not None:
+        domain, values = read
+        return _domain_matrix(values, rows, cols, domain)
     entries = [obj[i, j] for i in range(rows) for j in range(cols)]
     kinds = {entry.type() for entry in entries}
     if entries and kinds <= {"t_INT"}:
@@ -455,10 +459,58 @@ def _matrix(obj):
     else:
         flat = [_sympify(from_pari(entry)) for entry in entries]
         return sympy.Matrix(rows, cols, flat)
+    return _domain_matrix(values, rows, cols, domain)
+
+
+def _domain_matrix(values, rows, cols, domain):
+    """Return a SymPy Matrix from row-major ``values`` over ``domain``."""
     from sympy.polys.matrices import DomainMatrix
 
     grid = [values[i * cols : (i + 1) * cols] for i in range(rows)]
     return DomainMatrix(grid, (rows, cols), domain).to_Matrix()
+
+
+_INTEGER = re.compile(r"-?\d+")
+_FRACTION = re.compile(r"(-?\d+)/(\d+)")
+
+
+def _rational_entries(obj, count):
+    """Read a matrix over Z or Q from PARI's text: ``(domain, values)``.
+
+    None for anything else.
+
+    Asking PARI for each entry, its type and its value costs three calls
+    per entry; the text of the whole matrix is one call and Python reads
+    the numbers three times faster.  Only a matrix whose every entry is
+    an integer (``-12``) or a fraction (``-7/9``) is read this way; any
+    other text (``Mod(1, 3)``, ``x + 1``, ``1.5000``) gives None and the
+    caller takes the entry-by-entry route.
+    """
+    text = str(obj)
+    if text.startswith("Mat(") and text.endswith(")"):
+        text = text[4:-1]  # a single row prints as Mat([...])
+    if not (text.startswith("[") and text.endswith("]")):
+        return None
+    tokens = text[1:-1].replace(";", ",").split(",")
+    if len(tokens) != count:
+        return None
+    try:
+        # int() takes exactly a signed integer (spaces around allowed)
+        # and refuses "1/2", "Mod(1", "x" and "1.5": all in C
+        return sympy.ZZ, list(map(int, tokens))
+    except ValueError:
+        pass
+    values = []
+    for token in tokens:
+        token = token.strip()
+        if _INTEGER.fullmatch(token):
+            values.append(sympy.QQ(int(token)))
+            continue
+        fraction = _FRACTION.fullmatch(token)
+        if fraction is None:
+            return None
+        values.append(sympy.QQ(int(fraction[1]), int(fraction[2])))
+    return sympy.QQ, values
 
 
 _FROM_PARI = {

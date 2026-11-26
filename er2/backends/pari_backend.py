@@ -437,6 +437,10 @@ def _matrix(obj):
     about seven times faster.  Anything else takes the general route.
     """
     rows, cols = map(int, PARI.matsize(obj))
+    if not rows or not cols:
+        # an empty result (the kernel of an invertible matrix) needs no
+        # entries converted: the general route below costs 60 us for it
+        return sympy.zeros(rows, cols)
     entries = [obj[i, j] for i in range(rows) for j in range(cols)]
     kinds = {entry.type() for entry in entries}
     if entries and kinds <= {"t_INT"}:

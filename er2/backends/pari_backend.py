@@ -969,16 +969,27 @@ def det(matrix):
     return from_pari(PARI.matdet(to_pari(matrix)))
 
 
-def inverse(matrix):
-    """Return the inverse of a square rational matrix."""
+# PARI's error number for "impossible inverse" (e_INV): the only error
+# that means a singular matrix.  Others (dimensions, types) must not be
+# reported as one (review A-02, 2026-11-26).
+_E_INV = 31
+
+
+def _singular_or_other(error):
+    """Return the exception to raise for a PARI error in a matrix solve."""
     from sympy.matrices.exceptions import NonInvertibleMatrixError
 
+    if error.errnum() == _E_INV:
+        return NonInvertibleMatrixError("Matrix det == 0; not invertible.")
+    return ValueError(f"PARI: {error.errtext()}")
+
+
+def inverse(matrix):
+    """Return the inverse of a square rational matrix."""
     try:
         return from_pari(to_pari(matrix) ** -1)
-    except cypari2.PariError:
-        raise NonInvertibleMatrixError(
-            "Matrix det == 0; not invertible."
-        ) from None
+    except cypari2.PariError as error:
+        raise _singular_or_other(error) from None
 
 
 def rank(matrix):
@@ -1004,14 +1015,10 @@ def minpoly(obj, var):
 
 def solve_linear(matrix, rhs):
     """Return the solution ``v`` of ``matrix * v = rhs`` (square, regular)."""
-    from sympy.matrices.exceptions import NonInvertibleMatrixError
-
     try:
         return from_pari(PARI.matsolve(to_pari(matrix), to_pari(rhs)))
-    except cypari2.PariError:
-        raise NonInvertibleMatrixError(
-            "Matrix det == 0; not invertible."
-        ) from None
+    except cypari2.PariError as error:
+        raise _singular_or_other(error) from None
 
 
 def hermite_form(matrix):

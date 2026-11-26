@@ -224,6 +224,12 @@ def unload_ipython_extension(shell):
         shell.events.unregister("pre_run_cell", _restore_prelude)
     shell.compile.__dict__.pop("cache", None)
     shell.set_custom_exc((), None)
+    # undo all of load_ipython_extension (review A-01): the exact ``/``
+    # and ``**`` pass (D22) and the ``.er2`` importer too
+    shell.ast_transformers[:] = [
+        t for t in shell.ast_transformers if not isinstance(t, _ExactOps)
+    ]
+    importer.uninstall()
     printing.uninstall()
 
 

@@ -188,3 +188,20 @@ def test_normal_forms_agree_with_sympy(seed):
     assert pari_backend.smith_form(matrix) == smith_normal_form(matrix)
     if matrix.rank() == rows:  # SymPy's HNF needs full row rank
         assert pari_backend.hermite_form(matrix) == hermite_normal_form(matrix)
+
+
+def test_only_a_singular_matrix_is_reported_as_singular():
+    """Review A-02: other PARI errors are not called "not invertible"."""
+    import pytest
+    from sympy import Matrix
+    from sympy.matrices.exceptions import NonInvertibleMatrixError
+
+    from er2.backends.pari_backend import inverse, solve_linear
+
+    singular = Matrix([[1, 2], [2, 4]])
+    with pytest.raises(NonInvertibleMatrixError):
+        inverse(singular)
+    with pytest.raises(NonInvertibleMatrixError):
+        solve_linear(singular, Matrix([1, 1]))
+    with pytest.raises(ValueError, match="inconsistent dimensions"):
+        solve_linear(Matrix([[1, 2], [3, 4]]), Matrix([1, 1, 1]))

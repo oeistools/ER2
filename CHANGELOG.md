@@ -27,6 +27,13 @@ What is stable already, and what is not:
 
 ## [Unreleased]
 
+### Fixed
+
+- `%unload_ext er2` now undoes everything `%load_ext er2` did: it also removes the `.er2`
+  importer and the exact `/` and `**`, so `1/2` is Python's `0.5` again.
+- `inverse` and `solve_linear` report a singular matrix as `NonInvertibleMatrixError` only when
+  it is one; other PARI errors (wrong dimensions, types) are a `ValueError` with PARI's message.
+
 ### Changed
 
 - **Matrix results come back faster**: an integer or rational matrix from PARI is read from its

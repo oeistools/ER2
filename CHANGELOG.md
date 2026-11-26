@@ -29,6 +29,9 @@ What is stable already, and what is not:
 
 ### Changed
 
+- **ER2 programs start faster**: 93 ms instead of 145 ms for a program without symbols. PARI starts
+  with a smaller table of small primes (no result changes, and factoring is no slower), the
+  version is read only when asked for, and the REPL's modules load only for the REPL.
 - **`factor(f, modulus=p)` is about 2 times faster**: the polynomial is converted once per call
   instead of four times (degree 12: from 53 to 20 times the time of a bare PARI call).
 - **Integers are plain Python `int` and run at Python's speed (D22).** `/` and `**` are made

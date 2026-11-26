@@ -5,14 +5,11 @@ session needs (ER2 printing, D11; ``.er2`` imports).  Nothing here runs
 on a plain ``import er2``.
 """
 
-import code
-import codeop
 import fractions
 import linecache
 import os
 import signal
 import sys
-import traceback
 from pathlib import Path
 
 from er2 import importer, prelude, printing
@@ -87,6 +84,8 @@ def _print_user_traceback(exc):
     removed from ``.er2`` frames: they refer to the preparsed line, whose
     columns differ from the source line shown.
     """
+    import traceback  # only when there is an error to show
+
     report = traceback.TracebackException.from_exception(exc)
     for part in _chain(report):
         frames = list(part.stack)
@@ -118,40 +117,50 @@ def _is_internal(filename):
     return path.is_relative_to(_PACKAGE_DIR) or path == _FRACTIONS
 
 
-class _ExactCommandCompiler(codeop.CommandCompiler):
-    """The console's compiler, with exact ``/`` and ``**``."""
+def _console_class():
+    """Return the ER2 console class, importing ``code`` only now.
 
-    def __call__(self, source, filename="<input>", symbol="single"):
-        """Return None while incomplete, else the exact code object."""
-        if super().__call__(source, filename, symbol) is None:
-            return None
-        return compile_er2(source, filename, symbol)
+    ``code`` and ``codeop`` cost about 15 ms to import and only the REPL
+    needs them, so a program run with ``er2 file.er2`` does not pay.
+    """
+    import code
+    import codeop
 
+    class _ExactCommandCompiler(codeop.CommandCompiler):
+        """The console's compiler, with exact ``/`` and ``**``."""
 
-class ER2Console(code.InteractiveConsole):
-    """Python's interactive console with the ER2 preparser."""
+        def __call__(self, source, filename="<input>", symbol="single"):
+            """Return None while incomplete, else the exact code object."""
+            if super().__call__(source, filename, symbol) is None:
+                return None
+            return compile_er2(source, filename, symbol)
 
-    def __init__(self, *args, **kwargs):
-        """Use the compiler with exact ``/`` and ``**``."""
-        super().__init__(*args, **kwargs)
-        self.compile = _ExactCommandCompiler()
+    class ER2Console(code.InteractiveConsole):
+        """Python's interactive console with the ER2 preparser."""
 
-    def runsource(self, source, filename="<input>", symbol="single"):
-        """Preparse ``source``; return True while more input is needed."""
-        try:
-            python = preparse(source, filename)
-        except IncompleteSourceError:
-            return True
-        except SyntaxError:
-            # Let Python compile the raw source to report the error.
-            python = source
-        return super().runsource(python, filename, symbol)
+        def __init__(self, *args, **kwargs):
+            """Use the compiler with exact ``/`` and ``**``."""
+            super().__init__(*args, **kwargs)
+            self.compile = _ExactCommandCompiler()
+
+        def runsource(self, source, filename="<input>", symbol="single"):
+            """Preparse ``source``; return True while more input is needed."""
+            try:
+                python = preparse(source, filename)
+            except IncompleteSourceError:
+                return True
+            except SyntaxError:
+                # Let Python compile the raw source to report the error.
+                python = source
+            return super().runsource(python, filename, symbol)
+
+    return ER2Console
 
 
 def repl():
     """Run the interactive ER2 console."""
     start()
-    console = ER2Console(prelude.inject({"__name__": "__main__"}))
+    console = _console_class()(prelude.inject({"__name__": "__main__"}))
     banner = (
         f"ER2 on Python {sys.version.split()[0]}. "
         "'^' is power, '^^' is XOR. Type exit() to quit."

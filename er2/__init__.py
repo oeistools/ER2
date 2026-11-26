@@ -6,16 +6,10 @@ command, the ER2 kernel, ``%load_ext er2``) or explicitly with
 ``er2.session.start()``.
 """
 
-from importlib.metadata import PackageNotFoundError, version
-
 from er2.preparser import preparse
 from er2.printing import latex, show
 from er2.runtime.numbers import Integer, Rational
 
-try:
-    __version__ = version("er2")  # single source: pyproject.toml
-except PackageNotFoundError:  # running from a source tree, not installed
-    __version__ = "0+unknown"
 __all__ = ["Integer", "Rational", "latex", "preparse", "show"]
 
 
@@ -31,3 +25,22 @@ def unload_ipython_extension(shell):
     from er2.session import unload_ipython_extension
 
     unload_ipython_extension(shell)
+
+
+def __getattr__(name):
+    """Compute ``__version__`` when asked for (PEP 562).
+
+    ``importlib.metadata`` costs about 35 ms to import, a quarter of
+    the start of an ER2 program, and only ``--version``, ``--info`` and
+    the kernel need the version.
+    """
+    if name == "__version__":
+        from importlib.metadata import PackageNotFoundError, version
+
+        try:
+            value = version("er2")  # single source: pyproject.toml
+        except PackageNotFoundError:  # a source tree, not installed
+            value = "0+unknown"
+        globals()["__version__"] = value
+        return value
+    raise AttributeError(f"module 'er2' has no attribute {name!r}")

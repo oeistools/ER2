@@ -93,7 +93,12 @@ class _SympyOnDemand:
 
 sympy = _SympyOnDemand()
 
-PARI = cypari2.Pari()
+# PARI precomputes a table of small primes when it starts: up to 500000
+# by default, which is 20 of the 24 ms the start takes.  Up to 65536 it
+# takes 4 ms, and nothing gets slower: factoring numbers whose primes lie
+# between the two limits is in fact faster (250 us against 680 us), and
+# no result changes (2026-11-26, measured; ARCHITECTURE §2.1).
+PARI = cypari2.Pari(maxprime=65536)
 PariError = cypari2.PariError
 
 # PARI's default maximum stack is only ~8 MB.  The maximum is reserved

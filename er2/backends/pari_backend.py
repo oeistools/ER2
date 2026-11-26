@@ -1076,8 +1076,18 @@ def rank(matrix):
 
 def kernel(matrix):
     """Return a basis of ``{v : matrix * v = 0}`` as column matrices."""
-    basis = from_pari(PARI.matker(to_pari(matrix)))
-    return [basis[:, j] for j in range(basis.cols)]
+    result = PARI.matker(to_pari(matrix))
+    rows, cols = map(int, PARI.matsize(result))
+    read = _rational_entries(result, rows * cols) if rows * cols else None
+    if read is None:
+        basis = from_pari(result)
+        return [basis[:, j] for j in range(basis.cols)]
+    # each column straight from the text: slicing a SymPy matrix into
+    # columns costs as much as reading it
+    domain, values = read
+    return [
+        _domain_matrix(values[j::cols], rows, 1, domain) for j in range(cols)
+    ]
 
 
 def charpoly(matrix, var):

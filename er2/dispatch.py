@@ -516,9 +516,56 @@ def kernel(matrix):
     vectors = _call("kernel", matrix)
     if not vectors:
         return []
+    rational = _rational_echelon(vectors)
+    if rational is not None:
+        return rational
     sympy = _lazy.sympy()
     echelon = sympy.Matrix.hstack(*vectors).T.rref()[0]
     return [echelon[i, :].T for i in range(len(vectors))]
+
+
+def _rational_echelon(vectors):
+    """Return ``vectors`` in reduced echelon form, if all are rational.
+
+    None if any vector is not over Z or Q.  Gauss-Jordan on
+    ``Fraction`` rows takes half the time of SymPy's ``rref`` for a
+    kernel basis (one or a few vectors), and gives the same basis.
+    """
+    sympy = _lazy.sympy()
+    rows = []
+    for v in vectors:
+        rep = getattr(v, "_rep", None)
+        domain = getattr(rep, "domain", None)
+        if domain is None or not (domain.is_ZZ or domain.is_QQ):
+            return None
+        rows.append(
+            [
+                Fraction(int(x.numerator), int(x.denominator))
+                for x in rep.to_list_flat()
+            ]
+        )
+    done = 0
+    for col in range(len(rows[0])):
+        pivot = next((i for i in range(done, len(rows)) if rows[i][col]), None)
+        if pivot is None:
+            continue
+        rows[done], rows[pivot] = rows[pivot], rows[done]
+        head = rows[done][col]
+        rows[done] = [x / head for x in rows[done]]
+        for i, row in enumerate(rows):
+            if i != done and row[col]:
+                f = row[col]
+                rows[i] = [a - f * b for a, b in zip(row, rows[done])]
+        done += 1
+        if done == len(rows):
+            break
+    qq = sympy.QQ
+    return [
+        pari_backend._domain_matrix(
+            [qq(x.numerator, x.denominator) for x in row], len(row), 1, qq
+        )
+        for row in rows
+    ]
 
 
 def charpoly(matrix, x=None):

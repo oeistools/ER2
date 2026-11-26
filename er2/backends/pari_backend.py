@@ -168,6 +168,28 @@ def to_pari(obj):
     raise TypeError(f"cannot convert {type(obj).__name__} to PARI")
 
 
+def _int_matrix(rows, cols, entries):
+    """Build a PARI integer matrix from GP text: ``[1,2;3,4]``.
+
+    The one place where GP parses text made from values (D23): passing
+    the entries one by one costs 88 us for a 10x10 matrix, the text 39 us.
+    It is safe because every entry is checked to be exactly an ``int``,
+    whose text is digits and a sign; anything else raises before GP sees
+    it.  A single row is written ``Mat([...])``, since ``[...]`` alone is a
+    vector in GP.
+    """
+    # the same check as ``all(type(v) is int ...)``, done in C
+    if not set(map(type, entries)) <= {int}:
+        raise TypeError("_int_matrix() takes Python ints only")
+    if len(entries) != rows * cols or not rows or not cols:
+        raise ValueError("_int_matrix() needs rows * cols entries")
+    text = ";".join(
+        ",".join(map(str, entries[i * cols : (i + 1) * cols]))
+        for i in range(rows)
+    )
+    return PARI(f"Mat([{text}])" if rows == 1 else f"[{text}]")
+
+
 def _matrix_to_pari(obj):
     """Convert a SymPy matrix.
 
@@ -181,6 +203,8 @@ def _matrix_to_pari(obj):
     domain = getattr(getattr(obj, "_rep", None), "domain", None)
     if domain is not None and domain.is_ZZ:
         entries = [int(v) for v in obj._rep.to_list_flat()]
+        if obj.rows and obj.cols:
+            return _int_matrix(obj.rows, obj.cols, entries)
     elif domain is not None and domain.is_QQ:
         entries = [
             PARI(int(v.numerator)) / int(v.denominator)

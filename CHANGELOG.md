@@ -29,6 +29,8 @@ What is stable already, and what is not:
 
 ### Changed
 
+- **Integer matrix calls are faster** (`det`, `kernel`, `hermite_form`, `smith_form` over Z): the matrix
+  reaches PARI in one step instead of entry by entry.
 - **ER2 programs start faster**: 93 ms instead of 145 ms for a program without symbols. PARI starts
   with a smaller table of small primes (no result changes, and factoring is no slower), the
   version is read only when asked for, and the REPL's modules load only for the REPL.

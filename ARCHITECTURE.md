@@ -1024,6 +1024,12 @@ The following decisions were taken for M5 (PLAN.md) with the user on 2026-09-19.
   applies from 1.0): `type(5)` is `int`; `/` is exact also on values that came from Python
   (`len(x)/2` is `3/2`); `5r` is accepted but changes nothing; an ER2 integer passed into a
   `.py` module meets Python's `/` there. `Integer` stays for code that builds one.
+- **D23 — Integer matrices reach PARI as GP text. ✅ Resolved (2026-11-26, the user).** The one
+  exception to "GP only parses fixed texts, never user values": a matrix over Z is written as
+  `[1,2;3,4]` (`pari_backend._int_matrix`), because passing its entries one by one through
+  cypari2 was most of a matrix call (10x10: 88 us against 39 us). Safe because every entry is
+  checked to be exactly an `int`, whose text is digits and a sign; anything else raises before GP
+  sees it (`tests/backends/test_int_matrix.py`). Rationals and symbols keep the argument route.
 
 ## 6.1 Code style: PEP 8
 

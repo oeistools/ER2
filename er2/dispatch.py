@@ -393,6 +393,17 @@ def _modulus(options):
     """
     domain = options.get("domain")
     if not isinstance(domain, FiniteField):
+        modulus = options.get("modulus")
+        if (
+            isinstance(modulus, int)
+            and not isinstance(modulus, bool)
+            and not pari_backend.is_prime_number(modulus)
+        ):
+            # SymPy would fail deep inside with "zero divisor"
+            raise ValueError(
+                f"modulus={modulus} is not a prime: factoring is over "
+                "the field F_p, so the modulus must be prime"
+            )
         return options
     if domain.degree > 1:
         raise NotImplementedError(

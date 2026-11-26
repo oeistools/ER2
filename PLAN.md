@@ -843,6 +843,15 @@ and the README has a platform table (CHANGELOG, Unreleased).
 7. **ER2-specific error messages**, with the ER2 source line and a caret. `ER2Warning` exists in
    the preparser; the question is where Python's own `SyntaxError` reaches the user unexplained,
    which needs measuring before designing.
+   **Done 2026-11-26 (user's choice), for `er2 file.er2` and the REPL:** measured on typical mistakes, then
+   (1) a syntax error shows only the program's line and caret, as `python file.py` does (it
+   showed `preparser.py` and `ast.py` frames); (2) an unclosed bracket or string gets Python's
+   own message on the line where it opens ("'(' was never closed") instead of "unexpected
+   EOF" on the last line; (3) a runtime error stops at the user's last frame, without ER2's
+   runtime, SymPy, cypari2 or the standard library under it; (4) PARI's `TypeError`s use the
+   ER2 name (`phi()`, not `eulerphi()`); (5) `factor(f, modulus=n)` with `n` not prime is a
+   `ValueError` that says so (it was SymPy's "zero divisor"). Tests:
+   `test_error_messages_show_only_the_program`.
 
 **Documentation**
 

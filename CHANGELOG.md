@@ -29,6 +29,7 @@ What is stable already, and what is not:
 
 ### Fixed
 
+- Error messages of `er2 file.er2` and of the REPL show only the program: a syntax error has no ER2 frames (as `python file.py`); an unclosed bracket or string is reported where it opens ("'(' was never closed"); a runtime error stops at the user's last line, without ER2, SymPy or cypari2 frames; PARI argument errors use the ER2 name (`phi()`, not `eulerphi()`); `factor(f, modulus=n)` with `n` not prime says so instead of SymPy's "zero divisor".
 - `%unload_ext er2` now undoes everything `%load_ext er2` did: it also removes the `.er2`
   importer and the exact `/` and `**`, so `1/2` is Python's `0.5` again.
 - `inverse` and `solve_linear` report a singular matrix as `NonInvertibleMatrixError` only when

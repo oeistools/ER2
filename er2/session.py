@@ -45,7 +45,7 @@ def run_file(path, argv=()):
     # sys.path, so modules next to it can be imported.
     sys.path[0:1] = [str(Path(path).resolve().parent)]
     try:
-        compiled = compile_er2(preparse(source, str(path)), str(path), "exec")
+        compiled = compile_er2(_preparse_file(source, path), str(path), "exec")
         prelude.inject(namespace, compiled)
         exec(compiled, namespace)
     except SystemExit:
@@ -59,6 +59,25 @@ def run_file(path, argv=()):
         _print_user_traceback(exc)
         return 1
     return 0
+
+
+def _preparse_file(source, path):
+    """Preparse a whole program, with Python's message if it is cut short.
+
+    The tokenizer only says "unexpected EOF" at the last line; Python's
+    own compiler says which bracket or string was left open, and where:
+    "'(' was never closed" on the line of the bracket.
+    """
+    try:
+        return preparse(source, str(path))
+    except IncompleteSourceError as incomplete:
+        try:
+            compile(source, str(path), "exec", dont_inherit=True)
+        except SyntaxError as error:
+            text = str(error.msg)
+            if "never closed" in text or "unterminated" in text:
+                raise error from None
+        raise incomplete from None
 
 
 def _die_from_sigint():
@@ -77,20 +96,40 @@ def _die_from_sigint():
 
 
 def _print_user_traceback(exc):
-    """Print ``exc`` as Python would, hiding ER2's own machinery.
+    """Print ``exc`` as Python would, hiding ER2's own machinery."""
+    print(_format_user_traceback(exc), end="", file=sys.stderr)
 
-    Frames of the runner (outermost) and of the ER2 runtime (innermost,
-    e.g. inside ``Integer.__truediv__``) are dropped.  Column markers are
-    removed from ``.er2`` frames: they refer to the preparsed line, whose
-    columns differ from the source line shown.
+
+def _format_user_traceback(exc):
+    """Return the report of ``exc`` as Python would, without ER2's machinery.
+
+    Frames of the runner (outermost) are dropped, and so is everything
+    after the user's last frame: ER2's runtime and the libraries under it
+    (SymPy, cypari2, the standard library), whose frames say how ER2
+    computes, not where the program went wrong; the backend is not
+    observable (ARCHITECTURE §3).  A syntax error in the program shows no
+    frames at all, as ``python file.py`` does.  Column markers are removed
+    from ``.er2`` frames: they refer to the preparsed line, whose columns
+    differ from the source line shown.
     """
     import traceback  # only when there is an error to show
 
+    if not _LIBRARY_DIRS:
+        _LIBRARY_DIRS.extend(_library_dirs())
     report = traceback.TracebackException.from_exception(exc)
     for part in _chain(report):
         frames = list(part.stack)
         while frames and frames[0].filename == __file__:
             frames.pop(0)
+        if issubclass(part.exc_type or object, SyntaxError) and (
+            part.filename or ""
+        ).endswith(".er2"):
+            frames = []
+        user = [i for i, f in enumerate(frames) if _is_user(f.filename)]
+        if user:
+            # the REPL's own frame (``code.py``) comes before the user's
+            del frames[user[-1] + 1 :]
+            del frames[: user[0]]
         while len(frames) > 1 and _is_internal(frames[-1].filename):
             frames.pop()
         for frame in frames:
@@ -99,7 +138,7 @@ def _print_user_traceback(exc):
             ):
                 frame.colno = frame.end_colno = None
         part.stack = traceback.StackSummary.from_list(frames)
-    print("".join(report.format()), end="", file=sys.stderr)
+    return "".join(report.format())
 
 
 def _chain(report):
@@ -109,6 +148,30 @@ def _chain(report):
         seen.add(id(report))
         yield report
         report = report.__cause__ or report.__context__
+
+
+def _is_user(filename):
+    """Return True for the user's code: not ER2, a library or stdlib."""
+    if filename.endswith(".er2") or filename.startswith("<"):
+        return True
+    path = Path(filename)
+    if not path.is_absolute() or not path.exists():
+        return False  # e.g. cypari2's "cypari2/auto_instance.pxi"
+    if _is_internal(filename):
+        return False
+    return not any(path.resolve().is_relative_to(d) for d in _LIBRARY_DIRS)
+
+
+def _library_dirs():
+    """Return the standard library and site-packages directories."""
+    import sysconfig
+
+    names = ("stdlib", "platstdlib", "purelib", "platlib")
+    paths = {sysconfig.get_path(name) for name in names}
+    return [Path(p).resolve() for p in paths if p]
+
+
+_LIBRARY_DIRS = []
 
 
 def _is_internal(filename):
@@ -153,6 +216,12 @@ def _console_class():
                 # Let Python compile the raw source to report the error.
                 python = source
             return super().runsource(python, filename, symbol)
+
+        def showtraceback(self):
+            """Show the error as ``er2 file.er2`` does: no ER2 frames."""
+            exc = sys.exc_info()[1]
+            sys.last_exc = exc
+            self.write(_format_user_traceback(exc))
 
     return ER2Console
 

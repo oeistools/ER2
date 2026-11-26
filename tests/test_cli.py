@@ -109,6 +109,34 @@ def test_errors_report_the_er2_line(tmp_path):
     assert "session.py" not in result.stderr
 
 
+@pytest.mark.parametrize(
+    ("source", "expected", "line"),
+    [
+        ("y = (2 + 3\nprint(y)\n", "SyntaxError: '(' was never closed", 1),
+        ('s = """abc\nprint(1)\n', "unterminated triple-quoted", 1),
+        ("n = 5\nif n > 2\n    print(n^2)\n", "SyntaxError: expected ':'", 2),
+        ("print(phi(2^10, 3))\n", "TypeError: phi() takes exactly 1", 1),
+        (
+            "sym x\nprint(factor(x^2 - 1, modulus=4))\n",
+            "ValueError: modulus=4 is not a prime",
+            2,
+        ),
+    ],
+)
+def test_error_messages_show_only_the_program(
+    tmp_path, source, expected, line
+):
+    """Backlog 7: the user's line and a clear message, no ER2 internals."""
+    program = tmp_path / "bad.er2"
+    program.write_text(source, encoding="utf-8")
+    result = er2(program)
+    assert result.returncode == 1
+    assert f'bad.er2", line {line}' in result.stderr
+    assert expected in result.stderr
+    for internal in ("preparser.py", "ast.py", "dispatch.py", "sympy", "pxi"):
+        assert internal not in result.stderr
+
+
 def test_exit_codes_match_python(tmp_path):
     """``er2 f.er2`` exits as ``python f.py`` does (D7: Ctrl-C).
 
@@ -146,6 +174,16 @@ def test_repl():
     assert result.returncode == 0, result.stderr
     assert "x^2 + 1" in result.stdout
     assert "0\n1\n" in result.stdout
+
+
+def test_repl_errors_show_only_the_input():
+    result = er2(
+        stdin="print(phi(2^10, 3))\ndef f(n):\n    return n/0\n\nf(2)\n"
+    )
+    assert 'File "<console>", line 2, in f' in result.stderr
+    assert "TypeError: phi() takes exactly 1" in result.stderr
+    for internal in ("code.py", "dispatch.py", "numbers.py", "pari_backend"):
+        assert internal not in result.stderr
 
 
 def test_version_and_bad_option():

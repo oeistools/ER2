@@ -1213,7 +1213,14 @@ def _function(row):
     def function(*args, **kwargs):
         if takes_precision and "precision" not in kwargs:
             kwargs["precision"] = PARI.get_real_precision_bits()
-        return convert(call(*args, **kwargs))
+        try:
+            return convert(call(*args, **kwargs))
+        except TypeError as error:
+            # cypari2 names the PARI function: "eulerphi() takes ..."
+            text = str(error)
+            if er2_name == pari_name or not text.startswith(pari_name):
+                raise
+            raise TypeError(er2_name + text[len(pari_name) :]) from None
 
     function.__name__ = function.__qualname__ = er2_name
     function.__doc__ = (

@@ -12,6 +12,7 @@ The functions come from ``er2/data/pari_functions.csv`` (§3.5, D10):
 import csv
 import functools
 import inspect
+import math
 import re
 from fractions import Fraction
 from pathlib import Path
@@ -290,6 +291,57 @@ def _sympy_to_pari(expr):
     return result
 
 
+def _coefficient(c):
+    """Return a SymPy Integer or Rational as an exact number, or None."""
+    if c.is_Integer:
+        return int(c)
+    if c.is_Rational:
+        return PARI(int(c.p)) / int(c.q)
+    return None
+
+
+def _term(term, symbol):
+    """Return ``(degree, coefficient)`` of ``c*x^k``, or None."""
+    if term == symbol:
+        return 1, 1
+    if term.is_Pow:
+        base, exponent = term.args
+        if base == symbol and exponent.is_Integer and exponent > 0:
+            return int(exponent), 1
+        return None
+    if term.is_Number:
+        c = _coefficient(term)
+        return None if c is None else (0, c)
+    if term.is_Mul and len(term.args) == 2 and term.args[0].is_Number:
+        c = _coefficient(term.args[0])
+        rest = _term(term.args[1], symbol)
+        if c is None or rest is None or rest[1] != 1:
+            return None
+        return rest[0], c
+    return None
+
+
+def _sparse_coefficients(expr, symbol):
+    """Read ``sum c_k x^k`` (rational ``c_k``) straight from its terms.
+
+    SymPy's ``Poly`` constructor is general and slow: for a degree-12
+    polynomial it costs ten times PARI's ``factormod`` on it.  An
+    expanded polynomial in one symbol is an ``Add`` of ``c*x^k`` terms,
+    which can be read directly.  Anything else — a product, a power of
+    a sum, a symbolic coefficient — returns None, and the caller builds
+    the ``Poly`` as before.
+    """
+    terms = expr.args if expr.is_Add else (expr,)
+    out = {}
+    for term in terms:
+        read = _term(term, symbol)
+        if read is None:
+            return None
+        k, c = read
+        out[k] = out.get(k, 0) + c
+    return out or None
+
+
 def _univariate_to_pari(expr):
     """Build a ``t_POL`` from a univariate polynomial over Q, or None.
 
@@ -308,6 +360,11 @@ def _univariate_to_pari(expr):
     if len(symbols) != 1:
         return None
     (symbol,) = symbols
+    direct = _sparse_coefficients(expr, symbol)
+    if direct is not None:
+        degree = max(direct)
+        coefficients = [direct.get(k, 0) for k in range(degree, -1, -1)]
+        return PARI.Pol(coefficients, variable(symbol.name))
     try:
         poly = sympy.Poly(expr, symbol)
     except sympy.PolynomialError:
@@ -794,21 +851,21 @@ def is_prime_number(n):
     return bool(PARI.isprime(int(n)))
 
 
-# The dispatch predicate builds the ``Poly`` and ``factor_polynomial_mod``
-# needs it again a moment later, in the same call.  The predicate leaves
+# The dispatch predicate reads the coefficients and ``factor_polynomial_mod``
+# needs them again a moment later, in the same call.  The predicate leaves
 # it here and the function takes it if it gets the very same expression
 # (``is``), emptying the slot, so nothing is reused across calls.
 _HANDOFF = []
 
 
-def _take_poly(expr, var):
-    """Return the Poly the predicate built for ``expr``, or build it."""
+def _take_coefficients(expr):
+    """Return the coefficients the predicate read, or read them now."""
     if _HANDOFF and _HANDOFF[0] is expr:
-        poly = _HANDOFF[1]
+        coefficients = _HANDOFF[1]
         _HANDOFF.clear()
-        return poly
+        return coefficients
     _HANDOFF.clear()
-    return sympy.Poly(expr, var)
+    return _integer_coefficients(expr)
 
 
 def is_modular_polynomial(expr, modulus):
@@ -817,13 +874,33 @@ def is_modular_polynomial(expr, modulus):
     A polynomial that vanishes modulo ``p`` stays with SymPy, which leaves
     it as it is (``factor(5*x^2, modulus=5)`` is ``5*x^2``).
     """
+    coefficients = _integer_coefficients(expr)
+    if coefficients is None:
+        return False
+    if not any(c % int(modulus) for c in coefficients):
+        return False
+    _HANDOFF[:] = [expr, coefficients]
+    return True
+
+
+def _integer_coefficients(expr):
+    """Return the coefficients over Z, highest first, or None.
+
+    Read straight from the terms when the expression is a sum of
+    ``c*x^k`` (``_sparse_coefficients``), else through SymPy's ``Poly``.
+    """
+    if isinstance(expr, sympy.Expr) and len(expr.free_symbols) == 1:
+        (symbol,) = expr.free_symbols
+        direct = _sparse_coefficients(expr, symbol)
+        if direct is not None:
+            if not all(type(c) is int for c in direct.values()):
+                return None  # rational coefficients: not over Z
+            degree = max(direct)
+            return [direct.get(k, 0) for k in range(degree, -1, -1)]
     poly = _univariate_poly(expr)
     if poly is None or poly.domain != sympy.ZZ:
-        return False
-    if not any(int(c) % int(modulus) for c in poly.all_coeffs()):
-        return False
-    _HANDOFF[:] = [expr, poly]
-    return True
+        return None
+    return [int(c) for c in poly.all_coeffs()]
 
 
 def factor_polynomial_mod(expr, modulus):
@@ -834,10 +911,10 @@ def factor_polynomial_mod(expr, modulus):
     var = _polynomial_variable(expr)
     # SymPy takes the integer content out first and does not reduce it
     # modulo p: ``factor(9*x - 9, modulus=5)`` is ``9*(x - 1)``.
-    content, primitive = _take_poly(expr, var).primitive()
-    # straight from the coefficients: no expression and no second Poly
-    coefficients = [int(c) for c in primitive.all_coeffs()]
-    poly = PARI.Pol(coefficients, variable(var.name))
+    coefficients = _take_coefficients(expr)
+    content = math.gcd(*coefficients)  # positive, as Poly.primitive gives
+    primitive = [c // content for c in coefficients]
+    poly = PARI.Pol(primitive, variable(var.name))
     unit = content * _symmetric(
         PARI.lift(PARI.pollead(poly * PARI.Mod(1, p))), p
     )

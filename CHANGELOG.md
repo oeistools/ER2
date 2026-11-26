@@ -36,6 +36,11 @@ What is stable already, and what is not:
 
 ### Changed
 
+- **Polynomials reach PARI faster**: an expanded polynomial in one variable is read straight from
+  its terms instead of through SymPy's `Poly` (degree 12: 221 to 84 us), which speeds up
+  `factor` over Q and modulo p (degree 12 mod 7: from 20 to 14 times a bare PARI call).
+- **New benchmark group**: the SymPy <-> PARI conversions alone, each against the PARI
+  computation it serves.
 - **Matrix results come back faster**: an integer or rational matrix from PARI is read from its
   text in one step instead of entry by entry (`hermite_form` of a 10x10 integer matrix: about
   half the time).

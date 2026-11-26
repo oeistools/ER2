@@ -553,6 +553,53 @@ def exact_rows(quick):
     ]
 
 
+def conversion_rows(quick):
+    """Rows for the SymPy <-> PARI conversions alone (ARCHITECTURE §2.1).
+
+    Each conversion is compared with the PARI computation it serves, so
+    the ratio says how many times the calculation the conversion costs:
+    above 1, converting is the larger part of an ER2 call.
+    """
+    from er2.backends.pari_backend import from_pari, to_pari
+
+    pari = cypari2.Pari()
+    rng = random.Random(20261126)
+    x = sympy.Symbol("x")
+    rows = []
+    for n in (4,) if quick else (10, 20):
+        grid = [[rng.randint(-9, 9) for _ in range(n)] for _ in range(n)]
+        as_sympy = sympy.Matrix(grid)
+        as_pari = pari.matrix(n, n, [v for row in grid for v in row])
+        hnf = pari.mathnf(as_pari)
+        rows += [
+            (
+                f"SymPy to PARI, {n}x{n} integer matrix",
+                measure(lambda m=as_sympy: to_pari(m), quick),
+                "PARI `matdet` on it",
+                measure(lambda m=as_pari: pari.matdet(m), quick),
+            ),
+            (
+                f"PARI to SymPy, {n}x{n} integer matrix",
+                measure(lambda m=hnf: from_pari(m), quick),
+                "PARI `mathnf` that made it",
+                measure(lambda m=as_pari: pari.mathnf(m), quick),
+            ),
+        ]
+    for degree in (6,) if quick else (12, 48):
+        coefficients = [rng.randrange(7) for _ in range(degree)] + [1]
+        f = sympy.Add(*(c * x**i for i, c in enumerate(coefficients)))
+        raw = pari(str(f).replace("**", "^"))
+        rows.append(
+            (
+                f"SymPy to PARI, polynomial of degree {degree}",
+                measure(lambda f=f: to_pari(f), quick),
+                "PARI `factormod` mod 7 on it",
+                measure(lambda r=raw: pari.factormod(r, 7), quick),
+            )
+        )
+    return rows
+
+
 SECTIONS = [
     ("Startup", startup_rows),
     ("Dispatch overhead (§2.1)", dispatch_rows),
@@ -563,6 +610,7 @@ SECTIONS = [
     ("Polynomials over F_p (M5)", modular_polynomial_rows),
     ("Linear algebra (M5)", linear_algebra_rows),
     ("Calculus and series", calculus_rows),
+    ("Conversions SymPy <-> PARI (§2.1)", conversion_rows),
 ]
 
 

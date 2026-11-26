@@ -7,28 +7,34 @@
 <line x1="70" x2="740" y1="63.2" y2="63.2" stroke="#e5e5e5"/><text x="64" y="67.2" text-anchor="end">×10</text>
 <line x1="70" x2="740" y1="232.1" y2="232.1" stroke="black" stroke-dasharray="5 3"/><text x="740" y="228.1" text-anchor="end">as fast as the reference</text>
 <text x="70.0" y="276" text-anchor="middle" font-size="10">2026-11-25 b44083f</text>
-<text x="204.0" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
-<text x="338.0" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
-<text x="472.0" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
-<text x="606.0" y="276" text-anchor="middle" font-size="10">2026-11-26 c362f30</text>
-<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 304cb29</text>
-<polyline points="70.0,38.9 204.0,36.9 338.0,228.1 472.0,232.7 606.0,243.1 740.0,235.3" fill="none" stroke="#1f77b4" stroke-width="2"/>
+<text x="181.7" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
+<text x="293.3" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
+<text x="405.0" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
+<text x="516.7" y="276" text-anchor="middle" font-size="10">2026-11-26 c362f30</text>
+<text x="628.3" y="276" text-anchor="middle" font-size="10">2026-11-26 304cb29</text>
+<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 e7c4ba9</text>
+<polyline points="70.0,38.9 181.7,36.9 293.3,228.1 405.0,232.7 516.7,243.1 628.3,235.3 740.0,232.1" fill="none" stroke="#1f77b4" stroke-width="2"/>
 <circle cx="70.0" cy="38.9" r="3" fill="#1f77b4"/>
-<circle cx="204.0" cy="36.9" r="3" fill="#1f77b4"/>
-<circle cx="338.0" cy="228.1" r="3" fill="#1f77b4"/>
-<circle cx="472.0" cy="232.7" r="3" fill="#1f77b4"/>
-<circle cx="606.0" cy="243.1" r="3" fill="#1f77b4"/>
-<circle cx="740.0" cy="235.3" r="3" fill="#1f77b4"/>
+<circle cx="181.7" cy="36.9" r="3" fill="#1f77b4"/>
+<circle cx="293.3" cy="228.1" r="3" fill="#1f77b4"/>
+<circle cx="405.0" cy="232.7" r="3" fill="#1f77b4"/>
+<circle cx="516.7" cy="243.1" r="3" fill="#1f77b4"/>
+<circle cx="628.3" cy="235.3" r="3" fill="#1f77b4"/>
+<circle cx="740.0" cy="232.1" r="3" fill="#1f77b4"/>
 <rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">numeric loop, 20000 iterations (ER2 literals) · vs Python `int`</text>
-<polyline points="70.0,77.3 204.0,78.5 338.0,83.2 472.0,79.5 606.0,76.6" fill="none" stroke="#d62728" stroke-width="2"/>
+<polyline points="70.0,77.3 181.7,78.5 293.3,83.2 405.0,79.5 516.7,76.6" fill="none" stroke="#d62728" stroke-width="2"/>
 <circle cx="70.0" cy="77.3" r="3" fill="#d62728"/>
-<circle cx="204.0" cy="78.5" r="3" fill="#d62728"/>
-<circle cx="338.0" cy="83.2" r="3" fill="#d62728"/>
-<circle cx="472.0" cy="79.5" r="3" fill="#d62728"/>
-<circle cx="606.0" cy="76.6" r="3" fill="#d62728"/>
+<circle cx="181.7" cy="78.5" r="3" fill="#d62728"/>
+<circle cx="293.3" cy="83.2" r="3" fill="#d62728"/>
+<circle cx="405.0" cy="79.5" r="3" fill="#d62728"/>
+<circle cx="516.7" cy="76.6" r="3" fill="#d62728"/>
 <rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">`a + b` · vs `int` `a + b`</text>
-<circle cx="740.0" cy="229.5" r="3" fill="#2ca02c"/>
+<polyline points="628.3,229.5 740.0,224.9" fill="none" stroke="#2ca02c" stroke-width="2"/>
+<circle cx="628.3" cy="229.5" r="3" fill="#2ca02c"/>
+<circle cx="740.0" cy="224.9" r="3" fill="#2ca02c"/>
 <rect x="70" y="337" width="12" height="12" fill="#2ca02c"/><text x="88" y="347">`a + b` in an ER2 function · vs the same Python function</text>
-<circle cx="740.0" cy="138.9" r="3" fill="#9467bd"/>
+<polyline points="628.3,138.9 740.0,136.3" fill="none" stroke="#9467bd" stroke-width="2"/>
+<circle cx="628.3" cy="138.9" r="3" fill="#9467bd"/>
+<circle cx="740.0" cy="136.3" r="3" fill="#9467bd"/>
 <rect x="70" y="355" width="12" height="12" fill="#9467bd"/><text x="88" y="365">`Integer(a) + Integer(b)`, the explicit class · vs `int` `a + b`</text>
 </svg>

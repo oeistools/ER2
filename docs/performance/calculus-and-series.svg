@@ -4,49 +4,55 @@
 <line x1="70" x2="740" y1="145.1" y2="145.1" stroke="#e5e5e5"/><text x="64" y="149.1" text-anchor="end">×1</text>
 <line x1="70" x2="740" y1="145.1" y2="145.1" stroke="black" stroke-dasharray="5 3"/><text x="740" y="141.1" text-anchor="end">as fast as the reference</text>
 <text x="70.0" y="276" text-anchor="middle" font-size="10">2026-11-25 b44083f</text>
-<text x="204.0" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
-<text x="338.0" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
-<text x="472.0" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
-<text x="606.0" y="276" text-anchor="middle" font-size="10">2026-11-26 c362f30</text>
-<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 304cb29</text>
-<polyline points="70.0,144.9 204.0,136.0 338.0,140.3 472.0,196.8 606.0,142.3 740.0,144.9" fill="none" stroke="#1f77b4" stroke-width="2"/>
+<text x="181.7" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
+<text x="293.3" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
+<text x="405.0" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
+<text x="516.7" y="276" text-anchor="middle" font-size="10">2026-11-26 c362f30</text>
+<text x="628.3" y="276" text-anchor="middle" font-size="10">2026-11-26 304cb29</text>
+<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 e7c4ba9</text>
+<polyline points="70.0,144.9 181.7,136.0 293.3,140.3 405.0,196.8 516.7,142.3 628.3,144.9 740.0,140.9" fill="none" stroke="#1f77b4" stroke-width="2"/>
 <circle cx="70.0" cy="144.9" r="3" fill="#1f77b4"/>
-<circle cx="204.0" cy="136.0" r="3" fill="#1f77b4"/>
-<circle cx="338.0" cy="140.3" r="3" fill="#1f77b4"/>
-<circle cx="472.0" cy="196.8" r="3" fill="#1f77b4"/>
-<circle cx="606.0" cy="142.3" r="3" fill="#1f77b4"/>
-<circle cx="740.0" cy="144.9" r="3" fill="#1f77b4"/>
+<circle cx="181.7" cy="136.0" r="3" fill="#1f77b4"/>
+<circle cx="293.3" cy="140.3" r="3" fill="#1f77b4"/>
+<circle cx="405.0" cy="196.8" r="3" fill="#1f77b4"/>
+<circle cx="516.7" cy="142.3" r="3" fill="#1f77b4"/>
+<circle cx="628.3" cy="144.9" r="3" fill="#1f77b4"/>
+<circle cx="740.0" cy="140.9" r="3" fill="#1f77b4"/>
 <rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">expand((x + k)^20) · vs SymPy `expand`</text>
-<polyline points="70.0,145.6 204.0,142.9 338.0,139.1 472.0,157.5 606.0,147.3 740.0,147.0" fill="none" stroke="#d62728" stroke-width="2"/>
+<polyline points="70.0,145.6 181.7,142.9 293.3,139.1 405.0,157.5 516.7,147.3 628.3,147.0 740.0,156.4" fill="none" stroke="#d62728" stroke-width="2"/>
 <circle cx="70.0" cy="145.6" r="3" fill="#d62728"/>
-<circle cx="204.0" cy="142.9" r="3" fill="#d62728"/>
-<circle cx="338.0" cy="139.1" r="3" fill="#d62728"/>
-<circle cx="472.0" cy="157.5" r="3" fill="#d62728"/>
-<circle cx="606.0" cy="147.3" r="3" fill="#d62728"/>
-<circle cx="740.0" cy="147.0" r="3" fill="#d62728"/>
+<circle cx="181.7" cy="142.9" r="3" fill="#d62728"/>
+<circle cx="293.3" cy="139.1" r="3" fill="#d62728"/>
+<circle cx="405.0" cy="157.5" r="3" fill="#d62728"/>
+<circle cx="516.7" cy="147.3" r="3" fill="#d62728"/>
+<circle cx="628.3" cy="147.0" r="3" fill="#d62728"/>
+<circle cx="740.0" cy="156.4" r="3" fill="#d62728"/>
 <rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">diff, 5th derivative of x^k e^x sin(x) · vs SymPy `diff`</text>
-<polyline points="70.0,144.7 204.0,143.8 338.0,142.1 472.0,208.1 606.0,138.7 740.0,142.4" fill="none" stroke="#2ca02c" stroke-width="2"/>
+<polyline points="70.0,144.7 181.7,143.8 293.3,142.1 405.0,208.1 516.7,138.7 628.3,142.4 740.0,173.5" fill="none" stroke="#2ca02c" stroke-width="2"/>
 <circle cx="70.0" cy="144.7" r="3" fill="#2ca02c"/>
-<circle cx="204.0" cy="143.8" r="3" fill="#2ca02c"/>
-<circle cx="338.0" cy="142.1" r="3" fill="#2ca02c"/>
-<circle cx="472.0" cy="208.1" r="3" fill="#2ca02c"/>
-<circle cx="606.0" cy="138.7" r="3" fill="#2ca02c"/>
-<circle cx="740.0" cy="142.4" r="3" fill="#2ca02c"/>
+<circle cx="181.7" cy="143.8" r="3" fill="#2ca02c"/>
+<circle cx="293.3" cy="142.1" r="3" fill="#2ca02c"/>
+<circle cx="405.0" cy="208.1" r="3" fill="#2ca02c"/>
+<circle cx="516.7" cy="138.7" r="3" fill="#2ca02c"/>
+<circle cx="628.3" cy="142.4" r="3" fill="#2ca02c"/>
+<circle cx="740.0" cy="173.5" r="3" fill="#2ca02c"/>
 <rect x="70" y="337" width="12" height="12" fill="#2ca02c"/><text x="88" y="347">integrate x^k e^x · vs SymPy `integrate`</text>
-<polyline points="70.0,145.1 204.0,138.3 338.0,196.8 472.0,71.9 606.0,147.5 740.0,141.0" fill="none" stroke="#9467bd" stroke-width="2"/>
+<polyline points="70.0,145.1 181.7,138.3 293.3,196.8 405.0,71.9 516.7,147.5 628.3,141.0 740.0,198.6" fill="none" stroke="#9467bd" stroke-width="2"/>
 <circle cx="70.0" cy="145.1" r="3" fill="#9467bd"/>
-<circle cx="204.0" cy="138.3" r="3" fill="#9467bd"/>
-<circle cx="338.0" cy="196.8" r="3" fill="#9467bd"/>
-<circle cx="472.0" cy="71.9" r="3" fill="#9467bd"/>
-<circle cx="606.0" cy="147.5" r="3" fill="#9467bd"/>
-<circle cx="740.0" cy="141.0" r="3" fill="#9467bd"/>
+<circle cx="181.7" cy="138.3" r="3" fill="#9467bd"/>
+<circle cx="293.3" cy="196.8" r="3" fill="#9467bd"/>
+<circle cx="405.0" cy="71.9" r="3" fill="#9467bd"/>
+<circle cx="516.7" cy="147.5" r="3" fill="#9467bd"/>
+<circle cx="628.3" cy="141.0" r="3" fill="#9467bd"/>
+<circle cx="740.0" cy="198.6" r="3" fill="#9467bd"/>
 <rect x="70" y="355" width="12" height="12" fill="#9467bd"/><text x="88" y="365">series of sin(x) e^(kx), order 10 · vs SymPy `series`</text>
-<polyline points="70.0,143.6 204.0,116.6 338.0,130.2 472.0,188.2 606.0,144.7 740.0,176.4" fill="none" stroke="#ff7f0e" stroke-width="2"/>
+<polyline points="70.0,143.6 181.7,116.6 293.3,130.2 405.0,188.2 516.7,144.7 628.3,176.4 740.0,148.1" fill="none" stroke="#ff7f0e" stroke-width="2"/>
 <circle cx="70.0" cy="143.6" r="3" fill="#ff7f0e"/>
-<circle cx="204.0" cy="116.6" r="3" fill="#ff7f0e"/>
-<circle cx="338.0" cy="130.2" r="3" fill="#ff7f0e"/>
-<circle cx="472.0" cy="188.2" r="3" fill="#ff7f0e"/>
-<circle cx="606.0" cy="144.7" r="3" fill="#ff7f0e"/>
-<circle cx="740.0" cy="176.4" r="3" fill="#ff7f0e"/>
+<circle cx="181.7" cy="116.6" r="3" fill="#ff7f0e"/>
+<circle cx="293.3" cy="130.2" r="3" fill="#ff7f0e"/>
+<circle cx="405.0" cy="188.2" r="3" fill="#ff7f0e"/>
+<circle cx="516.7" cy="144.7" r="3" fill="#ff7f0e"/>
+<circle cx="628.3" cy="176.4" r="3" fill="#ff7f0e"/>
+<circle cx="740.0" cy="148.1" r="3" fill="#ff7f0e"/>
 <rect x="70" y="373" width="12" height="12" fill="#ff7f0e"/><text x="88" y="383">limit of (sin(kx) - kx) / x^3 at 0 · vs SymPy `limit`</text>
 </svg>

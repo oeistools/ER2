@@ -12,41 +12,46 @@
 <line x1="70" x2="740" y1="29.9" y2="29.9" stroke="#e5e5e5"/><text x="64" y="33.9" text-anchor="end">×50</text>
 <line x1="70" x2="740" y1="160.3" y2="160.3" stroke="black" stroke-dasharray="5 3"/><text x="740" y="156.3" text-anchor="end">as fast as the reference</text>
 <text x="70.0" y="276" text-anchor="middle" font-size="10">2026-11-25 b44083f</text>
-<text x="204.0" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
-<text x="338.0" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
-<text x="472.0" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
-<text x="606.0" y="276" text-anchor="middle" font-size="10">2026-11-26 c362f30</text>
-<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 304cb29</text>
-<polyline points="70.0,30.6 204.0,32.2 338.0,27.7 472.0,58.5 606.0,53.7 740.0,72.0" fill="none" stroke="#1f77b4" stroke-width="2"/>
+<text x="181.7" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
+<text x="293.3" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
+<text x="405.0" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
+<text x="516.7" y="276" text-anchor="middle" font-size="10">2026-11-26 c362f30</text>
+<text x="628.3" y="276" text-anchor="middle" font-size="10">2026-11-26 304cb29</text>
+<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 e7c4ba9</text>
+<polyline points="70.0,30.6 181.7,32.2 293.3,27.7 405.0,58.5 516.7,53.7 628.3,72.0 740.0,73.3" fill="none" stroke="#1f77b4" stroke-width="2"/>
 <circle cx="70.0" cy="30.6" r="3" fill="#1f77b4"/>
-<circle cx="204.0" cy="32.2" r="3" fill="#1f77b4"/>
-<circle cx="338.0" cy="27.7" r="3" fill="#1f77b4"/>
-<circle cx="472.0" cy="58.5" r="3" fill="#1f77b4"/>
-<circle cx="606.0" cy="53.7" r="3" fill="#1f77b4"/>
-<circle cx="740.0" cy="72.0" r="3" fill="#1f77b4"/>
+<circle cx="181.7" cy="32.2" r="3" fill="#1f77b4"/>
+<circle cx="293.3" cy="27.7" r="3" fill="#1f77b4"/>
+<circle cx="405.0" cy="58.5" r="3" fill="#1f77b4"/>
+<circle cx="516.7" cy="53.7" r="3" fill="#1f77b4"/>
+<circle cx="628.3" cy="72.0" r="3" fill="#1f77b4"/>
+<circle cx="740.0" cy="73.3" r="3" fill="#1f77b4"/>
 <rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">factor mod 7, degree 12 · vs cypari2</text>
-<polyline points="70.0,193.2 204.0,196.4 338.0,201.3 472.0,222.5 606.0,218.5 740.0,237.3" fill="none" stroke="#d62728" stroke-width="2"/>
+<polyline points="70.0,193.2 181.7,196.4 293.3,201.3 405.0,222.5 516.7,218.5 628.3,237.3 740.0,232.9" fill="none" stroke="#d62728" stroke-width="2"/>
 <circle cx="70.0" cy="193.2" r="3" fill="#d62728"/>
-<circle cx="204.0" cy="196.4" r="3" fill="#d62728"/>
-<circle cx="338.0" cy="201.3" r="3" fill="#d62728"/>
-<circle cx="472.0" cy="222.5" r="3" fill="#d62728"/>
-<circle cx="606.0" cy="218.5" r="3" fill="#d62728"/>
-<circle cx="740.0" cy="237.3" r="3" fill="#d62728"/>
+<circle cx="181.7" cy="196.4" r="3" fill="#d62728"/>
+<circle cx="293.3" cy="201.3" r="3" fill="#d62728"/>
+<circle cx="405.0" cy="222.5" r="3" fill="#d62728"/>
+<circle cx="516.7" cy="218.5" r="3" fill="#d62728"/>
+<circle cx="628.3" cy="237.3" r="3" fill="#d62728"/>
+<circle cx="740.0" cy="232.9" r="3" fill="#d62728"/>
 <rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">factor mod 7, degree 12 · vs SymPy</text>
-<polyline points="70.0,107.0 204.0,105.4 338.0,104.0 472.0,120.3 606.0,128.8 740.0,135.4" fill="none" stroke="#2ca02c" stroke-width="2"/>
+<polyline points="70.0,107.0 181.7,105.4 293.3,104.0 405.0,120.3 516.7,128.8 628.3,135.4 740.0,134.1" fill="none" stroke="#2ca02c" stroke-width="2"/>
 <circle cx="70.0" cy="107.0" r="3" fill="#2ca02c"/>
-<circle cx="204.0" cy="105.4" r="3" fill="#2ca02c"/>
-<circle cx="338.0" cy="104.0" r="3" fill="#2ca02c"/>
-<circle cx="472.0" cy="120.3" r="3" fill="#2ca02c"/>
-<circle cx="606.0" cy="128.8" r="3" fill="#2ca02c"/>
-<circle cx="740.0" cy="135.4" r="3" fill="#2ca02c"/>
+<circle cx="181.7" cy="105.4" r="3" fill="#2ca02c"/>
+<circle cx="293.3" cy="104.0" r="3" fill="#2ca02c"/>
+<circle cx="405.0" cy="120.3" r="3" fill="#2ca02c"/>
+<circle cx="516.7" cy="128.8" r="3" fill="#2ca02c"/>
+<circle cx="628.3" cy="135.4" r="3" fill="#2ca02c"/>
+<circle cx="740.0" cy="134.1" r="3" fill="#2ca02c"/>
 <rect x="70" y="337" width="12" height="12" fill="#2ca02c"/><text x="88" y="347">factor mod 7, degree 48 · vs cypari2</text>
-<polyline points="70.0,221.3 204.0,223.2 338.0,217.5 472.0,236.2 606.0,244.7 740.0,252.3" fill="none" stroke="#9467bd" stroke-width="2"/>
+<polyline points="70.0,221.3 181.7,223.2 293.3,217.5 405.0,236.2 516.7,244.7 628.3,252.3 740.0,249.7" fill="none" stroke="#9467bd" stroke-width="2"/>
 <circle cx="70.0" cy="221.3" r="3" fill="#9467bd"/>
-<circle cx="204.0" cy="223.2" r="3" fill="#9467bd"/>
-<circle cx="338.0" cy="217.5" r="3" fill="#9467bd"/>
-<circle cx="472.0" cy="236.2" r="3" fill="#9467bd"/>
-<circle cx="606.0" cy="244.7" r="3" fill="#9467bd"/>
-<circle cx="740.0" cy="252.3" r="3" fill="#9467bd"/>
+<circle cx="181.7" cy="223.2" r="3" fill="#9467bd"/>
+<circle cx="293.3" cy="217.5" r="3" fill="#9467bd"/>
+<circle cx="405.0" cy="236.2" r="3" fill="#9467bd"/>
+<circle cx="516.7" cy="244.7" r="3" fill="#9467bd"/>
+<circle cx="628.3" cy="252.3" r="3" fill="#9467bd"/>
+<circle cx="740.0" cy="249.7" r="3" fill="#9467bd"/>
 <rect x="70" y="355" width="12" height="12" fill="#9467bd"/><text x="88" y="365">factor mod 7, degree 48 · vs SymPy</text>
 </svg>

@@ -14,137 +14,154 @@
 <line x1="70" x2="740" y1="21.4" y2="21.4" stroke="#e5e5e5"/><text x="64" y="25.4" text-anchor="end">×20</text>
 <line x1="70" x2="740" y1="111.9" y2="111.9" stroke="black" stroke-dasharray="5 3"/><text x="740" y="107.9" text-anchor="end">as fast as the reference</text>
 <text x="70.0" y="276" text-anchor="middle" font-size="10">2026-11-25 b44083f</text>
-<text x="204.0" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
-<text x="338.0" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
-<text x="472.0" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
-<text x="606.0" y="276" text-anchor="middle" font-size="10">2026-11-26 c362f30</text>
-<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 304cb29</text>
-<polyline points="70.0,47.7 204.0,44.1 338.0,47.4 472.0,48.3 606.0,54.2 740.0,58.8" fill="none" stroke="#1f77b4" stroke-width="2"/>
+<text x="181.7" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
+<text x="293.3" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
+<text x="405.0" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
+<text x="516.7" y="276" text-anchor="middle" font-size="10">2026-11-26 c362f30</text>
+<text x="628.3" y="276" text-anchor="middle" font-size="10">2026-11-26 304cb29</text>
+<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 e7c4ba9</text>
+<polyline points="70.0,47.7 181.7,44.1 293.3,47.4 405.0,48.3 516.7,54.2 628.3,58.8 740.0,57.6" fill="none" stroke="#1f77b4" stroke-width="2"/>
 <circle cx="70.0" cy="47.7" r="3" fill="#1f77b4"/>
-<circle cx="204.0" cy="44.1" r="3" fill="#1f77b4"/>
-<circle cx="338.0" cy="47.4" r="3" fill="#1f77b4"/>
-<circle cx="472.0" cy="48.3" r="3" fill="#1f77b4"/>
-<circle cx="606.0" cy="54.2" r="3" fill="#1f77b4"/>
-<circle cx="740.0" cy="58.8" r="3" fill="#1f77b4"/>
+<circle cx="181.7" cy="44.1" r="3" fill="#1f77b4"/>
+<circle cx="293.3" cy="47.4" r="3" fill="#1f77b4"/>
+<circle cx="405.0" cy="48.3" r="3" fill="#1f77b4"/>
+<circle cx="516.7" cy="54.2" r="3" fill="#1f77b4"/>
+<circle cx="628.3" cy="58.8" r="3" fill="#1f77b4"/>
+<circle cx="740.0" cy="57.6" r="3" fill="#1f77b4"/>
 <rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">det, 10x10 over Z · vs cypari2</text>
-<polyline points="70.0,226.7 204.0,223.7 338.0,226.3 472.0,230.2 606.0,236.1 740.0,240.9" fill="none" stroke="#d62728" stroke-width="2"/>
+<polyline points="70.0,226.7 181.7,223.7 293.3,226.3 405.0,230.2 516.7,236.1 628.3,240.9 740.0,237.9" fill="none" stroke="#d62728" stroke-width="2"/>
 <circle cx="70.0" cy="226.7" r="3" fill="#d62728"/>
-<circle cx="204.0" cy="223.7" r="3" fill="#d62728"/>
-<circle cx="338.0" cy="226.3" r="3" fill="#d62728"/>
-<circle cx="472.0" cy="230.2" r="3" fill="#d62728"/>
-<circle cx="606.0" cy="236.1" r="3" fill="#d62728"/>
-<circle cx="740.0" cy="240.9" r="3" fill="#d62728"/>
+<circle cx="181.7" cy="223.7" r="3" fill="#d62728"/>
+<circle cx="293.3" cy="226.3" r="3" fill="#d62728"/>
+<circle cx="405.0" cy="230.2" r="3" fill="#d62728"/>
+<circle cx="516.7" cy="236.1" r="3" fill="#d62728"/>
+<circle cx="628.3" cy="240.9" r="3" fill="#d62728"/>
+<circle cx="740.0" cy="237.9" r="3" fill="#d62728"/>
 <rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">det, 10x10 over Z · vs SymPy</text>
-<polyline points="70.0,27.5 204.0,27.0 338.0,29.2 472.0,28.8 606.0,30.5 740.0,30.3" fill="none" stroke="#2ca02c" stroke-width="2"/>
+<polyline points="70.0,27.5 181.7,27.0 293.3,29.2 405.0,28.8 516.7,30.5 628.3,30.3 740.0,42.9" fill="none" stroke="#2ca02c" stroke-width="2"/>
 <circle cx="70.0" cy="27.5" r="3" fill="#2ca02c"/>
-<circle cx="204.0" cy="27.0" r="3" fill="#2ca02c"/>
-<circle cx="338.0" cy="29.2" r="3" fill="#2ca02c"/>
-<circle cx="472.0" cy="28.8" r="3" fill="#2ca02c"/>
-<circle cx="606.0" cy="30.5" r="3" fill="#2ca02c"/>
-<circle cx="740.0" cy="30.3" r="3" fill="#2ca02c"/>
+<circle cx="181.7" cy="27.0" r="3" fill="#2ca02c"/>
+<circle cx="293.3" cy="29.2" r="3" fill="#2ca02c"/>
+<circle cx="405.0" cy="28.8" r="3" fill="#2ca02c"/>
+<circle cx="516.7" cy="30.5" r="3" fill="#2ca02c"/>
+<circle cx="628.3" cy="30.3" r="3" fill="#2ca02c"/>
+<circle cx="740.0" cy="42.9" r="3" fill="#2ca02c"/>
 <rect x="70" y="337" width="12" height="12" fill="#2ca02c"/><text x="88" y="347">kernel, 10x10 over Z · vs cypari2</text>
-<polyline points="70.0,139.0 204.0,139.5 338.0,140.0 472.0,140.0 606.0,142.6 740.0,137.5" fill="none" stroke="#9467bd" stroke-width="2"/>
+<polyline points="70.0,139.0 181.7,139.5 293.3,140.0 405.0,140.0 516.7,142.6 628.3,137.5 740.0,154.5" fill="none" stroke="#9467bd" stroke-width="2"/>
 <circle cx="70.0" cy="139.0" r="3" fill="#9467bd"/>
-<circle cx="204.0" cy="139.5" r="3" fill="#9467bd"/>
-<circle cx="338.0" cy="140.0" r="3" fill="#9467bd"/>
-<circle cx="472.0" cy="140.0" r="3" fill="#9467bd"/>
-<circle cx="606.0" cy="142.6" r="3" fill="#9467bd"/>
-<circle cx="740.0" cy="137.5" r="3" fill="#9467bd"/>
+<circle cx="181.7" cy="139.5" r="3" fill="#9467bd"/>
+<circle cx="293.3" cy="140.0" r="3" fill="#9467bd"/>
+<circle cx="405.0" cy="140.0" r="3" fill="#9467bd"/>
+<circle cx="516.7" cy="142.6" r="3" fill="#9467bd"/>
+<circle cx="628.3" cy="137.5" r="3" fill="#9467bd"/>
+<circle cx="740.0" cy="154.5" r="3" fill="#9467bd"/>
 <rect x="70" y="355" width="12" height="12" fill="#9467bd"/><text x="88" y="365">kernel, 10x10 over Z · vs SymPy</text>
-<polyline points="70.0,49.2 204.0,49.1 338.0,48.6 472.0,44.1 606.0,52.7 740.0,62.1" fill="none" stroke="#ff7f0e" stroke-width="2"/>
+<polyline points="70.0,49.2 181.7,49.1 293.3,48.6 405.0,44.1 516.7,52.7 628.3,62.1 740.0,62.4" fill="none" stroke="#ff7f0e" stroke-width="2"/>
 <circle cx="70.0" cy="49.2" r="3" fill="#ff7f0e"/>
-<circle cx="204.0" cy="49.1" r="3" fill="#ff7f0e"/>
-<circle cx="338.0" cy="48.6" r="3" fill="#ff7f0e"/>
-<circle cx="472.0" cy="44.1" r="3" fill="#ff7f0e"/>
-<circle cx="606.0" cy="52.7" r="3" fill="#ff7f0e"/>
-<circle cx="740.0" cy="62.1" r="3" fill="#ff7f0e"/>
+<circle cx="181.7" cy="49.1" r="3" fill="#ff7f0e"/>
+<circle cx="293.3" cy="48.6" r="3" fill="#ff7f0e"/>
+<circle cx="405.0" cy="44.1" r="3" fill="#ff7f0e"/>
+<circle cx="516.7" cy="52.7" r="3" fill="#ff7f0e"/>
+<circle cx="628.3" cy="62.1" r="3" fill="#ff7f0e"/>
+<circle cx="740.0" cy="62.4" r="3" fill="#ff7f0e"/>
 <rect x="70" y="373" width="12" height="12" fill="#ff7f0e"/><text x="88" y="383">hermite_form, 10x10 over Z · vs cypari2</text>
-<polyline points="70.0,121.0 204.0,121.2 338.0,120.2 472.0,118.2 606.0,125.1 740.0,135.4" fill="none" stroke="#17becf" stroke-width="2"/>
+<polyline points="70.0,121.0 181.7,121.2 293.3,120.2 405.0,118.2 516.7,125.1 628.3,135.4 740.0,135.4" fill="none" stroke="#17becf" stroke-width="2"/>
 <circle cx="70.0" cy="121.0" r="3" fill="#17becf"/>
-<circle cx="204.0" cy="121.2" r="3" fill="#17becf"/>
-<circle cx="338.0" cy="120.2" r="3" fill="#17becf"/>
-<circle cx="472.0" cy="118.2" r="3" fill="#17becf"/>
-<circle cx="606.0" cy="125.1" r="3" fill="#17becf"/>
+<circle cx="181.7" cy="121.2" r="3" fill="#17becf"/>
+<circle cx="293.3" cy="120.2" r="3" fill="#17becf"/>
+<circle cx="405.0" cy="118.2" r="3" fill="#17becf"/>
+<circle cx="516.7" cy="125.1" r="3" fill="#17becf"/>
+<circle cx="628.3" cy="135.4" r="3" fill="#17becf"/>
 <circle cx="740.0" cy="135.4" r="3" fill="#17becf"/>
 <rect x="70" y="391" width="12" height="12" fill="#17becf"/><text x="88" y="401">hermite_form, 10x10 over Z · vs SymPy</text>
-<polyline points="70.0,65.1 204.0,65.9 338.0,61.3 472.0,67.4 606.0,69.5 740.0,70.2" fill="none" stroke="#8c564b" stroke-width="2"/>
+<polyline points="70.0,65.1 181.7,65.9 293.3,61.3 405.0,67.4 516.7,69.5 628.3,70.2 740.0,70.6" fill="none" stroke="#8c564b" stroke-width="2"/>
 <circle cx="70.0" cy="65.1" r="3" fill="#8c564b"/>
-<circle cx="204.0" cy="65.9" r="3" fill="#8c564b"/>
-<circle cx="338.0" cy="61.3" r="3" fill="#8c564b"/>
-<circle cx="472.0" cy="67.4" r="3" fill="#8c564b"/>
-<circle cx="606.0" cy="69.5" r="3" fill="#8c564b"/>
-<circle cx="740.0" cy="70.2" r="3" fill="#8c564b"/>
+<circle cx="181.7" cy="65.9" r="3" fill="#8c564b"/>
+<circle cx="293.3" cy="61.3" r="3" fill="#8c564b"/>
+<circle cx="405.0" cy="67.4" r="3" fill="#8c564b"/>
+<circle cx="516.7" cy="69.5" r="3" fill="#8c564b"/>
+<circle cx="628.3" cy="70.2" r="3" fill="#8c564b"/>
+<circle cx="740.0" cy="70.6" r="3" fill="#8c564b"/>
 <rect x="70" y="409" width="12" height="12" fill="#8c564b"/><text x="88" y="419">smith_form, 10x10 over Z · vs cypari2</text>
-<polyline points="70.0,144.5 204.0,144.0 338.0,143.5 472.0,157.2 606.0,148.8 740.0,153.7" fill="none" stroke="#e377c2" stroke-width="2"/>
+<polyline points="70.0,144.5 181.7,144.0 293.3,143.5 405.0,157.2 516.7,148.8 628.3,153.7 740.0,148.8" fill="none" stroke="#e377c2" stroke-width="2"/>
 <circle cx="70.0" cy="144.5" r="3" fill="#e377c2"/>
-<circle cx="204.0" cy="144.0" r="3" fill="#e377c2"/>
-<circle cx="338.0" cy="143.5" r="3" fill="#e377c2"/>
-<circle cx="472.0" cy="157.2" r="3" fill="#e377c2"/>
-<circle cx="606.0" cy="148.8" r="3" fill="#e377c2"/>
-<circle cx="740.0" cy="153.7" r="3" fill="#e377c2"/>
+<circle cx="181.7" cy="144.0" r="3" fill="#e377c2"/>
+<circle cx="293.3" cy="143.5" r="3" fill="#e377c2"/>
+<circle cx="405.0" cy="157.2" r="3" fill="#e377c2"/>
+<circle cx="516.7" cy="148.8" r="3" fill="#e377c2"/>
+<circle cx="628.3" cy="153.7" r="3" fill="#e377c2"/>
+<circle cx="740.0" cy="148.8" r="3" fill="#e377c2"/>
 <rect x="70" y="427" width="12" height="12" fill="#e377c2"/><text x="88" y="437">smith_form, 10x10 over Z · vs SymPy</text>
-<polyline points="70.0,73.9 204.0,74.5 338.0,66.8 472.0,75.2 606.0,83.7 740.0,77.6" fill="none" stroke="#7f7f7f" stroke-width="2"/>
+<polyline points="70.0,73.9 181.7,74.5 293.3,66.8 405.0,75.2 516.7,83.7 628.3,77.6 740.0,83.8" fill="none" stroke="#7f7f7f" stroke-width="2"/>
 <circle cx="70.0" cy="73.9" r="3" fill="#7f7f7f"/>
-<circle cx="204.0" cy="74.5" r="3" fill="#7f7f7f"/>
-<circle cx="338.0" cy="66.8" r="3" fill="#7f7f7f"/>
-<circle cx="472.0" cy="75.2" r="3" fill="#7f7f7f"/>
-<circle cx="606.0" cy="83.7" r="3" fill="#7f7f7f"/>
-<circle cx="740.0" cy="77.6" r="3" fill="#7f7f7f"/>
+<circle cx="181.7" cy="74.5" r="3" fill="#7f7f7f"/>
+<circle cx="293.3" cy="66.8" r="3" fill="#7f7f7f"/>
+<circle cx="405.0" cy="75.2" r="3" fill="#7f7f7f"/>
+<circle cx="516.7" cy="83.7" r="3" fill="#7f7f7f"/>
+<circle cx="628.3" cy="77.6" r="3" fill="#7f7f7f"/>
+<circle cx="740.0" cy="83.8" r="3" fill="#7f7f7f"/>
 <rect x="70" y="445" width="12" height="12" fill="#7f7f7f"/><text x="88" y="455">det, 20x20 over Z · vs cypari2</text>
-<polyline points="70.0,242.3 204.0,244.5 338.0,241.2 472.0,237.3 606.0,253.0 740.0,246.2" fill="none" stroke="#bcbd22" stroke-width="2"/>
+<polyline points="70.0,242.3 181.7,244.5 293.3,241.2 405.0,237.3 516.7,253.0 628.3,246.2 740.0,251.6" fill="none" stroke="#bcbd22" stroke-width="2"/>
 <circle cx="70.0" cy="242.3" r="3" fill="#bcbd22"/>
-<circle cx="204.0" cy="244.5" r="3" fill="#bcbd22"/>
-<circle cx="338.0" cy="241.2" r="3" fill="#bcbd22"/>
-<circle cx="472.0" cy="237.3" r="3" fill="#bcbd22"/>
-<circle cx="606.0" cy="253.0" r="3" fill="#bcbd22"/>
-<circle cx="740.0" cy="246.2" r="3" fill="#bcbd22"/>
+<circle cx="181.7" cy="244.5" r="3" fill="#bcbd22"/>
+<circle cx="293.3" cy="241.2" r="3" fill="#bcbd22"/>
+<circle cx="405.0" cy="237.3" r="3" fill="#bcbd22"/>
+<circle cx="516.7" cy="253.0" r="3" fill="#bcbd22"/>
+<circle cx="628.3" cy="246.2" r="3" fill="#bcbd22"/>
+<circle cx="740.0" cy="251.6" r="3" fill="#bcbd22"/>
 <rect x="70" y="463" width="12" height="12" fill="#bcbd22"/><text x="88" y="473">det, 20x20 over Z · vs SymPy</text>
-<polyline points="70.0,72.9 204.0,71.8 338.0,77.7 472.0,82.8 606.0,77.4 740.0,80.0" fill="none" stroke="#1f77b4" stroke-width="2"/>
+<polyline points="70.0,72.9 181.7,71.8 293.3,77.7 405.0,82.8 516.7,77.4 628.3,80.0 740.0,81.8" fill="none" stroke="#1f77b4" stroke-width="2"/>
 <circle cx="70.0" cy="72.9" r="3" fill="#1f77b4"/>
-<circle cx="204.0" cy="71.8" r="3" fill="#1f77b4"/>
-<circle cx="338.0" cy="77.7" r="3" fill="#1f77b4"/>
-<circle cx="472.0" cy="82.8" r="3" fill="#1f77b4"/>
-<circle cx="606.0" cy="77.4" r="3" fill="#1f77b4"/>
-<circle cx="740.0" cy="80.0" r="3" fill="#1f77b4"/>
+<circle cx="181.7" cy="71.8" r="3" fill="#1f77b4"/>
+<circle cx="293.3" cy="77.7" r="3" fill="#1f77b4"/>
+<circle cx="405.0" cy="82.8" r="3" fill="#1f77b4"/>
+<circle cx="516.7" cy="77.4" r="3" fill="#1f77b4"/>
+<circle cx="628.3" cy="80.0" r="3" fill="#1f77b4"/>
+<circle cx="740.0" cy="81.8" r="3" fill="#1f77b4"/>
 <rect x="70" y="481" width="12" height="12" fill="#1f77b4"/><text x="88" y="491">kernel, 20x20 over Z · vs cypari2</text>
-<polyline points="70.0,147.8 204.0,147.4 338.0,151.9 472.0,155.2 606.0,153.0 740.0,164.0" fill="none" stroke="#d62728" stroke-width="2"/>
+<polyline points="70.0,147.8 181.7,147.4 293.3,151.9 405.0,155.2 516.7,153.0 628.3,164.0 740.0,157.7" fill="none" stroke="#d62728" stroke-width="2"/>
 <circle cx="70.0" cy="147.8" r="3" fill="#d62728"/>
-<circle cx="204.0" cy="147.4" r="3" fill="#d62728"/>
-<circle cx="338.0" cy="151.9" r="3" fill="#d62728"/>
-<circle cx="472.0" cy="155.2" r="3" fill="#d62728"/>
-<circle cx="606.0" cy="153.0" r="3" fill="#d62728"/>
-<circle cx="740.0" cy="164.0" r="3" fill="#d62728"/>
+<circle cx="181.7" cy="147.4" r="3" fill="#d62728"/>
+<circle cx="293.3" cy="151.9" r="3" fill="#d62728"/>
+<circle cx="405.0" cy="155.2" r="3" fill="#d62728"/>
+<circle cx="516.7" cy="153.0" r="3" fill="#d62728"/>
+<circle cx="628.3" cy="164.0" r="3" fill="#d62728"/>
+<circle cx="740.0" cy="157.7" r="3" fill="#d62728"/>
 <rect x="70" y="499" width="12" height="12" fill="#d62728"/><text x="88" y="509">kernel, 20x20 over Z · vs SymPy</text>
-<polyline points="70.0,68.3 204.0,66.6 338.0,65.0 472.0,74.4 606.0,73.3 740.0,85.1" fill="none" stroke="#2ca02c" stroke-width="2"/>
+<polyline points="70.0,68.3 181.7,66.6 293.3,65.0 405.0,74.4 516.7,73.3 628.3,85.1 740.0,82.7" fill="none" stroke="#2ca02c" stroke-width="2"/>
 <circle cx="70.0" cy="68.3" r="3" fill="#2ca02c"/>
-<circle cx="204.0" cy="66.6" r="3" fill="#2ca02c"/>
-<circle cx="338.0" cy="65.0" r="3" fill="#2ca02c"/>
-<circle cx="472.0" cy="74.4" r="3" fill="#2ca02c"/>
-<circle cx="606.0" cy="73.3" r="3" fill="#2ca02c"/>
-<circle cx="740.0" cy="85.1" r="3" fill="#2ca02c"/>
+<circle cx="181.7" cy="66.6" r="3" fill="#2ca02c"/>
+<circle cx="293.3" cy="65.0" r="3" fill="#2ca02c"/>
+<circle cx="405.0" cy="74.4" r="3" fill="#2ca02c"/>
+<circle cx="516.7" cy="73.3" r="3" fill="#2ca02c"/>
+<circle cx="628.3" cy="85.1" r="3" fill="#2ca02c"/>
+<circle cx="740.0" cy="82.7" r="3" fill="#2ca02c"/>
 <rect x="70" y="517" width="12" height="12" fill="#2ca02c"/><text x="88" y="527">hermite_form, 20x20 over Z · vs cypari2</text>
-<polyline points="70.0,144.1 204.0,146.8 338.0,145.0 472.0,151.1 606.0,148.9 740.0,149.1" fill="none" stroke="#9467bd" stroke-width="2"/>
+<polyline points="70.0,144.1 181.7,146.8 293.3,145.0 405.0,151.1 516.7,148.9 628.3,149.1 740.0,160.7" fill="none" stroke="#9467bd" stroke-width="2"/>
 <circle cx="70.0" cy="144.1" r="3" fill="#9467bd"/>
-<circle cx="204.0" cy="146.8" r="3" fill="#9467bd"/>
-<circle cx="338.0" cy="145.0" r="3" fill="#9467bd"/>
-<circle cx="472.0" cy="151.1" r="3" fill="#9467bd"/>
-<circle cx="606.0" cy="148.9" r="3" fill="#9467bd"/>
-<circle cx="740.0" cy="149.1" r="3" fill="#9467bd"/>
+<circle cx="181.7" cy="146.8" r="3" fill="#9467bd"/>
+<circle cx="293.3" cy="145.0" r="3" fill="#9467bd"/>
+<circle cx="405.0" cy="151.1" r="3" fill="#9467bd"/>
+<circle cx="516.7" cy="148.9" r="3" fill="#9467bd"/>
+<circle cx="628.3" cy="149.1" r="3" fill="#9467bd"/>
+<circle cx="740.0" cy="160.7" r="3" fill="#9467bd"/>
 <rect x="70" y="535" width="12" height="12" fill="#9467bd"/><text x="88" y="545">hermite_form, 20x20 over Z · vs SymPy</text>
-<polyline points="70.0,89.4 204.0,86.4 338.0,90.9 472.0,85.0 606.0,94.4 740.0,90.7" fill="none" stroke="#ff7f0e" stroke-width="2"/>
+<polyline points="70.0,89.4 181.7,86.4 293.3,90.9 405.0,85.0 516.7,94.4 628.3,90.7 740.0,94.7" fill="none" stroke="#ff7f0e" stroke-width="2"/>
 <circle cx="70.0" cy="89.4" r="3" fill="#ff7f0e"/>
-<circle cx="204.0" cy="86.4" r="3" fill="#ff7f0e"/>
-<circle cx="338.0" cy="90.9" r="3" fill="#ff7f0e"/>
-<circle cx="472.0" cy="85.0" r="3" fill="#ff7f0e"/>
-<circle cx="606.0" cy="94.4" r="3" fill="#ff7f0e"/>
-<circle cx="740.0" cy="90.7" r="3" fill="#ff7f0e"/>
+<circle cx="181.7" cy="86.4" r="3" fill="#ff7f0e"/>
+<circle cx="293.3" cy="90.9" r="3" fill="#ff7f0e"/>
+<circle cx="405.0" cy="85.0" r="3" fill="#ff7f0e"/>
+<circle cx="516.7" cy="94.4" r="3" fill="#ff7f0e"/>
+<circle cx="628.3" cy="90.7" r="3" fill="#ff7f0e"/>
+<circle cx="740.0" cy="94.7" r="3" fill="#ff7f0e"/>
 <rect x="70" y="553" width="12" height="12" fill="#ff7f0e"/><text x="88" y="563">smith_form, 20x20 over Z · vs cypari2</text>
-<polyline points="70.0,148.2 204.0,144.1 338.0,145.9 472.0,146.4 606.0,153.5 740.0,146.1" fill="none" stroke="#17becf" stroke-width="2"/>
+<polyline points="70.0,148.2 181.7,144.1 293.3,145.9 405.0,146.4 516.7,153.5 628.3,146.1 740.0,153.3" fill="none" stroke="#17becf" stroke-width="2"/>
 <circle cx="70.0" cy="148.2" r="3" fill="#17becf"/>
-<circle cx="204.0" cy="144.1" r="3" fill="#17becf"/>
-<circle cx="338.0" cy="145.9" r="3" fill="#17becf"/>
-<circle cx="472.0" cy="146.4" r="3" fill="#17becf"/>
-<circle cx="606.0" cy="153.5" r="3" fill="#17becf"/>
-<circle cx="740.0" cy="146.1" r="3" fill="#17becf"/>
+<circle cx="181.7" cy="144.1" r="3" fill="#17becf"/>
+<circle cx="293.3" cy="145.9" r="3" fill="#17becf"/>
+<circle cx="405.0" cy="146.4" r="3" fill="#17becf"/>
+<circle cx="516.7" cy="153.5" r="3" fill="#17becf"/>
+<circle cx="628.3" cy="146.1" r="3" fill="#17becf"/>
+<circle cx="740.0" cy="153.3" r="3" fill="#17becf"/>
 <rect x="70" y="571" width="12" height="12" fill="#17becf"/><text x="88" y="581">smith_form, 20x20 over Z · vs SymPy</text>
 </svg>

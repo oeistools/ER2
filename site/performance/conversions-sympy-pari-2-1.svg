@@ -7,21 +7,34 @@
 <line x1="70" x2="740" y1="28.2" y2="28.2" stroke="#e5e5e5"/><text x="64" y="32.2" text-anchor="end">×5</text>
 <line x1="70" x2="740" y1="155.3" y2="155.3" stroke="black" stroke-dasharray="5 3"/><text x="740" y="151.3" text-anchor="end">as fast as the reference</text>
 <text x="70.0" y="276" text-anchor="middle" font-size="10">2026-11-25 b44083f</text>
-<text x="204.0" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
-<text x="338.0" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
-<text x="472.0" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
-<text x="606.0" y="276" text-anchor="middle" font-size="10">2026-11-26 c362f30</text>
-<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 304cb29</text>
-<circle cx="740.0" cy="46.1" r="3" fill="#1f77b4"/>
+<text x="181.7" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
+<text x="293.3" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
+<text x="405.0" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
+<text x="516.7" y="276" text-anchor="middle" font-size="10">2026-11-26 c362f30</text>
+<text x="628.3" y="276" text-anchor="middle" font-size="10">2026-11-26 304cb29</text>
+<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 e7c4ba9</text>
+<polyline points="628.3,46.1 740.0,40.8" fill="none" stroke="#1f77b4" stroke-width="2"/>
+<circle cx="628.3" cy="46.1" r="3" fill="#1f77b4"/>
+<circle cx="740.0" cy="40.8" r="3" fill="#1f77b4"/>
 <rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">SymPy to PARI, 10x10 integer matrix · vs PARI `matdet` on it</text>
-<circle cx="740.0" cy="130.8" r="3" fill="#d62728"/>
+<polyline points="628.3,130.8 740.0,134.8" fill="none" stroke="#d62728" stroke-width="2"/>
+<circle cx="628.3" cy="130.8" r="3" fill="#d62728"/>
+<circle cx="740.0" cy="134.8" r="3" fill="#d62728"/>
 <rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">PARI to SymPy, 10x10 integer matrix · vs PARI `mathnf` that made it</text>
-<circle cx="740.0" cy="121.0" r="3" fill="#2ca02c"/>
+<polyline points="628.3,121.0 740.0,124.4" fill="none" stroke="#2ca02c" stroke-width="2"/>
+<circle cx="628.3" cy="121.0" r="3" fill="#2ca02c"/>
+<circle cx="740.0" cy="124.4" r="3" fill="#2ca02c"/>
 <rect x="70" y="337" width="12" height="12" fill="#2ca02c"/><text x="88" y="347">SymPy to PARI, 20x20 integer matrix · vs PARI `matdet` on it</text>
-<circle cx="740.0" cy="224.9" r="3" fill="#9467bd"/>
+<polyline points="628.3,224.9 740.0,217.0" fill="none" stroke="#9467bd" stroke-width="2"/>
+<circle cx="628.3" cy="224.9" r="3" fill="#9467bd"/>
+<circle cx="740.0" cy="217.0" r="3" fill="#9467bd"/>
 <rect x="70" y="355" width="12" height="12" fill="#9467bd"/><text x="88" y="365">PARI to SymPy, 20x20 integer matrix · vs PARI `mathnf` that made it</text>
-<circle cx="740.0" cy="38.2" r="3" fill="#ff7f0e"/>
+<polyline points="628.3,38.2 740.0,39.9" fill="none" stroke="#ff7f0e" stroke-width="2"/>
+<circle cx="628.3" cy="38.2" r="3" fill="#ff7f0e"/>
+<circle cx="740.0" cy="39.9" r="3" fill="#ff7f0e"/>
 <rect x="70" y="373" width="12" height="12" fill="#ff7f0e"/><text x="88" y="383">SymPy to PARI, polynomial of degree 12 · vs PARI `factormod` mod 7 on it</text>
-<circle cx="740.0" cy="241.8" r="3" fill="#17becf"/>
+<polyline points="628.3,241.8 740.0,240.0" fill="none" stroke="#17becf" stroke-width="2"/>
+<circle cx="628.3" cy="241.8" r="3" fill="#17becf"/>
+<circle cx="740.0" cy="240.0" r="3" fill="#17becf"/>
 <rect x="70" y="391" width="12" height="12" fill="#17becf"/><text x="88" y="401">SymPy to PARI, polynomial of degree 48 · vs PARI `factormod` mod 7 on it</text>
 </svg>

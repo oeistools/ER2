@@ -37,6 +37,7 @@ What is stable already, and what is not:
 
 ### Changed
 
+- PARI is loaded only when a program uses it (D24): a program with only integers, rationals or SymPy starts in about 68 ms instead of 90 (×2.7 of Python, under the ×3 target); `pari.raw` starts it on demand.
 - **Polynomials reach PARI faster**: an expanded polynomial in one variable is read straight from
   its terms instead of through SymPy's `Poly` (degree 12: 221 to 84 us), which speeds up
   `factor` over Q and modulo p (degree 12 mod 7: from 20 to 14 times a bare PARI call).

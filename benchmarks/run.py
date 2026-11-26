@@ -397,6 +397,8 @@ def startup_rows(quick):
     """
     runs = 1 if quick else 7
     programs = {
+        # exact arithmetic only: neither PARI nor SymPy is loaded (D24)
+        "integers and rationals only": "print(2^100 + 1/3)\n",
         "number theory only": "print(phi(10^6), factor(360))\n",
         "with symbols (loads SymPy)": "sym x\nprint(factor(x^2 - 1))\n",
     }

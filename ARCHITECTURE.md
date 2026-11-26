@@ -1031,6 +1031,12 @@ The following decisions were taken for M5 (PLAN.md) with the user on 2026-09-19.
   checked to be exactly an `int`, whose text is digits and a sign; anything else raises before GP
   sees it (`tests/backends/test_int_matrix.py`). Rationals and symbols keep the argument route.
 
+- **D24 — PARI is loaded on first use. ✅ Resolved (2026-11-26, the user).** `pari_backend` imports
+  without cypari2: `PARI` and the fixed GP functions are placeholders that call `start()` on first
+  use, which imports cypari2, starts PARI (stack, precision) and replaces them in the module by
+  the real objects, so later calls cost nothing extra. A program with only integers, rationals or
+  SymPy starts in about 68 ms instead of 90.
+
 ## 6.1 Code style: PEP 8
 
 **Hard requirement:** ER2 follows [PEP 8](https://peps.python.org/pep-0008/).

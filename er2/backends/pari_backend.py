@@ -16,8 +16,6 @@ import re
 from fractions import Fraction
 from pathlib import Path
 
-import cypari2
-
 from er2 import _lazy
 from er2.runtime.factorization import Factorization
 from er2.runtime.finite_field import FiniteField, FiniteFieldElement
@@ -93,13 +91,89 @@ class _SympyOnDemand:
 
 sympy = _SympyOnDemand()
 
-# PARI precomputes a table of small primes when it starts: up to 500000
-# by default, which is 20 of the 24 ms the start takes.  Up to 65536 it
-# takes 4 ms, and nothing gets slower: factoring numbers whose primes lie
-# between the two limits is in fact faster (250 us against 680 us), and
-# no result changes (2026-11-26, measured; ARCHITECTURE §2.1).
-PARI = cypari2.Pari(maxprime=65536)
-PariError = cypari2.PariError
+
+class _NotStartedError(Exception):
+    """Stands for ``cypari2.PariError`` until PARI starts."""
+
+
+class _Pending:
+    """A PARI object not made yet; PARI starts on its first use.
+
+    PARI is loaded only when a program uses it (D24, user 2026-11-26):
+    importing cypari2 and starting PARI is about a third of ER2's start,
+    and a program that only computes with ``int`` or SymPy never needs
+    it.  ``PARI`` and the fixed GP functions below are ``_Pending``
+    until then; ``start()`` replaces them, in this module, by the real
+    objects, so once PARI runs nothing goes through this class.
+    """
+
+    __slots__ = ("_name",)
+
+    def __init__(self, name):
+        self._name = name
+
+    def _real(self):
+        start()
+        return _STARTED[self._name]
+
+    def __call__(self, *args, **kwargs):
+        return self._real()(*args, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(self._real(), name)
+
+    def __repr__(self):
+        return f"<PARI {self._name}, not started yet>"
+
+
+_STARTED = {}  # name -> real object, once PARI runs
+_GP_TEXT = {}  # module name -> its fixed GP text, compiled at start
+PARI = _Pending("PARI")
+PariError = _NotStartedError
+# No object is a PARI object before PARI starts: ``isinstance(x, _Gen)``
+# stays cheap and False until then.
+_Gen = type("_NoGen", (), {})
+
+
+def pari_started():
+    """Whether PARI has been started (by a computation that needed it)."""
+    return bool(_STARTED)
+
+
+def start():
+    """Import cypari2 and start PARI, if not done yet."""
+    global PariError, _Gen
+    if _STARTED:
+        return
+    import cypari2
+
+    # PARI precomputes a table of small primes when it starts: up to
+    # 500000 by default, which is 20 of the 24 ms the start takes.  Up to
+    # 65536 it takes 4 ms, and nothing gets slower: factoring numbers
+    # whose primes lie between the two limits is in fact faster (250 us
+    # against 680 us), and no result changes (2026-11-26, measured;
+    # ARCHITECTURE §2.1).
+    real = cypari2.Pari(maxprime=65536)
+    _STARTED["PARI"] = real
+    module = globals()
+    if isinstance(module["PARI"], _Pending):  # unless a test replaced it
+        module["PARI"] = real
+    PariError = cypari2.PariError
+    _Gen = cypari2.gen.Gen
+    for name, text in _GP_TEXT.items():
+        _STARTED[name] = real(text)
+        if isinstance(module[name], _Pending):
+            module[name] = _STARTED[name]
+    _GP_INFINITY.update({1: real("+oo"), -1: real("-oo")})
+    set_stack(max_size=DEFAULT_STACK_MAX)
+    set_precision(DEFAULT_PRECISION)
+
+
+def _gp(name, text):
+    """Return the fixed GP function ``text``, compiled when PARI starts."""
+    _GP_TEXT[name] = text
+    return _Pending(name)
+
 
 # PARI's default maximum stack is only ~8 MB.  The maximum is reserved
 # address space; the stack grows into it only when a computation needs it.
@@ -117,9 +191,6 @@ def set_stack(size=None, max_size=None):
     PARI.allocatemem(size, max(size, max_size), silent=True)
 
 
-set_stack(max_size=DEFAULT_STACK_MAX)
-
-
 def set_precision(digits):
     """Set the precision of real results, in decimal digits."""
     PARI.set_real_precision(digits)
@@ -129,7 +200,6 @@ def set_precision(digits):
 # uses GP's default, 38 digits.  cypari2 methods do not read this default,
 # so ``_function`` passes it to every method that takes ``precision``.
 DEFAULT_PRECISION = 38
-set_precision(DEFAULT_PRECISION)
 
 
 def to_pari(obj):
@@ -139,7 +209,7 @@ def to_pari(obj):
     functions (``t_POL``, ``t_RFRAC``), series with an ``O`` term
     (``t_SER``), matrices, and ``oo`` are supported.
     """
-    if isinstance(obj, cypari2.gen.Gen):
+    if isinstance(obj, _Gen):
         return obj
     if isinstance(obj, (bool, int)):
         return PARI(int(obj))
@@ -217,13 +287,15 @@ def _matrix_to_pari(obj):
 
 # Fixed GP functions used by the conversions.  Only these constant texts
 # are ever parsed by GP; user values are passed as arguments.
-_GP_REAL = PARI("(q, bits) -> localbitprec(bits); q * 1.")
-_GP_SERIES = PARI("(p, v, n) -> p + O(v^n)")
-_GP_FACTORIAL = PARI("(n) -> n!")
+_GP_REAL = _gp("_GP_REAL", "(q, bits) -> localbitprec(bits); q * 1.")
+_GP_SERIES = _gp("_GP_SERIES", "(p, v, n) -> p + O(v^n)")
+_GP_FACTORIAL = _gp("_GP_FACTORIAL", "(n) -> n!")
 # Members of a ``t_FFELT``: cypari2 has no attribute access for them.
-_GP_FF_COEFFICIENTS = PARI("(x) -> Vecrev(x.pol)")
-_GP_FF_FIELD = PARI("(x) -> [x.p, Vecrev(lift(x.mod)), variable(x.mod)]")
-_GP_INFINITY = {1: PARI("+oo"), -1: PARI("-oo")}
+_GP_FF_COEFFICIENTS = _gp("_GP_FF_COEFFICIENTS", "(x) -> Vecrev(x.pol)")
+_GP_FF_FIELD = _gp(
+    "_GP_FF_FIELD", "(x) -> [x.p, Vecrev(lift(x.mod)), variable(x.mod)]"
+)
+_GP_INFINITY = {}  # filled when PARI starts
 _IDENTIFIER = re.compile(r"[A-Za-z][A-Za-z0-9_]*")
 # Names created with ``varhigher`` because GP reserves them.
 _CREATED = set()
@@ -260,6 +332,7 @@ def _sympy_to_pari(expr):
         exact = sympy.Rational(expr)
         return _GP_REAL(to_pari(exact), expr._prec)
     if expr is sympy.oo or expr is sympy.S.NegativeInfinity:
+        start()
         return _GP_INFINITY[1 if expr is sympy.oo else -1]
     if expr is sympy.I:
         return PARI("I")
@@ -420,7 +493,7 @@ def from_pari(obj):
     (``t_PADIC``, ``t_FFELT``, ``t_CLOSURE``, ...); ``pari.raw`` gives the
     unconverted result.
     """
-    if not isinstance(obj, cypari2.gen.Gen):
+    if not isinstance(obj, _Gen):
         return obj
     kind = obj.type()
     converter = _FROM_PARI.get(kind)
@@ -1064,7 +1137,7 @@ def inverse(matrix):
     """Return the inverse of a square rational matrix."""
     try:
         return from_pari(to_pari(matrix) ** -1)
-    except cypari2.PariError as error:
+    except PariError as error:
         raise _singular_or_other(error) from None
 
 
@@ -1103,7 +1176,7 @@ def solve_linear(matrix, rhs):
     """Return the solution ``v`` of ``matrix * v = rhs`` (square, regular)."""
     try:
         return from_pari(PARI.matsolve(to_pari(matrix), to_pari(rhs)))
-    except cypari2.PariError as error:
+    except PariError as error:
         raise _singular_or_other(error) from None
 
 
@@ -1143,10 +1216,10 @@ def smith_form(matrix):
 # cached field.  ``nfinit`` is cheap; ``bnfinit`` is the expensive one and
 # the caller caches what it returns.
 
-_GP_NF = PARI("(n) -> [poldegree(n.pol), n.disc]")
-_GP_NF_ZK = PARI("(n) -> n.zk")
-_GP_BNF = PARI("(b) -> [b.no, b.cyc, b.fu, b.tu[1]]")
-_GP_PRID = PARI("(P) -> [P.p, P.e, P.f, P.gen[2]]")
+_GP_NF = _gp("_GP_NF", "(n) -> [poldegree(n.pol), n.disc]")
+_GP_NF_ZK = _gp("_GP_NF_ZK", "(n) -> n.zk")
+_GP_BNF = _gp("_GP_BNF", "(b) -> [b.no, b.cyc, b.fu, b.tu[1]]")
+_GP_PRID = _gp("_GP_PRID", "(P) -> [P.p, P.e, P.f, P.gen[2]]")
 
 
 def number_field(polynomial):
@@ -1207,11 +1280,14 @@ def _function(row):
     """Return the ER2 function for a row of the PARI table."""
     pari_name, er2_name = row["pari_name"], row["er2_name"]
     call = functools.partial(_call, pari_name)
-    takes_precision = "precision" in _parameters(getattr(PARI, pari_name))
     convert = bool if er2_name in _BOOLEAN else _same
+    takes = []  # whether it takes ``precision``: known once PARI runs
 
     def function(*args, **kwargs):
-        if takes_precision and "precision" not in kwargs:
+        if not takes:
+            method = getattr(PARI, pari_name)
+            takes.append("precision" in _parameters(method))
+        if takes[0] and "precision" not in kwargs:
             kwargs["precision"] = PARI.get_real_precision_bits()
         try:
             return convert(call(*args, **kwargs))
@@ -1291,9 +1367,14 @@ class PariNamespace:
     def __init__(self, rows):
         """Index the ``prelude``, ``namespace`` and ``wrapper`` rows."""
         self._rows = {row["er2_name"]: row for row in rows}
-        self.raw = PARI
         self.set_stack = set_stack
         self.set_precision = set_precision
+
+    @property
+    def raw(self):
+        """The cypari2 instance (PARI starts if it has not yet)."""
+        start()
+        return PARI
 
     def __getattr__(self, name):
         """Return the ER2 function for ``name`` (created on first use)."""

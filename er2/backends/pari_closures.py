@@ -11,7 +11,11 @@ as arguments.  The callable receives ER2 values and its result is
 converted back to PARI.
 """
 
-from er2.backends.pari_backend import PARI, from_pari, to_pari
+from er2.backends import pari_backend
+
+pari_backend.start()  # this module is loaded only to call PARI
+PARI = pari_backend.PARI
+from_pari, to_pari = pari_backend.from_pari, pari_backend.to_pari
 
 # name -> (parameters, GP call, arity of the callable ``f``).  The
 # callable is always the parameter ``f``; ``prec`` is added to every

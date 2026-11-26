@@ -47,7 +47,7 @@ change that. The end-to-end figure is the one to quote, never the backend's.
 
 ## Open, in order
 
-1. **Loading PARI only when used.** About 24 ms of the start (cypari2 and its initialisation),
+1. **Loading PARI only when used**: done 2026-11-26 (D24, the user); 90 to 68 ms without PARI.
    saved only by programs that call no PARI function; it needs a layer in `dispatch` and the
    prelude, so it waits until a measured program shows it matters.
 2. **Startup with symbols.** About 400 ms is importing SymPy itself; ER2 already loads it only

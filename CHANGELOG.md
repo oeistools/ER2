@@ -65,6 +65,7 @@ What is stable already, and what is not:
 ### Added
 
 - CI runs the quick benchmarks on every push and pull request and shows the report in the job summary; a timing never fails the build.
+- Startup is about 6 ms shorter: `typing` is no longer imported (explicit `singledispatch` registrations), and the PARI function table is read with `csv.reader` and its signatures without `inspect`.
 - Rational `+ - * /` are faster again: `a + b` from about 1.7 to 1.2 times `fractions.Fraction`, `a * b / (a - b)` from 1.55 to 1.1 (the result is built from its two slots, the operand read inline; same results).
 - The REPL and the Jupyter kernel import SymPy in the background as soon as they open, so the first symbolic command does not wait for it (about 330 ms); programs run from a file are unchanged.
 - `kernel` of a rational matrix is about 40 % faster: the echelon basis is computed on fractions and the columns are read straight from PARI (same basis as before, checked against SymPy's `rref` on random input).

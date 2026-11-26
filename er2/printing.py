@@ -164,18 +164,18 @@ class _PartPrinter:
         return _latex(obj, self.options)
 
 
-@_latex.register
-def _(obj: bool, options):
+@_latex.register(bool)
+def _(obj, options):
     return r"\text{%s}" % obj
 
 
-@_latex.register
-def _(obj: int, options):
+@_latex.register(int)
+def _(obj, options):
     return str(int(obj))
 
 
-@_latex.register
-def _(obj: Fraction, options):
+@_latex.register(Fraction)
+def _(obj, options):
     # SymPy's form, without loading SymPy: \frac{1}{3}, - \frac{2}{5}.
     if obj.denominator == 1:
         return str(obj.numerator)
@@ -183,20 +183,20 @@ def _(obj: Fraction, options):
     return r"%s\frac{%d}{%d}" % (sign, abs(obj.numerator), obj.denominator)
 
 
-@_latex.register
-def _(obj: float, options):
+@_latex.register(float)
+def _(obj, options):
     sympy = _lazy.sympy()
     return sympy.latex(sympy.Float(obj))
 
 
-@_latex.register
-def _(obj: complex, options):
+@_latex.register(complex)
+def _(obj, options):
     sympy = _lazy.sympy()
     return sympy.latex(sympy.sympify(obj))
 
 
-@_latex.register
-def _(obj: str, options):
+@_latex.register(str)
+def _(obj, options):
     if isinstance(obj, Tex):
         return str(obj)
     return r"\text{%s}" % _escape(obj)
@@ -218,8 +218,8 @@ def _(obj, options):
     return r"\left\{%s\right\}" % r", ".join(items)
 
 
-@_latex.register
-def _(obj: dict, options):
+@_latex.register(dict)
+def _(obj, options):
     items = r", \ ".join(
         f"{_latex(k, options)} : {_latex(v, options)}" for k, v in obj.items()
     )

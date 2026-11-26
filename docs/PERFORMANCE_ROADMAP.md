@@ -62,3 +62,8 @@ change that. The end-to-end figure is the one to quote, never the backend's.
   C (Cython) or a shared integer matrix type such as python-flint's.
 - **Benchmarks in CI** (2026-11-26): the `benchmarks` job of `ci.yml` runs `--quick` and puts
   the report in the job summary. It reports and never blocks a pull request.
+- **SymEngine** (2026-11-26). Much faster than SymPy where it has the function (five
+  derivatives of `sin(x)*exp(x^2)`: 68 us against about 50 ms; a symbolic 8x8 `det`: 0.34 ms
+  against 3.3 ms; import 105 ms against 330 ms), but 30 of the 51 SymPy names ER2 uses are
+  missing (`integrate`, `limit`, `solve`, `simplify`, `factor`, `groebner`, `Poly`…). It cannot
+  replace SymPy; ER2 stays on SymPy for now.

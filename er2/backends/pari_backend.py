@@ -516,17 +516,28 @@ def is_rational_univariate(expr):
     as ``is_polynomial`` returning False.  A dispatch predicate runs
     before any work is done, so its own cost is pure overhead (§2.1).
     """
+    poly = _univariate_poly(expr)
+    return poly is not None and poly.domain in (sympy.ZZ, sympy.QQ)
+
+
+def _univariate_poly(expr):
+    """Return ``expr`` as a univariate SymPy ``Poly``, or None.
+
+    The one place that builds it, so a caller can keep the ``Poly``
+    instead of building it again (each build of a degree-12 polynomial
+    costs more than PARI's whole ``factormod``).
+    """
     if not isinstance(expr, sympy.Expr):
-        return False
+        return None
     symbols = expr.free_symbols
     if len(symbols) != 1:
-        return False
+        return None
     (var,) = symbols
     try:
         poly = sympy.Poly(expr, var)
     except sympy.PolynomialError:
-        return False
-    return poly.gens == (var,) and poly.domain in (sympy.ZZ, sympy.QQ)
+        return None
+    return poly if poly.gens == (var,) else None
 
 
 def expand_series(expr):
@@ -698,18 +709,36 @@ def is_prime_number(n):
     return bool(PARI.isprime(int(n)))
 
 
+# The dispatch predicate builds the ``Poly`` and ``factor_polynomial_mod``
+# needs it again a moment later, in the same call.  The predicate leaves
+# it here and the function takes it if it gets the very same expression
+# (``is``), emptying the slot, so nothing is reused across calls.
+_HANDOFF = []
+
+
+def _take_poly(expr, var):
+    """Return the Poly the predicate built for ``expr``, or build it."""
+    if _HANDOFF and _HANDOFF[0] is expr:
+        poly = _HANDOFF[1]
+        _HANDOFF.clear()
+        return poly
+    _HANDOFF.clear()
+    return sympy.Poly(expr, var)
+
+
 def is_modular_polynomial(expr, modulus):
     """Whether ``expr`` is a univariate polynomial over Z, nonzero mod p.
 
     A polynomial that vanishes modulo ``p`` stays with SymPy, which leaves
     it as it is (``factor(5*x^2, modulus=5)`` is ``5*x^2``).
     """
-    if not is_rational_univariate(expr):
+    poly = _univariate_poly(expr)
+    if poly is None or poly.domain != sympy.ZZ:
         return False
-    poly = sympy.Poly(expr, _polynomial_variable(expr))
-    if poly.domain != sympy.ZZ:
+    if not any(int(c) % int(modulus) for c in poly.all_coeffs()):
         return False
-    return any(int(c) % int(modulus) for c in poly.all_coeffs())
+    _HANDOFF[:] = [expr, poly]
+    return True
 
 
 def factor_polynomial_mod(expr, modulus):
@@ -720,8 +749,10 @@ def factor_polynomial_mod(expr, modulus):
     var = _polynomial_variable(expr)
     # SymPy takes the integer content out first and does not reduce it
     # modulo p: ``factor(9*x - 9, modulus=5)`` is ``9*(x - 1)``.
-    content, primitive = sympy.Poly(expr, var).primitive()
-    poly = to_pari(primitive.as_expr())
+    content, primitive = _take_poly(expr, var).primitive()
+    # straight from the coefficients: no expression and no second Poly
+    coefficients = [int(c) for c in primitive.all_coeffs()]
+    poly = PARI.Pol(coefficients, variable(var.name))
     unit = content * _symmetric(
         PARI.lift(PARI.pollead(poly * PARI.Mod(1, p))), p
     )

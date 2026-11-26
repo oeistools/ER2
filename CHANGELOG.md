@@ -29,6 +29,8 @@ What is stable already, and what is not:
 
 ### Changed
 
+- **`factor(f, modulus=p)` is about 2 times faster**: the polynomial is converted once per call
+  instead of four times (degree 12: from 53 to 20 times the time of a bare PARI call).
 - **Integers are plain Python `int` and run at Python's speed (D22).** `/` and `**` are made
   exact when ER2 code is compiled (`1/3` is still `1/3`, `2^-1` is `1/2`), instead of every
   literal being an `Integer`: a numeric loop goes from 13.8 times Python's time to the same time.

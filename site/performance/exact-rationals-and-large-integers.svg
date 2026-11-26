@@ -5,21 +5,25 @@
 <line x1="70" x2="740" y1="107.9" y2="107.9" stroke="#e5e5e5"/><text x="64" y="111.9" text-anchor="end">×2</text>
 <line x1="70" x2="740" y1="215.1" y2="215.1" stroke="black" stroke-dasharray="5 3"/><text x="740" y="211.1" text-anchor="end">as fast as the reference</text>
 <text x="70.0" y="276" text-anchor="middle" font-size="10">2026-11-25 b44083f</text>
-<text x="405.0" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
-<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
-<polyline points="70.0,55.6 405.0,151.5 740.0,106.6" fill="none" stroke="#1f77b4" stroke-width="2"/>
+<text x="293.3" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
+<text x="516.7" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
+<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
+<polyline points="70.0,55.6 293.3,151.5 516.7,106.6 740.0,145.2" fill="none" stroke="#1f77b4" stroke-width="2"/>
 <circle cx="70.0" cy="55.6" r="3" fill="#1f77b4"/>
-<circle cx="405.0" cy="151.5" r="3" fill="#1f77b4"/>
-<circle cx="740.0" cy="106.6" r="3" fill="#1f77b4"/>
+<circle cx="293.3" cy="151.5" r="3" fill="#1f77b4"/>
+<circle cx="516.7" cy="106.6" r="3" fill="#1f77b4"/>
+<circle cx="740.0" cy="145.2" r="3" fill="#1f77b4"/>
 <rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">`a + b`, rationals · vs `fractions.Fraction`</text>
-<polyline points="70.0,63.5 405.0,140.2 740.0,148.8" fill="none" stroke="#d62728" stroke-width="2"/>
+<polyline points="70.0,63.5 293.3,140.2 516.7,148.8 740.0,151.0" fill="none" stroke="#d62728" stroke-width="2"/>
 <circle cx="70.0" cy="63.5" r="3" fill="#d62728"/>
-<circle cx="405.0" cy="140.2" r="3" fill="#d62728"/>
-<circle cx="740.0" cy="148.8" r="3" fill="#d62728"/>
+<circle cx="293.3" cy="140.2" r="3" fill="#d62728"/>
+<circle cx="516.7" cy="148.8" r="3" fill="#d62728"/>
+<circle cx="740.0" cy="151.0" r="3" fill="#d62728"/>
 <rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">`a * b / (a - b)`, rationals · vs `fractions.Fraction`</text>
-<polyline points="70.0,213.9 405.0,221.6 740.0,224.4" fill="none" stroke="#2ca02c" stroke-width="2"/>
+<polyline points="70.0,213.9 293.3,221.6 516.7,224.4 740.0,221.1" fill="none" stroke="#2ca02c" stroke-width="2"/>
 <circle cx="70.0" cy="213.9" r="3" fill="#2ca02c"/>
-<circle cx="405.0" cy="221.6" r="3" fill="#2ca02c"/>
-<circle cx="740.0" cy="224.4" r="3" fill="#2ca02c"/>
+<circle cx="293.3" cy="221.6" r="3" fill="#2ca02c"/>
+<circle cx="516.7" cy="224.4" r="3" fill="#2ca02c"/>
+<circle cx="740.0" cy="221.1" r="3" fill="#2ca02c"/>
 <rect x="70" y="337" width="12" height="12" fill="#2ca02c"/><text x="88" y="347">`3^20000 * 3^20000`, large integers · vs `int`</text>
 </svg>

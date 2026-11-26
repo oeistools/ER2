@@ -44,6 +44,26 @@ def sympy():
     return module
 
 
+def preload():
+    """Start importing SymPy in a background thread; return the thread.
+
+    For the REPL and the Jupyter kernel: the import runs while the user
+    types, so the first symbolic command does not wait for it.  A
+    program run from a file never calls this, so it pays only for what
+    it uses.  If the user needs SymPy before the thread is done, Python's
+    import lock makes them wait for that one import, never a second.
+    The thread is not a daemon: interpreter exit waits for it rather than
+    stopping it in the middle of an import.
+    """
+    import threading
+
+    if sympy_loaded():
+        return None
+    thread = threading.Thread(target=sympy, name="er2-preload-sympy")
+    thread.start()
+    return thread
+
+
 def when_sympy_loaded(hook):
     """Run ``hook()`` now if SymPy is loaded, else right after it loads."""
     if sympy_loaded():

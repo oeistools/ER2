@@ -22,7 +22,7 @@ except ImportError as exc:  # pragma: no cover - depends on the extra
     ) from exc
 
 from er2 import __version__ as er2_version
-from er2 import session
+from er2 import _lazy, session
 from er2.preparser import exact_tree, preparse
 
 KERNEL_NAME = "er2"
@@ -46,6 +46,7 @@ class ER2Kernel(IPythonKernel):
         """Start the kernel and enable ER2 in its shell."""
         super().__init__(**kwargs)
         session.load_ipython_extension(self.shell)
+        _lazy.preload()
 
     async def do_execute(
         self,

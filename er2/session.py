@@ -12,7 +12,7 @@ import signal
 import sys
 from pathlib import Path
 
-from er2 import importer, prelude, printing
+from er2 import _lazy, importer, prelude, printing
 from er2.preparser import (
     IncompleteSourceError,
     _ExactOps,
@@ -160,6 +160,7 @@ def _console_class():
 def repl():
     """Run the interactive ER2 console."""
     start()
+    _lazy.preload()
     console = _console_class()(prelude.inject({"__name__": "__main__"}))
     banner = (
         f"ER2 on Python {sys.version.split()[0]}. "

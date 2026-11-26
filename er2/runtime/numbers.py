@@ -170,24 +170,34 @@ class Integer(int):
 # ``complex``, SymPy, ...) takes the generic route below.
 
 
+_new = object.__new__
+
+
 def _parts(x):
     """Return ``(numerator, denominator)`` of an exact rational, or None."""
     if isinstance(x, Fraction):
         return x._numerator, x._denominator
-    if isinstance(x, int) and not isinstance(x, bool):
-        return int(x), 1
+    if isinstance(x, int) and type(x) is not bool:
+        return (x if type(x) is int else int(x)), 1
     return None
 
 
 def _number(n, d):
-    """Return ``n/d`` (lowest terms, ``d > 0``) as an ER2 number."""
+    """Return ``n/d`` (lowest terms, ``d > 0``) as an ER2 number.
+
+    Built with ``object.__new__`` and the two slots: half the time of
+    ``Fraction._from_coprime_ints``, which is most of a small sum.
+    """
     if d == 1:
         return n
-    return Rational._from_coprime_ints(n, d)
+    obj = _new(Rational)
+    obj._numerator = n
+    obj._denominator = d
+    return obj
 
 
-def _add_parts(na, da, nb, db):
-    """``na/da + nb/db`` as Fraction._add computes it."""
+def _add(na, da, nb, db):
+    """``na/da + nb/db`` as ``Fraction._add`` computes it."""
     g = math.gcd(da, db)
     if g == 1:
         return _number(na * db + da * nb, da * db)
@@ -199,8 +209,8 @@ def _add_parts(na, da, nb, db):
     return _number(t // g2, s * (db // g2))
 
 
-def _mul_parts(na, da, nb, db):
-    """``na/da * nb/db`` as Fraction._mul computes it."""
+def _mul(na, da, nb, db):
+    """``na/da * nb/db`` as ``Fraction._mul`` computes it."""
     g1 = math.gcd(na, db)
     if g1 > 1:
         na //= g1
@@ -212,8 +222,8 @@ def _mul_parts(na, da, nb, db):
     return _number(na * nb, db * da)
 
 
-def _div_parts(na, da, nb, db):
-    """``(na/da) / (nb/db)`` as Fraction._div computes it."""
+def _div(na, da, nb, db):
+    """``(na/da) / (nb/db)`` as ``Fraction._div`` computes it."""
     if nb == 0:
         raise ZeroDivisionError(f"Fraction({db}, 0)")
     g1 = math.gcd(na, nb)
@@ -230,24 +240,46 @@ def _div_parts(na, da, nb, db):
     return _number(n, d)
 
 
-def _fast(compute, fallback, reflected=False):
-    """Operator with the exact fast path and ``fallback`` for the rest."""
+def _fast(compute, fallback, reflected=False, negate=False):
+    """Operator with the exact fast path and ``fallback`` for the rest.
 
-    def method(self, other):
-        b = _parts(other)
-        if b is None:
-            return fallback(self, other)
-        a = (self._numerator, self._denominator)
-        return compute(*b, *a) if reflected else compute(*a, *b)
+    The operand is read inline, not through ``_parts``: one call less
+    on every ``+ - * /``.  ``negate`` turns ``_add`` into subtraction.
+    """
+    if reflected:
+
+        def method(self, other):
+            if isinstance(other, Fraction):
+                nb, db = other._numerator, other._denominator
+            elif type(other) is int:
+                nb, db = other, 1
+            else:
+                b = _parts(other)
+                if b is None:
+                    return fallback(self, other)
+                nb, db = b
+            na = -self._numerator if negate else self._numerator
+            return compute(nb, db, na, self._denominator)
+
+    else:
+
+        def method(self, other):
+            if isinstance(other, Fraction):
+                nb, db = other._numerator, other._denominator
+            elif type(other) is int:
+                nb, db = other, 1
+            else:
+                b = _parts(other)
+                if b is None:
+                    return fallback(self, other)
+                nb, db = b
+            if negate:
+                nb = -nb
+            return compute(self._numerator, self._denominator, nb, db)
 
     method.__name__ = fallback.__name__
     method.__doc__ = f"Exact version of ``{fallback.__name__}``."
     return method
-
-
-def _sub_parts(na, da, nb, db):
-    """``na/da - nb/db``."""
-    return _add_parts(na, da, -nb, db)
 
 
 class Rational(Fraction):
@@ -263,16 +295,16 @@ class Rational(Fraction):
         """Render as math in Jupyter and Quarto."""
         return latex(self)._repr_latex_()
 
-    __add__ = _fast(_add_parts, _exact(Fraction.__add__))
-    __radd__ = _fast(_add_parts, _exact(Fraction.__radd__), reflected=True)
-    __sub__ = _fast(_sub_parts, _exact(Fraction.__sub__))
-    __rsub__ = _fast(_sub_parts, _exact(Fraction.__rsub__), reflected=True)
-    __mul__ = _fast(_mul_parts, _exact(Fraction.__mul__))
-    __rmul__ = _fast(_mul_parts, _exact(Fraction.__rmul__), reflected=True)
-    __truediv__ = _fast(_div_parts, _exact(Fraction.__truediv__))
-    __rtruediv__ = _fast(
-        _div_parts, _exact(Fraction.__rtruediv__), reflected=True
+    __add__ = _fast(_add, _exact(Fraction.__add__))
+    __radd__ = _fast(_add, _exact(Fraction.__radd__), reflected=True)
+    __sub__ = _fast(_add, _exact(Fraction.__sub__), negate=True)
+    __rsub__ = _fast(
+        _add, _exact(Fraction.__rsub__), reflected=True, negate=True
     )
+    __mul__ = _fast(_mul, _exact(Fraction.__mul__))
+    __rmul__ = _fast(_mul, _exact(Fraction.__rmul__), reflected=True)
+    __truediv__ = _fast(_div, _exact(Fraction.__truediv__))
+    __rtruediv__ = _fast(_div, _exact(Fraction.__rtruediv__), reflected=True)
     __floordiv__ = _exact(Fraction.__floordiv__)
     __rfloordiv__ = _exact(Fraction.__rfloordiv__)
     __mod__ = _exact(Fraction.__mod__)

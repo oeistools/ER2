@@ -29,6 +29,8 @@ What is stable already, and what is not:
 
 ### Changed
 
+- **`kernel` of an invertible matrix is faster**: the empty result no longer goes through SymPy's
+  general matrix constructor.
 - **Integer matrix calls are faster** (`det`, `kernel`, `hermite_form`, `smith_form` over Z): the matrix
   reaches PARI in one step instead of entry by entry.
 - **ER2 programs start faster**: 93 ms instead of 145 ms for a program without symbols. PARI starts

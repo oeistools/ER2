@@ -17,31 +17,36 @@
 <line x1="70" x2="740" y1="25.2" y2="25.2" stroke="#e5e5e5"/><text x="64" y="29.2" text-anchor="end">×1</text>
 <line x1="70" x2="740" y1="25.2" y2="25.2" stroke="black" stroke-dasharray="5 3"/><text x="740" y="21.2" text-anchor="end">as fast as the reference</text>
 <text x="70.0" y="276" text-anchor="middle" font-size="10">2026-11-25 b44083f</text>
-<text x="293.3" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
-<text x="516.7" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
-<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
-<polyline points="70.0,90.9 293.3,90.9 516.7,92.2 740.0,89.1" fill="none" stroke="#1f77b4" stroke-width="2"/>
+<text x="237.5" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
+<text x="405.0" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
+<text x="572.5" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
+<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 c362f30</text>
+<polyline points="70.0,90.9 237.5,90.9 405.0,92.2 572.5,89.1 740.0,89.3" fill="none" stroke="#1f77b4" stroke-width="2"/>
 <circle cx="70.0" cy="90.9" r="3" fill="#1f77b4"/>
-<circle cx="293.3" cy="90.9" r="3" fill="#1f77b4"/>
-<circle cx="516.7" cy="92.2" r="3" fill="#1f77b4"/>
-<circle cx="740.0" cy="89.1" r="3" fill="#1f77b4"/>
+<circle cx="237.5" cy="90.9" r="3" fill="#1f77b4"/>
+<circle cx="405.0" cy="92.2" r="3" fill="#1f77b4"/>
+<circle cx="572.5" cy="89.1" r="3" fill="#1f77b4"/>
+<circle cx="740.0" cy="89.3" r="3" fill="#1f77b4"/>
 <rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">choose a backend: phi(n), an integer · vs the whole call</text>
-<polyline points="70.0,122.9 293.3,123.4 516.7,123.4 740.0,125.0" fill="none" stroke="#d62728" stroke-width="2"/>
+<polyline points="70.0,122.9 237.5,123.4 405.0,123.4 572.5,125.0 740.0,115.7" fill="none" stroke="#d62728" stroke-width="2"/>
 <circle cx="70.0" cy="122.9" r="3" fill="#d62728"/>
-<circle cx="293.3" cy="123.4" r="3" fill="#d62728"/>
-<circle cx="516.7" cy="123.4" r="3" fill="#d62728"/>
-<circle cx="740.0" cy="125.0" r="3" fill="#d62728"/>
+<circle cx="237.5" cy="123.4" r="3" fill="#d62728"/>
+<circle cx="405.0" cy="123.4" r="3" fill="#d62728"/>
+<circle cx="572.5" cy="125.0" r="3" fill="#d62728"/>
+<circle cx="740.0" cy="115.7" r="3" fill="#d62728"/>
 <rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">choose a backend: det, 10x10 over Z · vs the whole call</text>
-<polyline points="70.0,254.6 293.3,254.8 516.7,254.0 740.0,254.1" fill="none" stroke="#2ca02c" stroke-width="2"/>
+<polyline points="70.0,254.6 237.5,254.8 405.0,254.0 572.5,254.1 740.0,253.7" fill="none" stroke="#2ca02c" stroke-width="2"/>
 <circle cx="70.0" cy="254.6" r="3" fill="#2ca02c"/>
-<circle cx="293.3" cy="254.8" r="3" fill="#2ca02c"/>
-<circle cx="516.7" cy="254.0" r="3" fill="#2ca02c"/>
-<circle cx="740.0" cy="254.1" r="3" fill="#2ca02c"/>
+<circle cx="237.5" cy="254.8" r="3" fill="#2ca02c"/>
+<circle cx="405.0" cy="254.0" r="3" fill="#2ca02c"/>
+<circle cx="572.5" cy="254.1" r="3" fill="#2ca02c"/>
+<circle cx="740.0" cy="253.7" r="3" fill="#2ca02c"/>
 <rect x="70" y="337" width="12" height="12" fill="#2ca02c"/><text x="88" y="347">choose a backend: det, 10x10 with a symbol · vs the whole call</text>
-<polyline points="70.0,74.3 293.3,74.5 516.7,74.0 740.0,75.6" fill="none" stroke="#9467bd" stroke-width="2"/>
+<polyline points="70.0,74.3 237.5,74.5 405.0,74.0 572.5,75.6 740.0,75.2" fill="none" stroke="#9467bd" stroke-width="2"/>
 <circle cx="70.0" cy="74.3" r="3" fill="#9467bd"/>
-<circle cx="293.3" cy="74.5" r="3" fill="#9467bd"/>
-<circle cx="516.7" cy="74.0" r="3" fill="#9467bd"/>
-<circle cx="740.0" cy="75.6" r="3" fill="#9467bd"/>
+<circle cx="237.5" cy="74.5" r="3" fill="#9467bd"/>
+<circle cx="405.0" cy="74.0" r="3" fill="#9467bd"/>
+<circle cx="572.5" cy="75.6" r="3" fill="#9467bd"/>
+<circle cx="740.0" cy="75.2" r="3" fill="#9467bd"/>
 <rect x="70" y="355" width="12" height="12" fill="#9467bd"/><text x="88" y="365">choose a backend: factor, a polynomial over Q · vs the whole call</text>
 </svg>

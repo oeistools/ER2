@@ -34,7 +34,7 @@ import cypari2
 import sympy
 
 from er2 import prelude
-from er2.preparser import preparse
+from er2.preparser import compile_er2, preparse
 from er2.runtime.numbers import Integer
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -64,7 +64,7 @@ def _timed(function, calls):
 def er2_function(source, name):
     """Compile ER2 ``source`` and return the function ``name`` from it."""
     namespace = prelude.inject({"__name__": "bench"})
-    exec(compile(preparse(source), "<bench>", "exec"), namespace)
+    exec(compile_er2(preparse(source), "<bench>", "exec"), namespace)
     return namespace[name]
 
 
@@ -89,10 +89,28 @@ def python_loop(n):
     return s
 
 
+ADD = """
+def add(a, b):
+    return a + b
+"""
+
+
+def python_add(a, b):
+    """Return ``a + b`` with plain Python, as ``ADD`` does in ER2."""
+    return a + b
+
+
 def integer_rows(quick):
-    """Rows for ``Integer`` arithmetic (the D2 risk)."""
+    """Rows for integer arithmetic (the D2 risk; D22 since 2026-11-26).
+
+    ``a + b`` is a call of a function written in ER2 against the same
+    function in Python: a bare ``12345 + 678`` would be folded into a
+    constant by Python's compiler and time nothing.  The ``Integer``
+    row keeps the cost of the class, which ER2 code no longer creates.
+    """
     n = 1000 if quick else 20000
     loop = er2_function(LOOP, "loop")
+    add = er2_function(ADD, "add")
     a, b = Integer(12345), Integer(678)
     return [
         (
@@ -102,10 +120,16 @@ def integer_rows(quick):
             measure(lambda: python_loop(n), quick),
         ),
         (
-            "`a + b`",
+            "`a + b` in an ER2 function",
+            measure(lambda: add(12345, 678), quick),
+            "the same Python function",
+            measure(lambda: python_add(12345, 678), quick),
+        ),
+        (
+            "`Integer(a) + Integer(b)`, the explicit class",
             measure(lambda: a + b, quick),
             "`int` `a + b`",
-            measure(lambda: 12345 + 678, quick),
+            measure(lambda: python_add(12345, 678), quick),
         ),
     ]
 

@@ -3,14 +3,14 @@
 import pytest
 
 from er2.runtime.modular import Mod
-from er2.runtime.numbers import Integer, Rational
+from er2.runtime.numbers import Rational
 
 
 def test_construction_and_attributes():
     a = Mod(10, 7)
     assert a == Mod(3, 7)
-    assert a.lift() == 3 and type(a.lift()) is Integer
-    assert a.modulus == 7 and type(a.modulus) is Integer
+    assert a.lift() == 3 and type(a.lift()) is int
+    assert a.modulus == 7 and type(a.modulus) is int
     assert int(a) == 3
     assert Mod(5, -7) == Mod(5, 7)
     assert Mod(Rational(1, 3), 7) == Mod(5, 7)

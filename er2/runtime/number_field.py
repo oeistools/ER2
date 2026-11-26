@@ -17,7 +17,6 @@ equivalent representatives, never a canonical one.
 """
 
 from er2.printing import latex
-from er2.runtime.numbers import Integer
 
 __all__ = ["NumberField", "PrimeIdeal"]
 
@@ -189,9 +188,9 @@ class PrimeIdeal:
     def __init__(self, field, p, e, f, alpha):
         """Create the ideal above ``p`` with the given invariants."""
         self._field = field
-        self._p = Integer(p)
-        self._e = Integer(e)
-        self._f = Integer(f)
+        self._p = int(p)
+        self._e = int(e)
+        self._f = int(f)
         self._alpha = alpha
 
     @property

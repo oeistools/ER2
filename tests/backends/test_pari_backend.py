@@ -21,12 +21,12 @@ x = sympy.Symbol("x")
 @pytest.mark.parametrize(
     "value",
     [
-        Integer(0),
-        Integer(-7),
-        Integer(2) ** 300,
+        0,
+        -7,
+        2**300,
         Rational(-5, 3),
         Mod(3, 7),
-        [Integer(1), Rational(1, 2), Mod(2, 5)],
+        [1, Rational(1, 2), Mod(2, 5)],
     ],
 )
 def test_round_trip(value):
@@ -46,7 +46,7 @@ def test_to_pari():
 
 
 def test_from_pari():
-    assert type(from_pari(PARI(5))) is Integer
+    assert type(from_pari(PARI(5))) is int
     assert from_pari(PARI("x^2 - x + 1")) == x**2 - x + 1
     assert from_pari(PARI("1/(x^2 + 1)")) == 1 / (x**2 + 1)
     assert from_pari(PARI("1 + 2*I")) == 1 + 2 * sympy.I
@@ -126,7 +126,7 @@ def test_partial_factor():
 def test_factorial():
     # GP: 30!
     assert pari_backend.factorial(30) == 265252859812191058636308480000000
-    assert type(pari_backend.factorial(0)) is Integer
+    assert type(pari_backend.factorial(0)) is int
     for bad in (-1, Rational(1, 2), True):
         with pytest.raises(ValueError):
             pari_backend.factorial(bad)
@@ -170,7 +170,7 @@ def test_radical():
     assert [pari_backend.radical(n) for n in range(1, 21)] == values
     assert pari_backend.radical(360) == 30
     assert pari_backend.radical(2**100 * 3**50 * 7) == 42
-    assert isinstance(pari_backend.radical(12), Integer)
+    assert isinstance(pari_backend.radical(12), int)
     for bad in (0, -12, Rational(1, 2), x):
         with pytest.raises(ValueError):
             pari_backend.radical(bad)

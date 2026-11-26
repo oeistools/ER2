@@ -11,7 +11,7 @@ import importlib.machinery as machinery
 import sys
 
 from er2 import prelude
-from er2.preparser import preparse
+from er2.preparser import compile_er2, preparse
 
 SUFFIX = ".er2"
 
@@ -32,7 +32,9 @@ class ER2Loader(machinery.SourceFileLoader):
         """Return the code object compiled from the preparsed source."""
         path = self.get_filename(fullname)
         source = self.get_data(path).decode("utf-8")
-        return compile(preparse(source, path), path, "exec", dont_inherit=True)
+        return compile_er2(
+            preparse(source, path), path, "exec", dont_inherit=True
+        )
 
 
 def _loader_details():

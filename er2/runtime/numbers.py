@@ -21,10 +21,10 @@ def normalize(value):
     (``bool``, ``float``, SymPy objects, ...) is returned unchanged.
     """
     if type(value) is int:
-        return Integer(value)
+        return value
     if isinstance(value, Fraction):
         if value.denominator == 1:
-            return Integer(value.numerator)
+            return value.numerator
         if type(value) is not Rational:
             # already in lowest terms with a positive denominator: skip
             # the gcd and checks of the constructor (the hot path of
@@ -182,7 +182,7 @@ def _parts(x):
 def _number(n, d):
     """Return ``n/d`` (lowest terms, ``d > 0``) as an ER2 number."""
     if d == 1:
-        return Integer(n)
+        return n
     return Rational._from_coprime_ints(n, d)
 
 
@@ -291,6 +291,30 @@ class Rational(Fraction):
     __rdivmod__ = _exact_pair(Fraction.__rdivmod__)
 
 
+def exact_div(a, b):
+    """Return ``a / b``, exact when both are integers or rationals.
+
+    The ER2 compiler turns every ``/`` into this call (perf/plain-int),
+    so integers can stay plain ``int``: ``1/3`` is still ``Rational``.
+    """
+    if isinstance(a, int) and isinstance(b, int):
+        if b == 0:
+            raise ZeroDivisionError("division by zero")
+        if a % b == 0:
+            return a // b
+        return Rational(a, b)
+    if isinstance(a, (int, Fraction)) and isinstance(b, (int, Fraction)):
+        return normalize(Fraction(a) / Fraction(b))
+    return a / b
+
+
+def exact_pow(a, b):
+    """Return ``a ** b``; a negative integer exponent gives a Rational."""
+    if isinstance(b, int) and b < 0 and isinstance(a, (int, Fraction)):
+        return normalize(Fraction(a) ** b)
+    return a**b
+
+
 class _LiteralCache(dict):
     """Integer literals, created once: ``cache[5]`` is ``Integer(5)``.
 
@@ -303,7 +327,7 @@ class _LiteralCache(dict):
 
     def __missing__(self, value):
         """Create and remember the ``Integer`` for a new literal."""
-        integer = self[value] = Integer(value)
+        integer = self[value] = int(value)
         return integer
 
 

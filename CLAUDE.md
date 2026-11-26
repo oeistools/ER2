@@ -75,7 +75,7 @@ In practice:
 
 ## Implementation rules
 
-- **Preparser**: use the `tokenize` module, never regex over the text. Do not touch strings, comments, or f-strings. Preserve line numbers.
+- **Preparser**: use the `tokenize` module, never regex over the text. Do not touch strings, comments, or f-strings. Preserve line numbers. **One exception, D22**: `/` and `**` are made exact by a pass over the syntax tree at compile time (`er2.preparser.exact_tree`, `compile_er2`), because only the tree knows their operands; it adds no syntax. Every place that compiles ER2 must use it (files, imports, REPL, IPython, kernel inline expressions).
 - **Centralized dispatch**: public functions (`factor`, `isprime`, …) choose their backend in `er2/dispatch.py`. Backends never import each other.
 - **Never `import sympy` at module level** in `er2/`: use `er2._lazy` (`sympy()`, `sympy_loaded()`), so number-only programs never load SymPy (`tests/test_lazy_sympy.py` guards this).
 - **Conversions only at the backend boundary** (`to_pari`/`from_pari`, `to_sympy`/`from_sympy`). Users must not receive raw `cypari2.gen` objects.

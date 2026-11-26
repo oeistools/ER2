@@ -12,7 +12,7 @@ that are not prime; they are listed in ``unfactored``.
 from collections.abc import Sequence
 
 from er2.printing import latex
-from er2.runtime.numbers import Integer, normalize
+from er2.runtime.numbers import exact_pow, normalize
 
 
 class Factorization(Sequence):
@@ -22,9 +22,9 @@ class Factorization(Sequence):
 
     def __init__(self, factors, unit=1, unfactored=()):
         """Create a factorization from ``(prime, exponent)`` pairs."""
-        self._factors = tuple((Integer(p), Integer(e)) for p, e in factors)
-        self._unit = Integer(unit)
-        self._unfactored = tuple(Integer(n) for n in unfactored)
+        self._factors = tuple((int(p), int(e)) for p, e in factors)
+        self._unit = int(unit)
+        self._unfactored = tuple(int(n) for n in unfactored)
 
     @property
     def unit(self):
@@ -45,7 +45,8 @@ class Factorization(Sequence):
         """Return the number this factorization represents."""
         result = self._unit
         for p, e in self._factors:
-            result = result * p**e
+            # exact: a rational has negative exponents
+            result = result * exact_pow(p, e)
         return normalize(result)
 
     def __getitem__(self, index):

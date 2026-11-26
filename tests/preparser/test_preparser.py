@@ -6,8 +6,6 @@ import pytest
 
 from er2.preparser import ER2Warning, IncompleteSourceError, preparse
 
-I = "__er2_int__"  # noqa: E741 - short alias keeps the expected code readable
-
 
 @pytest.mark.parametrize(
     ("er2", "python"),
@@ -19,10 +17,10 @@ I = "__er2_int__"  # noqa: E741 - short alias keeps the expected code readable
         ("a ^^= b\n", "a ^= b\n"),
         ("-x^y^z\n", "-x**y**z\n"),
         # Integer literals.
-        ("n = 5\n", f"n = {I}(5)\n"),
+        ("n = 5\n", "n = 5\n"),
         (
             "n = 0x1F + 0b101 + 0o7 + 1_000\n",
-            f"n = {I}(0x1F) + {I}(0b101) + {I}(0o7) + {I}(1_000)\n",
+            "n = 0x1F + 0b101 + 0o7 + 1_000\n",
         ),
         ("r = 1.5 + 1e3 + 2j\n", "r = 1.5 + 1e3 + 2j\n"),
         # Literal patterns compare with ==, so they stay plain; guards and
@@ -33,20 +31,20 @@ I = "__er2_int__"  # noqa: E741 - short alias keeps the expected code readable
         ),
         (
             "match v:\n    case P(x=1) if n > 2: y = 3^2\n",
-            f"match v:\n    case P(x=1) if n > {I}(2): y = {I}(3)**{I}(2)\n",
+            "match v:\n    case P(x=1) if n > 2: y = 3**2\n",
         ),
         (
             'match v:\n    case {"é": 1}: pass\n',
             'match v:\n    case {"é": 1}: pass\n',
         ),
-        ("case = 5\n", f"case = {I}(5)\n"),
+        ("case = 5\n", "case = 5\n"),
         # Raw literals (Sage's ``5r``) are plain Python ints.
         ("n = 5r\n", "n = 5\n"),
         ("n = 0x1Fr + 1_000r\n", "n = 0x1F + 1_000\n"),
-        ("x = y^2; n = 5r + 2\n", f"x = y**{I}(2); n = 5 + {I}(2)\n"),
+        ("x = y^2; n = 5r + 2\n", "x = y**2; n = 5 + 2\n"),
         ("sym t; k = 7r\n", 't, = __er2_sym__("t"); k = 7\n'),
         # Self-documenting f-strings echo the ER2 text, not the Python.
-        ('f"{2^3=}"\n', f'f"2^3={{{I}(2)**{I}(3)!r}}"\n'),
+        ('f"{2^3=}"\n', 'f"2^3={2**3!r}"\n'),
         ('f"{n=:>4}"\n', 'f"n={n:>4}"\n'),
         # sym statements.
         ("sym x\n", 'x, = __er2_sym__("x")\n'),
@@ -87,13 +85,13 @@ def test_untouched(source):
 
 def test_fstring_literal_text_is_untouched():
     code = 'f"{a^2} ^ {b!r:>5}"\n'
-    assert preparse(code) == f'f"{{a**{I}(2)}} ^ {{b!r:>5}}"\n'
+    assert preparse(code) == 'f"{a**2} ^ {b!r:>5}"\n'
 
 
 def test_line_numbers_are_preserved():
     source = "a = 1\n\\\n    + 2\nsym x\n\n'''\nx ^ 2\n'''\nb = a ^ 2\n"
     assert preparse(source).count("\n") == source.count("\n")
-    assert preparse(source).splitlines()[-1] == f"b = a ** {I}(2)"
+    assert preparse(source).splitlines()[-1] == "b = a ** 2"
 
 
 def test_plain_python_without_literals_is_unchanged():

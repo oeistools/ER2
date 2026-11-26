@@ -19,7 +19,13 @@ from er2.runtime.factorization import Factorization
 from er2.runtime.finite_field import GF
 from er2.runtime.modular import Mod
 from er2.runtime.number_field import NumberField
-from er2.runtime.numbers import Integer, Rational, literal
+from er2.runtime.numbers import (
+    Integer,
+    Rational,
+    exact_div,
+    exact_pow,
+    literal,
+)
 from er2.runtime.qfb import Qfb
 
 # Public functions (CAS and number theory); they choose their backend in
@@ -82,6 +88,8 @@ def namespace(code=None):
     """
     ns = {
         preparser.INTEGER: literal,
+        preparser.DIV: exact_div,
+        preparser.POW: exact_pow,
         preparser.SYMBOLS: symbols,
         "Integer": Integer,
         "Rational": Rational,

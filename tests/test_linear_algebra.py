@@ -17,7 +17,7 @@ from sympy.matrices.normalforms import hermite_normal_form, smith_normal_form
 from er2 import dispatch
 from er2.backends import pari_backend, sympy_backend
 from er2.runtime.modular import Mod
-from er2.runtime.numbers import Integer, Rational
+from er2.runtime.numbers import Rational
 
 Matrix = sympy.Matrix
 x, t, a = sympy.symbols("x t a")
@@ -47,7 +47,7 @@ def test_backend_choice():
 
 def test_determinant_and_inverse():
     # GP: matdet(A), A^-1, matdet(R), R^-1
-    assert dispatch.det(A) == -144 and type(dispatch.det(A)) is Integer
+    assert dispatch.det(A) == -144 and type(dispatch.det(A)) is int
     assert dispatch.det(R) == Rational(1, 60)
     assert type(dispatch.det(R)) is Rational
     assert dispatch.inverse(A) == Matrix(
@@ -64,7 +64,7 @@ def test_determinant_and_inverse():
 
 def test_rank_kernel_and_echelon_form():
     # GP: matrank(C) = 2, matker(C) = [1; -2; 1]
-    assert dispatch.rank(C) == 2 and type(dispatch.rank(C)) is Integer
+    assert dispatch.rank(C) == 2 and type(dispatch.rank(C)) is int
     assert dispatch.rank(A) == 3
     assert dispatch.kernel(C) == [Matrix([1, -2, 1])]
     assert dispatch.kernel(A) == []
@@ -78,7 +78,7 @@ def test_rank_kernel_and_echelon_form():
         Matrix([0, 1, 0, -1]),
         Matrix([0, 0, 1, -1]),
     ]
-    assert type(dispatch.rank(S)) is Integer
+    assert type(dispatch.rank(S)) is int
 
 
 def test_characteristic_and_minimal_polynomials():

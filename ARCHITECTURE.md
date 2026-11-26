@@ -1008,6 +1008,22 @@ The following decisions were taken for M5 (PLAN.md) with the user on 2026-09-19.
   exactly, and are tested on random input. `tests/test_series.py` pins the premise: if a future
   SymPy learns to expand such a quotient, the test fails and this decision is revisited rather
   than silently kept.
+- **D22 — Integers are plain `int`; `/` and `**` are exact operators. ✅ Resolved (2026-11-26,
+  the user, with the goal "ER2 faster than Python and not much slower than PARI/GP").**
+  Supersedes the literal half of D6. Before, every literal became an `Integer` (an `int`
+  subclass whose operators are written in Python), and integer arithmetic paid for it: `a + b`
+  took about 270 ns against 26 ns for `int`, a numeric loop ×13.8 Python's time. Now literals
+  stay `int` and exactness moves to the two operators that leave the integers: a pass over the
+  syntax tree, after the token preparser and before compiling, turns `/` and `**` (and `/=`,
+  `**=` on names) into `__er2_div__` and `__er2_pow__` (LANGUAGE.md §3.7). The numeric loop runs
+  at Python's speed (×1.0). Why a tree pass, given "token transformations only": the operands of
+  `a / b * c` are only known after parsing; the pass adds no syntax and changes nothing else,
+  so the rule's purpose (no new grammar) holds. It runs wherever ER2 compiles: files, imports,
+  the REPL (`_ExactCommandCompiler`), IPython's `ast_transformers` and the kernel's inline
+  expressions. Consequences, accepted by the user (ER2 is experimental; the stability policy
+  applies from 1.0): `type(5)` is `int`; `/` is exact also on values that came from Python
+  (`len(x)/2` is `3/2`); `5r` is accepted but changes nothing; an ER2 integer passed into a
+  `.py` module meets Python's `/` there. `Integer` stays for code that builds one.
 
 ## 6.1 Code style: PEP 8
 

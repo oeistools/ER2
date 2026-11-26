@@ -19,7 +19,6 @@ from fractions import Fraction
 
 from er2 import _lazy
 from er2.printing import latex
-from er2.runtime.numbers import Integer
 
 
 def _backend():
@@ -72,8 +71,8 @@ class Mod:
             raise TypeError(
                 f"cannot reduce {type(value).__name__} modulo an integer"
             )
-        self._modulus = Integer(modulus)
-        self._value = Integer(value % modulus)
+        self._modulus = int(modulus)
+        self._value = int(value % modulus)
 
     def _init_polynomial(self, value, modulus):
         """Reduce ``value`` modulo the polynomial ``modulus`` with PARI."""

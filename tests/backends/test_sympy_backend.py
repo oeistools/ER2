@@ -26,21 +26,21 @@ def test_to_sympy_converts_numbers_and_containers():
 
 
 def test_from_sympy_converts_numbers_and_containers():
-    assert type(from_sympy(sympy.Integer(-4))) is Integer
-    assert type(from_sympy(sympy.S.One)) is Integer
+    assert type(from_sympy(sympy.Integer(-4))) is int
+    assert type(from_sympy(sympy.S.One)) is int
     assert from_sympy(sympy.Rational(2, 6)) == Rational(1, 3)
     assert type(from_sympy(sympy.Rational(1, 3))) is Rational
     assert [type(v) for v in from_sympy([sympy.Integer(1), x])] == [
-        Integer,
+        int,
         sympy.Symbol,
     ]
-    assert type(from_sympy({x: sympy.Integer(2)})[x]) is Integer
+    assert type(from_sympy({x: sympy.Integer(2)})[x]) is int
     assert from_sympy(sympy.pi) is sympy.pi
     assert from_sympy(sympy.oo) is sympy.oo
 
 
 def test_round_trip():
-    for value in (Integer(0), Integer(-7), Integer(2**200), Rational(-5, 3)):
+    for value in (0, -7, 2**200, Rational(-5, 3)):
         back = from_sympy(to_sympy(value))
         assert back == value and type(back) is type(value)
 
@@ -92,10 +92,10 @@ def test_cas_values(call, expected):
 def test_exact_results_are_er2_numbers():
     area = dispatch.integrate(f, (x, Integer(0), Integer(1)))
     assert area == Rational(7, 3) and type(area) is Rational
-    assert type(dispatch.diff(f, x, 2)) is Integer
+    assert type(dispatch.diff(f, x, 2)) is int
     roots = dispatch.solve(3 * x - 1, x)
     assert roots == [Rational(1, 3)] and type(roots[0]) is Rational
-    assert type(dispatch.expand(Integer(5))) is Integer
+    assert type(dispatch.expand(Integer(5))) is int
     solution = dispatch.solve([x + y - 3, x - y - 1], [x, y], dict=True)
     assert solution == [{x: 2, y: 1}]
-    assert type(solution[0][x]) is Integer
+    assert type(solution[0][x]) is int

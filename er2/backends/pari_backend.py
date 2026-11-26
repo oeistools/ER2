@@ -22,7 +22,7 @@ from er2 import _lazy
 from er2.runtime.factorization import Factorization
 from er2.runtime.finite_field import FiniteField, FiniteFieldElement
 from er2.runtime.modular import Mod
-from er2.runtime.numbers import Integer, Rational
+from er2.runtime.numbers import Rational
 from er2.runtime.qfb import Qfb
 
 __all__ = [
@@ -429,7 +429,7 @@ def _matrix(obj):
 
 
 _FROM_PARI = {
-    "t_INT": lambda obj: Integer(int(obj)),
+    "t_INT": lambda obj: int(int(obj)),
     "t_FRAC": lambda obj: Rational(
         int(PARI.numerator(obj)), int(PARI.denominator(obj))
     ),
@@ -454,7 +454,7 @@ _FROM_PARI = {
     "t_INFINITY": lambda obj: sympy.oo if obj > 0 else -sympy.oo,
     "t_VEC": lambda obj: [from_pari(item) for item in obj],
     "t_COL": lambda obj: [from_pari(item) for item in obj],
-    "t_VECSMALL": lambda obj: [Integer(int(item)) for item in obj],
+    "t_VECSMALL": lambda obj: [int(int(item)) for item in obj],
     "t_MAT": _matrix,
     "t_STR": str,
 }
@@ -767,7 +767,7 @@ def prime_power(q):
     k = int(PARI.isprimepower(q))
     if k == 0:
         raise ValueError(f"{q} is not a prime power")
-    return Integer(PARI.sqrtnint(q, k)), Integer(k)
+    return int(PARI.sqrtnint(q, k)), int(k)
 
 
 def ff_modulus(p, k, name):
@@ -778,7 +778,7 @@ def ff_modulus(p, k, name):
     SageMath's.
     """
     modulus = PARI.lift(PARI.ffinit(int(p), int(k), variable(name)))
-    return [Integer(c) for c in PARI.Vecrev(modulus)]
+    return [int(c) for c in PARI.Vecrev(modulus)]
 
 
 def _ff_generator(field):
@@ -802,16 +802,14 @@ def ff_element(element):
 
 def ff_coefficients(obj):
     """Return the coefficients of a PARI ``t_FFELT``, constant first."""
-    return [Integer(c) for c in _GP_FF_COEFFICIENTS(obj)]
+    return [int(c) for c in _GP_FF_COEFFICIENTS(obj)]
 
 
 def _finite_field(obj):
     """Return the ER2 field of a PARI ``t_FFELT``."""
     p, modulus, name = _GP_FF_FIELD(obj)
-    coefficients = [Integer(c) for c in modulus]
-    return FiniteField(
-        Integer(p), len(coefficients) - 1, str(name), coefficients
-    )
+    coefficients = [int(c) for c in modulus]
+    return FiniteField(int(p), len(coefficients) - 1, str(name), coefficients)
 
 
 def ff_polynomial(name, element, var):
@@ -842,7 +840,7 @@ def ff_charpoly(element, var):
 def ff_lift(name, element):
     """Return ``trace`` or ``norm`` of a field element, as an integer."""
     function = getattr(PARI, name)
-    return Integer(PARI.lift(function(ff_element(element))))
+    return int(PARI.lift(function(ff_element(element))))
 
 
 # Linear algebra over Q (M5, D12).  Matrices are SymPy matrices with
@@ -869,7 +867,7 @@ def inverse(matrix):
 
 def rank(matrix):
     """Return the rank of a rational matrix."""
-    return Integer(PARI.matrank(to_pari(matrix)))
+    return int(PARI.matrank(to_pari(matrix)))
 
 
 def kernel(matrix):

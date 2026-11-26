@@ -16,7 +16,6 @@ import requests
 
 from er2 import oeis, prelude
 from er2.printing import latex
-from er2.runtime.numbers import Integer
 
 DATA = Path(__file__).resolve().parent / "data"
 SEARCHES = {
@@ -77,9 +76,9 @@ def test_sequence_lookup(offline):
     s = oeis.sequence("A000045")
     assert s.id == "A000045" and s.url == "https://oeis.org/A000045"
     assert s.name.startswith("Fibonacci numbers")
-    assert s.offset == 0 and type(s.offset) is Integer
+    assert s.offset == 0 and type(s.offset) is int
     assert s.terms[:10] == [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
-    assert all(type(t) is Integer for t in s.terms)
+    assert all(type(t) is int for t in s.terms)
     assert "nonn" in s.keywords and "core" in s.keywords
     assert oeis.sequence(45) is s  # the same (cached) entry
     assert oeis.sequence("a000045") is s  # identifiers are normalized
@@ -91,7 +90,7 @@ def test_terms_use_the_offset_and_the_bfile(offline):
     assert s[2:7] == [1, 2, 3, 5, 8]
     assert not any(path.endswith(".txt") for path, _, _ in offline)
     assert s[100] == 354224848179261915075  # beyond the shown terms
-    assert type(s[100]) is Integer
+    assert type(s[100]) is int
     assert len(s.bfile()) == 120
     with pytest.raises(IndexError, match="no known term a\\(5000\\)"):
         _ = s[5000]

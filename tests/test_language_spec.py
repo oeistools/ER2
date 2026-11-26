@@ -14,8 +14,8 @@ from pathlib import Path
 import pytest
 
 from er2 import prelude
-from er2.preparser import preparse
-from er2.runtime.numbers import Integer, Rational
+from er2.preparser import compile_er2, preparse
+from er2.runtime.numbers import Rational
 
 ROOT = Path(__file__).resolve().parent.parent
 SPEC = ROOT / "docs" / "LANGUAGE.md"
@@ -25,7 +25,8 @@ def run(source):
     """Run ER2 ``source``; return its namespace."""
     namespace = prelude.namespace()
     exec(
-        compile(preparse(textwrap.dedent(source)), "<spec>", "exec"), namespace
+        compile_er2(preparse(textwrap.dedent(source)), "<spec>", "exec"),
+        namespace,
     )
     return namespace
 
@@ -81,7 +82,7 @@ def test_er2_numbers_are_closed_under_arithmetic():
         h = 1/2 + 1/3
     """)
     for name in "abcdefg":
-        assert type(namespace[name]) is Integer, name
+        assert type(namespace[name]) is int, name
     assert type(namespace["h"]) is Rational
 
 
@@ -117,7 +118,7 @@ def test_integers_and_rationals_interchange_with_python():
     """)
     assert namespace["a"] == "two"
     assert namespace["b"] is True
-    assert namespace["c"] == 1 and type(namespace["c"]) is Integer
+    assert namespace["c"] == 1 and type(namespace["c"]) is int
     assert namespace["d"] == 3
 
 
@@ -180,7 +181,7 @@ def test_reserved_helpers_are_bound():
     """§3.3 R4, §3.5 R5: the generated code's helpers exist."""
     namespace = prelude.namespace()
     assert namespace["__er2_int__"](5) == 5
-    assert type(namespace["__er2_int__"](5)) is Integer
+    assert type(namespace["__er2_int__"](5)) is int
     assert len(namespace["__er2_sym__"]("a, b")) == 2
 
 
@@ -295,6 +296,9 @@ COVERAGE = {
     "§3.5 R5": HERE,
     "§3.6 R1": PREPARSER,
     "§3.6 R2": COMPAT,
+    "§3.7 R1": HERE,
+    "§3.7 R2": NUMBERS,
+    "§3.7 R3": NUMBERS,
     "§4 R1": HERE,
     "§4 R2": HERE,
     "§4 R3": HERE,
@@ -393,3 +397,24 @@ def test_only_the_stability_policy_is_untestable():
     """Everything but §12 must point at a real test file."""
     policy = {r for r, path in COVERAGE.items() if path == "policy"}
     assert policy == {f"§12 R{n}" for n in range(1, 6)}
+
+
+def test_division_and_power_are_exact_everywhere():
+    """§3.7 R1: ``/``, ``**`` and their augmented forms compile exact."""
+    namespace = run("""
+        a = 1/3
+        b = 6/3
+        c = 2**-2
+        d = len([1, 2, 3])/2
+        e = 7
+        e /= 2
+        f = 2.0 / 4
+    """)
+    assert (
+        namespace["a"] == Rational(1, 3) and type(namespace["a"]) is Rational
+    )
+    assert namespace["b"] == 2 and type(namespace["b"]) is int
+    assert namespace["c"] == Rational(1, 4)
+    assert namespace["d"] == Rational(3, 2)
+    assert namespace["e"] == Rational(7, 2)
+    assert namespace["f"] == 0.5 and type(namespace["f"]) is float

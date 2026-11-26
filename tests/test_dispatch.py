@@ -56,7 +56,7 @@ def test_gcd_and_lcm_of_expressions_use_sympy():
     gcd, lcm = dispatch.FUNCTIONS["gcd"], dispatch.FUNCTIONS["lcm"]
     assert gcd(x**2 - 1, x**2 - 2 * x + 1) == x - 1
     assert lcm(x, x**2) == x**2
-    assert gcd(Integer(12), 18) == 6 and type(gcd(12, 18)) is Integer
+    assert gcd(Integer(12), 18) == 6 and type(gcd(12, 18)) is int
 
 
 def test_unsupported_arguments_raise_type_error():

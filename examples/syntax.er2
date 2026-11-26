@@ -9,9 +9,9 @@ a = 1/3
 print(a, a + 2/3, type(a).__name__)
 print(2^-3, (2/3)^2)
 
-# 5r is a raw Python int, for Python's own behavior.  Mixed with an ER2
-# number, the result is ER2's (as in Sage).
-print(type(7r).__name__, 7r / 2r, 7r / 2)
+# Integers are Python ints; `/` between them is exact.  For Python's
+# float division, use a float.
+print(type(7).__name__, 7 / 2.0, 7 / 2)
 
 # sym declares symbols; _x, _y, ... are predefined.
 sym t, u

@@ -17,7 +17,6 @@ from fractions import Fraction
 
 from er2.printing import latex
 from er2.runtime.modular import Mod
-from er2.runtime.numbers import Integer
 
 __all__ = ["GF", "FiniteField", "FiniteFieldElement"]
 
@@ -62,8 +61,8 @@ class FiniteField:
         ``modulus`` lists the coefficients of a monic irreducible
         polynomial of degree ``k`` over ``F_p``, constant term first.
         """
-        self._p, self._degree, self._name = Integer(p), Integer(k), name
-        self._modulus = tuple(Integer(c) for c in modulus)
+        self._p, self._degree, self._name = int(p), int(k), name
+        self._modulus = tuple(int(c) for c in modulus)
         self._primitive = None
 
     @property
@@ -220,7 +219,7 @@ class FiniteFieldElement:
             raise ValueError(f"an element of {field!r} has {k} coefficients")
         values += [0] * (k - len(values))
         self._field = field
-        self._coefficients = tuple(Integer(c) for c in values)
+        self._coefficients = tuple(int(c) for c in values)
 
     @property
     def parent(self):
@@ -361,7 +360,7 @@ class FiniteFieldElement:
         """Return the multiplicative order (PARI ``fforder``)."""
         if not self:
             raise ValueError("0 has no multiplicative order")
-        return Integer(self._pari_call(_backend().PARI.fforder))
+        return int(self._pari_call(_backend().PARI.fforder))
 
     def minpoly(self, x=None):
         """Return the minimal polynomial over ``F_p``, in ``x``."""
@@ -399,7 +398,7 @@ class FiniteFieldElement:
         base = self._field.primitive_element() if base is None else base
         base = self._field(base)
         backend = _backend()
-        return Integer(self._pari_call(backend.PARI.fflog, base._pari()))
+        return int(self._pari_call(backend.PARI.fflog, base._pari()))
 
     # Printing.
 

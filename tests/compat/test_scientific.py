@@ -233,7 +233,7 @@ def test_scipy_answers_in_floating_point(scipy_special):
     scipy_value = scipy_special.comb(Integer(10), Integer(3))
     assert isinstance(scipy_value, float)
     exact = FUNCTIONS["binomial"](Integer(10), Integer(3))
-    assert isinstance(exact, Integer)
+    assert isinstance(exact, int)
     assert exact == 120 == int(scipy_value)
 
 

@@ -136,7 +136,7 @@ def test_exit_codes_match_python(tmp_path):
 
 def test_show_python(tmp_path):
     program = write(tmp_path / "p.er2", "y = x^2\n")
-    assert er2("--show-python", program).stdout == "y = x**__er2_int__(2)\n"
+    assert er2("--show-python", program).stdout == "y = x**2\n"
 
 
 def test_repl():

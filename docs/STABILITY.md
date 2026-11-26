@@ -26,11 +26,12 @@ Before 1.0 a minor release may still change the public API, and each such change
 
 **S1. The language.** Every rule of [LANGUAGE.md](LANGUAGE.md) except §12, which is this policy
 restated. In particular the §3 table of differences from Python is exhaustive and frozen: `^`,
-`^^`, their assignment forms, exact integer literals, `5r`, `sym`, and the ER2 text echoed by
-`f"{a^2=}"`.
+`^^`, their assignment forms, exact `/` and `**` on integers (D22), `5r`, `sym`, and the ER2 text
+echoed by `f"{a^2=}"`.
 
-**S2. The number model.** `Integer` subclasses `int`; `Rational` subclasses `fractions.Fraction`;
-exact `/`; the closure and boundary rules of LANGUAGE.md §5.
+**S2. The number model.** Integers are Python's `int` (D22) and `Integer`, still available,
+subclasses it; `Rational` subclasses `fractions.Fraction`; exact `/` and `**` (LANGUAGE.md
+§3.7); the closure and boundary rules of LANGUAGE.md §5.
 
 **S3. The prelude names**, listed in `tests/test_stability.py` and pinned there. They fall into
 four groups:

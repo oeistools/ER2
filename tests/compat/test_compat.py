@@ -13,7 +13,7 @@ import textwrap
 import pytest
 
 from er2 import prelude
-from er2.preparser import preparse
+from er2.preparser import compile_er2, preparse
 
 SNIPPETS = {
     "classes and dataclasses": """
@@ -143,8 +143,9 @@ def run(source, er2):
         source = preparse(source)
         prelude.inject(namespace)
     out = io.StringIO()
+    compiler = compile_er2 if er2 else compile
     with contextlib.redirect_stdout(out):
-        exec(compile(source, "<snippet>", "exec"), namespace)
+        exec(compiler(source, "<snippet>", "exec"), namespace)
     return out.getvalue()
 
 
@@ -197,14 +198,14 @@ class TestMixingPythonAndEr2:
         )
         assert out == "0 27\n"
 
-    def test_er2_numbers_keep_their_type_inside_a_py_module(
+    def test_er2_integers_are_python_ints_inside_a_py_module(
         self, plain_module
     ):
-        """The subtlety: ``n / 2`` there is exact, because ``n`` is ours.
+        """An ER2 integer is a plain ``int``, also in a ``.py`` module (D22).
 
-        The module is not preparsed, so ``/`` is Python's true division
-        — but ``Integer.__truediv__`` returns a ``Rational``, so the
-        answer is ``1/2`` and not ``0.5``.
+        The module is not preparsed, so its ``/`` is Python's true
+        division: ``halve(1)`` is ``0.5`` there, whatever the caller.
+        Exactness is a property of ``.er2`` source, not of the values.
         """
         out = run(
             """
@@ -213,9 +214,14 @@ class TestMixingPythonAndEr2:
             """,
             er2=True,
         )
-        assert out == "1/2 0.5\n"
+        assert out == "0.5 0.5\n"
 
     def test_raw_literals_opt_a_single_expression_out(self):
-        """``5r`` and ``^^`` are the per-expression escapes (§1.1)."""
-        out = run("print(3r^^3r, 1r/3r, type(2r).__name__)\n", er2=True)
-        assert out == "0 0.3333333333333333 int\n"
+        """``^^`` is XOR; ``5r`` is accepted but changes nothing (D22).
+
+        Since D22 ``/`` is exact between integers wherever it is written,
+        so ``1r/3r`` is ``1/3``; for Python's float division, write a
+        float (``1/3.0``) or call ``float``.
+        """
+        out = run("print(3r^^3r, 1r/3r, 1/3.0, type(2r).__name__)\n", er2=True)
+        assert out == "0 1/3 0.3333333333333333 int\n"

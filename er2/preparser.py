@@ -29,6 +29,8 @@ import warnings
 
 INTEGER = "__er2_int__"
 SYMBOLS = "__er2_sym__"
+DIV = "__er2_div__"
+POW = "__er2_pow__"
 
 # Tokens after which a new statement starts.
 _STATEMENT_START = {
@@ -268,8 +270,9 @@ def _integer_literals(tokens, edits, skip=(), raw=()):
             continue
         if any(start <= tok.start and tok.end <= end for start, end in skip):
             continue
-        if _is_integer(tok.string):
-            edits.append((tok.start, tok.end, f"{INTEGER}({tok.string})"))
+        # perf/plain-int: integer literals stay plain ``int``; exactness
+        # comes from ``exact_tree`` (``/`` and ``**`` become exact calls).
+        continue
 
 
 def _sym_statements(tokens, edits, filename):
@@ -340,3 +343,46 @@ def _apply(lines, edits):
         assert row == erow, "ER2 edits never span lines"
         lines[row - 1] = lines[row - 1][:scol] + text + lines[row - 1][ecol:]
     return "".join(lines)
+
+
+class _ExactOps(ast.NodeTransformer):
+    """Turn ``a / b`` and ``a ** b`` into the exact ER2 calls."""
+
+    _CALLS = {ast.Div: DIV, ast.Pow: POW}
+
+    def _call(self, op, left, right, node):
+        call = ast.Call(
+            func=ast.Name(id=self._CALLS[type(op)], ctx=ast.Load()),
+            args=[left, right],
+            keywords=[],
+        )
+        return ast.copy_location(call, node)
+
+    def visit_BinOp(self, node):
+        """Replace ``a / b`` by ``__er2_div__(a, b)``, ``**`` likewise."""
+        self.generic_visit(node)
+        if type(node.op) in self._CALLS:
+            return self._call(node.op, node.left, node.right, node)
+        return node
+
+    def visit_AugAssign(self, node):
+        """Replace ``x /= y`` by ``x = __er2_div__(x, y)`` for names."""
+        self.generic_visit(node)
+        if type(node.op) in self._CALLS and isinstance(node.target, ast.Name):
+            load = ast.Name(id=node.target.id, ctx=ast.Load())
+            value = self._call(node.op, load, node.value, node)
+            return ast.copy_location(
+                ast.Assign(targets=[node.target], value=value), node
+            )
+        return node
+
+
+def exact_tree(tree):
+    """Return ``tree`` with ``/`` and ``**`` made exact (perf/plain-int)."""
+    return ast.fix_missing_locations(_ExactOps().visit(tree))
+
+
+def compile_er2(python, filename, mode="exec", **kwargs):
+    """Compile preparsed ``python`` with exact ``/`` and ``**``."""
+    tree = exact_tree(ast.parse(python, filename, mode))
+    return compile(tree, filename, mode, **kwargs)

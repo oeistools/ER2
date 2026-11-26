@@ -10,7 +10,7 @@ import functools
 
 import sympy
 
-from er2.runtime.numbers import Integer, Rational
+from er2.runtime.numbers import Rational
 
 __all__ = [
     "cancel",
@@ -67,7 +67,7 @@ def from_sympy(obj):
     ``Rational``; other SymPy objects are returned unchanged.
     """
     if isinstance(obj, sympy.Integer):
-        return Integer(int(obj))
+        return int(int(obj))
     if isinstance(obj, sympy.Rational):
         return Rational(int(obj.p), int(obj.q))
     if isinstance(obj, (list, tuple, set, frozenset)):
@@ -122,7 +122,7 @@ def inverse(matrix):
 
 def rank(matrix):
     """Return the rank of a matrix."""
-    return Integer(matrix.rank())
+    return int(matrix.rank())
 
 
 def kernel(matrix):

@@ -7,7 +7,6 @@ usual notation for a form.
 """
 
 from er2.printing import latex
-from er2.runtime.numbers import Integer
 
 
 def _backend():
@@ -27,7 +26,7 @@ class Qfb:
         for value in (a, b, c):
             if isinstance(value, bool) or not isinstance(value, int):
                 raise TypeError("Qfb coefficients must be integers")
-        self._a, self._b, self._c = Integer(a), Integer(b), Integer(c)
+        self._a, self._b, self._c = int(a), int(b), int(c)
 
     @property
     def a(self):

@@ -6,6 +6,7 @@ on a plain ``import er2``.
 """
 
 import code
+import codeop
 import fractions
 import linecache
 import os
@@ -15,7 +16,12 @@ import traceback
 from pathlib import Path
 
 from er2 import importer, prelude, printing
-from er2.preparser import IncompleteSourceError, preparse
+from er2.preparser import (
+    IncompleteSourceError,
+    _ExactOps,
+    compile_er2,
+    preparse,
+)
 
 _PACKAGE_DIR = Path(__file__).resolve().parent
 _FRACTIONS = Path(fractions.__file__).resolve()
@@ -42,7 +48,7 @@ def run_file(path, argv=()):
     # sys.path, so modules next to it can be imported.
     sys.path[0:1] = [str(Path(path).resolve().parent)]
     try:
-        compiled = compile(preparse(source, str(path)), str(path), "exec")
+        compiled = compile_er2(preparse(source, str(path)), str(path), "exec")
         prelude.inject(namespace, compiled)
         exec(compiled, namespace)
     except SystemExit:
@@ -112,8 +118,23 @@ def _is_internal(filename):
     return path.is_relative_to(_PACKAGE_DIR) or path == _FRACTIONS
 
 
+class _ExactCommandCompiler(codeop.CommandCompiler):
+    """The console's compiler, with exact ``/`` and ``**``."""
+
+    def __call__(self, source, filename="<input>", symbol="single"):
+        """Return None while incomplete, else the exact code object."""
+        if super().__call__(source, filename, symbol) is None:
+            return None
+        return compile_er2(source, filename, symbol)
+
+
 class ER2Console(code.InteractiveConsole):
     """Python's interactive console with the ER2 preparser."""
+
+    def __init__(self, *args, **kwargs):
+        """Use the compiler with exact ``/`` and ``**``."""
+        super().__init__(*args, **kwargs)
+        self.compile = _ExactCommandCompiler()
 
     def runsource(self, source, filename="<input>", symbol="single"):
         """Preparse ``source``; return True while more input is needed."""
@@ -154,6 +175,8 @@ def load_ipython_extension(shell):
     start()
     if transform_cell not in shell.input_transformers_post:
         shell.input_transformers_post.append(transform_cell)
+    if not any(isinstance(t, _ExactOps) for t in shell.ast_transformers):
+        shell.ast_transformers.append(_ExactOps())
     prelude.inject(shell.user_ns)
     # ``%reset`` (Quarto runs it before every render) clears the user
     # namespace; restore the prelude before each cell.

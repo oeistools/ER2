@@ -23,19 +23,19 @@ def test_integer_is_an_int():
     ("value", "expected", "kind"),
     [
         (Integer(5) / 3, Fraction(5, 3), Rational),
-        (Integer(6) / 3, 2, Integer),
+        (Integer(6) / 3, 2, int),
         (1 / Integer(4), Fraction(1, 4), Rational),
         (Integer(2) ** -2, Fraction(1, 4), Rational),
         (2 ** Integer(-1), Fraction(1, 2), Rational),
-        (Integer(2) ** 10, 1024, Integer),
+        (Integer(2) ** 10, 1024, int),
         (Integer(7) // 2, 3, Integer),
         (Integer(7) % 2, 1, Integer),
         (-Integer(3), -3, Integer),
         (Integer(5) ^ 3, 6, Integer),
         (Integer(3) + 4, 7, Integer),
         (4 * Integer(3), 12, Integer),
-        (Rational(1, 3) * 3, 1, Integer),
-        (Rational(1, 3) + Rational(2, 3), 1, Integer),
+        (Rational(1, 3) * 3, 1, int),
+        (Rational(1, 3) + Rational(2, 3), 1, int),
         (Rational(1, 3) ** 2, Fraction(1, 9), Rational),
     ],
 )
@@ -51,7 +51,7 @@ def test_floats_stay_floats():
 
 def test_divmod_and_pow_mod():
     assert divmod(Integer(7), 2) == (3, 1)
-    assert all(type(v) is Integer for v in divmod(Integer(7), 2))
+    assert all(type(v) is int for v in divmod(Integer(7), 2))
     assert pow(Integer(3), 4, 5) == 1
 
 
@@ -62,8 +62,8 @@ def test_divmod_with_other_number_types():
     assert divmod(Integer(2), 7.5) == (0.0, 2.0)
     q, r = divmod(Rational(7, 2), Rational(1, 3))
     assert (q, r) == (10, Rational(1, 6))
-    assert type(q) is Integer and type(r) is Rational
-    assert all(type(v) is Integer for v in divmod(7, Rational(2, 1)))
+    assert type(q) is int and type(r) is Rational
+    assert all(type(v) is int for v in divmod(7, Rational(2, 1)))
 
 
 def test_rounding_stays_exact():
@@ -77,7 +77,7 @@ def test_rounding_stays_exact():
         (math.floor(Integer(7)), 7),
         (round(Integer(17), -1), 20),
     ):
-        assert result == expected and type(result) is Integer
+        assert result == expected and isinstance(result, int)
     assert math.floor(half) / 2 == Rational(3, 2)
     assert round(Rational(7, 3), 1) == Rational(23, 10)
     assert type(round(Rational(7, 3), 1)) is Rational
@@ -85,7 +85,7 @@ def test_rounding_stays_exact():
 
 def test_integer_divided_by_other_numbers():
     for result, expected, kind in (
-        (Integer(1) / Rational(1, 2), 2, Integer),
+        (Integer(1) / Rational(1, 2), 2, int),
         (Integer(3) / Rational(2, 5), Rational(15, 2), Rational),
         (Integer(3) / 0.5, 6.0, float),
         (1.5 / Integer(3), 0.5, float),
@@ -124,14 +124,18 @@ def test_sympy_and_pari_interop():
 
 
 def test_literals_are_created_once():
-    """The preparser's literal helper caches immutable Integers (M4)."""
+    """``__er2_int__`` stays bound and gives a plain ``int`` (D22).
+
+    The preparser no longer wraps literals in it; old preparsed code
+    that calls it still runs, and gets the same ``int`` the literal is.
+    """
     from er2 import prelude, preparser
 
     literal = prelude.namespace()[preparser.INTEGER]
     five = literal(5)
-    assert type(five) is Integer and five == 5
+    assert type(five) is int and five == 5
     assert literal(5) is five
-    assert type(literal(10**30)) is Integer
+    assert type(literal(10**30)) is int
 
 
 def test_operators_return_integer():
@@ -168,16 +172,39 @@ def test_operators_return_integer():
 
 
 def test_raw_literals_are_plain_ints():
-    """``5r`` gives a Python ``int`` (§1.1); ``5`` gives an ``Integer``."""
+    """``5r`` and ``5`` are both a Python ``int`` (D22).
+
+    Since D22 every integer literal is a plain ``int`` and ``/`` is exact
+    between integers wherever it is written, so ``5r`` is still accepted
+    but no longer changes anything: ``5r / 2r`` is ``5/2``.
+    """
     from er2 import prelude
-    from er2.preparser import preparse
+    from er2.preparser import compile_er2, preparse
 
     ns = prelude.namespace()
     source = "a = 5r\nb = 5\nc = 5r / 2r\nd = 5r / 2\ne = f'{2^3=}'\n"
-    exec(preparse(source), ns)
-    assert type(ns["a"]) is int and type(ns["b"]) is Integer
-    # Only raw operands give Python's true division; with an ER2 number
-    # the result is ER2's, as in Sage (``5r / 2`` is ``5/2``).
-    assert ns["c"] == 2.5 and type(ns["c"]) is float
+    exec(compile_er2(preparse(source), "<test>"), ns)
+    assert type(ns["a"]) is int and type(ns["b"]) is int
+    assert ns["c"] == Rational(5, 2) and type(ns["c"]) is Rational
     assert ns["d"] == Rational(5, 2) and type(ns["d"]) is Rational
     assert ns["e"] == "2^3=8"
+
+
+def test_exact_div_and_pow():
+    """§3.7 R2, R3: the calls ``/`` and ``**`` compile to."""
+    import sympy
+
+    from er2.runtime.numbers import exact_div, exact_pow
+
+    assert exact_div(1, 3) == Rational(1, 3)
+    assert exact_div(6, 3) == 2 and type(exact_div(6, 3)) is int
+    assert exact_div(Rational(1, 2), 2) == Rational(1, 4)
+    assert exact_div(1, 0.5) == 2.0 and type(exact_div(1, 0.5)) is float
+    x = sympy.Symbol("x")
+    assert exact_div(x, 2) == x / 2
+    with pytest.raises(ZeroDivisionError):
+        exact_div(1, 0)
+    assert exact_pow(2, -2) == Rational(1, 4)
+    assert exact_pow(Rational(2, 3), -1) == Rational(3, 2)
+    assert exact_pow(2, 10) == 1024 and type(exact_pow(2, 10)) is int
+    assert exact_pow(2.0, -1) == 0.5

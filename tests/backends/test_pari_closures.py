@@ -11,7 +11,7 @@ import sympy
 
 from er2.backends import pari_closures
 from er2.backends.pari_backend import pari
-from er2.runtime.numbers import Integer, Rational
+from er2.runtime.numbers import Rational
 
 TABLE = Path(__file__).resolve().parents[2] / "er2/data/pari_functions.csv"
 x = sympy.Symbol("x")
@@ -38,7 +38,8 @@ def test_every_wrapper_row_has_a_signature():
 
 
 def test_exact_sums_and_products():
-    total = pari.sum(lambda n: 1 / n**2, 1, 10)
+    # a .py callback: Python's ``/`` on ints is a float (D22)
+    total = pari.sum(lambda n: Rational(1, n**2), 1, 10)
     assert total == Rational(1968329, 1270080) and type(total) is Rational
     assert pari.prod(lambda n: 1 + Rational(1, n), 1, 9) == 10
     assert pari.sumdiv(12, lambda d: d**2) == 210
@@ -51,19 +52,21 @@ def test_exact_sums_and_products():
 def test_callables_receive_er2_values():
     seen = []
     pari.sum(lambda n: seen.append(type(n)) or 0, 1, 2)
-    assert seen == [Integer, Integer]
+    assert seen == [int, int]  # ER2 integers are plain ints (D22)
 
 
 def test_numerical_functions_use_er2_precision():
     zeta2 = (sympy.pi**2 / 6).evalf(40)
     assert_close(pari.sumpos(lambda n: Rational(1, n**2), 1), zeta2)
-    assert_close(pari.sumnum(lambda n: 1 / n**2, 1), zeta2)
+    # a .py callback: exact on integers, precise on PARI's reals
+    assert_close(pari.sumnum(lambda n: 1 / sympy.S(n) ** 2, 1), zeta2)
     assert_close(pari.intnum(lambda t: t**2, 0, 1), sympy.Rational(1, 3))
     assert_close(pari.intnum(lambda t: pari.exp(-t), 0, [sympy.oo, 1]), 1)
     assert_close(pari.solve(lambda t: t**2 - 2, 1, 2), sympy.sqrt(2).evalf(40))
     assert_close(pari.derivnum(lambda t: t**3, 2), 12)
     assert_close(
-        pari.sumalt(lambda n: (-1) ** n / n, 1), -sympy.log(2).evalf(40)
+        pari.sumalt(lambda n: Rational((-1) ** n, n), 1),
+        -sympy.log(2).evalf(40),
     )
     assert_close(pari.intcirc(lambda z: 1 / z, 0, 1), 1)
     assert_close(

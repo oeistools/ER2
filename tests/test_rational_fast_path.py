@@ -6,7 +6,7 @@ from fractions import Fraction
 
 import pytest
 
-from er2.runtime.numbers import Integer, Rational
+from er2.runtime.numbers import Integer, Rational, exact_div
 
 OPS = [operator.add, operator.sub, operator.mul, operator.truediv]
 
@@ -15,16 +15,16 @@ def er2_value(x):
     """Return the ER2 number for an ``int`` or ``Fraction``."""
     if isinstance(x, Fraction):
         if x.denominator == 1:
-            return Integer(x.numerator)
+            return int(x.numerator)
         return Rational(x.numerator, x.denominator)
-    return Integer(x)
+    return int(x)  # an ER2 integer is a plain int (D22)
 
 
 def same(result, expected):
     """Check the value and the ER2 type (Integer when integral)."""
     assert result == expected
     if expected.denominator == 1:
-        assert type(result) is Integer
+        assert type(result) is int
     else:
         assert type(result) is Rational
         assert result.denominator > 0
@@ -40,7 +40,12 @@ def test_random_operations_match_fraction(op):
         for x, y in ((a, b), (a, k), (k, a)):
             if op is operator.truediv and y == 0:
                 continue
-            same(op(er2_value(x), er2_value(y)), op(Fraction(x), Fraction(y)))
+            # in ER2 source ``/`` is the exact call (D22)
+            er2_op = exact_div if op is operator.truediv else op
+            same(
+                er2_op(er2_value(x), er2_value(y)),
+                op(Fraction(x), Fraction(y)),
+            )
 
 
 def test_plain_int_and_float_operands():

@@ -63,7 +63,7 @@ DISCRIMINANTS = [
 def test_resultant(f, g, expected):
     result = dispatch.resultant(f, g, x)
     assert result == expected
-    assert isinstance(result, Integer)
+    assert isinstance(result, int)
     # Both backends agree, sign included.
     assert sympy_backend.resultant(f, g, x) == expected
 
@@ -72,7 +72,7 @@ def test_resultant(f, g, expected):
 def test_discriminant(f, expected):
     result = dispatch.discriminant(f, x)
     assert result == expected
-    assert isinstance(result, Integer)
+    assert isinstance(result, int)
     assert sympy_backend.discriminant(f, x) == expected
 
 

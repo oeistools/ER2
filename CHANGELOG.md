@@ -29,6 +29,13 @@ What is stable already, and what is not:
 
 ### Changed
 
+- **Integers are plain Python `int` and run at Python's speed (D22).** `/` and `**` are made
+  exact when ER2 code is compiled (`1/3` is still `1/3`, `2^-1` is `1/2`), instead of every
+  literal being an `Integer`: a numeric loop goes from 13.8 times Python's time to the same time.
+  `type(5)` is now `int`; `/` is exact also on integers that came from Python (`len(x)/2` is
+  `3/2`); `5r` is still accepted and changes nothing; a `.py` module that receives an ER2
+  integer uses Python's `/`. `Integer` is still available for code that builds one.
+
 - The web no longer loads Google Fonts (sin-google-fonts.scss: \$web-font-path: false; no font links).
 
 ### Added

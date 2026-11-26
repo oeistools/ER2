@@ -20,7 +20,6 @@ import functools
 import itertools
 
 from er2.printing import _escape, latex
-from er2.runtime.numbers import Integer
 
 __all__ = [
     "Check",
@@ -89,11 +88,9 @@ class OEISSequence:
         self.record = record
         self.id = f"A{int(record['number']):06d}"
         self.name = record.get("name", "")
-        self.terms = [
-            Integer(t) for t in record.get("data", "").split(",") if t
-        ]
+        self.terms = [int(t) for t in record.get("data", "").split(",") if t]
         offset = record.get("offset", "0").split(",")[0]
-        self.offset = Integer(offset)
+        self.offset = int(offset)
         self.keywords = [k for k in record.get("keyword", "").split(",") if k]
 
     @property
@@ -199,7 +196,7 @@ def _bfile(oeis_id):
     values, indices = bfile.get_bfile_data(), bfile.get_bfile_indices()
     if values is None or indices is None:
         raise OEISError(f"cannot read the b-file of {oeis_id}")
-    return {Integer(n): Integer(v) for n, v in zip(indices, values)}
+    return {int(n): int(v) for n, v in zip(indices, values)}
 
 
 def search(query, limit=10):

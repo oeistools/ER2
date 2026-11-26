@@ -8,6 +8,7 @@ Install the kernelspec with ``er2 kernel install``; run the kernel with
 ``python -m er2.kernel -f <connection file>``.
 """
 
+import ast
 import json
 import sys
 import tempfile
@@ -22,7 +23,7 @@ except ImportError as exc:  # pragma: no cover - depends on the extra
 
 from er2 import __version__ as er2_version
 from er2 import session
-from er2.preparser import preparse
+from er2.preparser import exact_tree, preparse
 
 KERNEL_NAME = "er2"
 DISPLAY_NAME = "ER2"
@@ -72,9 +73,15 @@ class ER2Kernel(IPythonKernel):
 
 
 def _preparse_expression(expr):
-    """Preparse one inline expression; leave it as is if it fails."""
+    """Preparse one inline expression; leave it as is if it fails.
+
+    IPython evaluates ``user_expressions`` as text, without its AST
+    transformers, so the exact ``/`` and ``**`` calls (D22) are written
+    into the text here.
+    """
     try:
-        return preparse(expr).strip()
+        tree = ast.parse(preparse(expr).strip(), mode="eval")
+        return ast.unparse(exact_tree(tree))
     except SyntaxError:
         return expr
 

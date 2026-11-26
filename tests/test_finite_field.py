@@ -23,7 +23,7 @@ def test_field_construction():
     field = GF(9)
     assert (field.order, field.characteristic, field.degree) == (9, 3, 2)
     assert all(
-        type(value) is Integer
+        type(value) is int
         for value in (field.order, field.characteristic, field.degree)
     )
     assert field.name == "a"
@@ -137,9 +137,9 @@ def test_element_functions():
     a = field.gen()
     # GP: fforder(a) = 8, lift(trace(a)) = 2, lift(norm(a)) = 2,
     # lift(minpoly(a)) = x^2 + x + 2, lift(charpoly(a + 1)) = x^2 + 2*x + 2
-    assert a.order() == 8 and type(a.order()) is Integer
+    assert a.order() == 8 and type(a.order()) is int
     assert a.trace() == 2 and a.norm() == 2
-    assert type(a.trace()) is Integer
+    assert type(a.trace()) is int
     assert a.minpoly() == x**2 + x + 2
     assert (a + 1).charpoly() == x**2 + 2 * x + 2
     t = sympy.Symbol("t")
@@ -232,7 +232,7 @@ def test_conversions_at_the_boundary():
 def test_no_pari_object_is_kept(monkeypatch):
     """Elements hold coefficients, not PARI objects (M4's stack rule)."""
     a = GF(9).gen()
-    assert all(type(c) is Integer for c in (a**3).coefficients())
+    assert all(type(c) is int for c in (a**3).coefficients())
     assert not any(
         isinstance(getattr(a, slot, None), type(pari_backend.PARI(1)))
         for slot in FiniteFieldElement.__slots__

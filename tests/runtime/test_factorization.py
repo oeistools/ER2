@@ -2,14 +2,14 @@
 
 from er2.printing import latex
 from er2.runtime.factorization import Factorization
-from er2.runtime.numbers import Integer, Rational
+from er2.runtime.numbers import Rational
 
 
 def test_sequence_of_pairs():
     f = Factorization([(2, 3), (3, 2)])
     assert list(f) == [(2, 3), (3, 2)]
     assert len(f) == 2 and f[0] == (2, 3)
-    assert all(type(p) is Integer and type(e) is Integer for p, e in f)
+    assert all(type(p) is int and type(e) is int for p, e in f)
     assert dict(f) == {2: 3, 3: 2}
 
 

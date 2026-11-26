@@ -97,13 +97,15 @@ text and ER2 must echo the *ER2* text.
 1. **Pass 1** rewrites, on the ER2 token stream: power and XOR operators (§3.1, §3.2), `sym`
    statements (§3.5), self-documenting f-strings (§3.6), and removes the `r` suffix of raw
    literals (§3.4), recording their positions.
-2. **Pass 2** re-tokenises the result of pass 1 — which is valid Python — and wraps integer
-   literals (§3.3), skipping the positions recorded in pass 1 and the literals inside `case`
-   patterns.
+2. **Pass 2** re-tokenises the result of pass 1 — which is valid Python. Until D22 it wrapped
+   integer literals (§3.3); since D22 it leaves them as they are.
 
 The order matters and is normative. Pass 2 needs a parseable source, because `case` patterns can
-only be located by parsing (§3.3 R3); and pass 1 produces one, because none of its rewrites
-depends on integer literals being wrapped.
+only be located by parsing (§3.3 R3); and pass 1 produces one.
+
+After the two passes, compiling the Python makes `/` and `**` exact (§3.7). That step works on
+the syntax tree, not on tokens, because only the tree knows the operands of `a / b * c`; it adds
+no syntax and changes nothing else (D22).
 
 ### 2.3 Line numbers and columns
 
@@ -147,8 +149,8 @@ a change to this table is a change to the language.
 | `a ^^ b`      | syntax error           | XOR, Python's `a ^ b`                                  |
 | `a ^= b`      | XOR-assign             | power-assign, `a **= b`                                |
 | `a ^^= b`     | syntax error           | XOR-assign, Python's `a ^= b`                          |
-| integer literal | `int`                | `Integer` (§5.1), so `1/3` is the rational 1/3          |
-| `5r`          | syntax error           | raw literal: the plain Python `int` 5                  |
+| integer literal | `int`                | `int`; `/` and `**` are exact (§3.7), so `1/3` is the rational 1/3 |
+| `5r`          | syntax error           | accepted: the same `int` 5 as `5` (§3.4)               |
 | `sym x, y`    | syntax error           | symbol declaration                                     |
 | `f"{a^2=}"`   | echoes the source text | echoes the **ER2** source text                         |
 
@@ -191,8 +193,9 @@ follows from R1: the translation *is* Python's XOR, with Python's precedence.
 
 ### 3.3 Integer literals
 
-**R1.** Every integer literal token MUST be translated to a call `__er2_int__(literal)`, where
-the literal's text is reproduced unchanged, except as R2 and R3 provide.
+**R1.** Every integer literal token MUST be left unchanged: its value is a plain Python `int`
+(D22). Exactness comes from §3.7, not from the literal. Before D22 a literal became
+`__er2_int__(literal)`, an `Integer` (§5.1); R4 keeps that name bound for old code.
 
 **R2.** A literal that is not an integer MUST be left alone: floats (`1.5`, `1e3`), imaginary
 literals (`2j`), and the numeric parts of anything else. ER2 does not change Python's
@@ -200,8 +203,8 @@ floating-point model (D2b).
 
 **R3.** An integer literal inside a `case` pattern MUST be left alone.
 
-R3 exists because a `match` statement compares a literal pattern with `==`, where an `Integer` is
-not needed, and because `case Integer(5):` would be read as a *class pattern* and change the
+R3 dates from before D22, when literals were wrapped: a `match` statement compares a literal
+pattern with `==`, and `case __er2_int__(5):` would be read as a *class pattern* and change the
 meaning of the program. Guards and bodies are ordinary code and are translated normally.
 
 ```er2
@@ -211,31 +214,27 @@ match value:
 ```
 
 **R4.** The name `__er2_int__` MUST be bound in every ER2 namespace (§6) to a callable that
-returns the `Integer` (§5.1) equal to its argument. The name is reserved: user code MUST NOT be
-able to shadow it by ordinary means, which is why it is spelled as a dunder.
-
-An implementation MAY cache the `Integer` for a literal, since `Integer` is immutable.
+returns the `int` equal to its argument, so code preparsed before D22 still runs. The name is
+reserved: user code MUST NOT be able to shadow it by ordinary means, which is why it is spelled
+as a dunder.
 
 ### 3.4 Raw literals: `5r`
 
 **R1.** An integer literal immediately followed by the name `r` — no space, no other character —
-is a *raw literal*. It MUST be translated by deleting the `r`, and MUST NOT be wrapped by §3.3.
-Its value is therefore a plain Python `int`.
+is a *raw literal*. It MUST be translated by deleting the `r`. Its value is a plain Python `int`,
+the same as the literal without `r`: since D22 the suffix is accepted, for old code, and changes
+nothing.
 
 **R2.** The suffix applies to every integer literal form: `0x1Fr`, `0b101r`, `1_000r`.
 
 **R3.** There is no raw float: `1.5r` is not a raw literal, because §3.4 R1 requires an integer.
 
 ```er2
-type(5)         # Integer
+type(5)         # int
 type(5r)        # int
-5r / 2          # 5/2, a Rational: an operation with an ER2 number gives an ER2 result
-5r / 2r         # 2.5, a float: Python's semantics all the way
+5r / 2r         # 5/2: `/` is exact between integers wherever it is written (§3.7)
+5 / 2.0         # 2.5: for Python's float division, use a float
 ```
-
-The last two lines are the point of the feature and follow Sage's convention: `r` opts one
-*literal* out, not the expression around it. It is an escape hatch for hot numeric loops and for
-code that needs Python's `int` exactly (D2).
 
 ### 3.5 `sym`
 
@@ -309,6 +308,32 @@ like any other expression.
 
 ---
 
+### 3.7 Exact `/` and `**` (D22)
+
+**R1.** In ER2 source, every binary `/` and `**` MUST compile to a call that computes it exactly,
+`__er2_div__(a, b)` and `__er2_pow__(a, b)`, and so MUST `x /= y` and `x **= y` when `x` is a
+name. This holds in `er2 file.er2`, the REPL, Jupyter (both routes, inline expressions included)
+and imported `.er2` modules.
+
+**R2.** `__er2_div__(a, b)` with `a` and `b` integers or rationals MUST return the exact quotient:
+an `int` when it divides, else a `Rational`; `b == 0` raises `ZeroDivisionError`. With any other
+operand (a float, a SymPy expression, …) it MUST return what `a / b` returns in Python.
+
+**R3.** `__er2_pow__(a, b)` with `b` a negative integer and `a` an integer or rational MUST return
+the exact `Rational`; otherwise it MUST return what `a ** b` returns in Python.
+
+```er2
+1/3             # 1/3, a Rational — not 0.333…
+6/3             # 2, an int
+2^-1            # 1/2
+len([1, 2, 3])/2   # 3/2: exact also for values that came from Python
+2 + 0.5         # 2.5, a float: mixing with float is Python's rule
+```
+
+Integers stay plain `int`, so integer arithmetic runs at Python's speed; only the two operators
+that would leave the integers call ER2. A `.py` module is never preparsed, so its `/` is Python's
+even on values that came from ER2 code (§5.3).
+
 ## 4. Precedence and associativity
 
 **R1.** ER2 adds no precedence level. Every operator has the precedence and associativity of the
@@ -355,6 +380,9 @@ R1 is the load-bearing decision of the number model (D6). Because `Integer` *is*
 `isinstance(n, int)` is true, `__index__` works, and every library that type-checks integers
 accepts ER2 numbers without knowing ER2 exists.
 
+`Integer` is no longer what ER2 code produces (D22): integers are plain `int` and exactness
+comes from §3.7. It stays, with these rules, for code that builds one explicitly.
+
 **R2.** Arithmetic on `Integer` MUST agree with `int` in value, and return `Integer`, with these
 exceptions:
 
@@ -363,12 +391,10 @@ exceptions:
 - `a ^ b` with `b` negative returns a `Rational`.
 - `a / 0` raises `ZeroDivisionError`.
 
-```er2
-type(2 + 3)     # Integer
-type(7 // 2)    # Integer
-1/3             # 1/3, a Rational — not 0.333…
-2^-1            # 1/2
-2 + 0.5         # 2.5, a float: mixing with float is Python's rule
+```python
+type(Integer(2) + 3)  # Integer
+Integer(1) / 3  # 1/3, a Rational
+Integer(4) / 2  # 2, an int (an exact result that is an integer, §5.2 R2)
 ```
 
 **R3.** `hash(Integer(n)) == hash(n)`, and `Integer(n) == n`, so ER2 numbers and Python numbers
@@ -378,8 +404,8 @@ are interchangeable as dictionary keys and in sets.
 
 **R1.** `Rational` MUST be a subclass of `fractions.Fraction`, always in lowest terms.
 
-**R2.** An operation whose exact result is an integer MUST return an `Integer`, not a `Rational`
-with denominator 1: `1/3 + 2/3` is the `Integer` 1.
+**R2.** An operation whose exact result is an integer MUST return an `int`, not a `Rational`
+with denominator 1: `1/3 + 2/3` is the `int` 1.
 
 **R3.** `repr(Rational(1, 3))` is `1/3` (§9).
 
@@ -390,12 +416,13 @@ with denominator 1: `1/3 + 2/3` is the `Integer` 1.
 **R2.** ER2 does **not** change what Python or a library returns. `len(lst)`, `range(3)[1]` and
 `math.factorial(5)` return plain `int`, in ER2 as in Python.
 
-R1 and R2 together are the whole boundary rule, and they are consistent: `sum([1, 2])` is an
-`Integer` because it adds `Integer`s to `0`, while `len([1, 2])` is an `int` because `len` is
-Python's. Values become ER2 numbers by being written as literals, by arithmetic with ER2
-numbers, or by coming out of an ER2 function (§8.1) — never by passing through a library.
+Since D22 the ER2 integers *are* Python's `int`, so R1 and R2 meet: `sum([1, 2])` and
+`len([1, 2])` are the same kind of number. What ER2 adds is in the operators of ER2 source
+(§3.7) and in `Rational`, which arithmetic keeps exact: `Rational` values become ER2 numbers by
+being written as `1/3`, by arithmetic with ER2 numbers, or by coming out of an ER2 function
+(§8.1) — never by passing through a library.
 
-**R3.** `bool` is untouched. `True` is not an `Integer`, and `1 == True` remains true.
+**R3.** `bool` is untouched. `True` stays a `bool`, and `1 == True` remains true.
 
 ### 5.4 Crossing into the scientific stack
 
@@ -405,9 +432,9 @@ numbers, or by coming out of an ER2 function (§8.1) — never by passing throug
 R2 to R4 are not requirements on ER2 — no ER2 code runs in them — but observable consequences
 of R1 and §5.1 R1. They are specified because programs depend on them, and each is tested.
 
-**R2.** `Integer` gets a real integer dtype everywhere, because it is an `int`:
-`np.array([2^3, 3^2]).dtype` is an integer dtype, a pandas column of `Integer` is `int64`, and
-SciPy accepts it as an argument, as a shape and as an interval bound.
+**R2.** ER2 integers get a real integer dtype everywhere, because they are `int` (and so is an
+explicit `Integer`): `np.array([2^3, 3^2]).dtype` is an integer dtype, a pandas column of them is
+`int64`, and SciPy accepts them as an argument, as a shape and as an interval bound.
 
 **R3.** `Rational` is not a machine number, and the stack splits on it:
 
@@ -493,7 +520,7 @@ R5 is what makes `pari.set_stack` — which discards PARI's stack — safe to ca
 
 | From | To | Rule |
 |---|---|---|
-| int literal | `Integer` | §3.3 |
+| int literal | `int` | §3.3 |
 | `5r` | `int` | §3.4 |
 | `Integer`, `Rational` | `int`, `float`, `complex` | explicit: `int(n)`, `float(q)` |
 | a library's `int` | stays `int` | §5.3 R2 |

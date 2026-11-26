@@ -10,7 +10,6 @@ import sympy
 
 from er2 import dispatch
 from er2.backends import sympy_backend
-from er2.runtime.numbers import Integer
 
 x, y, z = sympy.symbols("x y z")
 
@@ -54,7 +53,7 @@ def test_reduce_gives_the_normal_form():
     basis = dispatch.groebner(CIRCLE, x, y)
     remainder = dispatch.reduce(x**2 + y**2, basis)
     assert remainder == 1
-    assert isinstance(remainder, Integer)
+    assert isinstance(remainder, int)
     # Zero exactly for the members of the ideal.
     assert dispatch.reduce(x**2 + y**2 - 1, basis) == 0
     assert dispatch.reduce(x - y, basis) == 0

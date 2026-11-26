@@ -10,7 +10,6 @@ import sympy
 from er2 import dispatch, prelude
 from er2.runtime.modular import Mod
 from er2.runtime.number_field import NumberField, PrimeIdeal
-from er2.runtime.numbers import Integer
 
 x, y = sympy.symbols("x y")
 
@@ -30,7 +29,7 @@ def test_degree_and_discriminant():
     # The field discriminant, not the polynomial's: disc(x^2-x-1) = 5.
     assert NumberField(x**2 - x - 1).discriminant == 5
     assert NumberField(x**3 - x - 1).discriminant == -23
-    assert isinstance(NumberField(QI5).discriminant, Integer)
+    assert isinstance(NumberField(QI5).discriminant, int)
 
 
 def test_the_discriminant_is_the_field_not_the_polynomial():
@@ -67,7 +66,7 @@ def test_class_number_and_class_group():
     field = NumberField(QI5)
     assert field.class_number() == 2
     assert field.class_group() == [2]
-    assert isinstance(field.class_number(), Integer)
+    assert isinstance(field.class_number(), int)
     # h = 1: unique factorization, and the class group is trivial.
     for polynomial in (x**2 - 2, x**2 + 1, x**2 - x - 1):
         assert NumberField(polynomial).class_number() == 1

@@ -38,7 +38,10 @@ def test_runs_become_graphs_and_a_table(tmp_path):
     runs = history.load_runs(tmp_path)
     assert [r["commit"] for r in runs] == ["aaaaaaa", "bbbbbbb"]
     sections = history.series(runs)
-    assert sections["Integer arithmetic (D2)"]["`a + b`"] == [8.0, 1.5]
+    assert sections["Integer arithmetic (D2)"]["`a + b` · vs `int`"] == [
+        8.0,
+        1.5,
+    ]
     svg = history.svg_graph(
         "x", sections["Integer arithmetic (D2)"], ["a", "b"]
     )
@@ -48,7 +51,7 @@ def test_runs_become_graphs_and_a_table(tmp_path):
         "![Integer arithmetic (D2)](performance/integer-arithmetic-d2.svg)"
         in md
     )
-    assert "| `a + b` | ×8.00 | ×1.50 | ×0.19 |" in md
+    assert "| `a + b` · vs `int` | ×8.00 | ×1.50 | ×0.19 |" in md
 
 
 def test_the_committed_history_is_drawn():

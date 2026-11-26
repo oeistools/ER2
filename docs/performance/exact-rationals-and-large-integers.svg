@@ -11,15 +11,15 @@
 <circle cx="70.0" cy="55.6" r="3" fill="#1f77b4"/>
 <circle cx="405.0" cy="151.5" r="3" fill="#1f77b4"/>
 <circle cx="740.0" cy="106.6" r="3" fill="#1f77b4"/>
-<rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">`a + b`, rationals</text>
+<rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">`a + b`, rationals · vs `fractions.Fraction`</text>
 <polyline points="70.0,63.5 405.0,140.2 740.0,148.8" fill="none" stroke="#d62728" stroke-width="2"/>
 <circle cx="70.0" cy="63.5" r="3" fill="#d62728"/>
 <circle cx="405.0" cy="140.2" r="3" fill="#d62728"/>
 <circle cx="740.0" cy="148.8" r="3" fill="#d62728"/>
-<rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">`a * b / (a - b)`, rationals</text>
+<rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">`a * b / (a - b)`, rationals · vs `fractions.Fraction`</text>
 <polyline points="70.0,213.9 405.0,221.6 740.0,224.4" fill="none" stroke="#2ca02c" stroke-width="2"/>
 <circle cx="70.0" cy="213.9" r="3" fill="#2ca02c"/>
 <circle cx="405.0" cy="221.6" r="3" fill="#2ca02c"/>
 <circle cx="740.0" cy="224.4" r="3" fill="#2ca02c"/>
-<rect x="70" y="337" width="12" height="12" fill="#2ca02c"/><text x="88" y="347">`3^20000 * 3^20000`, large integers</text>
+<rect x="70" y="337" width="12" height="12" fill="#2ca02c"/><text x="88" y="347">`3^20000 * 3^20000`, large integers · vs `int`</text>
 </svg>

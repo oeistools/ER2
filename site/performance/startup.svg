@@ -14,10 +14,10 @@
 <circle cx="70.0" cy="119.8" r="3" fill="#1f77b4"/>
 <circle cx="405.0" cy="120.9" r="3" fill="#1f77b4"/>
 <circle cx="740.0" cy="119.4" r="3" fill="#1f77b4"/>
-<rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">`er2` startup, number theory only</text>
+<rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">`er2` startup, number theory only · vs Python</text>
 <polyline points="70.0,38.2 405.0,40.5 740.0,35.6" fill="none" stroke="#d62728" stroke-width="2"/>
 <circle cx="70.0" cy="38.2" r="3" fill="#d62728"/>
 <circle cx="405.0" cy="40.5" r="3" fill="#d62728"/>
 <circle cx="740.0" cy="35.6" r="3" fill="#d62728"/>
-<rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">`er2` startup, with symbols (loads SymPy)</text>
+<rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">`er2` startup, with symbols (loads SymPy) · vs Python</text>
 </svg>

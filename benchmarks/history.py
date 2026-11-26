@@ -60,7 +60,10 @@ def series(runs):
     for i, run in enumerate(runs):
         for b in run["benchmarks"]:
             labels = out.setdefault(b["section"], {})
-            ratios = labels.setdefault(b["label"], [None] * len(runs))
+            # the same benchmark may be timed against two references
+            # (cypari2 and SymPy): both must be kept
+            key = f"{b['label']} · vs {b['reference']}"
+            ratios = labels.setdefault(key, [None] * len(runs))
             ratios[i] = b["er2_s"] / b["reference_s"]
     return out
 

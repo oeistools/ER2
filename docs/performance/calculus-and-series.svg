@@ -10,25 +10,25 @@
 <circle cx="70.0" cy="124.7" r="3" fill="#1f77b4"/>
 <circle cx="405.0" cy="113.0" r="3" fill="#1f77b4"/>
 <circle cx="740.0" cy="118.6" r="3" fill="#1f77b4"/>
-<rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">expand((x + k)^20)</text>
+<rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">expand((x + k)^20) · vs SymPy `expand`</text>
 <polyline points="70.0,125.6 405.0,122.1 740.0,117.1" fill="none" stroke="#d62728" stroke-width="2"/>
 <circle cx="70.0" cy="125.6" r="3" fill="#d62728"/>
 <circle cx="405.0" cy="122.1" r="3" fill="#d62728"/>
 <circle cx="740.0" cy="117.1" r="3" fill="#d62728"/>
-<rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">diff, 5th derivative of x^k e^x sin(x)</text>
+<rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">diff, 5th derivative of x^k e^x sin(x) · vs SymPy `diff`</text>
 <polyline points="70.0,124.4 405.0,123.2 740.0,121.0" fill="none" stroke="#2ca02c" stroke-width="2"/>
 <circle cx="70.0" cy="124.4" r="3" fill="#2ca02c"/>
 <circle cx="405.0" cy="123.2" r="3" fill="#2ca02c"/>
 <circle cx="740.0" cy="121.0" r="3" fill="#2ca02c"/>
-<rect x="70" y="337" width="12" height="12" fill="#2ca02c"/><text x="88" y="347">integrate x^k e^x</text>
+<rect x="70" y="337" width="12" height="12" fill="#2ca02c"/><text x="88" y="347">integrate x^k e^x · vs SymPy `integrate`</text>
 <polyline points="70.0,124.9 405.0,116.0 740.0,192.3" fill="none" stroke="#9467bd" stroke-width="2"/>
 <circle cx="70.0" cy="124.9" r="3" fill="#9467bd"/>
 <circle cx="405.0" cy="116.0" r="3" fill="#9467bd"/>
 <circle cx="740.0" cy="192.3" r="3" fill="#9467bd"/>
-<rect x="70" y="355" width="12" height="12" fill="#9467bd"/><text x="88" y="365">series of sin(x) e^(kx), order 10</text>
+<rect x="70" y="355" width="12" height="12" fill="#9467bd"/><text x="88" y="365">series of sin(x) e^(kx), order 10 · vs SymPy `series`</text>
 <polyline points="70.0,122.9 405.0,87.7 740.0,105.4" fill="none" stroke="#ff7f0e" stroke-width="2"/>
 <circle cx="70.0" cy="122.9" r="3" fill="#ff7f0e"/>
 <circle cx="405.0" cy="87.7" r="3" fill="#ff7f0e"/>
 <circle cx="740.0" cy="105.4" r="3" fill="#ff7f0e"/>
-<rect x="70" y="373" width="12" height="12" fill="#ff7f0e"/><text x="88" y="383">limit of (sin(kx) - kx) / x^3 at 0</text>
+<rect x="70" y="373" width="12" height="12" fill="#ff7f0e"/><text x="88" y="383">limit of (sin(kx) - kx) / x^3 at 0 · vs SymPy `limit`</text>
 </svg>

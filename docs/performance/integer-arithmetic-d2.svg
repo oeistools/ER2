@@ -13,10 +13,10 @@
 <circle cx="70.0" cy="39.8" r="3" fill="#1f77b4"/>
 <circle cx="405.0" cy="37.7" r="3" fill="#1f77b4"/>
 <circle cx="740.0" cy="238.1" r="3" fill="#1f77b4"/>
-<rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">numeric loop, 20000 iterations (ER2 literals)</text>
+<rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">numeric loop, 20000 iterations (ER2 literals) · vs Python `int`</text>
 <polyline points="70.0,80.1 405.0,81.3 740.0,86.3" fill="none" stroke="#d62728" stroke-width="2"/>
 <circle cx="70.0" cy="80.1" r="3" fill="#d62728"/>
 <circle cx="405.0" cy="81.3" r="3" fill="#d62728"/>
 <circle cx="740.0" cy="86.3" r="3" fill="#d62728"/>
-<rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">`a + b`</text>
+<rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">`a + b` · vs `int` `a + b`</text>
 </svg>

@@ -12,8 +12,8 @@ Runs: 2026-11-25 b44083f (main, baseline, before the improvements); 2026-11-25 d
 
 | Benchmark | 2026-11-25 b44083f | 2026-11-26 4c333a4 | Change |
 |---|---|---|---|
-| `er2` startup, number theory only | ×6.32 | ×6.36 | ×1.01 |
-| `er2` startup, with symbols (loads SymPy) | ×21.16 | ×22.01 | ×1.04 |
+| `er2` startup, number theory only · vs Python | ×6.32 | ×6.36 | ×1.01 |
+| `er2` startup, with symbols (loads SymPy) · vs Python | ×21.16 | ×22.01 | ×1.04 |
 
 ## Dispatch overhead (§2.1)
 
@@ -21,10 +21,10 @@ Runs: 2026-11-25 b44083f (main, baseline, before the improvements); 2026-11-25 d
 
 | Benchmark | 2026-11-25 b44083f | 2026-11-26 4c333a4 | Change |
 |---|---|---|---|
-| choose a backend: phi(n), an integer | ×0.06 | ×0.05 | ×0.94 |
-| choose a backend: det, 10x10 over Z | ×0.01 | ×0.01 | ×0.98 |
-| choose a backend: det, 10x10 with a symbol | ×0.00 | ×0.00 | ×1.03 |
-| choose a backend: factor, a polynomial over Q | ×0.11 | ×0.12 | ×1.01 |
+| choose a backend: phi(n), an integer · vs the whole call | ×0.06 | ×0.05 | ×0.94 |
+| choose a backend: det, 10x10 over Z · vs the whole call | ×0.01 | ×0.01 | ×0.98 |
+| choose a backend: det, 10x10 with a symbol · vs the whole call | ×0.00 | ×0.00 | ×1.03 |
+| choose a backend: factor, a polynomial over Q · vs the whole call | ×0.11 | ×0.12 | ×1.01 |
 
 ## Integer arithmetic (D2)
 
@@ -32,8 +32,8 @@ Runs: 2026-11-25 b44083f (main, baseline, before the improvements); 2026-11-25 d
 
 | Benchmark | 2026-11-25 b44083f | 2026-11-26 4c333a4 | Change |
 |---|---|---|---|
-| numeric loop, 20000 iterations (ER2 literals) | ×13.93 | ×1.06 | ×0.08 |
-| `a + b` | ×8.25 | ×7.61 | ×0.92 |
+| numeric loop, 20000 iterations (ER2 literals) · vs Python `int` | ×13.93 | ×1.06 | ×0.08 |
+| `a + b` · vs `int` `a + b` | ×8.25 | ×7.61 | ×0.92 |
 
 ## Exact rationals and large integers
 
@@ -41,9 +41,9 @@ Runs: 2026-11-25 b44083f (main, baseline, before the improvements); 2026-11-25 d
 
 | Benchmark | 2026-11-25 b44083f | 2026-11-26 4c333a4 | Change |
 |---|---|---|---|
-| `a + b`, rationals | ×2.80 | ×2.02 | ×0.72 |
-| `a * b / (a - b)`, rationals | ×2.66 | ×1.54 | ×0.58 |
-| `3^20000 * 3^20000`, large integers | ×1.01 | ×0.94 | ×0.93 |
+| `a + b`, rationals · vs `fractions.Fraction` | ×2.80 | ×2.02 | ×0.72 |
+| `a * b / (a - b)`, rationals · vs `fractions.Fraction` | ×2.66 | ×1.54 | ×0.58 |
+| `3^20000 * 3^20000`, large integers · vs `int` | ×1.01 | ×0.94 | ×0.93 |
 
 ## Number theory
 
@@ -51,11 +51,15 @@ Runs: 2026-11-25 b44083f (main, baseline, before the improvements); 2026-11-25 d
 
 | Benchmark | 2026-11-25 b44083f | 2026-11-26 4c333a4 | Change |
 |---|---|---|---|
-| phi(n), n ≈ 1.2e8 | ×0.06 | ×0.05 | ×0.81 |
-| sigma(n), n ≈ 1.2e8 | ×0.06 | ×0.05 | ×0.90 |
-| isprime(2^127 - 1), proven | ×1.02 | ×1.00 | ×0.98 |
-| ispseudoprime (BPSW), Mersenne primes | ×0.32 | ×0.34 | ×1.06 |
-| factor(n), n ≈ 1e18 semiprime | ×0.02 | ×0.02 | ×0.91 |
+| phi(n), n ≈ 1.2e8 · vs cypari2 | ×1.78 | ×1.72 | ×0.96 |
+| phi(n), n ≈ 1.2e8 · vs SymPy | ×0.06 | ×0.05 | ×0.81 |
+| sigma(n), n ≈ 1.2e8 · vs cypari2 | ×1.77 | ×1.63 | ×0.92 |
+| sigma(n), n ≈ 1.2e8 · vs SymPy | ×0.06 | ×0.05 | ×0.90 |
+| isprime(2^127 - 1), proven · vs cypari2 | ×1.02 | ×1.00 | ×0.98 |
+| ispseudoprime (BPSW), Mersenne primes · vs cypari2 | ×1.15 | ×1.26 | ×1.10 |
+| ispseudoprime (BPSW), Mersenne primes · vs SymPy | ×0.32 | ×0.34 | ×1.06 |
+| factor(n), n ≈ 1e18 semiprime · vs cypari2 | ×1.08 | ×1.06 | ×0.98 |
+| factor(n), n ≈ 1e18 semiprime · vs SymPy | ×0.02 | ×0.02 | ×0.91 |
 
 ## Polynomial factorization
 
@@ -63,10 +67,10 @@ Runs: 2026-11-25 b44083f (main, baseline, before the improvements); 2026-11-25 d
 
 | Benchmark | 2026-11-25 b44083f | 2026-11-26 4c333a4 | Change |
 |---|---|---|---|
-| factor, degree 4 | ×0.47 | ×0.39 | ×0.82 |
-| factor, degree 9 | ×0.33 | ×0.41 | ×1.24 |
-| factor, degree 22 | ×0.16 | ×0.14 | ×0.91 |
-| factor, degree 60 | ×0.04 | ×0.04 | ×1.09 |
+| factor, degree 4 · vs SymPy `factor` | ×0.47 | ×0.39 | ×0.82 |
+| factor, degree 9 · vs SymPy `factor` | ×0.33 | ×0.41 | ×1.24 |
+| factor, degree 22 · vs SymPy `factor` | ×0.16 | ×0.14 | ×0.91 |
+| factor, degree 60 · vs SymPy `factor` | ×0.04 | ×0.04 | ×1.09 |
 
 ## Polynomials over F_p (M5)
 
@@ -74,8 +78,10 @@ Runs: 2026-11-25 b44083f (main, baseline, before the improvements); 2026-11-25 d
 
 | Benchmark | 2026-11-25 b44083f | 2026-11-26 4c333a4 | Change |
 |---|---|---|---|
-| factor mod 7, degree 12 | ×0.37 | ×0.29 | ×0.79 |
-| factor mod 7, degree 48 | ×0.16 | ×0.18 | ×1.12 |
+| factor mod 7, degree 12 · vs cypari2 | ×48.88 | ×53.38 | ×1.09 |
+| factor mod 7, degree 12 · vs SymPy | ×0.37 | ×0.29 | ×0.79 |
+| factor mod 7, degree 48 · vs cypari2 | ×4.95 | ×5.42 | ×1.09 |
+| factor mod 7, degree 48 · vs SymPy | ×0.16 | ×0.18 | ×1.12 |
 
 ## Linear algebra (M5)
 
@@ -83,14 +89,22 @@ Runs: 2026-11-25 b44083f (main, baseline, before the improvements); 2026-11-25 d
 
 | Benchmark | 2026-11-25 b44083f | 2026-11-26 4c333a4 | Change |
 |---|---|---|---|
-| det, 10x10 over Z | ×0.02 | ×0.02 | ×1.01 |
-| kernel, 10x10 over Z | ×0.41 | ×0.39 | ×0.97 |
-| hermite_form, 10x10 over Z | ×0.74 | ×0.76 | ×1.02 |
-| smith_form, 10x10 over Z | ×0.34 | ×0.35 | ×1.04 |
-| det, 20x20 over Z | ×0.01 | ×0.01 | ×1.04 |
-| kernel, 20x20 over Z | ×0.30 | ×0.27 | ×0.87 |
-| hermite_form, 20x20 over Z | ×0.34 | ×0.33 | ×0.97 |
-| smith_form, 20x20 over Z | ×0.30 | ×0.32 | ×1.08 |
+| det, 10x10 over Z · vs cypari2 | ×8.36 | ×8.46 | ×1.01 |
+| det, 10x10 over Z · vs SymPy | ×0.02 | ×0.02 | ×1.01 |
+| kernel, 10x10 over Z · vs cypari2 | ×16.33 | ×15.44 | ×0.95 |
+| kernel, 10x10 over Z · vs SymPy | ×0.41 | ×0.39 | ×0.97 |
+| hermite_form, 10x10 over Z · vs cypari2 | ×7.97 | ×8.14 | ×1.02 |
+| hermite_form, 10x10 over Z · vs SymPy | ×0.74 | ×0.76 | ×1.02 |
+| smith_form, 10x10 over Z · vs cypari2 | ×4.70 | ×5.33 | ×1.13 |
+| smith_form, 10x10 over Z · vs SymPy | ×0.34 | ×0.35 | ×1.04 |
+| det, 20x20 over Z · vs cypari2 | ×3.52 | ×4.45 | ×1.27 |
+| det, 20x20 over Z · vs SymPy | ×0.01 | ×0.01 | ×1.04 |
+| kernel, 20x20 over Z · vs cypari2 | ×3.64 | ×3.10 | ×0.85 |
+| kernel, 20x20 over Z · vs SymPy | ×0.30 | ×0.27 | ×0.87 |
+| hermite_form, 20x20 over Z · vs cypari2 | ×4.23 | ×4.73 | ×1.12 |
+| hermite_form, 20x20 over Z · vs SymPy | ×0.34 | ×0.33 | ×0.97 |
+| smith_form, 20x20 over Z · vs cypari2 | ×2.10 | ×2.00 | ×0.95 |
+| smith_form, 20x20 over Z · vs SymPy | ×0.30 | ×0.32 | ×1.08 |
 
 ## Calculus and series
 
@@ -98,8 +112,8 @@ Runs: 2026-11-25 b44083f (main, baseline, before the improvements); 2026-11-25 d
 
 | Benchmark | 2026-11-25 b44083f | 2026-11-26 4c333a4 | Change |
 |---|---|---|---|
-| expand((x + k)^20) | ×1.00 | ×1.02 | ×1.02 |
-| diff, 5th derivative of x^k e^x sin(x) | ×1.00 | ×1.03 | ×1.03 |
-| integrate x^k e^x | ×1.00 | ×1.01 | ×1.01 |
-| series of sin(x) e^(kx), order 10 | ×1.00 | ×0.80 | ×0.80 |
-| limit of (sin(kx) - kx) / x^3 at 0 | ×1.01 | ×1.07 | ×1.06 |
+| expand((x + k)^20) · vs SymPy `expand` | ×1.00 | ×1.02 | ×1.02 |
+| diff, 5th derivative of x^k e^x sin(x) · vs SymPy `diff` | ×1.00 | ×1.03 | ×1.03 |
+| integrate x^k e^x · vs SymPy `integrate` | ×1.00 | ×1.01 | ×1.01 |
+| series of sin(x) e^(kx), order 10 · vs SymPy `series` | ×1.00 | ×0.80 | ×0.80 |
+| limit of (sin(kx) - kx) / x^3 at 0 · vs SymPy `limit` | ×1.01 | ×1.07 | ×1.06 |

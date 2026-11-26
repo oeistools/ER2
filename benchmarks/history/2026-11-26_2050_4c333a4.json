@@ -1,0 +1,361 @@
+{
+  "date": "2026-11-26 20:50",
+  "commit": "4c333a4596cdedd201df70902c2051c71ddeb62e",
+  "branch": "perf/plain-int",
+  "dirty": false,
+  "note": "D22: plain int, exact / and ** (perf/plain-int)",
+  "environment": {
+    "python": "3.14.6",
+    "sympy": "1.14.0",
+    "cypari2": "2.2.4",
+    "er2": "0.7.0",
+    "machine": "x86_64",
+    "platform": "Linux-7.0.0-44-generic-x86_64-with-glibc2.43",
+    "processor": ""
+  },
+  "benchmarks": [
+    {
+      "section": "Startup",
+      "label": "`er2` startup, number theory only",
+      "er2_s": 0.1615335099997992,
+      "reference": "Python",
+      "reference_s": 0.02539918899992699
+    },
+    {
+      "section": "Startup",
+      "label": "`er2` startup, with symbols (loads SymPy)",
+      "er2_s": 0.5590231480000512,
+      "reference": "Python",
+      "reference_s": 0.02539918899992699
+    },
+    {
+      "section": "Dispatch overhead (§2.1)",
+      "label": "choose a backend: phi(n), an integer",
+      "er2_s": 2.7048589611058764e-07,
+      "reference": "the whole call",
+      "reference_s": 5.1936123962419145e-06
+    },
+    {
+      "section": "Dispatch overhead (§2.1)",
+      "label": "choose a backend: det, 10x10 over Z",
+      "er2_s": 1.5497698135375632e-06,
+      "reference": "the whole call",
+      "reference_s": 0.0001180841455078463
+    },
+    {
+      "section": "Dispatch overhead (§2.1)",
+      "label": "choose a backend: det, 10x10 with a symbol",
+      "er2_s": 1.8802465759276688e-05,
+      "reference": "the whole call",
+      "reference_s": 0.45528445500008274
+    },
+    {
+      "section": "Dispatch overhead (§2.1)",
+      "label": "choose a backend: factor, a polynomial over Q",
+      "er2_s": 5.60289486083998e-05,
+      "reference": "the whole call",
+      "reference_s": 0.0004817848300782135
+    },
+    {
+      "section": "Integer arithmetic (D2)",
+      "label": "numeric loop, 20000 iterations (ER2 literals)",
+      "er2_s": 0.001539982308593757,
+      "reference": "Python `int`",
+      "reference_s": 0.0014576375429689037
+    },
+    {
+      "section": "Integer arithmetic (D2)",
+      "label": "`a + b`",
+      "er2_s": 2.6959499931328117e-07,
+      "reference": "`int` `a + b`",
+      "reference_s": 3.542075824747998e-08
+    },
+    {
+      "section": "Exact rationals and large integers",
+      "label": "`a + b`, rationals",
+      "er2_s": 1.1387147750858279e-06,
+      "reference": "`fractions.Fraction`",
+      "reference_s": 5.646614618301776e-07
+    },
+    {
+      "section": "Exact rationals and large integers",
+      "label": "`a * b / (a - b)`, rationals",
+      "er2_s": 3.403720199586513e-06,
+      "reference": "`fractions.Fraction`",
+      "reference_s": 2.2164116821286883e-06
+    },
+    {
+      "section": "Exact rationals and large integers",
+      "label": "`3^20000 * 3^20000`, large integers",
+      "er2_s": 0.0002818203749999082,
+      "reference": "`int`",
+      "reference_s": 0.0002991538769532287
+    },
+    {
+      "section": "Number theory",
+      "label": "phi(n), n ≈ 1.2e8",
+      "er2_s": 5.2941206512453765e-06,
+      "reference": "cypari2",
+      "reference_s": 3.0827902908325128e-06
+    },
+    {
+      "section": "Number theory",
+      "label": "phi(n), n ≈ 1.2e8",
+      "er2_s": 5.2941206512453765e-06,
+      "reference": "SymPy",
+      "reference_s": 0.00010775237011717564
+    },
+    {
+      "section": "Number theory",
+      "label": "sigma(n), n ≈ 1.2e8",
+      "er2_s": 6.247186614991712e-06,
+      "reference": "cypari2",
+      "reference_s": 3.840724792480987e-06
+    },
+    {
+      "section": "Number theory",
+      "label": "sigma(n), n ≈ 1.2e8",
+      "er2_s": 6.247186614991712e-06,
+      "reference": "SymPy",
+      "reference_s": 0.00011404619531252269
+    },
+    {
+      "section": "Number theory",
+      "label": "isprime(2^127 - 1), proven",
+      "er2_s": 0.0004413896191406419,
+      "reference": "cypari2",
+      "reference_s": 0.0004420000966796067
+    },
+    {
+      "section": "Number theory",
+      "label": "ispseudoprime (BPSW), Mersenne primes",
+      "er2_s": 2.422168511963252e-05,
+      "reference": "cypari2",
+      "reference_s": 1.9156465881353668e-05
+    },
+    {
+      "section": "Number theory",
+      "label": "ispseudoprime (BPSW), Mersenne primes",
+      "er2_s": 2.422168511963252e-05,
+      "reference": "SymPy",
+      "reference_s": 7.139777758791155e-05
+    },
+    {
+      "section": "Number theory",
+      "label": "factor(n), n ≈ 1e18 semiprime",
+      "er2_s": 0.0002648287099609181,
+      "reference": "cypari2",
+      "reference_s": 0.0002506838671876288
+    },
+    {
+      "section": "Number theory",
+      "label": "factor(n), n ≈ 1e18 semiprime",
+      "er2_s": 0.0002648287099609181,
+      "reference": "SymPy",
+      "reference_s": 0.01563065393749241
+    },
+    {
+      "section": "Polynomial factorization",
+      "label": "factor, degree 4",
+      "er2_s": 0.00041681336328114327,
+      "reference": "SymPy `factor`",
+      "reference_s": 0.0010763885312501387
+    },
+    {
+      "section": "Polynomial factorization",
+      "label": "factor, degree 9",
+      "er2_s": 0.0009376281171880052,
+      "reference": "SymPy `factor`",
+      "reference_s": 0.0023056095664060194
+    },
+    {
+      "section": "Polynomial factorization",
+      "label": "factor, degree 22",
+      "er2_s": 0.001551545097655982,
+      "reference": "SymPy `factor`",
+      "reference_s": 0.010775729937499534
+    },
+    {
+      "section": "Polynomial factorization",
+      "label": "factor, degree 60",
+      "er2_s": 0.012194804656250113,
+      "reference": "SymPy `factor`",
+      "reference_s": 0.2776758960001189
+    },
+    {
+      "section": "Polynomials over F_p (M5)",
+      "label": "factor mod 7, degree 12",
+      "er2_s": 0.0010627173320312266,
+      "reference": "cypari2",
+      "reference_s": 1.9909026916509198e-05
+    },
+    {
+      "section": "Polynomials over F_p (M5)",
+      "label": "factor mod 7, degree 12",
+      "er2_s": 0.0010627173320312266,
+      "reference": "SymPy",
+      "reference_s": 0.003630935374999922
+    },
+    {
+      "section": "Polynomials over F_p (M5)",
+      "label": "factor mod 7, degree 48",
+      "er2_s": 0.00334469298437412,
+      "reference": "cypari2",
+      "reference_s": 0.0006171790068358884
+    },
+    {
+      "section": "Polynomials over F_p (M5)",
+      "label": "factor mod 7, degree 48",
+      "er2_s": 0.00334469298437412,
+      "reference": "SymPy",
+      "reference_s": 0.018610935750004387
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "det, 10x10 over Z",
+      "er2_s": 0.00011251289160152389,
+      "reference": "cypari2",
+      "reference_s": 1.3303767211911288e-05
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "det, 10x10 over Z",
+      "er2_s": 0.00011251289160152389,
+      "reference": "SymPy",
+      "reference_s": 0.004967827140625047
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "kernel, 10x10 over Z",
+      "er2_s": 0.0004268303632812831,
+      "reference": "cypari2",
+      "reference_s": 2.7651101867670613e-05
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "kernel, 10x10 over Z",
+      "er2_s": 0.0004268303632812831,
+      "reference": "SymPy",
+      "reference_s": 0.001081899417968657
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "hermite_form, 10x10 over Z",
+      "er2_s": 0.00031946983496089487,
+      "reference": "cypari2",
+      "reference_s": 3.9261155639638834e-05
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "hermite_form, 10x10 over Z",
+      "er2_s": 0.00031946983496089487,
+      "reference": "SymPy",
+      "reference_s": 0.000421255770507889
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "smith_form, 10x10 over Z",
+      "er2_s": 0.0003159834082031576,
+      "reference": "cypari2",
+      "reference_s": 5.925646630861037e-05
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "smith_form, 10x10 over Z",
+      "er2_s": 0.0003159834082031576,
+      "reference": "SymPy",
+      "reference_s": 0.0008997488437501033
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "det, 20x20 over Z",
+      "er2_s": 0.0006513060156250194,
+      "reference": "cypari2",
+      "reference_s": 0.0001463391430663874
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "det, 20x20 over Z",
+      "er2_s": 0.0006513060156250194,
+      "reference": "SymPy",
+      "reference_s": 0.047128795749983965
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "kernel, 20x20 over Z",
+      "er2_s": 0.000982678621093136,
+      "reference": "cypari2",
+      "reference_s": 0.0003171766025391598
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "kernel, 20x20 over Z",
+      "er2_s": 0.000982678621093136,
+      "reference": "SymPy",
+      "reference_s": 0.0036972069687486453
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "hermite_form, 20x20 over Z",
+      "er2_s": 0.001184247230469282,
+      "reference": "cypari2",
+      "reference_s": 0.0002505192363280173
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "hermite_form, 20x20 over Z",
+      "er2_s": 0.001184247230469282,
+      "reference": "SymPy",
+      "reference_s": 0.003542121218750083
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "smith_form, 20x20 over Z",
+      "er2_s": 0.001140048824218809,
+      "reference": "cypari2",
+      "reference_s": 0.0005698066181640815
+    },
+    {
+      "section": "Linear algebra (M5)",
+      "label": "smith_form, 20x20 over Z",
+      "er2_s": 0.001140048824218809,
+      "reference": "SymPy",
+      "reference_s": 0.003519579046873389
+    },
+    {
+      "section": "Calculus and series",
+      "label": "expand((x + k)^20)",
+      "er2_s": 0.006397439453124321,
+      "reference": "SymPy `expand`",
+      "reference_s": 0.006262254421876889
+    },
+    {
+      "section": "Calculus and series",
+      "label": "diff, 5th derivative of x^k e^x sin(x)",
+      "er2_s": 0.03586223081249784,
+      "reference": "SymPy `diff`",
+      "reference_s": 0.03492039387499801
+    },
+    {
+      "section": "Calculus and series",
+      "label": "integrate x^k e^x",
+      "er2_s": 0.051041962249996686,
+      "reference": "SymPy `integrate`",
+      "reference_s": 0.05036784287500495
+    },
+    {
+      "section": "Calculus and series",
+      "label": "series of sin(x) e^(kx), order 10",
+      "er2_s": 0.1201592350000169,
+      "reference": "SymPy `series`",
+      "reference_s": 0.15111906999999292
+    },
+    {
+      "section": "Calculus and series",
+      "label": "limit of (sin(kx) - kx) / x^3 at 0",
+      "er2_s": 0.027513648687502723,
+      "reference": "SymPy `limit`",
+      "reference_s": 0.02575235156250244
+    }
+  ]
+}

@@ -10,92 +10,92 @@ Notes: `isprime` proves primality (PARI's APRCL); `sympy.isprime` and `ispseudop
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| `er2` startup, number theory only | 135 ms | Python | 21.7 ms | ×6.22 |
-| `er2` startup, with symbols (loads SymPy) | 443 ms | Python | 21.7 ms | ×20.46 |
+| `er2` startup, number theory only | 162 ms | Python | 25.4 ms | ×6.36 |
+| `er2` startup, with symbols (loads SymPy) | 559 ms | Python | 25.4 ms | ×22.01 |
 
 ## Dispatch overhead (§2.1)
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| choose a backend: phi(n), an integer | 248 ns | the whole call | 4.51 µs | ×0.05 |
-| choose a backend: det, 10x10 over Z | 1.31 µs | the whole call | 99.4 µs | ×0.01 |
-| choose a backend: det, 10x10 with a symbol | 16.9 µs | the whole call | 425 ms | ×0.00 |
-| choose a backend: factor, a polynomial over Q | 46.1 µs | the whole call | 407 µs | ×0.11 |
+| choose a backend: phi(n), an integer | 270 ns | the whole call | 5.19 µs | ×0.05 |
+| choose a backend: det, 10x10 over Z | 1.55 µs | the whole call | 118 µs | ×0.01 |
+| choose a backend: det, 10x10 with a symbol | 18.8 µs | the whole call | 455 ms | ×0.00 |
+| choose a backend: factor, a polynomial over Q | 56 µs | the whole call | 482 µs | ×0.12 |
 
 ## Integer arithmetic (D2)
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| numeric loop, 20000 iterations (ER2 literals) | 19.8 ms | Python `int` | 1.38 ms | ×14.32 |
-| `a + b` | 259 ns | `int` `a + b` | 31.9 ns | ×8.12 |
+| numeric loop, 20000 iterations (ER2 literals) | 1.54 ms | Python `int` | 1.46 ms | ×1.06 |
+| `a + b` | 270 ns | `int` `a + b` | 35.4 ns | ×7.61 |
 
 ## Exact rationals and large integers
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| `a + b`, rationals | 906 ns | `fractions.Fraction` | 600 ns | ×1.51 |
-| `a * b / (a - b)`, rationals | 3.16 µs | `fractions.Fraction` | 1.95 µs | ×1.62 |
-| `3^20000 * 3^20000`, large integers | 286 µs | `int` | 298 µs | ×0.96 |
+| `a + b`, rationals | 1.14 µs | `fractions.Fraction` | 565 ns | ×2.02 |
+| `a * b / (a - b)`, rationals | 3.4 µs | `fractions.Fraction` | 2.22 µs | ×1.54 |
+| `3^20000 * 3^20000`, large integers | 282 µs | `int` | 299 µs | ×0.94 |
 
 ## Number theory
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| phi(n), n ≈ 1.2e8 | 5.09 µs | cypari2 | 2.87 µs | ×1.77 |
-| phi(n), n ≈ 1.2e8 | 5.09 µs | SymPy | 85 µs | ×0.06 |
-| sigma(n), n ≈ 1.2e8 | 5.13 µs | cypari2 | 2.86 µs | ×1.79 |
-| sigma(n), n ≈ 1.2e8 | 5.13 µs | SymPy | 87.5 µs | ×0.06 |
-| isprime(2^127 - 1), proven | 356 µs | cypari2 | 398 µs | ×0.89 |
-| ispseudoprime (BPSW), Mersenne primes | 21.4 µs | cypari2 | 22.8 µs | ×0.94 |
-| ispseudoprime (BPSW), Mersenne primes | 21.4 µs | SymPy | 91.5 µs | ×0.23 |
-| factor(n), n ≈ 1e18 semiprime | 258 µs | cypari2 | 226 µs | ×1.14 |
-| factor(n), n ≈ 1e18 semiprime | 258 µs | SymPy | 12.6 ms | ×0.02 |
+| phi(n), n ≈ 1.2e8 | 5.29 µs | cypari2 | 3.08 µs | ×1.72 |
+| phi(n), n ≈ 1.2e8 | 5.29 µs | SymPy | 108 µs | ×0.05 |
+| sigma(n), n ≈ 1.2e8 | 6.25 µs | cypari2 | 3.84 µs | ×1.63 |
+| sigma(n), n ≈ 1.2e8 | 6.25 µs | SymPy | 114 µs | ×0.05 |
+| isprime(2^127 - 1), proven | 441 µs | cypari2 | 442 µs | ×1.00 |
+| ispseudoprime (BPSW), Mersenne primes | 24.2 µs | cypari2 | 19.2 µs | ×1.26 |
+| ispseudoprime (BPSW), Mersenne primes | 24.2 µs | SymPy | 71.4 µs | ×0.34 |
+| factor(n), n ≈ 1e18 semiprime | 265 µs | cypari2 | 251 µs | ×1.06 |
+| factor(n), n ≈ 1e18 semiprime | 265 µs | SymPy | 15.6 ms | ×0.02 |
 
 ## Polynomial factorization
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| factor, degree 4 | 374 µs | SymPy `factor` | 861 µs | ×0.43 |
-| factor, degree 9 | 852 µs | SymPy `factor` | 2.64 ms | ×0.32 |
-| factor, degree 22 | 1.87 ms | SymPy `factor` | 11.5 ms | ×0.16 |
-| factor, degree 60 | 12.6 ms | SymPy `factor` | 304 ms | ×0.04 |
+| factor, degree 4 | 417 µs | SymPy `factor` | 1.08 ms | ×0.39 |
+| factor, degree 9 | 938 µs | SymPy `factor` | 2.31 ms | ×0.41 |
+| factor, degree 22 | 1.55 ms | SymPy `factor` | 10.8 ms | ×0.14 |
+| factor, degree 60 | 12.2 ms | SymPy `factor` | 278 ms | ×0.04 |
 
 ## Polynomials over F_p (M5)
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| factor mod 7, degree 12 | 1.13 ms | cypari2 | 24.2 µs | ×46.63 |
-| factor mod 7, degree 12 | 1.13 ms | SymPy | 3.33 ms | ×0.34 |
-| factor mod 7, degree 48 | 3.8 ms | cypari2 | 732 µs | ×5.19 |
-| factor mod 7, degree 48 | 3.8 ms | SymPy | 25.1 ms | ×0.15 |
+| factor mod 7, degree 12 | 1.06 ms | cypari2 | 19.9 µs | ×53.38 |
+| factor mod 7, degree 12 | 1.06 ms | SymPy | 3.63 ms | ×0.29 |
+| factor mod 7, degree 48 | 3.34 ms | cypari2 | 617 µs | ×5.42 |
+| factor mod 7, degree 48 | 3.34 ms | SymPy | 18.6 ms | ×0.18 |
 
 ## Linear algebra (M5)
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| det, 10x10 over Z | 142 µs | cypari2 | 15 µs | ×9.44 |
-| det, 10x10 over Z | 142 µs | SymPy | 5.75 ms | ×0.02 |
-| kernel, 10x10 over Z | 412 µs | cypari2 | 24.8 µs | ×16.63 |
-| kernel, 10x10 over Z | 412 µs | SymPy | 1.03 ms | ×0.40 |
-| hermite_form, 10x10 over Z | 307 µs | cypari2 | 38.5 µs | ×7.98 |
-| hermite_form, 10x10 over Z | 307 µs | SymPy | 418 µs | ×0.73 |
-| smith_form, 10x10 over Z | 298 µs | cypari2 | 65.1 µs | ×4.58 |
-| smith_form, 10x10 over Z | 298 µs | SymPy | 865 µs | ×0.34 |
-| det, 20x20 over Z | 610 µs | cypari2 | 177 µs | ×3.45 |
-| det, 20x20 over Z | 610 µs | SymPy | 49.3 ms | ×0.01 |
-| kernel, 20x20 over Z | 1.22 ms | cypari2 | 324 µs | ×3.77 |
-| kernel, 20x20 over Z | 1.22 ms | SymPy | 3.96 ms | ×0.31 |
-| hermite_form, 20x20 over Z | 1.12 ms | cypari2 | 251 µs | ×4.48 |
-| hermite_form, 20x20 over Z | 1.12 ms | SymPy | 3.57 ms | ×0.31 |
-| smith_form, 20x20 over Z | 1.37 ms | cypari2 | 590 µs | ×2.32 |
-| smith_form, 20x20 over Z | 1.37 ms | SymPy | 3.98 ms | ×0.34 |
+| det, 10x10 over Z | 113 µs | cypari2 | 13.3 µs | ×8.46 |
+| det, 10x10 over Z | 113 µs | SymPy | 4.97 ms | ×0.02 |
+| kernel, 10x10 over Z | 427 µs | cypari2 | 27.7 µs | ×15.44 |
+| kernel, 10x10 over Z | 427 µs | SymPy | 1.08 ms | ×0.39 |
+| hermite_form, 10x10 over Z | 319 µs | cypari2 | 39.3 µs | ×8.14 |
+| hermite_form, 10x10 over Z | 319 µs | SymPy | 421 µs | ×0.76 |
+| smith_form, 10x10 over Z | 316 µs | cypari2 | 59.3 µs | ×5.33 |
+| smith_form, 10x10 over Z | 316 µs | SymPy | 900 µs | ×0.35 |
+| det, 20x20 over Z | 651 µs | cypari2 | 146 µs | ×4.45 |
+| det, 20x20 over Z | 651 µs | SymPy | 47.1 ms | ×0.01 |
+| kernel, 20x20 over Z | 983 µs | cypari2 | 317 µs | ×3.10 |
+| kernel, 20x20 over Z | 983 µs | SymPy | 3.7 ms | ×0.27 |
+| hermite_form, 20x20 over Z | 1.18 ms | cypari2 | 251 µs | ×4.73 |
+| hermite_form, 20x20 over Z | 1.18 ms | SymPy | 3.54 ms | ×0.33 |
+| smith_form, 20x20 over Z | 1.14 ms | cypari2 | 570 µs | ×2.00 |
+| smith_form, 20x20 over Z | 1.14 ms | SymPy | 3.52 ms | ×0.32 |
 
 ## Calculus and series
 
 | Benchmark | ER2 | Reference | Reference time | ER2 / reference |
 |---|---|---|---|---|
-| expand((x + k)^20) | 7.82 ms | SymPy `expand` | 7.51 ms | ×1.04 |
-| diff, 5th derivative of x^k e^x sin(x) | 38.4 ms | SymPy `diff` | 38 ms | ×1.01 |
-| integrate x^k e^x | 55.8 ms | SymPy `integrate` | 55.5 ms | ×1.01 |
-| series of sin(x) e^(kx), order 10 | 133 ms | SymPy `series` | 129 ms | ×1.03 |
-| limit of (sin(kx) - kx) / x^3 at 0 | 26.5 ms | SymPy `limit` | 23.4 ms | ×1.13 |
+| expand((x + k)^20) | 6.4 ms | SymPy `expand` | 6.26 ms | ×1.02 |
+| diff, 5th derivative of x^k e^x sin(x) | 35.9 ms | SymPy `diff` | 34.9 ms | ×1.03 |
+| integrate x^k e^x | 51 ms | SymPy `integrate` | 50.4 ms | ×1.01 |
+| series of sin(x) e^(kx), order 10 | 120 ms | SymPy `series` | 151 ms | ×0.80 |
+| limit of (sin(kx) - kx) / x^3 at 0 | 27.5 ms | SymPy `limit` | 25.8 ms | ×1.07 |

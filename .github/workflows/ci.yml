@@ -81,3 +81,17 @@ jobs:
       - run: uv run python tools/sync_pari_functions.py
       - name: Generated files must be committed
         run: git diff --exit-code -- er2/data docs
+
+  benchmarks:
+    # Report only: shared runners are noisy, so a timing never fails a
+    # pull request.  The ratios (ER2 / reference) are in the job summary.
+    name: Benchmarks (report only)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          cache-suffix: ${{ github.job }}
+      - run: uv sync --locked
+      - run: uv run python benchmarks/run.py --quick >> "$GITHUB_STEP_SUMMARY"

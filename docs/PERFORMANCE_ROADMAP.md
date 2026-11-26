@@ -47,12 +47,18 @@ change that. The end-to-end figure is the one to quote, never the backend's.
 
 ## Open, in order
 
-1. **Matrix conversion, SymPy to PARI.** At size 10 it still costs about five times the
-   determinant itself; most of it is SymPy's `Matrix` and reading its entries.
-2. **Loading PARI only when used.** About 24 ms of the start (cypari2 and its initialisation),
+1. **Loading PARI only when used.** About 24 ms of the start (cypari2 and its initialisation),
    saved only by programs that call no PARI function; it needs a layer in `dispatch` and the
    prelude, so it waits until a measured program shows it matters.
-3. **Startup with symbols.** About 400 ms is importing SymPy itself; ER2 already loads it only
+2. **Startup with symbols.** About 400 ms is importing SymPy itself; ER2 already loads it only
    when a program uses symbols.
-4. **Benchmarks in CI** (PLAN backlog 14), allowing for the noise of shared runners: report,
-   never block a pull request on a timing.
+
+## Measured and left as they are
+
+- **Matrix conversion, SymPy to PARI** (2026-11-26). A 10x10 integer matrix takes 61 us: 17 us
+  reading SymPy's entries, 15 us writing the GP text, 29 us for GP to read it. The fastest route
+  cypari2 offers from Python (each entry converted with `integer_to_gen`, then `PARI.matrix`)
+  takes 45 us, so the gain left is small and not worth a second code path. Going lower needs
+  C (Cython) or a shared integer matrix type such as python-flint's.
+- **Benchmarks in CI** (2026-11-26): the `benchmarks` job of `ci.yml` runs `--quick` and puts
+  the report in the job summary. It reports and never blocks a pull request.

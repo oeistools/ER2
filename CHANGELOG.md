@@ -63,6 +63,8 @@ What is stable already, and what is not:
 - The web no longer loads Google Fonts (sin-google-fonts.scss: \$web-font-path: false; no font links).
 
 ### Added
+
+- CI runs the quick benchmarks on every push and pull request and shows the report in the job summary; a timing never fails the build.
 - **Faster rational arithmetic**: `+ - * /` between rationals and integers are about 1.7 times
   faster (same results as `fractions.Fraction`, checked on random input).
 - **Performance history**: `make bench-record NOTE="…"` keeps every benchmark run in

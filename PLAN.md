@@ -876,6 +876,11 @@ and the README has a platform table (CHANGELOG, Unreleased).
    linked from CONTRIBUTING and the README; ARCHITECTURE §2's diagram updated for D22 and D24.
 12. **A searchable function reference.** `docs/PARI_FUNCTIONS.md` is generated and large; the
     site could offer it by topic, without editing the generated file.
+    **Done 2026-11-27:** the site's *PARI reference* has a search box (every word must match a
+    name or the description; "only what ER2 exposes" hides the `python` rows; empty topics are
+    hidden; `?find=eulerphi` links to a search), on top of the included generated file. It
+    showed that `kill`'s description (TeX quotes, ``undefined'') had cut "Programming in GP" to
+    59 of its 126 rows: the generator now escapes backticks.
 
 **Tests and tooling**
 

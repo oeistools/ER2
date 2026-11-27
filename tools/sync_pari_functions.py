@@ -271,7 +271,9 @@ def write_doc(rows):
                 er2,
                 r["status"],
                 r["note"],
-                r["summary"],
+                # PARI's texts use TeX quotes (``undefined''): a backtick
+                # would open inline code and swallow the rest of the table
+                r["summary"].replace("`", "\\`"),
             ]
             lines.append(
                 "| " + " | ".join(c.replace("|", "\\|") for c in cells) + " |"

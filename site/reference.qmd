@@ -6,4 +6,51 @@ title: "PARI reference"
 Every PARI function, its ER2 name, and whether the prelude exposes it. Generated from `er2/data/pari_functions.csv`.
 :::
 
+```{=html}
+<div class="er2-search">
+  <input id="er2-search" type="search" placeholder="Search a PARI or ER2 name, or a word of the description"
+         aria-label="Search the functions" style="width: 100%; padding: 0.4em; margin-bottom: 0.5em;">
+  <label><input id="er2-exposed" type="checkbox"> Only what ER2 exposes (prelude, <code>pari.</code> and wrappers)</label>
+  <p id="er2-count" style="margin-top: 0.5em;"></p>
+</div>
+<script>
+// Filters the rows of the function tables below: the generated
+// document is included as it is, and only hidden or shown here.
+document.addEventListener("DOMContentLoaded", () => {
+  const box = document.getElementById("er2-search");
+  const exposed = document.getElementById("er2-exposed");
+  const count = document.getElementById("er2-count");
+  // the function tables are the ones with a "Status" column
+  const tables = [...document.querySelectorAll("main table")].filter(
+    (t) => [...t.querySelectorAll("th")].some((th) => th.textContent.trim() === "PARI"));
+  const rows = tables.flatMap((t) => [...t.querySelectorAll("tbody tr")]);
+  const hidden = new Set(["python", "conflict"]);
+  function update() {
+    const words = box.value.toLowerCase().split(/\s+/).filter(Boolean);
+    let shown = 0;
+    for (const row of rows) {
+      const text = row.textContent.toLowerCase();
+      const status = (row.cells[2]?.textContent || "").trim();
+      const ok = words.every((w) => text.includes(w)) && !(exposed.checked && hidden.has(status));
+      row.style.display = ok ? "" : "none";
+      shown += ok;
+    }
+    for (const table of tables) {
+      const any = [...table.querySelectorAll("tbody tr")].some((r) => r.style.display !== "none");
+      // hide a whole topic when none of its functions matches
+      const node = table.closest("section.level2") || table;
+      node.style.display = any ? "" : "none";
+    }
+    count.textContent = `${shown} of ${rows.length} functions`;
+  }
+  // ?find=eulerphi links straight to a search (Quarto's own search uses ?q=)
+  const query = new URLSearchParams(location.search).get("find");
+  if (query) box.value = query;
+  box.addEventListener("input", update);
+  exposed.addEventListener("change", update);
+  update();
+});
+</script>
+```
+
 {{< include ../docs/PARI_FUNCTIONS.md >}}

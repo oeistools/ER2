@@ -29,6 +29,7 @@ What is stable already, and what is not:
 
 ### Fixed
 
+- `docs/PARI_FUNCTIONS.md` showed only 59 of the 126 functions of "Programming in GP": the TeX quotes in `kill`'s description opened inline code; the generator now escapes backticks.
 - The site's home and *Get started* pages described integer literals as `Integer` and `5r` as the way to get a plain `int`; since D22 every integer is an `int` and only `/` and `**` are exact.
 - Error messages of `er2 file.er2` and of the REPL show only the program: a syntax error has no ER2 frames (as `python file.py`); an unclosed bracket or string is reported where it opens ("'(' was never closed"); a runtime error stops at the user's last line, without ER2, SymPy or cypari2 frames; PARI argument errors use the ER2 name (`phi()`, not `eulerphi()`); `factor(f, modulus=n)` with `n` not prime says so instead of SymPy's "zero divisor".
 - `%unload_ext er2` now undoes everything `%load_ext er2` did: it also removes the `.er2`
@@ -67,6 +68,7 @@ What is stable already, and what is not:
 
 ### Added
 
+- The site's *PARI reference* can be searched: by PARI or ER2 name or by a word of the description, optionally only what ER2 exposes; `reference.html?find=eulerphi` links to a search.
 - `docs/OVERVIEW.md`: ER2 in two pages for contributors (the pipeline, which module does what, where a change goes), linked from CONTRIBUTING and the README.
 - `docs/COMPARISON.md` (site page *Compared*, linked from the README): ER2 against Python, SymPy, SageMath and PARI/GP, with what ER2 gives over each, what each is for, the measured costs and where ER2 stops.
 - *Ten programs in ER2* (`examples/ten/`): Mersenne primes, factorization, `phi`, `mu`, algebra, calculus, a matrix, finite fields, power series and a number field, each golden-tested.

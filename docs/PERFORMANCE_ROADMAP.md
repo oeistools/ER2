@@ -47,10 +47,7 @@ change that. The end-to-end figure is the one to quote, never the backend's.
 
 ## Open, in order
 
-1. **Loading PARI only when used**: done 2026-11-26 (D24, the user); 90 to 68 ms without PARI.
-   saved only by programs that call no PARI function; it needs a layer in `dispatch` and the
-   prelude, so it waits until a measured program shows it matters.
-2. **Startup with symbols.** About 400 ms is importing SymPy itself; ER2 already loads it only
+1. **Startup with symbols.** About 400 ms is importing SymPy itself; ER2 already loads it only
    when a program uses symbols.
 
 ## Measured and left as they are
@@ -67,3 +64,8 @@ change that. The end-to-end figure is the one to quote, never the backend's.
   against 3.3 ms; import 105 ms against 330 ms), but 30 of the 51 SymPy names ER2 uses are
   missing (`integrate`, `limit`, `solve`, `simplify`, `factor`, `groebner`, `Poly`…). It cannot
   replace SymPy; ER2 stays on SymPy for now.
+- **Loading PARI on first use** (D24, 2026-11-26, the user). A program without PARI starts in
+  about 56 ms instead of 85 (fastest of 15 runs, same machine). A program that uses PARI pays
+  about 4-5 ms more than before (85 to 89 ms, 40 runs each): the start itself is the same work,
+  and turning the garbage collector off during it did not explain the difference. About 5 %,
+  within the acceptance rule above; left as it is.

@@ -1,7 +1,9 @@
 # Contributing to ER2
 
 Thank you for helping. ER2 is small and young, so every contribution counts: a bug report with a
-three-line example is as useful as a new feature.
+three-line example is as useful as a new feature. New to the code? Start with
+[docs/OVERVIEW.md](docs/OVERVIEW.md): the pipeline, the modules and where a change goes, in two
+pages.
 
 - [Set up](#set-up)
 - [Reporting a bug](#reporting-a-bug)

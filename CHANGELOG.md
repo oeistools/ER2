@@ -67,6 +67,7 @@ What is stable already, and what is not:
 
 ### Added
 
+- `docs/OVERVIEW.md`: ER2 in two pages for contributors (the pipeline, which module does what, where a change goes), linked from CONTRIBUTING and the README.
 - `docs/COMPARISON.md` (site page *Compared*, linked from the README): ER2 against Python, SymPy, SageMath and PARI/GP, with what ER2 gives over each, what each is for, the measured costs and where ER2 stops.
 - *Ten programs in ER2* (`examples/ten/`): Mersenne primes, factorization, `phi`, `mu`, algebra, calculus, a matrix, finite fields, power series and a number field, each golden-tested.
 - *Get started* has a table of the same lines in Python and in ER2, with what each prints.

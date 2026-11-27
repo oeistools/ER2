@@ -290,7 +290,7 @@ flowchart TD
     NB["Jupyter cell<br/>Quarto chunk"]
     REPL["REPL"]
 
-    PRE["er2.preparser<br/>tokenize → transform → untokenize<br/>^ → ** · sym x → Symbol · 5 → Integer(5)<br/>never regex: strings and comments are safe"]
+    PRE["er2.preparser<br/>tokenize → transform → untokenize<br/>^ → ** · sym x → Symbol<br/>then the tree: / and ** exact (D22)<br/>never regex: strings and comments are safe"]
     PY["valid Python source"]
     CPY["CPython<br/>compile and exec"]
     PRELUDE["er2.prelude<br/>the initial namespace"]
@@ -304,7 +304,7 @@ flowchart TD
 
     subgraph backends ["er2.backends"]
         SYMPY["sympy_backend → SymPy<br/>loaded on demand"]
-        PARI["pari_backend → cypari2 → libpari"]
+        PARI["pari_backend → cypari2 → libpari<br/>started on first use (D24)"]
     end
 
     SRC --> PRE

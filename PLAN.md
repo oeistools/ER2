@@ -872,6 +872,8 @@ and the README has a platform table (CHANGELOG, Unreleased).
    network.
 11. **A short architecture overview** (one or two pages, the pipeline diagram of ARCHITECTURE §2)
    for new contributors, pointing to ARCHITECTURE.md for the decisions.
+   **Done 2026-11-27:** `docs/OVERVIEW.md` (pipeline, module map, where a change goes, the rules),
+   linked from CONTRIBUTING and the README; ARCHITECTURE §2's diagram updated for D22 and D24.
 12. **A searchable function reference.** `docs/PARI_FUNCTIONS.md` is generated and large; the
     site could offer it by topic, without editing the generated file.
 

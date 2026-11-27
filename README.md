@@ -122,7 +122,7 @@ The documentation site is at **<https://oeistools.github.io/ER2/>**, built by Qu
 | **Know exactly what the language is** | [docs/LANGUAGE.md](https://github.com/oeistools/ER2/blob/main/docs/LANGUAGE.md): the normative specification — the differences from Python, precedence, the number model, and what is stable before 1.0 |
 | **Understand the design** | [ARCHITECTURE.md](https://github.com/oeistools/ER2/blob/main/ARCHITECTURE.md): the compatibility contract, the components, and the design decisions D1–D24 |
 | **Follow the project** | [PLAN.md](https://github.com/oeistools/ER2/blob/main/PLAN.md) (milestones and acceptance criteria), [CHANGELOG.md](https://github.com/oeistools/ER2/blob/main/CHANGELOG.md) (releases and versioning policy), [docs/BENCHMARKS.md](https://github.com/oeistools/ER2/blob/main/docs/BENCHMARKS.md) |
-| **Contribute** | [CONTRIBUTING.md](https://github.com/oeistools/ER2/blob/main/CONTRIBUTING.md): setup, tests, rules for each part of the code, good first contributions |
+| **Contribute** | [docs/OVERVIEW.md](https://github.com/oeistools/ER2/blob/main/docs/OVERVIEW.md) (the pipeline and the modules in two pages), then [CONTRIBUTING.md](https://github.com/oeistools/ER2/blob/main/CONTRIBUTING.md): setup, tests, rules for each part of the code, good first contributions |
 
 The rules for AI-assisted development are in [CLAUDE.md](https://github.com/oeistools/ER2/blob/main/CLAUDE.md).
 

@@ -843,9 +843,14 @@ and the README has a platform table (CHANGELOG, Unreleased).
 
 **The REPL and errors**
 
-6. **A better REPL.** `er2` is a `code.InteractiveConsole` (`er2/session.py`) and does not
+6. ✅ **A better REPL.** `er2` is a `code.InteractiveConsole` (`er2/session.py`) and does not
    import `readline`, so history and line editing should be checked first; then help (`?`) and
    timing. Keep it Python's console underneath, not a new one.
+   **Done 2026-11-27 (the user's choice), still `code.InteractiveConsole`:** on a terminal,
+   readline with Tab completion of the program's names and a history kept in
+   `$XDG_STATE_HOME/er2/history` (`~/.local/state/er2/history`); `name?` prints the signature
+   and the docstring (REPL only, as in IPython; never in `.er2` files). Timing is left to
+   Jupyter's `%time`, rather than a REPL-only syntax. Tested on a real terminal (pty).
 7. **ER2-specific error messages**, with the ER2 source line and a caret. `ER2Warning` exists in
    the preparser; the question is where Python's own `SyntaxError` reaches the user unexplained,
    which needs measuring before designing.

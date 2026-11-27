@@ -186,6 +186,61 @@ def test_repl_errors_show_only_the_input():
         assert internal not in result.stderr
 
 
+def test_repl_help_with_a_question_mark():
+    result = er2(stdin="factor?\npari.zeta?\nnot_a_name?\nprint(2^3)\n")
+    assert result.returncode == 0, result.stderr
+    assert "factor(obj, *args, **kwargs)" in result.stdout
+    assert "Factor an integer" in result.stdout
+    assert "Riemann zeta function" in result.stdout
+    assert "not_a_name: not defined" in result.stdout
+    assert "8" in result.stdout
+
+
+def test_history_path_follows_xdg(monkeypatch, tmp_path):
+    from er2 import session
+
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path))
+    assert session.history_path() == tmp_path / "er2" / "history"
+    monkeypatch.delenv("XDG_STATE_HOME")
+    assert session.history_path().parts[-4:] == (
+        ".local",
+        "state",
+        "er2",
+        "history",
+    )
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="needs a terminal (pty)")
+def test_repl_in_a_terminal_keeps_its_history(tmp_path):
+    """With a real terminal, readline is on and the history is saved."""
+    import os
+    import pty
+
+    env = dict(os.environ, XDG_STATE_HOME=str(tmp_path))
+    pid, fd = pty.fork()
+    if pid == 0:  # the child: the REPL, on the terminal
+        os.execvpe(ER2[0], ER2, env)
+    output = b""
+    try:
+        for line in (b"x = 2^5\r", b"print(x)\r", b"exit()\r"):
+            os.write(fd, line)
+        while True:
+            try:
+                chunk = os.read(fd, 1024)
+            except OSError:  # the REPL has exited
+                break
+            if not chunk:
+                break
+            output += chunk
+    finally:
+        os.waitpid(pid, 0)
+    assert b"32" in output
+    history = (tmp_path / "er2" / "history").read_text()
+    # libedit (python-build-standalone, macOS) writes spaces as \\040
+    history = history.replace("\\040", " ")
+    assert "x = 2^5" in history and "print(x)" in history
+
+
 def test_version_and_bad_option():
     assert er2("--version").stdout.startswith("er2 ")
     assert er2("--nope").returncode == 2

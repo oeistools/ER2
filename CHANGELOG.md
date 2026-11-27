@@ -69,6 +69,7 @@ What is stable already, and what is not:
 
 ### Added
 
+- The REPL keeps its history between sessions (`~/.local/state/er2/history`), completes names with Tab, and shows a function's help with `name?`.
 - Syntax highlighting for `.er2` files in VS Code, in the sibling repository [ER2-VSCODE](https://github.com/oeistools/ER2-VSCODE).
 - Property-based tests (`tests/test_properties.py`, with Hypothesis as a development dependency only): factorization, `phi`, `mu`, exact division and powers, `Mod`, polynomial factorization and determinants checked on generated input.
 - CI builds the wheel and runs it in a clean environment on Python 3.12, 3.13 and 3.14 on every push; the release workflow does the same on all three versions (it tested 3.12 only).

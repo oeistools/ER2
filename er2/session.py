@@ -8,6 +8,7 @@ on a plain ``import er2``.
 import fractions
 import linecache
 import os
+import re
 import signal
 import sys
 from pathlib import Path
@@ -208,6 +209,8 @@ def _console_class():
 
         def runsource(self, source, filename="<input>", symbol="single"):
             """Preparse ``source``; return True while more input is needed."""
+            if _show_help(source, self.locals, sys.stdout.write):
+                return False
             try:
                 python = preparse(source, filename)
             except IncompleteSourceError:
@@ -226,16 +229,99 @@ def _console_class():
     return ER2Console
 
 
+_HELP = re.compile(r"\s*([A-Za-z_][\w.]*)\s*\?\s*")
+
+
+def _show_help(source, namespace, write):
+    """Write the help of ``name`` for a REPL line ``name?``; True if so.
+
+    Only the REPL reads ``?``, as IPython does; it is not ER2 syntax and
+    an ``.er2`` file never sees it.  A name that does not resolve gives
+    a short message rather than a traceback.
+    """
+    match = _HELP.fullmatch(source)
+    if match is None:
+        return False
+    import inspect  # only when help is asked for
+
+    name = match.group(1)
+    head, *rest = name.split(".")
+    try:
+        obj = namespace[head] if head in namespace else eval(head, namespace)
+        for part in rest:
+            obj = getattr(obj, part)
+    except Exception:  # noqa: BLE001 - any failure means "no such name"
+        write(f"{name}: not defined\n")
+        return True
+    try:
+        signature = f"{name}{inspect.signature(obj)}"
+    except (TypeError, ValueError):
+        signature = f"{name}: {type(obj).__name__}"
+    doc = inspect.getdoc(obj) or "(no documentation)"
+    write(f"{signature}\n\n{doc}\n")
+    return True
+
+
+def history_path():
+    """Return the REPL history file: ``$XDG_STATE_HOME/er2/history``."""
+    state = os.environ.get("XDG_STATE_HOME") or os.path.join(
+        os.path.expanduser("~"), ".local", "state"
+    )
+    return Path(state) / "er2" / "history"
+
+
+def _line_editing(namespace, path):
+    """Turn on readline: history in ``path`` and Tab completion.
+
+    Returns the function that saves the history, or None when readline
+    is not available (Windows without it, or a stripped build).
+    """
+    try:
+        import readline
+        import rlcompleter
+    except ImportError:
+        return None
+    readline.set_completer(rlcompleter.Completer(namespace).complete)
+    if "libedit" in (readline.__doc__ or ""):
+        readline.parse_and_bind("bind ^I rl_complete")  # macOS
+    else:
+        readline.parse_and_bind("tab: complete")
+    readline.set_history_length(1000)
+    try:
+        readline.read_history_file(path)
+    except OSError:
+        pass  # first session, or unreadable: start empty
+
+    def save():
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            readline.write_history_file(path)
+        except OSError:
+            pass  # a read-only home must not break leaving the REPL
+
+    return save
+
+
 def repl():
     """Run the interactive ER2 console."""
     start()
     _lazy.preload()
-    console = _console_class()(prelude.inject({"__name__": "__main__"}))
+    namespace = prelude.inject({"__name__": "__main__"})
+    console = _console_class()(namespace)
+    save = (
+        _line_editing(namespace, history_path())
+        if sys.stdin.isatty()
+        else None
+    )
     banner = (
         f"ER2 on Python {sys.version.split()[0]}. "
-        "'^' is power, '^^' is XOR. Type exit() to quit."
+        "'^' is power, '^^' is XOR. 'name?' shows help. Type exit() to quit."
     )
-    console.interact(banner=banner, exitmsg="")
+    try:
+        console.interact(banner=banner, exitmsg="")
+    finally:
+        if save is not None:
+            save()
 
 
 def transform_cell(lines):

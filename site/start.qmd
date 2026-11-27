@@ -43,7 +43,8 @@ To see what the preparser produced — which is ordinary Python — ask for it:
 er2 --show-python first.er2
 ```
 
-There is also a REPL: run `er2` with no arguments.
+There is also a REPL: run `er2` with no arguments. It keeps its history between sessions,
+completes names with Tab, and `factor?` shows the help of `factor`.
 
 ## Python and ER2 side by side
 

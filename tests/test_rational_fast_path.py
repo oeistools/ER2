@@ -62,3 +62,47 @@ def test_division_by_zero():
         Rational(1, 3) / 0
     with pytest.raises(ZeroDivisionError):
         Integer(1) / Rational(0, 1)
+
+
+def _random_rationals(rng, count):
+    for _ in range(count):
+        yield (
+            Fraction(rng.randint(-(10**6), 10**6), rng.randint(1, 10**4)),
+            Fraction(rng.randint(-(10**6), 10**6), rng.randint(1, 10**4)),
+            rng.randint(-50, 50),
+        )
+
+
+@pytest.mark.parametrize(
+    "op", [operator.floordiv, operator.mod], ids=lambda f: f.__name__
+)
+def test_floordiv_and_mod_match_fraction(op):
+    for a, b, k in _random_rationals(random.Random(7), 2000):
+        for x, y in ((a, b), (a, k), (k, a)):
+            if y == 0:
+                continue
+            expected = op(Fraction(x), Fraction(y))
+            result = op(er2_value(x), er2_value(y))
+            assert result == expected
+            assert type(result) is (
+                int if expected.denominator == 1 else Rational
+            )
+
+
+def test_power_negation_and_abs_match_fraction():
+    for a, _, k in _random_rationals(random.Random(11), 2000):
+        x = er2_value(a)
+        if not isinstance(x, Rational):
+            continue
+        e = k % 13 - 6  # exponents -6 .. 6
+        if a or e >= 0:
+            same(x**e, a**e)
+        same(-x, -a)
+        same(abs(x), abs(a))
+        assert +x is x
+    assert Rational(1, 4) ** 0.5 == 0.5  # other exponents: Fraction's way
+    assert Rational(1, 4) ** Rational(1, 2) == 0.5
+    with pytest.raises(ZeroDivisionError):
+        Rational(1, 3) // 0
+    with pytest.raises(ZeroDivisionError):
+        Rational(1, 3) % 0

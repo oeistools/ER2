@@ -282,6 +282,22 @@ def _fast(compute, fallback, reflected=False, negate=False):
     return method
 
 
+def _floordiv(na, da, nb, db):
+    """``(na/da) // (nb/db)`` as ``Fraction._floordiv``: an ``int``."""
+    return (na * db) // (da * nb)
+
+
+def _mod(na, da, nb, db):
+    """``(na/da) % (nb/db)`` as ``Fraction._mod``, in lowest terms."""
+    n, d = (na * db) % (nb * da), da * db
+    g = math.gcd(n, d)
+    return _number(n // g, d // g)
+
+
+# ``**`` with a float, a rational exponent or a modulus
+_SLOW_POW = _exact(Fraction.__pow__)
+
+
 class Rational(Fraction):
     """Exact rational number; integral results become ``Integer``."""
 
@@ -305,15 +321,41 @@ class Rational(Fraction):
     __rmul__ = _fast(_mul, _exact(Fraction.__rmul__), reflected=True)
     __truediv__ = _fast(_div, _exact(Fraction.__truediv__))
     __rtruediv__ = _fast(_div, _exact(Fraction.__rtruediv__), reflected=True)
-    __floordiv__ = _exact(Fraction.__floordiv__)
-    __rfloordiv__ = _exact(Fraction.__rfloordiv__)
-    __mod__ = _exact(Fraction.__mod__)
-    __rmod__ = _exact(Fraction.__rmod__)
-    __pow__ = _exact(Fraction.__pow__)
+    __floordiv__ = _fast(_floordiv, _exact(Fraction.__floordiv__))
+    __rfloordiv__ = _fast(
+        _floordiv, _exact(Fraction.__rfloordiv__), reflected=True
+    )
+    __mod__ = _fast(_mod, _exact(Fraction.__mod__))
+    __rmod__ = _fast(_mod, _exact(Fraction.__rmod__), reflected=True)
     __rpow__ = _exact(Fraction.__rpow__)
-    __neg__ = _exact(Fraction.__neg__)
-    __pos__ = _exact(Fraction.__pos__)
-    __abs__ = _exact(Fraction.__abs__)
+
+    def __pow__(self, other, modulo=None):
+        """Exact ``**``; an ``int`` exponent as ``Fraction.__pow__``."""
+        if modulo is not None or type(other) is not int:
+            return _SLOW_POW(self, other, modulo)
+        n, d = self._numerator, self._denominator
+        if other >= 0:
+            return _number(n**other, d**other)
+        if n > 0:
+            return _number(d**-other, n**-other)
+        if n == 0:
+            raise ZeroDivisionError(f"Fraction({d**-other}, 0)")
+        return _number((-d) ** -other, (-n) ** -other)
+
+    def __neg__(self):
+        """Exact version of ``__neg__``."""
+        return _number(-self._numerator, self._denominator)
+
+    def __pos__(self):
+        """Return the number itself: ER2 rationals are immutable."""
+        return self
+
+    def __abs__(self):
+        """Exact version of ``__abs__``."""
+        if self._numerator >= 0:
+            return self
+        return _number(-self._numerator, self._denominator)
+
     # ``math.floor``, ``math.ceil``, ``math.trunc`` and ``round``.
     __floor__ = _exact(Fraction.__floor__)
     __ceil__ = _exact(Fraction.__ceil__)

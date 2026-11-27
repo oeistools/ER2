@@ -29,6 +29,7 @@ What is stable already, and what is not:
 
 ### Fixed
 
+- The site's home and *Get started* pages described integer literals as `Integer` and `5r` as the way to get a plain `int`; since D22 every integer is an `int` and only `/` and `**` are exact.
 - Error messages of `er2 file.er2` and of the REPL show only the program: a syntax error has no ER2 frames (as `python file.py`); an unclosed bracket or string is reported where it opens ("'(' was never closed"); a runtime error stops at the user's last line, without ER2, SymPy or cypari2 frames; PARI argument errors use the ER2 name (`phi()`, not `eulerphi()`); `factor(f, modulus=n)` with `n` not prime says so instead of SymPy's "zero divisor".
 - `%unload_ext er2` now undoes everything `%load_ext er2` did: it also removes the `.er2`
   importer and the exact `/` and `**`, so `1/2` is Python's `0.5` again.
@@ -66,6 +67,7 @@ What is stable already, and what is not:
 
 ### Added
 
+- *Get started* has a table of the same lines in Python and in ER2, with what each prints.
 - Rational `**` with an integer exponent, unary `-`, `abs`, `//` and `%` take the same direct route as `+ - * /`: `**`, `-` and `abs` now run in about half the time of `fractions.Fraction`, `//` from 2.5 to 1.6 times (same results, checked on random input).
 - CI runs the quick benchmarks on every push and pull request and shows the report in the job summary; a timing never fails the build.
 - Startup is about 6 ms shorter: `typing` is no longer imported (explicit `singledispatch` registrations), and the PARI function table is read with `csv.reader` and its signatures without `inspect`.

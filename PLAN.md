@@ -857,6 +857,9 @@ and the README has a platform table (CHANGELOG, Unreleased).
 
 8. **"ER2 for a Python programmer" as one table**: `1/3`, `2^100`, `sym x`, `factor(360)`,
    side by side in Python and ER2. It is the §3 table seen from the user's side (§1.4).
+   **Done 2026-11-27:** *Python and ER2 side by side* in `site/start.qmd` (each row checked by
+   running it in both); the start page and the home page no longer describe integers as
+   `Integer` and `5r` as the plain `int` (outdated since D22).
 9. **ER2 compared with Python, SymPy, SageMath and PARI/GP**: a technical page, not marketing,
    stating what each one is for and where ER2 stops.
 10. **"Ten programs in ER2"**: Mersenne primes, factorization, `phi`, `mu`, algebra, calculus,

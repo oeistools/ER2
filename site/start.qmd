@@ -45,13 +45,39 @@ er2 --show-python first.er2
 
 There is also a REPL: run `er2` with no arguments.
 
+## Python and ER2 side by side
+
+The same lines in both, with what each prints.  On the Python side the mathematical functions
+come from SymPy, which ER2 uses underneath.
+
+| You write | Python prints | ER2 prints |
+|---|---|---|
+| `1/3` | `0.3333333333333333` | `1/3` |
+| `1/3 + 1/6` | `0.5` | `1/2` |
+| `10/4`, `10//4` | `2.5`, `2` | `5/2`, `2` |
+| `0.1 + 0.2` | `0.30000000000000004` | `0.30000000000000004` (floats are unchanged) |
+| `2^100` | `102` (XOR) | `1267650600228229401496703205376` |
+| `7 ^^ 2` | syntax error | `5` (XOR; Python's `7 ^ 2`) |
+| `sym x` | syntax error | declares the symbol `x` (Python: `x = sympy.symbols("x")`) |
+| `factor(x^2 - 1)` | needs `sympy.factor(x**2 - 1)`: `(x - 1)*(x + 1)` | `(x - 1)*(x + 1)` |
+| `expand((x + 1)^3)` | `sympy.expand`: `x**3 + 3*x**2 + 3*x + 1` | `x^3 + 3*x^2 + 3*x + 1` |
+| `factor(360)` | `sympy.factorint(360)`: `{2: 3, 3: 2, 5: 1}` | `2^3 * 3^2 * 5` |
+| `isprime(2^127 - 1)` | `sympy.isprime(2**127 - 1)`: `True` | `True`, proven by PARI |
+| `phi(36)` | `sympy.totient(36)`: `12` | `12` |
+| `Mod(3, 7)^-1` | `pow(3, -1, 7)`: `5` | `Mod(5, 7)` |
+| `f"{a^2=}"` with `a = 3` | (`f"{a**2=}"`) `a**2=9` | `a^2=9` |
+
+Everything not in this table — `def`, `class`, `import`, lists, loops, any library — is
+Python, unchanged.
+
 ## The three things to know
 
 **`^` is power, not XOR.** This is the one change that can silently alter pasted Python. Write
 `^^` when you want XOR. ER2 warns when a `^` shares a line with obvious bit manipulation.
 
-**Integer literals are exact.** `1/3` is the rational one third, not `0.333…`. When you want a
-plain Python `int` — in a hot loop, say — write `5r`.
+**Division is exact.** `1/3` is the rational one third, not `0.333…`, and `2^-1` is `1/2`.
+Integers are ordinary Python `int`s, as fast as in Python; only `/` and `**` change, and only
+between integers and rationals: a `float` anywhere gives a `float`, as in Python.
 
 **`sym x` declares a symbol.** Or use the predefined `_x`, `_y`, `_z`, `_n`, `_k`, `_p` without
 declaring anything.

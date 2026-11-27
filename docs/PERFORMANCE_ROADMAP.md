@@ -75,3 +75,13 @@ change that. The end-to-end figure is the one to quote, never the backend's.
   times `Fraction`, against 0.72 for the same function in Python. Without type annotations
   mypyc has nothing to specialise, and the call into the extension costs more than it saves.
   ER2 stays pure Python.
+- **SymPy's core compiled with Cython** (2026-11-27, at the user's request). The 37 modules of
+  `sympy/core` (SymPy 1.14.0) compile in three minutes, but only with `annotation_typing=False`:
+  otherwise Cython enforces SymPy's annotations and the first `x - 1` fails. Compiled, against
+  the same SymPy as pure Python, with the cache cleared before each call: building an
+  expression 0-18 % faster, `expand((x + y + 1)^12)` 13-27 %, five derivatives 7-10 %, `series`
+  5-8 %, `factor(x^20 - 1)` about 10 %, `integrate` unchanged, and `import sympy` no faster
+  (about 420 ms either way). 9 of SymPy's 1963 core tests fail compiled (`test_Rational_new`,
+  `test_rewrite_Add`, `test_var`, ...). A gain this size does not pay for shipping a patched,
+  compiled SymPy for every platform and Python version, with tests SymPy itself fails; ER2
+  keeps the SymPy wheel from PyPI.

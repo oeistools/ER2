@@ -67,7 +67,7 @@ What is stable already, and what is not:
 
 ### Added
 
-- `docs/COMPARISON.md` (site page *Compared*): ER2 against Python, SymPy, SageMath and PARI/GP, with what each is for, the measured costs and where ER2 stops.
+- `docs/COMPARISON.md` (site page *Compared*, linked from the README): ER2 against Python, SymPy, SageMath and PARI/GP, with what ER2 gives over each, what each is for, the measured costs and where ER2 stops.
 - *Ten programs in ER2* (`examples/ten/`): Mersenne primes, factorization, `phi`, `mu`, algebra, calculus, a matrix, finite fields, power series and a number field, each golden-tested.
 - *Get started* has a table of the same lines in Python and in ER2, with what each prints.
 - Rational `**` with an integer exponent, unary `-`, `abs`, `//` and `%` take the same direct route as `+ - * /`: `**`, `-` and `abs` now run in about half the time of `fractions.Fraction`, `//` from 2.5 to 1.6 times (same results, checked on random input).

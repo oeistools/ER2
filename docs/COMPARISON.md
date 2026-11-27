@@ -4,6 +4,29 @@ A technical comparison: what each system is for, what ER2 takes from it, and whe
 The figures come from `benchmarks/run.py` ([BENCHMARKS.md](BENCHMARKS.md)), measured on one
 machine; ratios are ER2's time divided by the other system's.
 
+## What ER2 gives over each
+
+- **Over Python alone:** exact mathematics without asking for it (`1/3` is one third,
+  `2^-1` is `1/2`), mathematical notation in and out (`x^2`, `sym x`; results print as
+  `x^2 + 1` and `2^3 * 3^2 * 5`), and number theory, algebra and calculus without an import.
+  Integer code keeps Python's speed (×1.0).
+- **Over SymPy:** the same SymPy underneath, with `x^2` instead of `x**2` and `sym x` instead of
+  `symbols("x")`, and PARI chosen automatically where it is faster, with the answer SymPy would
+  give: a degree-60 polynomial factors in a twenty-fifth of SymPy's time, a 10x10 integer
+  determinant in a hundredth.
+- **Over PARI/GP:** Python instead of GP, so every Python library (NumPy, pandas, Matplotlib)
+  and Jupyter work, and PARI and symbolic algebra in the same program. On integers the cost
+  over calling PARI directly is small (`isprime` ×1.0, `factor` ×1.1).
+- **Over SageMath:** `pip install er2`, with PARI inside the cypari2 wheel; a language whose
+  difference from Python is one table, learnt in an afternoon; and a program without PARI or
+  symbols starts in about 60 ms.
+- **Only in ER2:** Python, SymPy and PARI as one language, with the engine chosen for each call;
+  and documents (Quarto, Jupyter) written in ER2, where every result has a LaTeX form.
+
+Where it does not win: GP alone is faster on matrices and polynomials (×2 to ×14 here, the price
+of converting); SageMath covers far more mathematics (groups, algebraic geometry,
+combinatorics); and ER2 adds no algorithms of its own.
+
 ## In one table
 
 | | Python | SymPy | SageMath | PARI/GP | ER2 |

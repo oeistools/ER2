@@ -39,6 +39,7 @@ What is stable already, and what is not:
 
 ### Changed
 
+- The workflows use actions that run on Node 24 (`upload-artifact` v7, `download-artifact` v8, `configure-pages` v6, `upload-pages-artifact` v5, `deploy-pages` v5); Node 20 is no longer supported on GitHub's runners.
 - PARI is loaded only when a program uses it (D24): a program with only integers, rationals or SymPy starts in about 68 ms instead of 90 (×2.7 of Python, under the ×3 target); `pari.raw` starts it on demand.
 - **Polynomials reach PARI faster**: an expanded polynomial in one variable is read straight from
   its terms instead of through SymPy's `Poly` (degree 12: 221 to 84 us), which speeds up
@@ -68,6 +69,7 @@ What is stable already, and what is not:
 
 ### Added
 
+- Syntax highlighting for `.er2` files in VS Code, in the sibling repository [ER2-VSCODE](https://github.com/oeistools/ER2-VSCODE).
 - Property-based tests (`tests/test_properties.py`, with Hypothesis as a development dependency only): factorization, `phi`, `mu`, exact division and powers, `Mod`, polynomial factorization and determinants checked on generated input.
 - CI builds the wheel and runs it in a clean environment on Python 3.12, 3.13 and 3.14 on every push; the release workflow does the same on all three versions (it tested 3.12 only).
 - The site's *PARI reference* can be searched: by PARI or ER2 name or by a word of the description, optionally only what ER2 exposes; `reference.html?find=eulerphi` links to a search.

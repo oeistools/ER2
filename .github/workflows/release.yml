@@ -67,7 +67,7 @@ jobs:
             "$venv/bin/er2" "$RUNNER_TEMP/first.er2" > "$RUNNER_TEMP/actual"
             diff "$RUNNER_TEMP/expected" "$RUNNER_TEMP/actual"
           done
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist/
@@ -85,7 +85,7 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: dist
           path: dist/

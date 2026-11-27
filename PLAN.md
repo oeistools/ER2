@@ -908,8 +908,12 @@ and the README has a platform table (CHANGELOG, Unreleased).
     exact rationals and large integers (against `fractions.Fraction` and `int`). The baseline
     is this laptop's: compare on the same machine. **Done 2026-11-26:** the `benchmarks` job of
     `ci.yml` runs `--quick` and writes the report to the job summary; it never fails a build.
-15. **Editor support**: a TextMate grammar for `.er2` (VS Code), from the same rules as
+15. ✅ **Editor support**: a TextMate grammar for `.er2` (VS Code), from the same rules as
     `examples/er2.xml`. Probably a sibling repository, as ER2-ENGINE is for Quarto.
+    **Done 2026-11-27 (the user's choice):** [ER2-VSCODE](https://github.com/oeistools/ER2-VSCODE),
+    a sibling repository. Python's grammar plus the ER2 rules (`sym`, `^` as power, `^^`, `5r`),
+    injected so they apply inside brackets too and never in strings or comments; grammar tests
+    with vscode-tmgrammar-test; CI builds the `.vsix`. Not on the Marketplace yet.
 
 16. **Performance targets** (from an outside review of 2026-11-25). **The user's goal
     (2026-11-25): ER2 faster than Python, and not much slower than PARI/GP.** First step done

@@ -788,6 +788,9 @@ and the README has a platform table (CHANGELOG, Unreleased).
 2. **`er2/py.typed`**, so type checkers read ER2's annotations. Only after checking that the
    public API (the `PRELUDE_NAMES` of `tests/test_stability.py`) is annotated: the marker is a
    promise that the hints are worth reading.
+   **Checked 2026-11-27:** none of the 67 public functions is annotated (two return
+   annotations in all of `er2/`), so the marker waits. Annotating dispatch functions honestly
+   means unions of ER2 values and SymPy expressions; worth doing only if users ask for it.
 3. ✅ **Test macOS in CI**, so the README's platform table can move macOS from *experimental*
    to *supported* and `pyproject.toml` can declare `Operating System :: MacOS`. cypari2 has
    macOS wheels (x86-64 and arm64); what is missing is ER2's own run on them.

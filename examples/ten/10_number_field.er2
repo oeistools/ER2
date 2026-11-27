@@ -1,0 +1,16 @@
+# Q(sqrt(-5)): unique factorization of integers fails, ideals rescue it.
+sym x
+K = NumberField(x^2 + 5)
+print(K, K.discriminant, K.class_number())
+
+# 6 = 2 * 3 = (1 + sqrt(-5)) * (1 - sqrt(-5)), and none of these factor
+# further: the ring of integers is not a unique factorization domain.
+w = K.gen()
+print((1 + w)*(1 - w))
+
+# As ideals, 2 and 3 split into primes (p, e, f, generator).
+print(K.factor(2))
+print(K.factor(3))
+
+# Q(sqrt(-1)) and Q(sqrt(2)) have class number 1.
+print(NumberField(x^2 + 1).class_number(), NumberField(x^2 - 2).class_number())

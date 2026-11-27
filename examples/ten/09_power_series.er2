@@ -1,0 +1,14 @@
+# Power series: SymPy expressions with an O() term, multiplied by PARI.
+sym x
+
+e = series(exp(x), x, 0, 8)
+print(e)
+print(expand(e * series(exp(-x), x, 0, 8)))
+
+# The Fibonacci numbers from their generating function.
+fib = series(x/(1 - x - x^2), x, 0, 12)
+print(fib)
+print([fib.coeff(x, k) for k in range(12)])
+
+# Reversion: y = x/(1 - x) has the inverse x = y/(1 + y).
+print(series_reverse(series(x/(1 - x), x, 0, 6)))

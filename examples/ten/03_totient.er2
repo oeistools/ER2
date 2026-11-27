@@ -1,0 +1,15 @@
+# Euler's phi: how many k in 1..n are coprime to n.
+print([phi(n) for n in range(1, 21)])
+
+# Gauss: the phi of the divisors of n add up to n.
+n = 360
+print(sum(phi(d) for d in divisors(n)) == n)
+
+# Euler's theorem: a^phi(n) = 1 (mod n) when gcd(a, n) = 1.  A residue
+# is compared with a residue: Mod(1, n) == 1 is False in ER2 (D5).
+one = Mod(1, n)
+print(all(Mod(a, n)^phi(n) == one for a in range(1, n) if gcd(a, n) == 1))
+
+# The proportion of fractions in lowest terms tends to 6/pi^2.
+total = sum(phi(n) for n in range(1, 1001))
+print(total, 2*total/1000^2, float(6/pi^2))

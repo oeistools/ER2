@@ -1,0 +1,17 @@
+# Mersenne primes: 2^p - 1 can only be prime when p is prime.
+exponents = [p for p in range(2, 130) if isprime(p) and isprime(2^p - 1)]
+print(exponents)
+
+
+def lucas_lehmer(p):
+    """The Lucas-Lehmer test: 2^p - 1 is prime iff s ends at 0."""
+    m = 2^p - 1
+    s = 4
+    for _ in range(p - 2):
+        s = (s^2 - 2) % m
+    return s == 0
+
+
+# The classical test agrees with isprime (p = 2 is the special case).
+print(all(lucas_lehmer(p) for p in exponents[1:]))
+print(lucas_lehmer(11), factor(2^11 - 1))

@@ -1,0 +1,6 @@
+exp(x)*sin(x) + exp(x)*cos(x)
+(x^2 - 2*x + 2)*exp(x)
+pi/4
+1 E
+1 - x^2/2 + x^4/24 - x^6/720 + O(x^8)
+sqrt(pi)

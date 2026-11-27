@@ -1,0 +1,13 @@
+# Polynomials over Q: factor, expand, gcd and roots, exactly.
+sym x, y
+
+f = x^4 - 5*x^2 + 4
+print(factor(f))
+print(expand((x - 1)*(x + 1)*(x - 2)*(x + 2)) == f)
+print(gcd(f, x^3 - x), solve(f, x))
+
+# Two variables.
+print(factor(x^3 - y^3), expand((x + y)^4))
+
+# A cubic with no rational roots stays irreducible.
+print(factor(x^3 - 2), isirreducible(x^3 - 2), discriminant(x^3 - 2))

@@ -1,0 +1,12 @@
+# Factorization: factor returns a value that prints as mathematics and
+# multiplies back to the number.
+n = 2^64 + 1
+f = factor(n)
+print(f)
+print(f.value() == n, list(f))
+
+print(factor(2024), divisors(2024))
+print(numdiv(2024), sigma(2024))
+
+# A perfect number equals the sum of its proper divisors.
+print([n for n in range(2, 10000) if sigma(n) == 2*n])

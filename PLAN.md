@@ -864,6 +864,10 @@ and the README has a platform table (CHANGELOG, Unreleased).
    stating what each one is for and where ER2 stops.
 10. **"Ten programs in ER2"**: Mersenne primes, factorization, `phi`, `mu`, algebra, calculus,
    a matrix, a finite field, a series, the OEIS; golden-tested like `tests/examples/`.
+   **Done 2026-11-27:** `examples/ten/` (`01_mersenne.er2` … `10_number_field.er2`, with a
+   `README.md`), outputs in `tests/examples/ten/`. The OEIS program became a number field
+   (Q(sqrt(-5))): OEIS functions need the network and `er2[oeis]`, and tests never use the
+   network.
 11. **A short architecture overview** (one or two pages, the pipeline diagram of ARCHITECTURE §2)
    for new contributors, pointing to ARCHITECTURE.md for the decisions.
 12. **A searchable function reference.** `docs/PARI_FUNCTIONS.md` is generated and large; the

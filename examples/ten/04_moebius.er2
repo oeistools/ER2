@@ -1,0 +1,17 @@
+# The Moebius function: 0 if n has a square factor, else (-1)^(number of
+# primes).
+print([mu(n) for n in range(1, 21)])
+
+# The sum of mu(d) over the divisors of n is 0, except for n = 1.
+print([sum(mu(d) for d in divisors(n)) for n in range(1, 11)])
+
+# The Mertens function M(n) = mu(1) + ... + mu(n) stays small.
+mertens = 0
+values = []
+for n in range(1, 101):
+    mertens += mu(n)
+    values.append(mertens)
+print(values[-1], min(values), max(values))
+
+# Square-free numbers have density 6/pi^2 too.
+print(sum(1 for n in range(1, 1001) if mu(n) != 0))

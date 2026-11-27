@@ -1,0 +1,11 @@
+# Calculus with SymPy, printed as mathematics.
+sym x
+
+print(diff(sin(x)*exp(x), x))
+print(integrate(x^2*exp(x), x))
+print(integrate(1/(1 + x^2), (x, 0, 1)))
+print(limit(sin(x)/x, x, 0), limit((1 + 1/x)^x, x, oo))
+print(series(cos(x), x, 0, 8))
+
+# The Gaussian integral, exactly.
+print(integrate(exp(-x^2), (x, -oo, oo)))

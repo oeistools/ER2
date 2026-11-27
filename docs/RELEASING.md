@@ -94,7 +94,7 @@ environment. A fork or another workflow cannot publish, and there is no secret t
 
    The *Release* run first checks the tag against `pyproject.toml` and checks that the commit is
    on `main`. It then runs ruff and the full suite, builds, runs `twine check`, and runs the
-   built wheel in a clean 3.12 environment (steps 1 and 5–7 again, on a clean machine). Only
+   built wheel in clean 3.12, 3.13 and 3.14 environments (steps 1 and 5–7 again, on a clean machine). Only
    then does it stop and wait at the `pypi` environment. **Approving that deployment is the
    publication.** If anything fails before that point, nothing has been uploaded: delete the tag
    (`git push --delete origin v0.7.0`, then `git tag -d v0.7.0`), fix the problem, and tag again.

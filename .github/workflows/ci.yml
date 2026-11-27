@@ -82,6 +82,32 @@ jobs:
       - name: Generated files must be committed
         run: git diff --exit-code -- er2/data docs
 
+  wheel:
+    # The artefact users install, not the source tree: a data file left
+    # out of the wheel fails here, on every push, not at release time.
+    name: Built wheel (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v7
+        with:
+          cache-suffix: ${{ github.job }}-${{ matrix.python-version }}
+      - run: uv build
+      - name: The wheel runs ER2 in a clean environment
+        run: |
+          venv="$RUNNER_TEMP/clean"
+          uv venv "$venv" --python "${{ matrix.python-version }}"
+          uv pip install --python "$venv/bin/python" dist/er2-*.whl
+          printf 'sym x\nprint(2^10, 1/3, factor(x^4 - 1))\nprint(isprime(2^521 - 1))\n' \
+            > "$RUNNER_TEMP/first.er2"
+          printf '1024 1/3 (x - 1)*(x + 1)*(x^2 + 1)\nTrue\n' > "$RUNNER_TEMP/expected"
+          "$venv/bin/er2" "$RUNNER_TEMP/first.er2" > "$RUNNER_TEMP/actual"
+          diff "$RUNNER_TEMP/expected" "$RUNNER_TEMP/actual"
+
   benchmarks:
     # Report only: shared runners are noisy, so a timing never fails a
     # pull request.  The ratios (ER2 / reference) are in the job summary.

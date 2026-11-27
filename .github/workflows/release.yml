@@ -55,15 +55,18 @@ jobs:
       - run: uv run pytest
       - run: uv build
       - run: uv run --with twine twine check dist/*
-      - name: The built wheel runs ER2 in a clean environment
+      - name: The built wheel runs ER2 in a clean environment, on every Python
         run: |
-          uv venv "$RUNNER_TEMP/clean" --python 3.12
-          uv pip install --python "$RUNNER_TEMP/clean/bin/python" dist/er2-*.whl
           printf 'sym x\nprint(2^10, 1/3, factor(x^4 - 1))\nprint(isprime(2^521 - 1))\n' \
             > "$RUNNER_TEMP/first.er2"
           printf '1024 1/3 (x - 1)*(x + 1)*(x^2 + 1)\nTrue\n' > "$RUNNER_TEMP/expected"
-          "$RUNNER_TEMP/clean/bin/er2" "$RUNNER_TEMP/first.er2" > "$RUNNER_TEMP/actual"
-          diff "$RUNNER_TEMP/expected" "$RUNNER_TEMP/actual"
+          for version in 3.12 3.13 3.14; do
+            venv="$RUNNER_TEMP/clean-$version"
+            uv venv "$venv" --python "$version"
+            uv pip install --python "$venv/bin/python" dist/er2-*.whl
+            "$venv/bin/er2" "$RUNNER_TEMP/first.er2" > "$RUNNER_TEMP/actual"
+            diff "$RUNNER_TEMP/expected" "$RUNNER_TEMP/actual"
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: dist

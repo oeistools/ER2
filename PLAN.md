@@ -780,8 +780,11 @@ and the README has a platform table (CHANGELOG, Unreleased).
 
 **Release and packaging**
 
-1. **Run the release smoke test on 3.12, 3.13 and 3.14.** `release.yml` installs the built wheel
+1. ✅ **Run the release smoke test on 3.12, 3.13 and 3.14.** `release.yml` installs the built wheel
    in a clean venv on 3.12 only; CI tests the source on all three, but not the artefact users get.
+   **Done 2026-11-27:** `release.yml` runs the built wheel on 3.12, 3.13 and 3.14, and a new
+   `wheel` job in `ci.yml` builds and runs it on all three on every push, so a file left out
+   of the wheel shows before a release. Checked locally first: green on the three.
 2. **`er2/py.typed`**, so type checkers read ER2's annotations. Only after checking that the
    public API (the `PRELUDE_NAMES` of `tests/test_stability.py`) is annotated: the marker is a
    promise that the hints are worth reading.

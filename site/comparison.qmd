@@ -1,0 +1,9 @@
+---
+title: "ER2 compared"
+---
+
+::: {.callout-note appearance="simple"}
+What Python, SymPy, SageMath and PARI/GP are for, and where ER2 stops.
+:::
+
+{{< include ../docs/COMPARISON.md >}}

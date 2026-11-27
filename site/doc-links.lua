@@ -18,6 +18,7 @@ local BLOB = "https://github.com/oeistools/ER2/blob/main/"
 local pages = {
   ["LANGUAGE.md"] = "language.html",
   ["STABILITY.md"] = "stability.html",
+  ["COMPARISON.md"] = "comparison.html",
   ["PARI_FUNCTIONS.md"] = "reference.html",
   ["BENCHMARKS.md"] = "benchmarks.html",
   ["PERFORMANCE.md"] = "performance.html",

@@ -862,6 +862,8 @@ and the README has a platform table (CHANGELOG, Unreleased).
    `Integer` and `5r` as the plain `int` (outdated since D22).
 9. **ER2 compared with Python, SymPy, SageMath and PARI/GP**: a technical page, not marketing,
    stating what each one is for and where ER2 stops.
+   **Done 2026-11-27:** `docs/COMPARISON.md`, the site page *Compared*; its figures come from
+   `docs/BENCHMARKS.md`.
 10. **"Ten programs in ER2"**: Mersenne primes, factorization, `phi`, `mu`, algebra, calculus,
    a matrix, a finite field, a series, the OEIS; golden-tested like `tests/examples/`.
    **Done 2026-11-27:** `examples/ten/` (`01_mersenne.er2` … `10_number_field.er2`, with a

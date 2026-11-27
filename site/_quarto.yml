@@ -26,6 +26,8 @@ website:
         text: Get started
       - href: language.qmd
         text: Language
+      - href: comparison.qmd
+        text: Compared
       - href: reference.qmd
         text: PARI reference
       - href: stability.qmd

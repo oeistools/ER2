@@ -332,6 +332,9 @@ class Rational(Fraction):
     def __pow__(self, other, modulo=None):
         """Exact ``**``; an ``int`` exponent as ``Fraction.__pow__``."""
         if modulo is not None or type(other) is not int:
+            # ``Fraction.__pow__`` takes a modulus only from Python 3.14
+            if modulo is None:
+                return _SLOW_POW(self, other)
             return _SLOW_POW(self, other, modulo)
         n, d = self._numerator, self._denominator
         if other >= 0:

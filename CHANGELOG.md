@@ -64,6 +64,7 @@ Speed and usability, measured against Python, SymPy and PARI/GP ([docs/PERFORMAN
 
 ### Added
 
+- **Type hints** (`er2/py.typed`): what Python code imports from ER2 (`er2.preparse`, `latex`, `show`, `Rational`, `er2.prelude.namespace`, `er2.session.run_file`, ...) is annotated, so mypy and editors read it; the results of the mathematical functions are `Any`, because they depend on the arguments. CI type-checks `tests/typing/usage.py` against the built wheel with `mypy --strict`. No startup cost: `typing` is never imported at run time.
 - The REPL keeps its history between sessions (`~/.local/state/er2/history`), completes names with Tab, and shows a function's help with `name?`.
 - Syntax highlighting for `.er2` files in VS Code, in the sibling repository [ER2-VSCODE](https://github.com/oeistools/ER2-VSCODE).
 - Property-based tests (`tests/test_properties.py`, with Hypothesis as a development dependency only): factorization, `phi`, `mu`, exact division and powers, `Mod`, polynomial factorization and determinants checked on generated input.

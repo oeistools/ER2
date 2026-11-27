@@ -1,22 +1,37 @@
-"""Exact numbers: ``Integer`` and ``Rational`` (ARCHITECTURE.md §1.1, D6).
+"""Exact numbers: ``Rational``, ``exact_div`` and ``Integer`` (D6, D22).
 
-Every integer literal in ER2 source becomes an ``Integer``.  ``Integer``
-is a real ``int`` subclass, so it keeps working wherever Python or a
-library expects an ``int`` (``range``, indexing, ``json``, NumPy, ...).
-The only difference is that ``/`` and negative powers are exact: they
-return a ``Rational`` instead of a ``float``.
+Integers in ER2 are plain ``int``; the compiler turns ``/`` and ``**``
+into ``exact_div`` and ``exact_pow``, which return a ``Rational`` (a
+``fractions.Fraction`` subclass) where Python would give a ``float``.
+``Integer`` is the earlier ``int`` subclass with exact ``/``, kept for
+code that builds one.
+
+The annotations are for type checkers only (``py.typed``): with
+``from __future__ import annotations`` they are never evaluated, and
+``typing`` is not imported at run time (it costs startup).
 """
+
+from __future__ import annotations
 
 import math
 from fractions import Fraction
 
 from er2.printing import latex
 
+TYPE_CHECKING = False
+if TYPE_CHECKING:
+    from collections.abc import Callable
+    from typing import Any
 
-def normalize(value):
+    # an operator built by the factories below: its result depends on
+    # the operand (an exact number, a float, a SymPy expression, ...)
+    _Operator = Callable[..., Any]
+
+
+def normalize(value: Any) -> Any:
     """Return ``value`` as an ER2 number when it is an exact integer/ratio.
 
-    ``int`` becomes ``Integer``; a ``Fraction`` becomes ``Integer`` when
+    A ``Fraction`` becomes an ``int`` when
     its denominator is 1 and ``Rational`` otherwise.  Anything else
     (``bool``, ``float``, SymPy objects, ...) is returned unchanged.
     """
@@ -29,13 +44,13 @@ def normalize(value):
             # already in lowest terms with a positive denominator: skip
             # the gcd and checks of the constructor (the hot path of
             # rational arithmetic; Python >= 3.12)
-            return Rational._from_coprime_ints(
+            return Rational._from_coprime_ints(  # type: ignore[attr-defined]
                 value.numerator, value.denominator
             )
     return value
 
 
-def _exact(op):
+def _exact(op: Callable[..., Any]) -> _Operator:
     """Wrap an ``int`` or ``Fraction`` operator so results stay ER2 numbers."""
 
     def method(self, *args):
@@ -46,7 +61,7 @@ def _exact(op):
     return method
 
 
-def _exact_pair(op):
+def _exact_pair(op: Callable[..., Any]) -> _Operator:
     """Wrap ``divmod`` so that both parts of the result are ER2 numbers."""
 
     def method(self, other):
@@ -65,7 +80,7 @@ def _exact_pair(op):
 # ``normalize`` step.
 
 
-def _int_binary(op):
+def _int_binary(op: Callable[..., Any]) -> _Operator:
     """Wrap a binary ``int`` operator so that it returns an ``Integer``."""
 
     def method(self, other):
@@ -79,7 +94,7 @@ def _int_binary(op):
     return method
 
 
-def _int_unary(op):
+def _int_unary(op: Callable[..., Any]) -> _Operator:
     """Wrap a unary ``int`` operator so that it returns an ``Integer``."""
 
     def method(self, *args):
@@ -95,11 +110,11 @@ class Integer(int):
 
     __slots__ = ()
 
-    def _repr_latex_(self):
+    def _repr_latex_(self) -> str:
         """Render as math in Jupyter and Quarto."""
         return latex(self)._repr_latex_()
 
-    def __truediv__(self, other):
+    def __truediv__(self, other: Any) -> Any:
         """Return ``self / other``, exactly when ``other`` is an integer."""
         if isinstance(other, int):
             if other == 0:
@@ -109,7 +124,7 @@ class Integer(int):
             return normalize(Fraction(int(self)) / other)
         return int.__truediv__(self, other)
 
-    def __rtruediv__(self, other):
+    def __rtruediv__(self, other: Any) -> Any:
         """Return ``other / self``, exactly when ``other`` is an integer."""
         if isinstance(other, int):
             if self == 0:
@@ -117,13 +132,13 @@ class Integer(int):
             return normalize(Fraction(int(other), int(self)))
         return int.__rtruediv__(self, other)
 
-    def __pow__(self, other, modulo=None):
+    def __pow__(self, other: Any, modulo: Any = None) -> Any:
         """Return ``self ** other``; a negative exponent gives a Rational."""
         if modulo is None and isinstance(other, int) and other < 0:
             return normalize(Fraction(1, int(self) ** -int(other)))
         return normalize(int.__pow__(self, other, modulo))
 
-    def __rpow__(self, other):
+    def __rpow__(self, other: Any) -> Any:  # type: ignore[override]
         """Return ``other ** self``; a negative exponent gives a Rational."""
         if isinstance(other, int) and self < 0:
             return normalize(Fraction(1, int(other) ** -int(self)))
@@ -182,7 +197,7 @@ def _parts(x):
     return None
 
 
-def _number(n, d):
+def _number(n: int, d: int) -> int | Rational:
     """Return ``n/d`` (lowest terms, ``d > 0``) as an ER2 number.
 
     Built with ``object.__new__`` and the two slots: half the time of
@@ -240,7 +255,12 @@ def _div(na, da, nb, db):
     return _number(n, d)
 
 
-def _fast(compute, fallback, reflected=False, negate=False):
+def _fast(
+    compute: Callable[[int, int, int, int], Any],
+    fallback: Callable[..., Any],
+    reflected: bool = False,
+    negate: bool = False,
+) -> _Operator:
     """Operator with the exact fast path and ``fallback`` for the rest.
 
     The operand is read inline, not through ``_parts``: one call less
@@ -299,15 +319,18 @@ _SLOW_POW = _exact(Fraction.__pow__)
 
 
 class Rational(Fraction):
-    """Exact rational number; integral results become ``Integer``."""
+    """Exact rational number; integral results become ``int``."""
 
     __slots__ = ()
+    # ``Fraction``'s own slots, read directly on the hot path
+    _numerator: int
+    _denominator: int
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return ``1/3`` instead of ``Rational(1, 3)``."""
         return str(self)
 
-    def _repr_latex_(self):
+    def _repr_latex_(self) -> str:
         """Render as math in Jupyter and Quarto."""
         return latex(self)._repr_latex_()
 
@@ -329,7 +352,7 @@ class Rational(Fraction):
     __rmod__ = _fast(_mod, _exact(Fraction.__rmod__), reflected=True)
     __rpow__ = _exact(Fraction.__rpow__)
 
-    def __pow__(self, other, modulo=None):
+    def __pow__(self, other: Any, modulo: Any = None) -> Any:
         """Exact ``**``; an ``int`` exponent as ``Fraction.__pow__``."""
         if modulo is not None or type(other) is not int:
             # ``Fraction.__pow__`` takes a modulus only from Python 3.14
@@ -345,19 +368,19 @@ class Rational(Fraction):
             raise ZeroDivisionError(f"Fraction({d**-other}, 0)")
         return _number((-d) ** -other, (-n) ** -other)
 
-    def __neg__(self):
+    def __neg__(self) -> Rational:
         """Exact version of ``__neg__``."""
-        return _number(-self._numerator, self._denominator)
+        return _number(-self._numerator, self._denominator)  # type: ignore[return-value]  # d > 1
 
-    def __pos__(self):
+    def __pos__(self) -> Rational:
         """Return the number itself: ER2 rationals are immutable."""
         return self
 
-    def __abs__(self):
+    def __abs__(self) -> Rational:
         """Exact version of ``__abs__``."""
         if self._numerator >= 0:
             return self
-        return _number(-self._numerator, self._denominator)
+        return _number(-self._numerator, self._denominator)  # type: ignore[return-value]  # d > 1
 
     # ``math.floor``, ``math.ceil``, ``math.trunc`` and ``round``.
     __floor__ = _exact(Fraction.__floor__)
@@ -368,7 +391,7 @@ class Rational(Fraction):
     __rdivmod__ = _exact_pair(Fraction.__rdivmod__)
 
 
-def exact_div(a, b):
+def exact_div(a: Any, b: Any) -> Any:
     """Return ``a / b``, exact when both are integers or rationals.
 
     The ER2 compiler turns every ``/`` into this call (perf/plain-int),
@@ -385,7 +408,7 @@ def exact_div(a, b):
     return a / b
 
 
-def exact_pow(a, b):
+def exact_pow(a: Any, b: Any) -> Any:
     """Return ``a ** b``; a negative integer exponent gives a Rational."""
     if isinstance(b, int) and b < 0 and isinstance(a, (int, Fraction)):
         return normalize(Fraction(a) ** b)
@@ -393,7 +416,7 @@ def exact_pow(a, b):
 
 
 class _LiteralCache(dict):
-    """Integer literals, created once: ``cache[5]`` is ``Integer(5)``.
+    """Integer literals, created once: ``cache[5]`` is ``5``.
 
     The preparser wraps every integer literal in a call, which runs on
     every evaluation.  ``Integer`` is immutable, so a literal can be shared,
@@ -402,8 +425,8 @@ class _LiteralCache(dict):
 
     __slots__ = ()
 
-    def __missing__(self, value):
-        """Create and remember the ``Integer`` for a new literal."""
+    def __missing__(self, value: str) -> int:
+        """Create and remember the ``int`` for a new literal."""
         integer = self[value] = int(value)
         return integer
 

@@ -9,6 +9,8 @@ about 0.3 s to import.  Given a program's code, ``namespace`` includes
 them only if the program uses them (``er2._lazy``).
 """
 
+from __future__ import annotations
+
 import types
 
 from er2 import _lazy, dispatch, oeis, preparser
@@ -27,6 +29,10 @@ from er2.runtime.numbers import (
     literal,
 )
 from er2.runtime.qfb import Qfb
+
+TYPE_CHECKING = False
+if TYPE_CHECKING:  # annotations only: ``typing`` costs startup
+    from typing import Any
 
 # Public functions (CAS and number theory); they choose their backend in
 # ``er2.dispatch``.
@@ -56,18 +62,18 @@ PREDEFINED_SYMBOLS = ("x", "y", "z", "n", "k", "p")
 _DYNAMIC_NAMES = {"eval", "exec", "globals", "vars", "locals", "__import__"}
 
 
-def symbols(names):
+def symbols(names: str) -> tuple[Any, ...]:
     """Return a tuple of SymPy symbols for the comma-separated ``names``."""
     result = _lazy.sympy().symbols(names, seq=True)
     return tuple(result)
 
 
-def sympy_names():
+def sympy_names() -> set[str]:
     """Return the prelude names whose values are SymPy objects."""
     return {*SYMPY_NAMES, *(f"_{name}" for name in PREDEFINED_SYMBOLS)}
 
 
-def needs_sympy(code):
+def needs_sympy(code: types.CodeType) -> bool:
     """Whether compiled ``code`` may use a SymPy value of the prelude."""
     names = set()
     pending = [code]
@@ -80,7 +86,7 @@ def needs_sympy(code):
     return bool(names & (sympy_names() | _DYNAMIC_NAMES))
 
 
-def namespace(code=None):
+def namespace(code: types.CodeType | None = None) -> dict[str, Any]:
     """Return a fresh dict with the ER2 prelude.
 
     With ``code`` (a compiled program), the SymPy values are included only
@@ -115,7 +121,9 @@ def namespace(code=None):
     return ns
 
 
-def inject(target, code=None):
+def inject(
+    target: dict[str, Any], code: types.CodeType | None = None
+) -> dict[str, Any]:
     """Add the prelude to the ``target`` dict without overwriting names.
 
     ``code`` is the compiled program that will run in ``target``, if

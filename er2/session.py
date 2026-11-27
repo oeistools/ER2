@@ -5,6 +5,8 @@ session needs (ER2 printing, D11; ``.er2`` imports).  Nothing here runs
 on a plain ``import er2``.
 """
 
+from __future__ import annotations
+
 import fractions
 import linecache
 import os
@@ -21,17 +23,22 @@ from er2.preparser import (
     preparse,
 )
 
+TYPE_CHECKING = False
+if TYPE_CHECKING:  # annotations only: ``typing`` costs startup
+    from collections.abc import Iterable
+    from typing import Any
+
 _PACKAGE_DIR = Path(__file__).resolve().parent
 _FRACTIONS = Path(fractions.__file__).resolve()
 
 
-def start():
+def start() -> None:
     """Enable ER2 printing and ``.er2`` imports in this process."""
     printing.install()
     importer.install()
 
 
-def run_file(path, argv=()):
+def run_file(path: str | os.PathLike[str], argv: Iterable[str] = ()) -> int:
     """Run the ER2 program at ``path`` as ``__main__``; return exit code."""
     start()
     with open(path, encoding="utf-8") as fh:
@@ -262,7 +269,7 @@ def _show_help(source, namespace, write):
     return True
 
 
-def history_path():
+def history_path() -> Path:
     """Return the REPL history file: ``$XDG_STATE_HOME/er2/history``."""
     state = os.environ.get("XDG_STATE_HOME") or os.path.join(
         os.path.expanduser("~"), ".local", "state"
@@ -302,7 +309,7 @@ def _line_editing(namespace, path):
     return save
 
 
-def repl():
+def repl() -> None:
     """Run the interactive ER2 console."""
     start()
     _lazy.preload()
@@ -324,7 +331,7 @@ def repl():
             save()
 
 
-def transform_cell(lines):
+def transform_cell(lines: list[str]) -> list[str]:
     """IPython input transformer: preparse a cell given as ``lines``."""
     source = "".join(lines)
     try:
@@ -335,7 +342,7 @@ def transform_cell(lines):
     return python.splitlines(keepends=True)
 
 
-def load_ipython_extension(shell):
+def load_ipython_extension(shell: Any) -> None:
     """Enable ER2 in an IPython shell (``%load_ext er2``)."""
     start()
     if transform_cell not in shell.input_transformers_post:
@@ -372,7 +379,7 @@ def _hide_internal_frames(shell, etype, value, tb, tb_offset=None):
     shell.showtraceback((etype, value, tb), tb_offset=tb_offset)
 
 
-def unload_ipython_extension(shell):
+def unload_ipython_extension(shell: Any) -> None:
     """Disable ER2 in an IPython shell (``%unload_ext er2``)."""
     if transform_cell in shell.input_transformers_post:
         shell.input_transformers_post.remove(transform_cell)

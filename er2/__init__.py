@@ -6,28 +6,34 @@ command, the ER2 kernel, ``%load_ext er2``) or explicitly with
 ``er2.session.start()``.
 """
 
+from __future__ import annotations
+
 from er2.preparser import preparse
 from er2.printing import latex, show
 from er2.runtime.numbers import Integer, Rational
 
+TYPE_CHECKING = False
+if TYPE_CHECKING:  # annotations only: ``typing`` costs startup
+    from typing import Any
+
 __all__ = ["Integer", "Rational", "latex", "preparse", "show"]
 
 
-def load_ipython_extension(shell):
+def load_ipython_extension(shell: Any) -> None:
     """Enable ER2 in IPython: ``%load_ext er2``."""
     from er2.session import load_ipython_extension
 
     load_ipython_extension(shell)
 
 
-def unload_ipython_extension(shell):
+def unload_ipython_extension(shell: Any) -> None:
     """Disable ER2 in IPython: ``%unload_ext er2``."""
     from er2.session import unload_ipython_extension
 
     unload_ipython_extension(shell)
 
 
-def __getattr__(name):
+def __getattr__(name: str) -> str:
     """Compute ``__version__`` when asked for (PEP 562).
 
     ``importlib.metadata`` costs about 35 ms to import, a quarter of

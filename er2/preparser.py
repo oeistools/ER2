@@ -20,12 +20,18 @@ ER2            Python
 =============  =====================================
 """
 
+from __future__ import annotations
+
 import ast
 import io
 import keyword
 import re
 import tokenize
 import warnings
+
+TYPE_CHECKING = False
+if TYPE_CHECKING:  # annotations only: ``typing`` costs startup
+    from types import CodeType
 
 INTEGER = "__er2_int__"
 SYMBOLS = "__er2_sym__"
@@ -52,7 +58,7 @@ class IncompleteSourceError(SyntaxError):
     """The source ends inside a bracket or a multi-line string."""
 
 
-def preparse(source, filename="<er2>"):
+def preparse(source: str, filename: str = "<er2>") -> str:
     """Return the Python translation of the ER2 ``source`` string.
 
     Raise ``IncompleteSourceError`` if ``source`` ends inside a bracket or a
@@ -377,12 +383,21 @@ class _ExactOps(ast.NodeTransformer):
         return node
 
 
-def exact_tree(tree):
+def exact_tree(tree: ast.AST) -> ast.AST:
     """Return ``tree`` with ``/`` and ``**`` made exact (perf/plain-int)."""
     return ast.fix_missing_locations(_ExactOps().visit(tree))
 
 
-def compile_er2(python, filename, mode="exec", **kwargs):
+def compile_er2(
+    python: str,
+    filename: str,
+    mode: str = "exec",
+    *,
+    dont_inherit: bool = False,
+) -> CodeType:
     """Compile preparsed ``python`` with exact ``/`` and ``**``."""
     tree = exact_tree(ast.parse(python, filename, mode))
-    return compile(tree, filename, mode, **kwargs)
+    # a parsed ``mode`` tree is what ``compile`` takes; typeshed sees AST
+    return compile(  # type: ignore[call-overload]
+        tree, filename, mode, dont_inherit=dont_inherit
+    )

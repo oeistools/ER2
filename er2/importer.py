@@ -50,7 +50,7 @@ def _loader_details():
 _hook = machinery.FileFinder.path_hook(*_loader_details())
 
 
-def install():
+def install() -> None:
     """Enable ``.er2`` imports (idempotent)."""
     if _hook in sys.path_hooks:
         return
@@ -66,7 +66,7 @@ def install():
     sys.path_importer_cache.clear()
 
 
-def uninstall():
+def uninstall() -> None:
     """Disable ``.er2`` imports."""
     if _hook in sys.path_hooks:
         sys.path_hooks.remove(_hook)

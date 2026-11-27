@@ -37,7 +37,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | 0.6.1     | ER2 cells and highlighting in Quarto (D9)     | ✅ done     |
 | M7 (0.7)  | Language specification                        | ✅ done     |
 | M8 (1.0)  | Stable language and release                   | in progress |
-| Backlog   | From a review of 0.7.0 (16 items)             | 14 done; 2 and 5 wait |
+| Backlog   | From a review of 0.7.0 (16 items)             | 15 done; 5 waits on cypari2 |
 | — (2.0)  | Deep CPython integration                      | long term   |
 
 ---
@@ -791,12 +791,21 @@ and the README has a platform table (CHANGELOG, Unreleased).
    **Done 2026-11-27:** `release.yml` runs the built wheel on 3.12, 3.13 and 3.14, and a new
    `wheel` job in `ci.yml` builds and runs it on all three on every push, so a file left out
    of the wheel shows before a release. Checked locally first: green on the three.
-2. **`er2/py.typed`**, so type checkers read ER2's annotations. Only after checking that the
+2. ✅ **`er2/py.typed`**, so type checkers read ER2's annotations. Only after checking that the
    public API (the `PRELUDE_NAMES` of `tests/test_stability.py`) is annotated: the marker is a
    promise that the hints are worth reading.
    **Checked 2026-11-27:** none of the 67 public functions is annotated (two return
    annotations in all of `er2/`), so the marker waits. Annotating dispatch functions honestly
    means unions of ER2 values and SymPy expressions; worth doing only if users ask for it.
+   **Done 2026-11-27 (the user's choice), for what a type checker can see:** the prelude's
+   functions are made at import time (`dispatch.FUNCTIONS`, `_public`) and reach ER2 programs
+   through the namespace, so no checker sees them; what Python code imports is annotated
+   (`er2.preparse`, `latex`, `show`, `Tex`, `Rational`, `exact_div`, `compile_er2`, `prelude`,
+   `session`, `importer`). Results that depend on the arguments are `Any`, not invented unions.
+   The annotations are never evaluated (`from __future__ import annotations`, a
+   `TYPE_CHECKING = False` block), so startup is unchanged. `tests/typing/usage.py` pins the
+   types with `assert_type`; the `wheel` job of CI checks it with `mypy --strict` against the
+   installed wheel. Not done: annotating `dispatch`, the runtime classes and the backends.
 3. ✅ **Test macOS in CI**, so the README's platform table can move macOS from *experimental*
    to *supported* and `pyproject.toml` can declare `Operating System :: MacOS`. cypari2 has
    macOS wheels (x86-64 and arm64); what is missing is ER2's own run on them.

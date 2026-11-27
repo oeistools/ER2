@@ -9,11 +9,17 @@
   as ER2 text in a terminal.
 """
 
+from __future__ import annotations
+
 import functools
 import sys
 from fractions import Fraction
 
 from er2 import _lazy
+
+TYPE_CHECKING = False
+if TYPE_CHECKING:  # annotations only: ``typing`` costs startup
+    from typing import Any
 
 __all__ = ["Tex", "install", "latex", "show", "uninstall"]
 
@@ -55,14 +61,14 @@ def _printer_class():
     return ER2StrPrinter
 
 
-def __getattr__(name):
+def __getattr__(name: str) -> type:
     """Build ``ER2StrPrinter`` on first access (it needs SymPy)."""
     if name == "ER2StrPrinter":
         return _printer_class()
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
-def er2_str(expr, **settings):
+def er2_str(expr: Any, **settings: Any) -> str:
     """Return ``expr`` as a string in ER2 notation."""
     return _printer_class()(settings).doprint(expr)
 
@@ -70,7 +76,7 @@ def er2_str(expr, **settings):
 _original_sstr = None
 
 
-def install():
+def install() -> None:
     """Make ER2 notation SymPy's default ``str``/``repr`` in this process.
 
     If SymPy is not imported yet, this happens as soon as it is (D11): a
@@ -88,7 +94,7 @@ def _install_now():
         sympy_str.sstr = er2_str
 
 
-def uninstall():
+def uninstall() -> None:
     """Restore SymPy's own printer (undo ``install``)."""
     global _original_sstr
     _lazy.cancel(_install_now)
@@ -108,23 +114,25 @@ class Tex(str):
     render it through ``_repr_markdown_``.
     """
 
-    def __new__(cls, body, display=False):
+    display: bool
+
+    def __new__(cls, body: str, display: bool = False) -> Tex:
         """Create a ``Tex`` from the LaTeX ``body``."""
         self = super().__new__(cls, body)
         self.display = display
         return self
 
-    def _delimited(self):
+    def _delimited(self) -> str:
         return f"$${self}$$" if self.display else f"${self}$"
 
-    def _repr_latex_(self):
+    def _repr_latex_(self) -> str:
         return self._delimited()
 
-    def _repr_markdown_(self):
+    def _repr_markdown_(self) -> str:
         return self._delimited()
 
 
-def latex(obj, *, display=False, **options):
+def latex(obj: Any, *, display: bool = False, **options: Any) -> Tex:
     """Return the LaTeX of ``obj`` as a ``Tex``.
 
     ``display=True`` renders it as display math (``$$...$$``) in
@@ -253,7 +261,7 @@ def _escape(text):
     return "".join(table.get(ch, ch) for ch in text)
 
 
-def show(*objs):
+def show(*objs: Any) -> None:
     """Render ``objs`` as display math in notebooks, else print them."""
     display = _notebook_display()
     for obj in objs:

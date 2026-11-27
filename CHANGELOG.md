@@ -93,6 +93,7 @@ Speed and usability, measured against Python, SymPy and PARI/GP ([docs/PERFORMAN
 - **macOS is supported**, on Apple Silicon and Intel: CI now runs the whole test suite on both
   as well as on Linux, for Python 3.12–3.14, and the package declares
   `Operating System :: MacOS`.
+- The release workflow can be run by hand (`gh workflow run release.yml`) as a rehearsal: it checks and builds but never publishes.
 - **Releases through a trusted publisher (M8).** Pushing a tag `vX.Y.Z` starts
   `.github/workflows/release.yml`. It checks the tag against the version and that the commit
   is on `main`, runs the suite, builds, and runs the built wheel in a clean environment. It then

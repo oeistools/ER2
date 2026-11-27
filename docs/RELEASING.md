@@ -42,6 +42,13 @@ Nothing here can be done from the repository. It needs your accounts:
 PyPI then accepts uploads only from that workflow file, in that repository, running in that
 environment. A fork or another workflow cannot publish, and there is no secret to leak.
 
+## Rehearsing the release workflow
+
+Run it by hand from **Actions → Release → Run workflow** on `main`, or with
+`gh workflow run release.yml --ref main`. It does everything the tag would do (the suite,
+the build, `twine check`, the wheel on 3.12, 3.13 and 3.14) except the tag check, and then
+stops: the publish job runs only for a pushed `v*` tag, so nothing can reach PyPI.
+
 ## The checklist
 
 1. **Everything green.**

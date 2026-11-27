@@ -52,6 +52,16 @@ def test_the_workflow_runs_on_version_tags_only():
     assert "branches" not in head
 
 
+def test_a_run_by_hand_never_publishes():
+    # workflow_dispatch is a rehearsal: the publish job needs a pushed tag
+    head, _, publish = _jobs()
+    assert "workflow_dispatch:" in head
+    assert (
+        "if: github.event_name == 'push' && "
+        "startsWith(github.ref, 'refs/tags/v')" in publish
+    )
+
+
 def test_the_tag_is_checked_before_building():
     _, build, _ = _jobs()
     version_check = build.index('"v${version}"')

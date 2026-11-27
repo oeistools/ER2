@@ -7,6 +7,9 @@
 #   environment (the check that catches a missing data file), and
 # * a maintainer has approved the `pypi` environment's deployment.
 #
+# Run by hand (workflow_dispatch) it is a rehearsal: the build job runs
+# on main without the tag check, and the publish job is skipped.
+#
 # There is no token anywhere: PyPI trusts this workflow, in this
 # repository, in that environment, and nothing else.  Only the publish
 # job can ask for the OIDC identity that proves it.
@@ -15,6 +18,7 @@ name: Release
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -37,6 +41,7 @@ jobs:
         with:
           cache-suffix: ${{ github.job }}
       - name: The tag names the version in pyproject.toml
+        if: github.event_name == 'push'
         run: |
           version="$(uv version --short)"
           if [ "${GITHUB_REF_NAME}" != "v${version}" ]; then
@@ -76,6 +81,8 @@ jobs:
   publish:
     name: Upload to PyPI
     needs: build
+    # only a pushed tag publishes; a run by hand stops after the build
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     # Give this environment required reviewers in the repository settings:
     # the approval is the moment a person decides to publish.

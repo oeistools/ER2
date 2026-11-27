@@ -26,8 +26,9 @@ Before 1.0 a minor release may still change the public API, and each such change
 
 **S1. The language.** Every rule of [LANGUAGE.md](LANGUAGE.md) except §12, which is this policy
 restated. In particular the §3 table of differences from Python is exhaustive and frozen: `^`,
-`^^`, their assignment forms, exact `/` and `**` on integers (D22), `5r`, `sym`, and the ER2 text
-echoed by `f"{a^2=}"`.
+`^^`, their assignment forms, exact `/` and `**` on integers (D22), `sym`, and the ER2 text
+echoed by `f"{a^2=}"`. The raw literal `5r` is **not** frozen: it is deprecated (LANGUAGE.md
+§3.4 R4) and 1.0 removes it.
 
 **S2. The number model.** Integers are Python's `int` (D22) and `Integer`, still available,
 subclasses it; `Rational` subclasses `fractions.Fraction`; exact `/` and `**` (LANGUAGE.md
@@ -37,8 +38,9 @@ subclasses it; `Rational` subclasses `fractions.Fraction`; exact `/` and `**` (L
 four groups:
 
 - the mathematical functions (`factor`, `isprime`, `phi`, `det`, `expand`, …);
-- the mathematical types (`Integer`, `Rational`, `Mod`, `GF`, `NumberField`, `Factorization`,
-  `Qfb`, `DirichletSeries`, `Matrix`);
+- the mathematical types (`Rational`, `Mod`, `GF`, `NumberField`, `Factorization`, `Qfb`,
+  `DirichletSeries`, `Matrix`). `Integer` is deprecated in the prelude (LANGUAGE.md §5.1 R5):
+  1.0 removes it from there, and it stays importable (`from er2 import Integer`);
 - output (`latex`, `show`);
 - the SymPy constants and elementary functions re-exported as they are (`pi`, `E`, `I`, `oo`,
   `sqrt`, `exp`, `log`, `sin`, `cos`, `tan`, `Eq`), and `symbols`.
@@ -55,6 +57,12 @@ what it returns for arguments that already worked.
 
 **S7. `.er2` files are importable** with a plain `import`, and a `.py` module of the same name
 wins (LANGUAGE.md §11.1 R2).
+
+**S8. The Python API** (decided 2026-11-27): what Python code may import and rely on is the
+top-level `er2` package (`er2.__all__`: `preparse`, `latex`, `show`, `Integer`, `Rational`, and
+`%load_ext er2`) and the classes of `er2.runtime` (`Mod`, `Factorization`, `GF` and its
+elements, `NumberField`, `PrimeIdeal`, `Qfb`, `DirichletSeries`). Their type hints
+(`py.typed`) are part of it. Everything else that is importable is N5.
 
 ## 3. What is not stable
 
@@ -87,8 +95,9 @@ From 1.0, a stable name is removed only like this:
 
 1. **Announce.** The release that deprecates it says so in `CHANGELOG.md` under **Deprecated**,
    names the replacement, and explains how to migrate.
-2. **Warn.** Using it raises `DeprecationWarning` with the replacement in the message. The name
-   keeps working unchanged.
+2. **Warn.** Using it raises `FutureWarning` with the replacement in the message. The name
+   keeps working unchanged. Not `DeprecationWarning`: Python hides that one outside
+   `__main__`, and the warning is for the person who wrote the program.
 3. **Wait.** At least **two minor releases**, and at least **six months**, whichever is longer.
 4. **Remove.** Only in a major release, listed under **Removed**.
 

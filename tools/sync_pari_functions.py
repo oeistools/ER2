@@ -60,12 +60,12 @@ STATUSES = {
 # Initial curated rows: (er2_name, status, note).  Used only when a PARI
 # function has no row in the CSV yet; afterwards the CSV is edited by hand.
 CURATED = {
-    "eulerphi": ("phi", "prelude", "draft name"),
-    "moebius": ("mu", "prelude", "draft name"),
+    "eulerphi": ("phi", "prelude", "final name (1.0 review)"),
+    "moebius": ("mu", "prelude", "final name (1.0 review)"),
     "bigomega": (
         "bigomega",
         "prelude",
-        "draft `Omega`, renamed for PEP 8 (D8)",
+        "final (1.0 review); `Omega` renamed for PEP 8 (D8)",
     ),
     "psi": (
         "digamma",

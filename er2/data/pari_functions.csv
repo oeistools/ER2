@@ -220,7 +220,7 @@ addprimes,5,addprimes,namespace,,add primes in the vector x to the prime table t
 bestappr,5,bestappr,namespace,,"return a rational approximation to x, whose denominator is limited by B, if present"
 bestapprPade,5,bestappr_pade,namespace,renamed for PEP 8,returns a rational function approximation to x
 bezout,5,bezout,namespace,,deprecated alias for gcdext
-bigomega,5,bigomega,prelude,"draft `Omega`, renamed for PEP 8 (D8)","number of prime divisors of x, counted with multiplicity"
+bigomega,5,bigomega,prelude,final (1.0 review); `Omega` renamed for PEP 8 (D8),"number of prime divisors of x, counted with multiplicity"
 charconj,5,charconj,namespace,,"given a finite abelian group (by its elementary divisors cyc) and a character chi, return the conjugate character"
 chardiv,5,chardiv,namespace,,"given a finite abelian group (by its elementary divisors cyc) and two characters a and b, return the character a/b"
 chareval,5,chareval,namespace,,"given an abelian group structure affording a discrete logarithm method, e.g"
@@ -241,7 +241,7 @@ dirmul,5,dirmul,namespace,,multiplication of the Dirichlet series x by the Diric
 dirpowerssum,5,dirpowerssum,namespace,,return f(1)1^x + f(2)2^x + 
 divisors,5,divisors,prelude,,gives a vector formed by the divisors of x in increasing order
 divisorslenstra,5,divisorslenstra,namespace,,finds all divisors d of N such that d = r (mod s)
-eulerphi,5,phi,prelude,draft name,Euler's totient function of x
+eulerphi,5,phi,prelude,final name (1.0 review),Euler's totient function of x
 factor,5,factor,prelude,"dispatch: integers -> PARI, Expr -> SymPy",factorization of x over domain D
 factorback,5,factorback,namespace,,"given a factorization f, gives the factored object back"
 factorcantor,5,factorcantor,namespace,,"this function is obsolete, use factormod"
@@ -283,7 +283,7 @@ istotient,5,istotient,namespace,,"true(1) if x = eulerphi(n) for some integer n,
 kronecker,5,kronecker,prelude,,kronecker symbol (x/y)
 lcm,5,lcm,prelude,,"least common multiple of x and y, i.e"
 logint,5,logint,namespace,,"return the largest non-negative integer e so that b^e <= x, where b > 1 is an integer and x >= 1 is a real number"
-moebius,5,mu,prelude,draft name,Moebius function of x
+moebius,5,mu,prelude,final name (1.0 review),Moebius function of x
 nextprime,5,nextprime,prelude,,smallest pseudoprime >= x
 numdiv,5,numdiv,prelude,,number of divisors of x
 omega,5,omega,prelude,,number of distinct prime divisors of x

@@ -111,3 +111,5 @@ convention = "numpy"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# a deprecated feature in a test must say so (pytest.mark.filterwarnings)
+filterwarnings = ["error::FutureWarning"]

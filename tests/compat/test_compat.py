@@ -198,6 +198,7 @@ class TestMixingPythonAndEr2:
         )
         assert out == "0 27\n"
 
+    @pytest.mark.filterwarnings("ignore:.*is deprecated:FutureWarning")
     def test_er2_integers_are_python_ints_inside_a_py_module(
         self, plain_module
     ):
@@ -216,6 +217,7 @@ class TestMixingPythonAndEr2:
         )
         assert out == "0.5 0.5\n"
 
+    @pytest.mark.filterwarnings("ignore:.*is deprecated:FutureWarning")
     def test_raw_literals_opt_a_single_expression_out(self):
         """``^^`` is XOR; ``5r`` is accepted but changes nothing (D22).
 

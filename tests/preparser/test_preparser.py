@@ -4,7 +4,12 @@ import warnings
 
 import pytest
 
-from er2.preparser import ER2Warning, IncompleteSourceError, preparse
+from er2.preparser import (
+    ER2Warning,
+    IncompleteSourceError,
+    compile_er2,
+    preparse,
+)
 
 
 @pytest.mark.parametrize(
@@ -55,6 +60,7 @@ from er2.preparser import ER2Warning, IncompleteSourceError, preparse
         ("def f():\n    sym t\n", 'def f():\n    t, = __er2_sym__("t")\n'),
     ],
 )
+@pytest.mark.filterwarnings("ignore:.*is deprecated:FutureWarning")
 def test_translation(er2, python):
     assert preparse(er2) == python
 
@@ -125,3 +131,21 @@ def test_xor_warning():
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         preparse("y = x ^ 2\n")
+
+
+def test_raw_literals_are_deprecated():
+    with pytest.warns(FutureWarning, match="'5r' is deprecated") as record:
+        preparse("n = 5r\n", "prog.er2")
+    assert record[0].filename == "prog.er2" and record[0].lineno == 1
+
+
+def test_integer_from_the_prelude_is_deprecated():
+    with pytest.warns(FutureWarning, match="'Integer' in the prelude"):
+        compile_er2("n = 1\nm = Integer(3)\n", "prog.er2")
+
+
+def test_integer_imported_by_the_program_is_not_warned():
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        compile_er2("from er2 import Integer\nm = Integer(3)\n", "p.er2")
+        compile_er2("Integer = int\nm = Integer(3)\n", "p.er2")

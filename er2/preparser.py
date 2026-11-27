@@ -75,7 +75,7 @@ def preparse(source: str, filename: str = "<er2>") -> str:
     _power_and_xor(tokens, edits, lines, filename)
     _sym_statements(tokens, edits, filename)
     _debug_fstrings(tokens, edits, lines)
-    raw = _raw_literals(tokens, edits)
+    raw = _raw_literals(tokens, edits, filename)
     # Integer literals are wrapped in a second pass over valid Python, so
     # that the literals of ``case`` patterns can be found and left alone.
     python = _apply(lines, edits)
@@ -87,12 +87,14 @@ def preparse(source: str, filename: str = "<er2>") -> str:
     return _apply(lines, edits)
 
 
-def _raw_literals(tokens, edits):
+def _raw_literals(tokens, edits, filename):
     """Record the edits for raw literals (``5r``); return their positions.
 
     ``5r`` is a plain Python ``int`` (Sage's convention, §1.1): the ``r``
     is removed and the literal is not wrapped.  ``5r`` is a syntax error
-    in Python, so this cannot change the meaning of Python code.
+    in Python, so this cannot change the meaning of Python code.  Since
+    D22 every integer is an ``int``, so ``5r`` is deprecated (LANGUAGE.md
+    §3.4 R4): it warns, and 1.0 removes it.
     """
     raw = set()
     for number, suffix in zip(tokens, tokens[1:]):
@@ -105,6 +107,14 @@ def _raw_literals(tokens, edits):
         ):
             edits.append((suffix.start, suffix.end, ""))
             raw.add(number.start)
+            warnings.warn_explicit(
+                f"'{number.string}r' is deprecated: every integer is "
+                f"already an int, so write '{number.string}' "
+                "(removed in ER2 1.0)",
+                FutureWarning,
+                filename,
+                number.start[0],
+            )
     return raw
 
 
@@ -352,9 +362,37 @@ def _apply(lines, edits):
 
 
 class _ExactOps(ast.NodeTransformer):
-    """Turn ``a / b`` and ``a ** b`` into the exact ER2 calls."""
+    """Turn ``a / b`` and ``a ** b`` into the exact ER2 calls.
+
+    It also warns when a program uses the prelude's ``Integer``, which
+    is deprecated there (LANGUAGE.md §5.1 R5): a module that binds the
+    name itself (``from er2 import Integer``) is not warned.
+    """
 
     _CALLS = {ast.Div: DIV, ast.Pow: POW}
+
+    def __init__(self, filename: str = "<er2>") -> None:
+        self.filename = filename
+
+    def visit_Module(self, node):
+        """Warn once per program that reads ``Integer`` from the prelude."""
+        uses = [
+            n
+            for n in ast.walk(node)
+            if isinstance(n, ast.Name)
+            and n.id == "Integer"
+            and isinstance(n.ctx, ast.Load)
+        ]
+        if uses and not _binds(node, "Integer"):
+            warnings.warn_explicit(
+                "'Integer' in the prelude is deprecated: integers are "
+                "plain int; use 'from er2 import Integer' if you need it "
+                "(removed from the prelude in ER2 1.0)",
+                FutureWarning,
+                self.filename,
+                uses[0].lineno,
+            )
+        return self.generic_visit(node)
 
     def _call(self, op, left, right, node):
         call = ast.Call(
@@ -383,9 +421,22 @@ class _ExactOps(ast.NodeTransformer):
         return node
 
 
-def exact_tree(tree: ast.AST) -> ast.AST:
+def _binds(tree, name):
+    """Whether ``tree`` binds ``name``: an import, assignment, def, ..."""
+    for n in ast.walk(tree):
+        if isinstance(n, ast.alias) and (n.asname or n.name) == name:
+            return True
+        if isinstance(n, ast.Name) and n.id == name:
+            if isinstance(n.ctx, ast.Store):
+                return True
+        if isinstance(n, (ast.FunctionDef, ast.ClassDef)) and n.name == name:
+            return True
+    return False
+
+
+def exact_tree(tree: ast.AST, filename: str = "<er2>") -> ast.AST:
     """Return ``tree`` with ``/`` and ``**`` made exact (perf/plain-int)."""
-    return ast.fix_missing_locations(_ExactOps().visit(tree))
+    return ast.fix_missing_locations(_ExactOps(filename).visit(tree))
 
 
 def compile_er2(
@@ -396,7 +447,7 @@ def compile_er2(
     dont_inherit: bool = False,
 ) -> CodeType:
     """Compile preparsed ``python`` with exact ``/`` and ``**``."""
-    tree = exact_tree(ast.parse(python, filename, mode))
+    tree = exact_tree(ast.parse(python, filename, mode), filename)
     # a parsed ``mode`` tree is what ``compile`` takes; typeshed sees AST
     return compile(  # type: ignore[call-overload]
         tree, filename, mode, dont_inherit=dont_inherit

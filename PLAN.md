@@ -739,6 +739,29 @@ been installed by anyone would be a guess.
    `Documentation` URL in `pyproject.toml` and the site link in `README.md` now resolve.
 3. **Freeze**, and say so in `docs/STABILITY.md` (it is written as in force at 1.0) and in the
    `CHANGELOG.md` versioning table.
+   **Review before freezing (2026-11-27).** Freezing is for good, so what 1.0 would freeze was
+   read against the code. Five points need the user's decision; the rest of `docs/STABILITY.md`
+   (S1–S7, N1–N6) matches the code as it is:
+   - **`5r`** has changed nothing since D22 (every integer is an `int`). Frozen, it stays as
+     dead syntax forever; deprecated in 0.9, it can go before 1.0.
+   - **`Integer`** is in the prelude and in LANGUAGE.md §5.1 only for code written before D22.
+     Frozen, it is a public type no ER2 code makes; alternatively it leaves the prelude (it
+     stays importable from `er2`).
+   - **Draft names**: `phi`, `mu` and `bigomega` are still marked *draft name* in
+     `er2/data/pari_functions.csv`. 1.0 makes them final.
+   - **The Python API.** STABILITY N5 calls `er2.prelude`, `er2.session` and `er2.preparser`
+     private, but 0.8.0's type hints (`py.typed`) present `er2.prelude.namespace` and
+     `er2.session.run_file` as what Python code imports. Either the public Python API is the
+     top-level `er2` (`preparse`, `latex`, `show`, `Integer`, `Rational`) plus `er2.runtime`, or
+     those functions become stable too.
+   - **Real users.** The condition for 1.0 was that 0.7.0 had been used. On 2026-11-27 the
+     repository has 2 stars, no forks and no issues: no outside feedback yet.
+   **Decided the same day (the user):** `5r` deprecated in 0.9 and removed in 1.0; `Integer`
+   deprecated in the prelude and removed from it in 1.0 (still `from er2 import Integer`); the
+   stable Python API is `er2` plus `er2.runtime` (STABILITY S8); `phi`, `mu`, `bigomega` final;
+   1.0 waits for users. **Done:** both deprecations warn (`FutureWarning`, LANGUAGE.md §3.4 R4,
+   §5.1 R4–R5, tests in `tests/preparser/test_preparser.py`), STABILITY S1, S3, S8 and §4, and
+   the CSV notes. Left for 1.0: delete `5r` from the preparser and `Integer` from the prelude.
 4. ✅ **Trusted-publisher workflow, decided and added 2026-09-22** (user's decision: yes).
    `.github/workflows/release.yml` runs on a `v*` tag. The `build` job has no publishing rights.
    It checks that the tag matches `pyproject.toml` and that the commit is on `main`, runs ruff

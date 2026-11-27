@@ -171,6 +171,7 @@ def test_operators_return_integer():
     assert (a + True) == 8 and type(a + True) is Integer
 
 
+@pytest.mark.filterwarnings("ignore:.*is deprecated:FutureWarning")
 def test_raw_literals_are_plain_ints():
     """``5r`` and ``5`` are both a Python ``int`` (D22).
 

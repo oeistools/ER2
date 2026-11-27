@@ -150,7 +150,7 @@ a change to this table is a change to the language.
 | `a ^= b`      | XOR-assign             | power-assign, `a **= b`                                |
 | `a ^^= b`     | syntax error           | XOR-assign, Python's `a ^= b`                          |
 | integer literal | `int`                | `int`; `/` and `**` are exact (§3.7), so `1/3` is the rational 1/3 |
-| `5r`          | syntax error           | accepted: the same `int` 5 as `5` (§3.4)               |
+| `5r`          | syntax error           | deprecated: the same `int` 5 as `5` (§3.4 R4)          |
 | `sym x, y`    | syntax error           | symbol declaration                                     |
 | `f"{a^2=}"`   | echoes the source text | echoes the **ER2** source text                         |
 
@@ -228,6 +228,9 @@ nothing.
 **R2.** The suffix applies to every integer literal form: `0x1Fr`, `0b101r`, `1_000r`.
 
 **R3.** There is no raw float: `1.5r` is not a raw literal, because §3.4 R1 requires an integer.
+
+**R4.** Raw literals are **deprecated** (decided 2026-11-27, before 1.0): translating one MUST
+emit a `FutureWarning` at its line, and ER2 1.0 removes them. Write `5`.
 
 ```er2
 type(5)         # int
@@ -399,6 +402,12 @@ Integer(4) / 2  # 2, an int (an exact result that is an integer, §5.2 R2)
 
 **R3.** `hash(Integer(n)) == hash(n)`, and `Integer(n) == n`, so ER2 numbers and Python numbers
 are interchangeable as dictionary keys and in sets.
+
+**R4.** `Integer` stays importable from Python and from ER2 code: `from er2 import Integer`.
+
+**R5.** The prelude name `Integer` is **deprecated** (decided 2026-11-27, before 1.0): a
+program that reads it without binding it itself MUST get a `FutureWarning` at its first use,
+and ER2 1.0 removes it from the prelude (R4 keeps it importable).
 
 ### 5.2 `Rational`
 

@@ -83,7 +83,7 @@ between integers and rationals: a `float` anywhere gives a `float`, as in Python
 **`sym x` declares a symbol.** Or use the predefined `_x`, `_y`, `_z`, `_n`, `_k`, `_p` without
 declaring anything.
 
-Those, plus `5r` and the way `f"{a^2=}"` echoes ER2 rather than the generated Python, are the
+Those, plus `5r` (deprecated: it changes nothing since integers are `int`) and the way `f"{a^2=}"` echoes ER2 rather than the generated Python, are the
 **whole** of the difference from Python. The [specification](language.qmd) says so normatively and
 exhaustively.
 

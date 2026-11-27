@@ -27,6 +27,20 @@ What is stable already, and what is not:
 
 ## [Unreleased]
 
+Prepares 1.0 (decided 2026-11-27, PLAN.md M8 task 3): what 1.0 would freeze was reviewed, and
+two things that changed meaning with D22 are deprecated instead of frozen.
+
+### Deprecated
+
+- **`5r`**: since D22 every integer is an `int`, so the raw literal changes nothing. It now warns (`FutureWarning` at its line: write `5`), and 1.0 removes it (LANGUAGE.md §3.4 R4).
+- **`Integer` in the prelude**: a program that uses it without importing it gets a `FutureWarning`; 1.0 removes it from the prelude, and `from er2 import Integer` keeps working (LANGUAGE.md §5.1 R4, R5).
+
+### Changed
+
+- `docs/STABILITY.md` names the stable Python API (S8): the top-level `er2` and the classes of `er2.runtime`; `er2.prelude`, `er2.session` and the other modules stay internal, even where they have type hints. Deprecations warn with `FutureWarning`, which Python shows, rather than `DeprecationWarning`, which it hides outside `__main__`.
+- `phi`, `mu` and `bigomega` are final names (they were marked *draft* in the PARI table).
+- The test suite turns `FutureWarning` into an error, so a test that uses a deprecated feature has to say so.
+
 ### Added
 
 - The classes of `er2.runtime` are annotated too (`Mod`, `Factorization`, `GF` and its elements, `NumberField`, `PrimeIdeal`, `Qfb`, `DirichletSeries`), and the README has a badge with the latest GitHub release beside PyPI's.

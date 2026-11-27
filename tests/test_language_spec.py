@@ -108,6 +108,7 @@ def test_bool_is_untouched():
     assert namespace["c"] is bool
 
 
+@pytest.mark.filterwarnings("ignore:.*is deprecated:FutureWarning")
 def test_integers_and_rationals_interchange_with_python():
     """§5.1 R3, §5.2 R2: hashing, equality and normalisation."""
     namespace = run("""
@@ -289,6 +290,7 @@ COVERAGE = {
     "§3.4 R1": PREPARSER,
     "§3.4 R2": PREPARSER,
     "§3.4 R3": PREPARSER,
+    "§3.4 R4": PREPARSER,
     "§3.5 R1": PREPARSER,
     "§3.5 R2": PREPARSER,
     "§3.5 R3": PREPARSER,
@@ -305,6 +307,8 @@ COVERAGE = {
     "§5.1 R1": NUMBERS,
     "§5.1 R2": NUMBERS,
     "§5.1 R3": HERE,
+    "§5.1 R4": PREPARSER,
+    "§5.1 R5": PREPARSER,
     "§5.2 R1": NUMBERS,
     "§5.2 R2": HERE,
     "§5.2 R3": NUMBERS,

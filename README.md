@@ -175,7 +175,7 @@ ER2 is a superset of Python and follows the same model as SageMath:
   | `a ^^ b`    | syntax error  | XOR                           |
   | `1/3`       | `0.333…`      | exact rational `1/3`          |
   | `sym x, y`  | syntax error  | declares symbols `x`, `y`     |
-  | `5r`        | syntax error  | the plain Python `int` 5      |
+  | `5r`        | syntax error  | `5` (deprecated)              |
 
 ## Jupyter and Quarto
 

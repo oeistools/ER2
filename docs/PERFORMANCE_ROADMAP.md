@@ -69,3 +69,9 @@ change that. The end-to-end figure is the one to quote, never the backend's.
   about 4-5 ms more than before (85 to 89 ms, 40 runs each): the start itself is the same work,
   and turning the garbage collector off during it did not explain the difference. About 5 %,
   within the acceptance rule above; left as it is.
+- **mypyc** (2026-11-27). It cannot compile `er2/runtime/numbers.py`: an internal error on
+  `class Rational(Fraction)`. Compiling only the arithmetic (`_add` and `_number`, called from a
+  Python method, since a compiled function does not bind as a method) made `a + b` slower: 0.94
+  times `Fraction`, against 0.72 for the same function in Python. Without type annotations
+  mypyc has nothing to specialise, and the call into the extension costs more than it saves.
+  ER2 stays pure Python.

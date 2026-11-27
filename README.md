@@ -220,7 +220,7 @@ ER2 does not introduce a new interpreter. It has three parts:
 Dirichlet, Euler products) and the language specification are all in.
 [docs/LANGUAGE.md](https://github.com/oeistools/ER2/blob/main/docs/LANGUAGE.md) now defines the language normatively, and
 [CHANGELOG.md](https://github.com/oeistools/ER2/blob/main/CHANGELOG.md) says what is stable, what is still experimental, and what has
-changed. 0.7.0 is [on PyPI](https://pypi.org/project/er2/) (0.8.0, the speed release, is prepared), the
+changed. 0.7.0 is [on PyPI](https://pypi.org/project/er2/) (0.8.0, the speed release, is a [GitHub release](https://github.com/oeistools/ER2/releases/tag/v0.8.0), not on PyPI yet), the
 [documentation site](https://oeistools.github.io/ER2/) is live, and
 [docs/STABILITY.md](https://github.com/oeistools/ER2/blob/main/docs/STABILITY.md) sets the
 stability policy. What remains is 1.0 itself, which freezes the syntax and the public API.

@@ -763,6 +763,9 @@ been installed by anyone would be a guess.
    Checked as `docs/RELEASING.md` asks: `make check` (833 pass), `make dist`, `twine check`, and
    the wheel run in a clean 3.12 venv. No tag and no upload: the user decided not to publish to
    PyPI for now. Publishing is then steps 8–9 of the checklist, by the maintainer.
+   **Tagged the same day (the user's choice):** `v0.8.0` and a GitHub release with the wheel and
+   sdist; the tag's *Release* run passed its checks and waits at the `pypi` approval, which
+   is the only step left to publish.
 
 **State at the end of 2026-09-21** (all of it committed, nothing in flight): 768 tests pass and
 3 skip, ruff is clean, `dist/` holds the built 0.7.0 sdist and wheel ready to upload, and

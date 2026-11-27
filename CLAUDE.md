@@ -22,7 +22,7 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
 - PARI → ER2 function names: [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTIONS.md)
 - Technical design and decisions (D1–D15): [ARCHITECTURE.md](ARCHITECTURE.md) — **read before implementing**.
 - Releases and versioning policy: [CHANGELOG.md](CHANGELOG.md). Contributor rules: [CONTRIBUTING.md](CONTRIBUTING.md).
-- Status: **0.8.0** is prepared but not published (2026-11-27: the user decided not to upload to PyPI for now; it is under **[0.8.0]** in the changelog). **0.7.0** is on PyPI (published 2026-09-26 by the trusted-publisher workflow); M1–M7 done (M3 was the MVP), plus `er2.oeis`. **M5 (0.5, algebra) is
+- Status: **0.8.0** is tagged and a GitHub release (2026-11-27, with the wheel and sdist), not on PyPI (the user decided not to upload for now; the tag's Release run waits at the `pypi` approval; it is under **[0.8.0]** in the changelog). **0.7.0** is on PyPI (published 2026-09-26 by the trusted-publisher workflow); M1–M7 done (M3 was the MVP), plus `er2.oeis`. **M5 (0.5, algebra) is
   complete**, acceptance included: linear algebra with `Matrix`, finite fields with `GF`,
   polynomials over `F_p`, `resultant`/`discriminant`, `groebner`/`reduce` and `NumberField`.
   **0.5.1 (scientific articles, ARCHITECTURE §1.3) is done** too: `examples/article.qmd`, and

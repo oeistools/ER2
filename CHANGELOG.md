@@ -27,18 +27,20 @@ What is stable already, and what is not:
 
 ## [Unreleased]
 
-### Fixed
+Nothing yet.
 
-- `docs/PARI_FUNCTIONS.md` showed only 59 of the 126 functions of "Programming in GP": the TeX quotes in `kill`'s description opened inline code; the generator now escapes backticks.
-- The site's home and *Get started* pages described integer literals as `Integer` and `5r` as the way to get a plain `int`; since D22 every integer is an `int` and only `/` and `**` are exact.
-- Error messages of `er2 file.er2` and of the REPL show only the program: a syntax error has no ER2 frames (as `python file.py`); an unclosed bracket or string is reported where it opens ("'(' was never closed"); a runtime error stops at the user's last line, without ER2, SymPy or cypari2 frames; PARI argument errors use the ER2 name (`phi()`, not `eulerphi()`); `factor(f, modulus=n)` with `n` not prime says so instead of SymPy's "zero divisor".
-- `%unload_ext er2` now undoes everything `%load_ext er2` did: it also removes the `.er2`
-  importer and the exact `/` and `**`, so `1/2` is Python's `0.5` again.
-- `inverse` and `solve_linear` report a singular matrix as `NonInvertibleMatrixError` only when
-  it is one; other PARI errors (wrong dimensions, types) are a `ValueError` with PARI's message.
+## [0.8.0] — 2026-11-27
+
+Speed and usability, measured against Python, SymPy and PARI/GP ([docs/PERFORMANCE.md](docs/PERFORMANCE.md)). **Breaking:** integers are plain `int` (D22), so `type(5)` is `int`; everything else is compatible.
 
 ### Changed
 
+- **Integers are plain Python `int` and run at Python's speed (D22).** `/` and `**` are made
+  exact when ER2 code is compiled (`1/3` is still `1/3`, `2^-1` is `1/2`), instead of every
+  literal being an `Integer`: a numeric loop goes from 13.8 times Python's time to the same time.
+  `type(5)` is now `int`; `/` is exact also on integers that came from Python (`len(x)/2` is
+  `3/2`); `5r` is still accepted and changes nothing; a `.py` module that receives an ER2
+  integer uses Python's `/`. `Integer` is still available for code that builds one.
 - The workflows use actions that run on Node 24 (`upload-artifact` v7, `download-artifact` v8, `configure-pages` v6, `upload-pages-artifact` v5, `deploy-pages` v5); Node 20 is no longer supported on GitHub's runners.
 - PARI is loaded only when a program uses it (D24): a program with only integers, rationals or SymPy starts in about 68 ms instead of 90 (×2.7 of Python, under the ×3 target); `pari.raw` starts it on demand.
 - **Polynomials reach PARI faster**: an expanded polynomial in one variable is read straight from
@@ -58,14 +60,7 @@ What is stable already, and what is not:
   version is read only when asked for, and the REPL's modules load only for the REPL.
 - **`factor(f, modulus=p)` is about 2 times faster**: the polynomial is converted once per call
   instead of four times (degree 12: from 53 to 20 times the time of a bare PARI call).
-- **Integers are plain Python `int` and run at Python's speed (D22).** `/` and `**` are made
-  exact when ER2 code is compiled (`1/3` is still `1/3`, `2^-1` is `1/2`), instead of every
-  literal being an `Integer`: a numeric loop goes from 13.8 times Python's time to the same time.
-  `type(5)` is now `int`; `/` is exact also on integers that came from Python (`len(x)/2` is
-  `3/2`); `5r` is still accepted and changes nothing; a `.py` module that receives an ER2
-  integer uses Python's `/`. `Integer` is still available for code that builds one.
-
-- The web no longer loads Google Fonts (sin-google-fonts.scss: \$web-font-path: false; no font links).
+- The site no longer loads Google Fonts.
 
 ### Added
 
@@ -107,6 +102,14 @@ What is stable already, and what is not:
   checks that only the approved job can publish.
 
 ### Fixed
+
+- `docs/PARI_FUNCTIONS.md` showed only 59 of the 126 functions of "Programming in GP": the TeX quotes in `kill`'s description opened inline code; the generator now escapes backticks.
+- The site's home and *Get started* pages described integer literals as `Integer` and `5r` as the way to get a plain `int`; since D22 every integer is an `int` and only `/` and `**` are exact.
+- Error messages of `er2 file.er2` and of the REPL show only the program: a syntax error has no ER2 frames (as `python file.py`); an unclosed bracket or string is reported where it opens ("'(' was never closed"); a runtime error stops at the user's last line, without ER2, SymPy or cypari2 frames; PARI argument errors use the ER2 name (`phi()`, not `eulerphi()`); `factor(f, modulus=n)` with `n` not prime says so instead of SymPy's "zero divisor".
+- `%unload_ext er2` now undoes everything `%load_ext er2` did: it also removes the `.er2`
+  importer and the exact `/` and `**`, so `1/2` is Python's `0.5` again.
+- `inverse` and `solve_linear` report a singular matrix as `NonInvertibleMatrixError` only when
+  it is one; other PARI errors (wrong dimensions, types) are a `ValueError` with PARI's message.
 - The README's logo and five of its badges used relative paths, which are dead on the PyPI
   project page, since the README is the PyPI description. They are now absolute, and
   `tests/test_release.py` fails if a relative link comes back.

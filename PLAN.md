@@ -757,6 +757,12 @@ been installed by anyone would be a guess.
    now waits for approval as task 4 intended. Not set, and optional: a deployment-tag rule
    `v*` (the workflow already runs only on `v*` tags from `main`), and administrators may
    still bypass the approval.
+6. ✅ **0.8.0 prepared, not published (2026-11-27).** The speed work (D22–D24, faster rationals
+   and matrices), the better REPL and error messages, and the documentation of the last weeks
+   are cut under **[0.8.0]** in the changelog; `pyproject.toml` and `CITATION.cff` say 0.8.0.
+   Checked as `docs/RELEASING.md` asks: `make check` (833 pass), `make dist`, `twine check`, and
+   the wheel run in a clean 3.12 venv. No tag and no upload: the user decided not to publish to
+   PyPI for now. Publishing is then steps 8–9 of the checklist, by the maintainer.
 
 **State at the end of 2026-09-21** (all of it committed, nothing in flight): 768 tests pass and
 3 skip, ruff is clean, `dist/` holds the built 0.7.0 sdist and wheel ready to upload, and

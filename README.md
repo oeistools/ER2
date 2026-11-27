@@ -215,12 +215,12 @@ ER2 does not introduce a new interpreter. It has three parts:
 
 ## Status and roadmap
 
-**Version 0.7.0, early development.** Milestones M1–M7 are done (M3 was the MVP). Algebra
+**Version 0.8.0, early development.** Milestones M1–M7 are done (M3 was the MVP). Algebra
 (matrices, finite fields, `F_p`, resultants, Gröbner bases, `NumberField`), series (power,
 Dirichlet, Euler products) and the language specification are all in.
 [docs/LANGUAGE.md](https://github.com/oeistools/ER2/blob/main/docs/LANGUAGE.md) now defines the language normatively, and
 [CHANGELOG.md](https://github.com/oeistools/ER2/blob/main/CHANGELOG.md) says what is stable, what is still experimental, and what has
-changed. 0.7.0 is [on PyPI](https://pypi.org/project/er2/), the
+changed. 0.7.0 is [on PyPI](https://pypi.org/project/er2/) (0.8.0, the speed release, is prepared), the
 [documentation site](https://oeistools.github.io/ER2/) is live, and
 [docs/STABILITY.md](https://github.com/oeistools/ER2/blob/main/docs/STABILITY.md) sets the
 stability policy. What remains is 1.0 itself, which freezes the syntax and the public API.
@@ -234,6 +234,7 @@ stability policy. What remains is 1.0 itself, which freezes the syntax and the p
 | 0.5 | Algebra: matrices, finite fields, resultants, Gröbner bases, number fields | ✅ |
 | 0.6 | Series: power, Dirichlet, Euler products | ✅ |
 | 0.7 | The language specification, `docs/LANGUAGE.md`; first PyPI release | ✅ |
+| 0.8 | Speed: integers are plain `int`, PARI loads on demand, faster rationals and matrices; better REPL and errors | ✅ |
 | 1.0 | Frozen syntax and public API (documentation site and stability policy done) | in progress |
 
 Beyond the table, every PARI function is available as `pari.<name>`, and PARI's sums and integrals

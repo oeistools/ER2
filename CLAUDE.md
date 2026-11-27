@@ -22,7 +22,7 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
 - PARI → ER2 function names: [docs/PARI_FUNCTIONS.md](docs/PARI_FUNCTIONS.md)
 - Technical design and decisions (D1–D15): [ARCHITECTURE.md](ARCHITECTURE.md) — **read before implementing**.
 - Releases and versioning policy: [CHANGELOG.md](CHANGELOG.md). Contributor rules: [CONTRIBUTING.md](CONTRIBUTING.md).
-- Status: **0.7.0** is on PyPI (published 2026-09-26 by the trusted-publisher workflow); M1–M7 done (M3 was the MVP), plus `er2.oeis`. **M5 (0.5, algebra) is
+- Status: **0.8.0** is prepared but not published (2026-11-27: the user decided not to upload to PyPI for now; it is under **[0.8.0]** in the changelog). **0.7.0** is on PyPI (published 2026-09-26 by the trusted-publisher workflow); M1–M7 done (M3 was the MVP), plus `er2.oeis`. **M5 (0.5, algebra) is
   complete**, acceptance included: linear algebra with `Matrix`, finite fields with `GF`,
   polynomials over `F_p`, `resultant`/`discriminant`, `groebner`/`reduce` and `NumberField`.
   **0.5.1 (scientific articles, ARCHITECTURE §1.3) is done** too: `examples/article.qmd`, and
@@ -41,8 +41,7 @@ The name honors the Hungarian mathematician **Paul Erdős**: in Spanish, "Erdős
   unreleased since 0.4.2), `docs/STABILITY.md` is written and enforced, and the documentation
   site is in `site/`. The `pypi` environment has a required reviewer. What is left is 1.0,
   which freezes the syntax and the public API once 0.7.0 has had real users (PLAN.md, M8). The site is live at <https://oeistools.github.io/ER2/> (verified 2026-09-22). D1–D21 are all resolved, and the changes are under
-  **[0.7.0]** in [CHANGELOG.md](CHANGELOG.md); **Unreleased** holds the release
-  workflow and fixes made after the 0.7.0 cut.
+  **[0.7.0]** and **[0.8.0]** in [CHANGELOG.md](CHANGELOG.md).
 
 ## Guiding principle
 

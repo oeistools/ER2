@@ -2,7 +2,7 @@
 
 > Technical design document. The original idea is summarized in §1; the draft it came from is kept
 > locally (`draft/`, ignored by Git).
-> Status: **0.7.0** (M1–M7 done; M3 was the MVP).
+> Status: **0.8.0** prepared, not yet published (M1–M7 done; M3 was the MVP; D22–D24 make it fast).
 > M5 (algebra), M6 (series) and M7 (the language specification, [docs/LANGUAGE.md](docs/LANGUAGE.md))
 > are complete, acceptances included.
 > See [PLAN.md](PLAN.md).

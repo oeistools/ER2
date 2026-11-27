@@ -51,7 +51,8 @@ environment. A fork or another workflow cannot publish, and there is no secret t
    ```
 
 2. **The version is right.** `pyproject.toml` is the single source; `er2.__version__` reads it
-   from the installed metadata, so there is nothing else to bump.
+   from the installed metadata. Only `CITATION.cff` repeats it (`version` and `date-released`),
+   and `tests/test_cli.py` fails until it matches.
 
 3. **The changelog has a section for it**, dated, with `## [Unreleased]` left above it holding
    `Nothing yet.`

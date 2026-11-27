@@ -19,8 +19,8 @@ contact:
   - given-names: Enrique
     family-names: Pérez Herrero
     email: energycode.org@gmail.com
-version: 0.7.0
-date-released: 2026-09-21
+version: 0.8.0
+date-released: 2026-11-27
 repository-code: "https://github.com/oeistools/ER2"
 url: "https://oeistools.github.io/ER2/"
 license: MIT

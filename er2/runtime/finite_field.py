@@ -12,11 +12,18 @@ the field when they meet an element of it, and ``F(3) == 3`` is true, as
 in PARI and SageMath.
 """
 
+from __future__ import annotations
+
 import itertools
 from fractions import Fraction
 
 from er2.printing import latex
 from er2.runtime.modular import Mod
+
+TYPE_CHECKING = False
+if TYPE_CHECKING:  # annotations only: ``typing`` costs startup
+    from collections.abc import Iterable, Iterator
+    from typing import Any
 
 __all__ = ["GF", "FiniteField", "FiniteFieldElement"]
 
@@ -28,7 +35,7 @@ def _backend():
     return pari_backend
 
 
-def GF(order, degree=None, name="a"):  # noqa: N802 (the usual notation)
+def GF(order: int, degree: int | None = None, name: str = "a") -> FiniteField:  # noqa: N802 (the usual notation)
     """Return the finite field with ``order`` elements.
 
     ``GF(9)`` and ``GF(3, 2)`` are the same field; ``GF(9, "t")`` names
@@ -54,8 +61,11 @@ class FiniteField:
     """The finite field with ``p^k`` elements; ``GF`` creates it."""
 
     __slots__ = ("_degree", "_modulus", "_name", "_p", "_primitive")
+    _primitive: FiniteFieldElement | None
 
-    def __init__(self, p, k, name, modulus):
+    def __init__(
+        self, p: int, k: int, name: str, modulus: Iterable[int]
+    ) -> None:
         """Create the field from its defining polynomial's coefficients.
 
         ``modulus`` lists the coefficients of a monic irreducible
@@ -66,30 +76,30 @@ class FiniteField:
         self._primitive = None
 
     @property
-    def characteristic(self):
+    def characteristic(self) -> int:
         """The prime ``p``."""
         return self._p
 
     @property
-    def degree(self):
+    def degree(self) -> int:
         """The degree ``k`` over the prime field."""
         return self._degree
 
     @property
-    def order(self):
+    def order(self) -> int:
         """The number of elements, ``p^k``."""
         return self._p**self._degree
 
     @property
-    def name(self):
+    def name(self) -> str:
         """The name of the generator."""
         return self._name
 
-    def modulus_coefficients(self):
+    def modulus_coefficients(self) -> list[int]:
         """Return the defining polynomial's coefficients, constant first."""
         return list(self._modulus)
 
-    def modulus(self):
+    def modulus(self) -> Any:
         """Return the defining polynomial, in the generator's name."""
         from er2 import _lazy
 
@@ -97,13 +107,13 @@ class FiniteField:
         var = sympy.Symbol(self._name)
         return sympy.Add(*(c * var**i for i, c in enumerate(self._modulus)))
 
-    def gen(self):
+    def gen(self) -> FiniteFieldElement:
         """Return the generator: a root of ``modulus()`` (1 if ``k = 1``)."""
         if self._degree == 1:
             return self(1)
         return FiniteFieldElement(self, (0, 1))
 
-    def primitive_element(self):
+    def primitive_element(self) -> FiniteFieldElement:
         """Return a generator of the multiplicative group.
 
         It is the first one in the order of ``elements()``, so it is the
@@ -116,9 +126,10 @@ class FiniteField:
                 if element.order() == target:
                     self._primitive = element
                     break
+        assert self._primitive is not None  # F_q^* is cyclic
         return self._primitive
 
-    def elements(self):
+    def elements(self) -> Iterator[FiniteFieldElement]:
         """Iterate over the elements, as the integers ``0, ..., q - 1``.
 
         The element with coefficients ``c_0, c_1, ...`` comes at position
@@ -131,11 +142,11 @@ class FiniteField:
                 coefficients.append(c)
             yield FiniteFieldElement(self, coefficients)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[FiniteFieldElement]:
         """Iterate over the elements (see ``elements``)."""
         return self.elements()
 
-    def __call__(self, value):
+    def __call__(self, value: Any) -> FiniteFieldElement:
         """Return ``value`` as an element of this field."""
         element = self._coerce(value)
         if element is None:
@@ -168,36 +179,36 @@ class FiniteField:
             return FiniteFieldElement(self, (int(value.lift()),))
         return None
 
-    def __contains__(self, value):
+    def __contains__(self, value: object) -> bool:
         """Whether ``value`` is an element of this field."""
         return isinstance(value, FiniteFieldElement) and value.parent == self
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Fields are equal when they have the same defining polynomial."""
         if isinstance(other, FiniteField):
             return self._key() == other._key()
         return NotImplemented
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Hash consistently with ``__eq__``."""
         return hash((FiniteField, *self._key()))
 
     def _key(self):
         return self._p, self._modulus, self._name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return ``GF(9)``, or ``GF(9, "t")`` for another generator name."""
         if self._name == "a":
             return f"GF({self.order})"
         return f'GF({self.order}, "{self._name}")'
 
-    def _sympystr(self, printer):
+    def _sympystr(self, printer: Any) -> str:
         return repr(self)
 
-    def _latex(self, printer):
+    def _latex(self, printer: Any) -> str:
         return rf"\mathbb{{F}}_{{{self.order}}}"
 
-    def _repr_latex_(self):
+    def _repr_latex_(self) -> str:
         """Render as math in Jupyter and Quarto."""
         return latex(self)._repr_latex_()
 
@@ -207,7 +218,9 @@ class FiniteFieldElement:
 
     __slots__ = ("_coefficients", "_field")
 
-    def __init__(self, field, coefficients):
+    def __init__(
+        self, field: FiniteField, coefficients: Iterable[int]
+    ) -> None:
         """Create the element ``sum(c_i * a^i)`` of ``field``.
 
         ``coefficients`` are integers, constant term first; they are
@@ -222,11 +235,11 @@ class FiniteFieldElement:
         self._coefficients = tuple(int(c) for c in values)
 
     @property
-    def parent(self):
+    def parent(self) -> FiniteField:
         """The field this element belongs to."""
         return self._field
 
-    def coefficients(self):
+    def coefficients(self) -> list[int]:
         """Return the coefficients in the generator, constant term first."""
         return list(self._coefficients)
 
@@ -275,39 +288,41 @@ class FiniteFieldElement:
             raise ZeroDivisionError(f"division by zero in {self._field!r}")
         return self._from_pari(a / b)
 
-    def __add__(self, other):
+    def __add__(self, other: Any) -> Any:
         """Return ``self + other``."""
         return self._linear(other, 1)
 
-    def __radd__(self, other):
+    def __radd__(self, other: Any) -> Any:
         """Return ``other + self``."""
         return self._linear(other, 1, True)
 
-    def __sub__(self, other):
+    def __sub__(self, other: Any) -> Any:
         """Return ``self - other``."""
         return self._linear(other, -1)
 
-    def __rsub__(self, other):
+    def __rsub__(self, other: Any) -> Any:
         """Return ``other - self``."""
         return self._linear(other, -1, True)
 
-    def __mul__(self, other):
+    def __mul__(self, other: Any) -> Any:
         """Return ``self * other``."""
         return self._product(other)
 
-    def __rmul__(self, other):
+    def __rmul__(self, other: Any) -> Any:
         """Return ``other * self``."""
         return self._product(other, reflected=True)
 
-    def __truediv__(self, other):
+    def __truediv__(self, other: Any) -> Any:
         """Return ``self / other``."""
         return self._product(other, divide=True)
 
-    def __rtruediv__(self, other):
+    def __rtruediv__(self, other: Any) -> Any:
         """Return ``other / self``."""
         return self._product(other, divide=True, reflected=True)
 
-    def __pow__(self, exponent, modulo=None):
+    def __pow__(
+        self, exponent: int, modulo: None = None
+    ) -> FiniteFieldElement:
         """Return ``self ** exponent``; negative exponents invert."""
         if modulo is not None or isinstance(exponent, bool):
             return NotImplemented
@@ -317,27 +332,27 @@ class FiniteFieldElement:
             raise ZeroDivisionError(f"division by zero in {self._field!r}")
         return self._from_pari(self._pari() ** int(exponent))
 
-    def __neg__(self):
+    def __neg__(self) -> FiniteFieldElement:
         """Return ``-self``."""
         return FiniteFieldElement(
             self._field, [-c for c in self._coefficients]
         )
 
-    def __pos__(self):
+    def __pos__(self) -> FiniteFieldElement:
         """Return ``self``."""
         return self
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         """Return whether the element is nonzero."""
         return any(self._coefficients)
 
-    def __int__(self):
+    def __int__(self) -> int:
         """Return the element as an integer in ``[0, p)``, if it is one."""
         if any(self._coefficients[1:]):
             raise TypeError(f"{self} is not in the prime field")
         return int(self._coefficients[0])
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Compare with an element of the same field, or an integer."""
         if isinstance(other, FiniteFieldElement):
             return (self._field, self._coefficients) == (
@@ -348,7 +363,7 @@ class FiniteFieldElement:
             return self == self._field(other)
         return NotImplemented
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Hash consistently with ``__eq__`` (an integer's hash if equal)."""
         if not any(self._coefficients[1:]):
             return hash(int(self._coefficients[0]))
@@ -356,39 +371,39 @@ class FiniteFieldElement:
 
     # Mathematical functions, computed by PARI.
 
-    def order(self):
+    def order(self) -> int:
         """Return the multiplicative order (PARI ``fforder``)."""
         if not self:
             raise ValueError("0 has no multiplicative order")
         return int(self._pari_call(_backend().PARI.fforder))
 
-    def minpoly(self, x=None):
+    def minpoly(self, x: Any = None) -> Any:
         """Return the minimal polynomial over ``F_p``, in ``x``."""
         return _backend().ff_polynomial("minpoly", self, x)
 
-    def charpoly(self, x=None):
+    def charpoly(self, x: Any = None) -> Any:
         """Return the characteristic polynomial over ``F_p``, in ``x``."""
         return _backend().ff_polynomial("charpoly", self, x)
 
-    def trace(self):
+    def trace(self) -> int:
         """Return the trace to ``F_p``, as an integer in ``[0, p)``."""
         return _backend().ff_lift("trace", self)
 
-    def norm(self):
+    def norm(self) -> int:
         """Return the norm to ``F_p``, as an integer in ``[0, p)``."""
         return _backend().ff_lift("norm", self)
 
-    def is_square(self):
+    def is_square(self) -> bool:
         """Return whether the element is a square in the field."""
         return bool(self._pari_call(_backend().PARI.issquare))
 
-    def sqrt(self):
+    def sqrt(self) -> FiniteFieldElement:
         """Return a square root; raise ``ValueError`` if there is none."""
         if not self.is_square():
             raise ValueError(f"{self} is not a square in {self._field!r}")
         return self._from_pari(self._pari_call(_backend().PARI.sqrt))
 
-    def log(self, base=None):
+    def log(self, base: FiniteFieldElement | None = None) -> int:
         """Return ``n`` with ``base^n == self`` (PARI ``fflog``).
 
         ``base`` defaults to the field's ``primitive_element()``.
@@ -415,7 +430,7 @@ class FiniteFieldElement:
             terms.append(monomial if c == 1 else f"{c}{{}}{monomial}")
         return terms
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return ``a^2 + 2*a + 1``, like PARI."""
 
         def power(name, i):
@@ -424,16 +439,16 @@ class FiniteFieldElement:
         terms = [t.replace("{}", "*") for t in self._terms(power)]
         return " + ".join(terms) or "0"
 
-    def _sympystr(self, printer):
+    def _sympystr(self, printer: Any) -> str:
         return repr(self)
 
-    def _latex(self, printer):
+    def _latex(self, printer: Any) -> str:
         def power(name, i):
             return name if i == 1 else f"{name}^{{{i}}}"
 
         terms = [t.replace("{}", " ") for t in self._terms(power)]
         return " + ".join(terms) or "0"
 
-    def _repr_latex_(self):
+    def _repr_latex_(self) -> str:
         """Render as math in Jupyter and Quarto."""
         return latex(self)._repr_latex_()

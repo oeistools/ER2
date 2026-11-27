@@ -27,7 +27,9 @@ What is stable already, and what is not:
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- The classes of `er2.runtime` are annotated too (`Mod`, `Factorization`, `GF` and its elements, `NumberField`, `PrimeIdeal`, `Qfb`, `DirichletSeries`), and the README has a badge with the latest GitHub release beside PyPI's.
 
 ## [0.8.0] — 2026-11-27
 

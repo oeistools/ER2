@@ -12,6 +12,8 @@ r"""Residue classes: ``Mod(3, 7)`` and ``Mod(x, x^2 + 1)``.
 It prints as ``Mod(3, 7)`` and its LaTeX is ``3 \pmod{7}``.
 """
 
+from __future__ import annotations
+
 import math
 import operator
 import sys
@@ -19,6 +21,10 @@ from fractions import Fraction
 
 from er2 import _lazy
 from er2.printing import latex
+
+TYPE_CHECKING = False
+if TYPE_CHECKING:  # annotations only: ``typing`` costs startup
+    from typing import Any
 
 
 def _backend():
@@ -44,8 +50,10 @@ class Mod:
     """The residue class of ``value`` modulo ``modulus``."""
 
     __slots__ = ("_modulus", "_value")
+    _modulus: Any
+    _value: Any
 
-    def __init__(self, value, modulus):
+    def __init__(self, value: Any, modulus: Any) -> None:
         """Create ``value mod modulus``.
 
         ``modulus`` is a nonzero integer or a polynomial; ``value`` may be
@@ -84,30 +92,30 @@ class Mod:
         self._modulus = backend.from_pari(residue.mod())
 
     @property
-    def modulus(self):
+    def modulus(self) -> Any:
         """The modulus: an integer, or a polynomial."""
         return self._modulus
 
     @property
-    def is_polynomial(self):
+    def is_polynomial(self) -> bool:
         """Whether the modulus is a polynomial (PARI's ``t_POLMOD``)."""
         return _lazy.is_symbolic(self._modulus)
 
-    def lift(self):
+    def lift(self) -> Any:
         """Return the representative: in ``[0, n)``, or of lower degree."""
         return self._value
 
-    def __int__(self):
+    def __int__(self) -> int:
         """Return ``lift()`` as an ``int`` (integer moduli only)."""
         if self.is_polynomial:
             raise TypeError("a polynomial residue is not an integer")
         return int(self._value)
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         """Return whether the residue is nonzero."""
         return self._value != 0
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Residues are equal when value and modulus are both equal."""
         if isinstance(other, Mod):
             return (self._value, self._modulus) == (
@@ -116,23 +124,23 @@ class Mod:
             )
         return NotImplemented
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Hash consistently with ``__eq__``."""
         return hash((Mod, self._value, self._modulus))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return ``Mod(3, 7)``, like PARI."""
         return f"Mod({self._value}, {self._modulus})"
 
-    def _sympystr(self, printer):
+    def _sympystr(self, printer: Any) -> str:
         value, modulus = map(printer._print, (self._value, self._modulus))
         return f"Mod({value}, {modulus})"
 
-    def _latex(self, printer):
+    def _latex(self, printer: Any) -> str:
         value = printer._print(self._value)
         return rf"{value} \pmod{{{printer._print(self._modulus)}}}"
 
-    def _repr_latex_(self):
+    def _repr_latex_(self) -> str:
         """Render as math in Jupyter and Quarto."""
         return latex(self)._repr_latex_()
 
@@ -174,37 +182,37 @@ class Mod:
             a, b = b, a
         return Mod(integer_op(a, b, n), n)
 
-    def __add__(self, other):
+    def __add__(self, other: Any) -> Any:
         """Return ``self + other``."""
         return self._binary(other, operator.add, lambda a, b, n: a + b)
 
-    def __radd__(self, other):
+    def __radd__(self, other: Any) -> Any:
         """Return ``other + self``."""
         return self._binary(other, operator.add, lambda a, b, n: a + b, True)
 
-    def __sub__(self, other):
+    def __sub__(self, other: Any) -> Any:
         """Return ``self - other``."""
         return self._binary(other, operator.sub, lambda a, b, n: a - b)
 
-    def __rsub__(self, other):
+    def __rsub__(self, other: Any) -> Any:
         """Return ``other - self``."""
         return self._binary(other, operator.sub, lambda a, b, n: a - b, True)
 
-    def __mul__(self, other):
+    def __mul__(self, other: Any) -> Any:
         """Return ``self * other``."""
         return self._binary(other, operator.mul, lambda a, b, n: a * b)
 
-    def __rmul__(self, other):
+    def __rmul__(self, other: Any) -> Any:
         """Return ``other * self``."""
         return self._binary(other, operator.mul, lambda a, b, n: a * b, True)
 
-    def __truediv__(self, other):
+    def __truediv__(self, other: Any) -> Any:
         """Return ``self / other``; ``other`` must be invertible."""
         return self._binary(
             other, operator.truediv, lambda a, b, n: a * _inverse(b, n)
         )
 
-    def __rtruediv__(self, other):
+    def __rtruediv__(self, other: Any) -> Any:
         """Return ``other / self``; ``self`` must be invertible."""
         return self._binary(
             other,
@@ -213,7 +221,7 @@ class Mod:
             True,
         )
 
-    def __pow__(self, exponent, modulo=None):
+    def __pow__(self, exponent: int, modulo: None = None) -> Any:
         """Return ``self ** exponent``; negative exponents invert."""
         if modulo is not None or isinstance(exponent, bool):
             return NotImplemented
@@ -228,11 +236,11 @@ class Mod:
             exponent = -exponent
         return Mod(pow(base, int(exponent), n), n)
 
-    def __neg__(self):
+    def __neg__(self) -> Mod:
         """Return ``-self``."""
         return Mod(-self._value, self._modulus)
 
-    def __pos__(self):
+    def __pos__(self) -> Mod:
         """Return ``self``."""
         return self
 

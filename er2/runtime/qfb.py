@@ -6,7 +6,13 @@ prints as ``Qfb(1, 1, 6)`` and its LaTeX is ``\left(1, 1, 6\right)``, the
 usual notation for a form.
 """
 
+from __future__ import annotations
+
 from er2.printing import latex
+
+TYPE_CHECKING = False
+if TYPE_CHECKING:  # annotations only: ``typing`` costs startup
+    from typing import Any
 
 
 def _backend():
@@ -21,7 +27,7 @@ class Qfb:
 
     __slots__ = ("_a", "_b", "_c")
 
-    def __init__(self, a, b, c):
+    def __init__(self, a: int, b: int, c: int) -> None:
         """Create the form with integer coefficients ``a, b, c``."""
         for value in (a, b, c):
             if isinstance(value, bool) or not isinstance(value, int):
@@ -29,34 +35,34 @@ class Qfb:
         self._a, self._b, self._c = int(a), int(b), int(c)
 
     @property
-    def a(self):
+    def a(self) -> int:
         """The coefficient of ``x^2``."""
         return self._a
 
     @property
-    def b(self):
+    def b(self) -> int:
         """The coefficient of ``x*y``."""
         return self._b
 
     @property
-    def c(self):
+    def c(self) -> int:
         """The coefficient of ``y^2``."""
         return self._c
 
-    def discriminant(self):
+    def discriminant(self) -> int:
         """Return ``b^2 - 4*a*c``."""
         return self._b**2 - 4 * self._a * self._c
 
-    def reduce(self):
+    def reduce(self) -> Qfb:
         """Return the reduced form equivalent to this one (PARI ``qfbred``)."""
         backend = _backend()
         return backend.from_pari(backend.PARI.qfbred(backend.to_pari(self)))
 
-    def __call__(self, x, y):
+    def __call__(self, x: Any, y: Any) -> Any:
         """Evaluate the form at ``(x, y)``."""
         return self._a * x**2 + self._b * x * y + self._c * y**2
 
-    def __mul__(self, other):
+    def __mul__(self, other: object) -> Qfb:
         """Return the composition of two forms, reduced (PARI ``*``)."""
         if not isinstance(other, Qfb):
             return NotImplemented
@@ -65,7 +71,7 @@ class Qfb:
             backend.to_pari(self) * backend.to_pari(other)
         )
 
-    def __pow__(self, n, modulo=None):
+    def __pow__(self, n: int, modulo: None = None) -> Qfb:
         """Return the ``n``-th power under composition (PARI ``^``)."""
         if modulo is not None or isinstance(n, bool):
             return NotImplemented
@@ -74,7 +80,7 @@ class Qfb:
         backend = _backend()
         return backend.from_pari(backend.to_pari(self) ** int(n))
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Forms are equal when their coefficients are equal."""
         if isinstance(other, Qfb):
             return (self._a, self._b, self._c) == (
@@ -84,20 +90,20 @@ class Qfb:
             )
         return NotImplemented
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Hash consistently with ``__eq__``."""
         return hash((Qfb, self._a, self._b, self._c))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return ``Qfb(1, 1, 6)``, like PARI."""
         return f"Qfb({self._a}, {self._b}, {self._c})"
 
-    def _sympystr(self, printer):
+    def _sympystr(self, printer: Any) -> str:
         return repr(self)
 
-    def _latex(self, printer):
+    def _latex(self, printer: Any) -> str:
         return rf"\left({self._a}, {self._b}, {self._c}\right)"
 
-    def _repr_latex_(self):
+    def _repr_latex_(self) -> str:
         """Render as math in Jupyter and Quarto."""
         return latex(self)._repr_latex_()

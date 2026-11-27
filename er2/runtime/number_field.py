@@ -16,7 +16,15 @@ randomised, so a fundamental unit comes back as one of several
 equivalent representatives, never a canonical one.
 """
 
+from __future__ import annotations
+
 from er2.printing import latex
+
+TYPE_CHECKING = False
+if TYPE_CHECKING:  # annotations only: ``typing`` costs startup
+    from typing import Any
+
+    from er2.runtime.modular import Mod
 
 __all__ = ["NumberField", "PrimeIdeal"]
 
@@ -39,7 +47,7 @@ class NumberField:
 
     __slots__ = ("_basis", "_bnf", "_degree", "_discriminant", "_polynomial")
 
-    def __init__(self, polynomial):
+    def __init__(self, polynomial: Any) -> None:
         """Create the field defined by ``polynomial``.
 
         ``polynomial`` must be monic, with integer coefficients, and
@@ -56,35 +64,35 @@ class NumberField:
         self._bnf = None
 
     @property
-    def polynomial(self):
+    def polynomial(self) -> Any:
         """The defining polynomial."""
         return self._polynomial
 
     @property
-    def degree(self):
+    def degree(self) -> int:
         """The degree over Q."""
         return self._degree
 
     @property
-    def discriminant(self):
+    def discriminant(self) -> int:
         """The discriminant of the field (not of the polynomial)."""
         return self._discriminant
 
     @property
-    def variable(self):
+    def variable(self) -> Any:
         """The symbol the defining polynomial is written in."""
         (symbol,) = self._polynomial.free_symbols
         return symbol
 
-    def integral_basis(self):
+    def integral_basis(self) -> list[Any]:
         """Return a Z-basis of the ring of integers, as field elements."""
         return list(self._basis)
 
-    def gen(self):
+    def gen(self) -> Mod:
         """Return a root of the defining polynomial: ``Mod(x, f)``."""
         return self(self.variable)
 
-    def __call__(self, value):
+    def __call__(self, value: Any) -> Mod:
         """Return ``value`` as an element of the field."""
         from er2.runtime.modular import Mod
 
@@ -103,11 +111,11 @@ class NumberField:
             self._bnf = (*data, bool(certify))
         return self._bnf
 
-    def class_number(self, certify=False):
+    def class_number(self, certify: bool = False) -> int:
         """Return the class number ``h`` of the field."""
         return self._class_group_data(certify)[0]
 
-    def class_group(self, certify=False):
+    def class_group(self, certify: bool = False) -> list[int]:
         """Return the class group's invariant factors.
 
         ``[2]`` means ``Z/2Z``, and ``[]`` means the group is trivial,
@@ -115,7 +123,7 @@ class NumberField:
         """
         return list(self._class_group_data(certify)[1])
 
-    def units(self, certify=False):
+    def units(self, certify: bool = False) -> list[Any]:
         """Return a system of fundamental units, as field elements.
 
         The list is empty when the unit group is finite, as it is for
@@ -129,11 +137,11 @@ class NumberField:
         """
         return list(self._class_group_data(certify)[2])
 
-    def roots_of_unity(self, certify=False):
+    def roots_of_unity(self, certify: bool = False) -> Any:
         """Return how many roots of unity the field contains."""
         return self._class_group_data(certify)[3]
 
-    def factor(self, p):
+    def factor(self, p: int) -> list[tuple[PrimeIdeal, int]]:
         """Factor the rational prime ``p`` into prime ideals.
 
         Returns ``(ideal, exponent)`` pairs: in ``Q(sqrt(-5))`` the
@@ -151,31 +159,31 @@ class NumberField:
             )
         ]
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Two fields are equal when their polynomials are."""
         if not isinstance(other, NumberField):
             return NotImplemented
         return self._polynomial == other._polynomial
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Hash the field by its polynomial."""
         return hash((NumberField, self._polynomial))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return ``NumberField(x^2 + 5)``."""
         return f"NumberField({self._polynomial})"
 
-    def _sympystr(self, printer):
+    def _sympystr(self, printer: Any) -> str:
         return f"NumberField({printer._print(self._polynomial)})"
 
-    def _latex(self, printer):
+    def _latex(self, printer: Any) -> str:
         body = printer._print(self._polynomial)
         return (
             rf"\mathbb{{Q}}[{printer._print(self.variable)}]/"
             rf"\left({body}\right)"
         )
 
-    def _repr_latex_(self):
+    def _repr_latex_(self) -> str:
         """Render as math in Jupyter and Quarto."""
         return latex(self)._repr_latex_()
 
@@ -185,7 +193,9 @@ class PrimeIdeal:
 
     __slots__ = ("_alpha", "_e", "_f", "_field", "_p")
 
-    def __init__(self, field, p, e, f, alpha):
+    def __init__(
+        self, field: NumberField, p: int, e: int, f: int, alpha: Any
+    ) -> None:
         """Create the ideal above ``p`` with the given invariants."""
         self._field = field
         self._p = int(p)
@@ -194,43 +204,43 @@ class PrimeIdeal:
         self._alpha = alpha
 
     @property
-    def field(self):
+    def field(self) -> NumberField:
         """The number field this ideal belongs to."""
         return self._field
 
     @property
-    def p(self):
+    def p(self) -> int:
         """The rational prime below this ideal."""
         return self._p
 
     @property
-    def ramification_index(self):
+    def ramification_index(self) -> int:
         """The exponent ``e`` of this ideal in the factorization of ``p``."""
         return self._e
 
     @property
-    def residue_degree(self):
+    def residue_degree(self) -> int:
         """The degree ``f`` of the residue field over ``F_p``."""
         return self._f
 
     @property
-    def alpha(self):
+    def alpha(self) -> Any:
         """The second generator: the ideal is ``(p, alpha)``."""
         return self._alpha
 
-    def norm(self):
+    def norm(self) -> int:
         """Return the norm of the ideal, ``p^f``."""
         return self._p**self._f
 
-    def is_inert(self):
+    def is_inert(self) -> bool:
         """Whether ``p`` stays prime: ``e = 1`` and ``f`` is the degree."""
         return self._e == 1 and self._f == self._field.degree
 
-    def is_ramified(self):
+    def is_ramified(self) -> bool:
         """Whether ``e > 1``."""
         return self._e > 1
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Two ideals are equal when field, p, e, f and alpha all are.
 
         ``alpha`` is not decoration: the primes above a split prime
@@ -242,27 +252,27 @@ class PrimeIdeal:
             return NotImplemented
         return self._key() == other._key()
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Hash the ideal by everything ``__eq__`` compares."""
         return hash((PrimeIdeal, *self._key()))
 
     def _key(self):
         return (self._field, self._p, self._e, self._f, self._alpha)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return the two-element form, ``(2, x + 1)``."""
         return f"({self._p}, {self._alpha.lift()})"
 
-    def _sympystr(self, printer):
+    def _sympystr(self, printer: Any) -> str:
         parts = printer._print(self._p), printer._print(self._alpha.lift())
         return f"({parts[0]}, {parts[1]})"
 
-    def _latex(self, printer):
+    def _latex(self, printer: Any) -> str:
         p = printer._print(self._p)
         alpha = printer._print(self._alpha.lift())
         return rf"\left({p},\ {alpha}\right)"
 
-    def _repr_latex_(self):
+    def _repr_latex_(self) -> str:
         """Render as math in Jupyter and Quarto."""
         return latex(self)._repr_latex_()
 

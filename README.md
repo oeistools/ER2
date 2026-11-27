@@ -9,6 +9,7 @@
 [![CI](https://github.com/oeistools/ER2/actions/workflows/ci.yml/badge.svg)](https://github.com/oeistools/ER2/actions/workflows/ci.yml)
 [![Release](https://github.com/oeistools/ER2/actions/workflows/release.yml/badge.svg)](https://github.com/oeistools/ER2/releases/latest)
 [![PyPI](https://img.shields.io/pypi/v/er2?label=pypi)](https://pypi.org/project/er2/)
+[![GitHub release](https://img.shields.io/github/v/release/oeistools/ER2?label=github)](https://github.com/oeistools/ER2/releases/latest)
 [![Pages](https://github.com/oeistools/ER2/actions/workflows/pages.yml/badge.svg)](https://oeistools.github.io/ER2/)
 [![Python 3.12 | 3.13 | 3.14](https://img.shields.io/badge/python-3.12%20%7C%203.13%20%7C%203.14-blue?logo=python&logoColor=white)](https://github.com/oeistools/ER2/blob/main/pyproject.toml)
 [![Jupyter](https://img.shields.io/badge/runs%20in-Jupyter-F37626?logo=jupyter&logoColor=white)](https://github.com/oeistools/ER2/blob/main/ARCHITECTURE.md#12-notebooks-jupyter-and-quarto)

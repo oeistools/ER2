@@ -808,7 +808,9 @@ and the README has a platform table (CHANGELOG, Unreleased).
    The annotations are never evaluated (`from __future__ import annotations`, a
    `TYPE_CHECKING = False` block), so startup is unchanged. `tests/typing/usage.py` pins the
    types with `assert_type`; the `wheel` job of CI checks it with `mypy --strict` against the
-   installed wheel. Not done: annotating `dispatch`, the runtime classes and the backends.
+   installed wheel. **The runtime classes too, after 0.8.0 (the user's choice):** `Mod`,
+   `Factorization`, `GF` and `FiniteFieldElement`, `NumberField`, `PrimeIdeal`, `Qfb`,
+   `DirichletSeries`, pinned in the same file. Not annotated: `dispatch` and the backends.
 3. ✅ **Test macOS in CI**, so the README's platform table can move macOS from *experimental*
    to *supported* and `pyproject.toml` can declare `Operating System :: MacOS`. cypari2 has
    macOS wheels (x86-64 and arm64); what is missing is ER2's own run on them.

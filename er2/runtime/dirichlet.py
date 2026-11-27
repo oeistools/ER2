@@ -11,7 +11,14 @@ are coefficientwise.  The coefficients are stored as plain ER2 numbers,
 so no PARI object outlives the call that made it (M4).
 """
 
+from __future__ import annotations
+
 from er2.printing import latex
+
+TYPE_CHECKING = False
+if TYPE_CHECKING:  # annotations only: ``typing`` costs startup
+    from collections.abc import Callable, Iterable, Iterator
+    from typing import Any
 
 __all__ = ["DirichletSeries"]
 
@@ -36,7 +43,7 @@ class DirichletSeries:
 
     __slots__ = ("_coefficients",)
 
-    def __init__(self, coefficients):
+    def __init__(self, coefficients: Iterable[Any]) -> None:
         """Create the series with coefficients ``a_1, a_2, ...``."""
         backend = _backend()
         values = tuple(backend.from_pari(c) for c in coefficients)
@@ -45,7 +52,9 @@ class DirichletSeries:
         self._coefficients = values
 
     @classmethod
-    def euler(cls, factor, terms):
+    def euler(
+        cls, factor: Callable[[int, Any], Any], terms: int
+    ) -> DirichletSeries:
         r"""Build a series from its Euler product (PARI ``direuler``).
 
         ``factor(p, x)`` returns the local factor at the prime ``p`` as
@@ -64,7 +73,7 @@ class DirichletSeries:
         return cls(backend.euler_product_series(factor, terms))
 
     @classmethod
-    def zeta(cls, terms):
+    def zeta(cls, terms: int) -> DirichletSeries:
         """Return the Riemann zeta function: every coefficient 1.
 
         A classmethod rather than a prelude name, so the two series a
@@ -74,21 +83,21 @@ class DirichletSeries:
         return cls([1] * terms)
 
     @classmethod
-    def moebius(cls, terms):
+    def moebius(cls, terms: int) -> DirichletSeries:
         """Return ``1/zeta(s)``, whose coefficients are ``mu(n)``."""
         return cls.euler(lambda p, local: 1 - local, terms)
 
     @property
-    def coefficients(self):
+    def coefficients(self) -> tuple[Any, ...]:
         """The coefficients ``a_1, ..., a_N`` as a tuple."""
         return self._coefficients
 
     @property
-    def terms(self):
+    def terms(self) -> int:
         """How many coefficients the series carries."""
         return len(self._coefficients)
 
-    def __getitem__(self, n):
+    def __getitem__(self, n: int) -> Any:
         """Return ``a_n``.  Indexed from 1, as the mathematics is."""
         if isinstance(n, slice):
             raise TypeError("a Dirichlet series does not support slicing")
@@ -101,11 +110,11 @@ class DirichletSeries:
             )
         return self._coefficients[n - 1]
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Return the number of terms, which is the truncation."""
         return len(self._coefficients)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Any]:
         """Iterate over ``a_1, a_2, ...``."""
         return iter(self._coefficients)
 
@@ -123,11 +132,11 @@ class DirichletSeries:
         result = operation(backend.PARI, self._pari(), other._pari())
         return DirichletSeries(list(result)[:terms])
 
-    def __mul__(self, other):
+    def __mul__(self, other: Any) -> Any:
         """Dirichlet convolution (PARI ``dirmul``)."""
         return self._combine(other, lambda pari, a, b: pari.dirmul(a, b))
 
-    def __truediv__(self, other):
+    def __truediv__(self, other: Any) -> Any:
         """Dirichlet division (PARI ``dirdiv``); ``a_1`` must be non-zero."""
         return self._combine(other, lambda pari, a, b: pari.dirdiv(a, b))
 
@@ -143,25 +152,25 @@ class DirichletSeries:
             ]
         )
 
-    def __add__(self, other):
+    def __add__(self, other: Any) -> Any:
         """Add coefficientwise."""
         return self._pointwise(other, lambda a, b: a + b)
 
-    def __sub__(self, other):
+    def __sub__(self, other: Any) -> Any:
         """Subtract coefficientwise."""
         return self._pointwise(other, lambda a, b: a - b)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         """Two series are equal when their coefficients are."""
         if isinstance(other, DirichletSeries):
             return self._coefficients == other._coefficients
         return NotImplemented
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Hash consistently with ``__eq__``."""
         return hash((DirichletSeries, self._coefficients))
 
-    def _parts(self):
+    def _parts(self) -> tuple[list[tuple[int, Any]], bool]:
         """Return the leading ``(index, coefficient)``, zeros dropped."""
         shown = [
             (n, a)
@@ -173,18 +182,18 @@ class DirichletSeries:
         more = any(a != 0 for a in self._coefficients[_SHOWN:])
         return shown, more
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return ``1 - 2^-s - 3^-s + ...  (20 terms)``."""
         body = _join(*self._parts(), "^-s", tex=False)
         return f"{body}  ({len(self)} terms)"
 
-    def _sympystr(self, printer):
+    def _sympystr(self, printer: Any) -> str:
         return repr(self)
 
-    def _latex(self, printer=None):
+    def _latex(self, printer: Any = None) -> str:
         return _join(*self._parts(), "^{-s}", tex=True)
 
-    def _repr_latex_(self):
+    def _repr_latex_(self) -> str:
         """Render as math in Jupyter and Quarto."""
         return latex(self)._repr_latex_()
 

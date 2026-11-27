@@ -37,7 +37,7 @@ These come from the hard requirements in ARCHITECTURE.md §1.1, §1.2 and §6.1.
 | 0.6.1     | ER2 cells and highlighting in Quarto (D9)     | ✅ done     |
 | M7 (0.7)  | Language specification                        | ✅ done     |
 | M8 (1.0)  | Stable language and release                   | in progress |
-| Backlog   | From a review of 0.7.0 (15 items)             | not scheduled |
+| Backlog   | From a review of 0.7.0 (16 items)             | 14 done; 2 and 5 wait |
 | — (2.0)  | Deep CPython integration                      | long term   |
 
 ---
@@ -857,7 +857,7 @@ and the README has a platform table (CHANGELOG, Unreleased).
    `$XDG_STATE_HOME/er2/history` (`~/.local/state/er2/history`); `name?` prints the signature
    and the docstring (REPL only, as in IPython; never in `.er2` files). Timing is left to
    Jupyter's `%time`, rather than a REPL-only syntax. Tested on a real terminal (pty).
-7. **ER2-specific error messages**, with the ER2 source line and a caret. `ER2Warning` exists in
+7. ✅ **ER2-specific error messages**, with the ER2 source line and a caret. `ER2Warning` exists in
    the preparser; the question is where Python's own `SyntaxError` reaches the user unexplained,
    which needs measuring before designing.
    **Done 2026-11-26 (user's choice), for `er2 file.er2` and the REPL:** measured on typical mistakes, then
@@ -872,26 +872,26 @@ and the README has a platform table (CHANGELOG, Unreleased).
 
 **Documentation**
 
-8. **"ER2 for a Python programmer" as one table**: `1/3`, `2^100`, `sym x`, `factor(360)`,
+8. ✅ **"ER2 for a Python programmer" as one table**: `1/3`, `2^100`, `sym x`, `factor(360)`,
    side by side in Python and ER2. It is the §3 table seen from the user's side (§1.4).
    **Done 2026-11-27:** *Python and ER2 side by side* in `site/start.qmd` (each row checked by
    running it in both); the start page and the home page no longer describe integers as
    `Integer` and `5r` as the plain `int` (outdated since D22).
-9. **ER2 compared with Python, SymPy, SageMath and PARI/GP**: a technical page, not marketing,
+9. ✅ **ER2 compared with Python, SymPy, SageMath and PARI/GP**: a technical page, not marketing,
    stating what each one is for and where ER2 stops.
    **Done 2026-11-27:** `docs/COMPARISON.md`, the site page *Compared*; its figures come from
    `docs/BENCHMARKS.md`.
-10. **"Ten programs in ER2"**: Mersenne primes, factorization, `phi`, `mu`, algebra, calculus,
+10. ✅ **"Ten programs in ER2"**: Mersenne primes, factorization, `phi`, `mu`, algebra, calculus,
    a matrix, a finite field, a series, the OEIS; golden-tested like `tests/examples/`.
    **Done 2026-11-27:** `examples/ten/` (`01_mersenne.er2` … `10_number_field.er2`, with a
    `README.md`), outputs in `tests/examples/ten/`. The OEIS program became a number field
    (Q(sqrt(-5))): OEIS functions need the network and `er2[oeis]`, and tests never use the
    network.
-11. **A short architecture overview** (one or two pages, the pipeline diagram of ARCHITECTURE §2)
+11. ✅ **A short architecture overview** (one or two pages, the pipeline diagram of ARCHITECTURE §2)
    for new contributors, pointing to ARCHITECTURE.md for the decisions.
    **Done 2026-11-27:** `docs/OVERVIEW.md` (pipeline, module map, where a change goes, the rules),
    linked from CONTRIBUTING and the README; ARCHITECTURE §2's diagram updated for D22 and D24.
-12. **A searchable function reference.** `docs/PARI_FUNCTIONS.md` is generated and large; the
+12. ✅ **A searchable function reference.** `docs/PARI_FUNCTIONS.md` is generated and large; the
     site could offer it by topic, without editing the generated file.
     **Done 2026-11-27:** the site's *PARI reference* has a search box (every word must match a
     name or the description; "only what ER2 exposes" hides the `python` rows; empty topics are
@@ -909,7 +909,7 @@ and the README has a platform table (CHANGELOG, Unreleased).
     multiplicative, the divisor sums of `mu` and `phi`, exact `/` and `**` against `Fraction`,
     `Mod` as a ring homomorphism, `factor(f)` expands back to `f`, and `det(A*B) = det(A)*det(B)`.
     Inputs stay small (numbers below 10^12, degree 6, 3x3) so no case is slow (D7): 3 s in all.
-14. **Benchmark regression in CI**, from `benchmarks/run.py`, allowing for the noise of shared
+14. ✅ **Benchmark regression in CI**, from `benchmarks/run.py`, allowing for the noise of shared
     runners (§1.5: only end-to-end figures count).
     **First step done 2026-11-25 (user: «tests that rate the speed of different calculations
     as a reference for the improvements»):** `make bench-baseline` saves every time in
@@ -926,7 +926,7 @@ and the README has a platform table (CHANGELOG, Unreleased).
     injected so they apply inside brackets too and never in strings or comments; grammar tests
     with vscode-tmgrammar-test; CI builds the `.vsix`. Not on the Marketplace yet.
 
-16. **Performance targets** (from an outside review of 2026-11-25). **The user's goal
+16. ✅ **Performance targets** (from an outside review of 2026-11-25). **The user's goal
     (2026-11-25): ER2 faster than Python, and not much slower than PARI/GP.** First step done
     the same day: rational `+ - * /` build the result directly with `fractions`' own algorithms
     (`a + b` from ×3.1 to ×1.8 of `Fraction`, `tests/test_rational_fast_path.py` checks the results
@@ -941,6 +941,10 @@ and the README has a platform table (CHANGELOG, Unreleased).
     degree 48 (D23), REPL and kernel preload SymPy. Open: startup without symbols is ×3.6–4 of
     Python (target 3); what is left is mostly importing cypari2, only saved by loading PARI on
     first use (on hold).
+    **Done 2026-11-27:** PARI loads on first use (D24): startup without PARI ×2.7 of Python,
+    under the target of 3; rationals ×1.0–1.2 of `Fraction` (`**`, `-`, `abs` faster than it);
+    `kernel` of a 10x10 matrix ×9.8 (was ×14.9). Measured and rejected: gmpy2, SymEngine,
+    mypyc and a Cython-compiled SymPy (`docs/PERFORMANCE_ROADMAP.md`).
 
 **Not taken, and why**
 

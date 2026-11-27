@@ -80,6 +80,7 @@ dev = [
     # them, so these are test-only and never runtime dependencies.
     "pandas>=2.2",
     "scipy>=1.13",
+    "hypothesis>=6.170.21",
 ]
 
 [build-system]

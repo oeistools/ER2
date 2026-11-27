@@ -890,9 +890,14 @@ and the README has a platform table (CHANGELOG, Unreleased).
 
 **Tests and tooling**
 
-13. **Property-based tests** of mathematical invariants (`factor` reconstructs `n`,
+13. ✅ **Property-based tests** of mathematical invariants (`factor` reconstructs `n`,
     `expand(factor(f)) == expand(f)`). Hypothesis would be a new dev dependency, which needs the
     user's agreement (minimal dependencies, CLAUDE.md).
+    **Done 2026-11-27 (the user agreed):** `hypothesis` in the dev group only, and
+    `tests/test_properties.py`: `factor(n)` multiplies back to `n` with prime factors, `phi` is
+    multiplicative, the divisor sums of `mu` and `phi`, exact `/` and `**` against `Fraction`,
+    `Mod` as a ring homomorphism, `factor(f)` expands back to `f`, and `det(A*B) = det(A)*det(B)`.
+    Inputs stay small (numbers below 10^12, degree 6, 3x3) so no case is slow (D7): 3 s in all.
 14. **Benchmark regression in CI**, from `benchmarks/run.py`, allowing for the noise of shared
     runners (§1.5: only end-to-end figures count).
     **First step done 2026-11-25 (user: «tests that rate the speed of different calculations

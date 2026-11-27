@@ -68,6 +68,7 @@ What is stable already, and what is not:
 
 ### Added
 
+- Property-based tests (`tests/test_properties.py`, with Hypothesis as a development dependency only): factorization, `phi`, `mu`, exact division and powers, `Mod`, polynomial factorization and determinants checked on generated input.
 - CI builds the wheel and runs it in a clean environment on Python 3.12, 3.13 and 3.14 on every push; the release workflow does the same on all three versions (it tested 3.12 only).
 - The site's *PARI reference* can be searched: by PARI or ER2 name or by a word of the description, optionally only what ER2 exposes; `reference.html?find=eulerphi` links to a search.
 - `docs/OVERVIEW.md`: ER2 in two pages for contributors (the pipeline, which module does what, where a change goes), linked from CONTRIBUTING and the README.

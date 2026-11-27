@@ -104,7 +104,7 @@ In practice:
 - Python 3.14 (minimum: 3.12, as `pyproject.toml` requires). Package manager: `uv`.
 - `draft/` is gitignored: private notes, never committed.
 - Virtual env: `.venv/` managed by `uv sync`. Dependencies in `pyproject.toml`.
-- **Minimal dependencies**: runtime = `sympy` + `cypari2`; dev = `pytest` + `ruff`. Do not add a dependency unless a task truly needs it (e.g. `ipykernel` as the optional extra `er2[jupyter]`, `oeis-tools` as `er2[oeis]`).
+- **Minimal dependencies**: runtime = `sympy` + `cypari2`; dev = `pytest` + `ruff` + `hypothesis` (property tests, `tests/test_properties.py`; agreed 2026-11-27). Do not add a dependency unless a task truly needs it (e.g. `ipykernel` as the optional extra `er2[jupyter]`, `oeis-tools` as `er2[oeis]`).
 - **OEIS tests never use the network**: they read `tests/oeis/data/` (recorded responses). `ER2_NETWORK_TESTS=1 uv run pytest tests/oeis` also runs the live test.
 - Quarto 1.9 is installed on this machine (`quarto render`), used for the Quarto tests.
 - **PARI comes from cypari2** (its wheel bundles libpari 2.17.2). Do not depend on a system PARI/GP install or the `gp` binary — not for the code, not for tests. To check an expected value:

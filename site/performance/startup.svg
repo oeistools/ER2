@@ -8,30 +8,35 @@
 <line x1="70" x2="740" y1="45.1" y2="45.1" stroke="#e5e5e5"/><text x="64" y="49.1" text-anchor="end">×20</text>
 <line x1="70" x2="740" y1="244.7" y2="244.7" stroke="black" stroke-dasharray="5 3"/><text x="740" y="240.7" text-anchor="end">as fast as the reference</text>
 <text x="70.0" y="276" text-anchor="middle" font-size="10">2026-11-25 b44083f</text>
-<text x="181.7" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
-<text x="293.3" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
-<text x="405.0" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
-<text x="516.7" y="276" text-anchor="middle" font-size="10">2026-11-26 c362f30</text>
-<text x="628.3" y="276" text-anchor="middle" font-size="10">2026-11-26 304cb29</text>
-<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 e7c4ba9</text>
-<polyline points="70.0,121.8 181.7,122.9 293.3,121.4 405.0,151.8 516.7,159.6 628.3,159.7 740.0,148.9" fill="none" stroke="#1f77b4" stroke-width="2"/>
+<text x="165.7" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
+<text x="261.4" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
+<text x="357.1" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
+<text x="452.9" y="276" text-anchor="middle" font-size="10">2026-11-26 c362f30</text>
+<text x="548.6" y="276" text-anchor="middle" font-size="10">2026-11-26 304cb29</text>
+<text x="644.3" y="276" text-anchor="middle" font-size="10">2026-11-26 e7c4ba9</text>
+<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-28 699f0d3</text>
+<polyline points="70.0,121.8 165.7,122.9 261.4,121.4 357.1,151.8 452.9,159.6 548.6,159.7 644.3,148.9 740.0,158.0" fill="none" stroke="#1f77b4" stroke-width="2"/>
 <circle cx="70.0" cy="121.8" r="3" fill="#1f77b4"/>
-<circle cx="181.7" cy="122.9" r="3" fill="#1f77b4"/>
-<circle cx="293.3" cy="121.4" r="3" fill="#1f77b4"/>
-<circle cx="405.0" cy="151.8" r="3" fill="#1f77b4"/>
-<circle cx="516.7" cy="159.6" r="3" fill="#1f77b4"/>
-<circle cx="628.3" cy="159.7" r="3" fill="#1f77b4"/>
-<circle cx="740.0" cy="148.9" r="3" fill="#1f77b4"/>
+<circle cx="165.7" cy="122.9" r="3" fill="#1f77b4"/>
+<circle cx="261.4" cy="121.4" r="3" fill="#1f77b4"/>
+<circle cx="357.1" cy="151.8" r="3" fill="#1f77b4"/>
+<circle cx="452.9" cy="159.6" r="3" fill="#1f77b4"/>
+<circle cx="548.6" cy="159.7" r="3" fill="#1f77b4"/>
+<circle cx="644.3" cy="148.9" r="3" fill="#1f77b4"/>
+<circle cx="740.0" cy="158.0" r="3" fill="#1f77b4"/>
 <rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">`er2` startup, number theory only · vs Python</text>
-<polyline points="70.0,41.4 181.7,43.6 293.3,38.7 405.0,35.3 516.7,51.7 628.3,47.4 740.0,41.3" fill="none" stroke="#d62728" stroke-width="2"/>
+<polyline points="70.0,41.4 165.7,43.6 261.4,38.7 357.1,35.3 452.9,51.7 548.6,47.4 644.3,41.3 740.0,45.9" fill="none" stroke="#d62728" stroke-width="2"/>
 <circle cx="70.0" cy="41.4" r="3" fill="#d62728"/>
-<circle cx="181.7" cy="43.6" r="3" fill="#d62728"/>
-<circle cx="293.3" cy="38.7" r="3" fill="#d62728"/>
-<circle cx="405.0" cy="35.3" r="3" fill="#d62728"/>
-<circle cx="516.7" cy="51.7" r="3" fill="#d62728"/>
-<circle cx="628.3" cy="47.4" r="3" fill="#d62728"/>
-<circle cx="740.0" cy="41.3" r="3" fill="#d62728"/>
+<circle cx="165.7" cy="43.6" r="3" fill="#d62728"/>
+<circle cx="261.4" cy="38.7" r="3" fill="#d62728"/>
+<circle cx="357.1" cy="35.3" r="3" fill="#d62728"/>
+<circle cx="452.9" cy="51.7" r="3" fill="#d62728"/>
+<circle cx="548.6" cy="47.4" r="3" fill="#d62728"/>
+<circle cx="644.3" cy="41.3" r="3" fill="#d62728"/>
+<circle cx="740.0" cy="45.9" r="3" fill="#d62728"/>
 <rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">`er2` startup, with symbols (loads SymPy) · vs Python</text>
-<circle cx="740.0" cy="172.7" r="3" fill="#2ca02c"/>
+<polyline points="644.3,172.7 740.0,180.3" fill="none" stroke="#2ca02c" stroke-width="2"/>
+<circle cx="644.3" cy="172.7" r="3" fill="#2ca02c"/>
+<circle cx="740.0" cy="180.3" r="3" fill="#2ca02c"/>
 <rect x="70" y="337" width="12" height="12" fill="#2ca02c"/><text x="88" y="347">`er2` startup, integers and rationals only · vs Python</text>
 </svg>

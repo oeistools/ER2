@@ -8,46 +8,51 @@
 <line x1="70" x2="740" y1="34.5" y2="34.5" stroke="#e5e5e5"/><text x="64" y="38.5" text-anchor="end">×1</text>
 <line x1="70" x2="740" y1="34.5" y2="34.5" stroke="black" stroke-dasharray="5 3"/><text x="740" y="30.5" text-anchor="end">as fast as the reference</text>
 <text x="70.0" y="276" text-anchor="middle" font-size="10">2026-11-25 b44083f</text>
-<text x="181.7" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
-<text x="293.3" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
-<text x="405.0" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
-<text x="516.7" y="276" text-anchor="middle" font-size="10">2026-11-26 c362f30</text>
-<text x="628.3" y="276" text-anchor="middle" font-size="10">2026-11-26 304cb29</text>
-<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-26 e7c4ba9</text>
-<polyline points="70.0,81.7 181.7,87.1 293.3,94.3 405.0,58.9 516.7,77.6 628.3,89.4 740.0,96.7" fill="none" stroke="#1f77b4" stroke-width="2"/>
+<text x="165.7" y="276" text-anchor="middle" font-size="10">2026-11-25 dff4757</text>
+<text x="261.4" y="276" text-anchor="middle" font-size="10">2026-11-26 4c333a4</text>
+<text x="357.1" y="276" text-anchor="middle" font-size="10">2026-11-26 a1fd279</text>
+<text x="452.9" y="276" text-anchor="middle" font-size="10">2026-11-26 c362f30</text>
+<text x="548.6" y="276" text-anchor="middle" font-size="10">2026-11-26 304cb29</text>
+<text x="644.3" y="276" text-anchor="middle" font-size="10">2026-11-26 e7c4ba9</text>
+<text x="740.0" y="276" text-anchor="middle" font-size="10">2026-11-28 699f0d3</text>
+<polyline points="70.0,81.7 165.7,87.1 261.4,94.3 357.1,58.9 452.9,77.6 548.6,89.4 644.3,96.7 740.0,101.3" fill="none" stroke="#1f77b4" stroke-width="2"/>
 <circle cx="70.0" cy="81.7" r="3" fill="#1f77b4"/>
-<circle cx="181.7" cy="87.1" r="3" fill="#1f77b4"/>
-<circle cx="293.3" cy="94.3" r="3" fill="#1f77b4"/>
-<circle cx="405.0" cy="58.9" r="3" fill="#1f77b4"/>
-<circle cx="516.7" cy="77.6" r="3" fill="#1f77b4"/>
-<circle cx="628.3" cy="89.4" r="3" fill="#1f77b4"/>
-<circle cx="740.0" cy="96.7" r="3" fill="#1f77b4"/>
+<circle cx="165.7" cy="87.1" r="3" fill="#1f77b4"/>
+<circle cx="261.4" cy="94.3" r="3" fill="#1f77b4"/>
+<circle cx="357.1" cy="58.9" r="3" fill="#1f77b4"/>
+<circle cx="452.9" cy="77.6" r="3" fill="#1f77b4"/>
+<circle cx="548.6" cy="89.4" r="3" fill="#1f77b4"/>
+<circle cx="644.3" cy="96.7" r="3" fill="#1f77b4"/>
+<circle cx="740.0" cy="101.3" r="3" fill="#1f77b4"/>
 <rect x="70" y="301" width="12" height="12" fill="#1f77b4"/><text x="88" y="311">factor, degree 4 · vs SymPy `factor`</text>
-<polyline points="70.0,104.6 181.7,105.8 293.3,91.2 405.0,108.9 516.7,108.7 628.3,111.8 740.0,116.7" fill="none" stroke="#d62728" stroke-width="2"/>
+<polyline points="70.0,104.6 165.7,105.8 261.4,91.2 357.1,108.9 452.9,108.7 548.6,111.8 644.3,116.7 740.0,122.0" fill="none" stroke="#d62728" stroke-width="2"/>
 <circle cx="70.0" cy="104.6" r="3" fill="#d62728"/>
-<circle cx="181.7" cy="105.8" r="3" fill="#d62728"/>
-<circle cx="293.3" cy="91.2" r="3" fill="#d62728"/>
-<circle cx="405.0" cy="108.9" r="3" fill="#d62728"/>
-<circle cx="516.7" cy="108.7" r="3" fill="#d62728"/>
-<circle cx="628.3" cy="111.8" r="3" fill="#d62728"/>
-<circle cx="740.0" cy="116.7" r="3" fill="#d62728"/>
+<circle cx="165.7" cy="105.8" r="3" fill="#d62728"/>
+<circle cx="261.4" cy="91.2" r="3" fill="#d62728"/>
+<circle cx="357.1" cy="108.9" r="3" fill="#d62728"/>
+<circle cx="452.9" cy="108.7" r="3" fill="#d62728"/>
+<circle cx="548.6" cy="111.8" r="3" fill="#d62728"/>
+<circle cx="644.3" cy="116.7" r="3" fill="#d62728"/>
+<circle cx="740.0" cy="122.0" r="3" fill="#d62728"/>
 <rect x="70" y="319" width="12" height="12" fill="#d62728"/><text x="88" y="329">factor, degree 9 · vs SymPy `factor`</text>
-<polyline points="70.0,150.7 181.7,149.0 293.3,156.6 405.0,152.1 516.7,144.2 628.3,155.7 740.0,158.2" fill="none" stroke="#2ca02c" stroke-width="2"/>
+<polyline points="70.0,150.7 165.7,149.0 261.4,156.6 357.1,152.1 452.9,144.2 548.6,155.7 644.3,158.2 740.0,144.4" fill="none" stroke="#2ca02c" stroke-width="2"/>
 <circle cx="70.0" cy="150.7" r="3" fill="#2ca02c"/>
-<circle cx="181.7" cy="149.0" r="3" fill="#2ca02c"/>
-<circle cx="293.3" cy="156.6" r="3" fill="#2ca02c"/>
-<circle cx="405.0" cy="152.1" r="3" fill="#2ca02c"/>
-<circle cx="516.7" cy="144.2" r="3" fill="#2ca02c"/>
-<circle cx="628.3" cy="155.7" r="3" fill="#2ca02c"/>
-<circle cx="740.0" cy="158.2" r="3" fill="#2ca02c"/>
+<circle cx="165.7" cy="149.0" r="3" fill="#2ca02c"/>
+<circle cx="261.4" cy="156.6" r="3" fill="#2ca02c"/>
+<circle cx="357.1" cy="152.1" r="3" fill="#2ca02c"/>
+<circle cx="452.9" cy="144.2" r="3" fill="#2ca02c"/>
+<circle cx="548.6" cy="155.7" r="3" fill="#2ca02c"/>
+<circle cx="644.3" cy="158.2" r="3" fill="#2ca02c"/>
+<circle cx="740.0" cy="144.4" r="3" fill="#2ca02c"/>
 <rect x="70" y="337" width="12" height="12" fill="#2ca02c"/><text x="88" y="347">factor, degree 22 · vs SymPy `factor`</text>
-<polyline points="70.0,237.1 181.7,235.1 293.3,231.4 405.0,235.7 516.7,245.5 628.3,229.9 740.0,238.7" fill="none" stroke="#9467bd" stroke-width="2"/>
+<polyline points="70.0,237.1 165.7,235.1 261.4,231.4 357.1,235.7 452.9,245.5 548.6,229.9 644.3,238.7 740.0,245.5" fill="none" stroke="#9467bd" stroke-width="2"/>
 <circle cx="70.0" cy="237.1" r="3" fill="#9467bd"/>
-<circle cx="181.7" cy="235.1" r="3" fill="#9467bd"/>
-<circle cx="293.3" cy="231.4" r="3" fill="#9467bd"/>
-<circle cx="405.0" cy="235.7" r="3" fill="#9467bd"/>
-<circle cx="516.7" cy="245.5" r="3" fill="#9467bd"/>
-<circle cx="628.3" cy="229.9" r="3" fill="#9467bd"/>
-<circle cx="740.0" cy="238.7" r="3" fill="#9467bd"/>
+<circle cx="165.7" cy="235.1" r="3" fill="#9467bd"/>
+<circle cx="261.4" cy="231.4" r="3" fill="#9467bd"/>
+<circle cx="357.1" cy="235.7" r="3" fill="#9467bd"/>
+<circle cx="452.9" cy="245.5" r="3" fill="#9467bd"/>
+<circle cx="548.6" cy="229.9" r="3" fill="#9467bd"/>
+<circle cx="644.3" cy="238.7" r="3" fill="#9467bd"/>
+<circle cx="740.0" cy="245.5" r="3" fill="#9467bd"/>
 <rect x="70" y="355" width="12" height="12" fill="#9467bd"/><text x="88" y="365">factor, degree 60 · vs SymPy `factor`</text>
 </svg>
